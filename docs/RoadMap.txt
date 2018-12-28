@@ -1,0 +1,1 @@
+﻿- ao derrotar chefe, adicionar tela entre estágios (mapa estilo castlevania)
