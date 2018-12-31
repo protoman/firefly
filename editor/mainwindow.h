@@ -174,7 +174,6 @@ private:
     weapon_edit *weapon_edit_tab;
     stage_edit *stage_edit_tab;
     projectile_edit *projectile_edit_tab;
-    game_properties_tab *game_prop_tab;
     map_tab *map_edit_tab;
     player_edit *player_edit_tab;
     armor_edit *armor_edit_tab;

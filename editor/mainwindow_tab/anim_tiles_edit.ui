@@ -96,7 +96,7 @@
         <number>0</number>
        </property>
        <item row="1" column="0">
-        <widget class="framesPreviewArea" name="animTileFrames_widget" native="true">
+        <widget class="animTileEdit" name="animTileFrames_widget" native="true">
          <property name="styleSheet">
           <string notr="true">border-width: 2px;
 border-color: black;
@@ -147,15 +147,15 @@ border-style: outset;</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>framesPreviewArea</class>
-   <extends>QWidget</extends>
-   <header>framespreviewarea.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>animTitle</class>
    <extends>QWidget</extends>
    <header>animtitle.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>animTileEdit</class>
+   <extends>QWidget</extends>
+   <header>animtileedit.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

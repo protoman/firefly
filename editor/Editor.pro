@@ -75,7 +75,6 @@ SOURCES += main.cpp \
     sprite_preview_area.cpp \
     mainwindow_tab/artificial_inteligence_tab.cpp \
     mainwindow_tab/projectile_edit.cpp \
-    mainwindow_tab/game_properties_tab.cpp \
     mainwindow_tab/map_tab.cpp \
     ../file/convert.cpp \
     stage_swap_dialog.cpp \
@@ -117,8 +116,8 @@ SOURCES += main.cpp \
     dialog_pick_color.cpp \
     files_editor/gametextcreditstab.cpp \
     ../aux_tools/exception_manager.cpp \
-    mainwindow_tab/castlepointsdialog.cpp \
-    mainwindow_tab/castle_points_editorarea.cpp
+    mainwindow_tab/game_properties_tab.cpp \
+    mainwindow_tab/animtileedit.cpp
 
 HEADERS += mainwindow.h \
     editorarea.h \
@@ -198,8 +197,7 @@ HEADERS += mainwindow.h \
     dialog_pick_color.h \
     files_editor/gametextcreditstab.h \
     ../aux_tools/exception_manager.h \
-    mainwindow_tab/castlepointsdialog.h \
-    mainwindow_tab/castle_points_editorarea.h
+    mainwindow_tab/animtileedit.h
 
 FORMS += mainwindow.ui \
     addwizard.ui \
@@ -234,8 +232,7 @@ FORMS += mainwindow.ui \
     mainwindow_tab/anim_tiles_edit.ui \
     mainwindow_tab/anim/animpackimport.ui \
     dialog_pick_color.ui \
-    files_editor/gametextcreditstab.ui \
-    mainwindow_tab/castlepointsdialog.ui
+    files_editor/gametextcreditstab.ui
 
 RESOURCES += resources/icons/icons.qrc
 INCLUDEPATH += ../common

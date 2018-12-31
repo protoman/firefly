@@ -9,9 +9,6 @@
 
 #include "aux_tools/exception_manager.h"
 
-extern std::string FILEPATH;
-extern std::string GAMEPATH;
-
 class fio_common
 {
 public:
@@ -27,8 +24,7 @@ public:
     template <class T> T load_struct_data(std::string file);
 };
 
-template <class T> void fio_common::save_struct_data(std::string file, T data) {
-    std::string filename = std::string(FILEPATH) + "/" + file;
+template <class T> void fio_common::save_struct_data(std::string filename, T data) {
     std::cout << ">> file_io::save_struct_data - filename: '" << filename << "'." << std::endl;
     FILE *fp = fopen(filename.c_str(), "wb");
     if (!fp) {
@@ -41,8 +37,7 @@ template <class T> void fio_common::save_struct_data(std::string file, T data) {
     fclose(fp);
 }
 
-template <class T> T fio_common::load_struct_data(std::string file) {
-    std::string filename = std::string(FILEPATH) + "/" + file;
+template <class T> T fio_common::load_struct_data(std::string filename) {
     T res;
     FILE *fp = fopen(filename.c_str(), "rb");
     if (!fp) {
@@ -65,9 +60,8 @@ template <class T> T fio_common::load_struct_data(std::string file) {
 
 }
 
-template <class T> void fio_common::save_data_to_disk(std::string file, std::vector<T> data)
+template <class T> void fio_common::save_data_to_disk(std::string filename, std::vector<T> data)
 {
-    std::string filename = std::string(FILEPATH) + "/" + file;
     std::cout << ">> file_io::save_data_to_disk - filename: '" << filename << "'." << std::endl;
     FILE *fp = fopen(filename.c_str(), "wb");
     if (!fp) {
@@ -86,9 +80,8 @@ template <class T> void fio_common::save_data_to_disk(std::string file, std::vec
 }
 
 
-template <class T> std::vector<T> fio_common::load_from_disk(std::string file)
+template <class T> std::vector<T> fio_common::load_from_disk(std::string filename)
 {
-    std::string filename = std::string(FILEPATH) + "/" + file;
     std::vector<T> res;
     FILE *fp = fopen(filename.c_str(), "rb");
     if (!fp) {
@@ -117,9 +110,8 @@ template <class T> std::vector<T> fio_common::load_from_disk(std::string file)
     return res;
 }
 
-template <class T> T fio_common::load_single_object_from_disk(std::string file)
+template <class T> T fio_common::load_single_object_from_disk(std::string filename)
 {
-    std::string filename = std::string(FILEPATH) + "/" + file;
     T res;
     FILE *fp = fopen(filename.c_str(), "rb");
     if (!fp) {
@@ -144,9 +136,8 @@ template <class T> T fio_common::load_single_object_from_disk(std::string file)
     return res;
 }
 
-template <class T> void fio_common::save_single_object_to_disk(std::string file, T data_in)
+template <class T> void fio_common::save_single_object_to_disk(std::string filename, T data_in)
 {
-    std::string filename = std::string(FILEPATH) + "/" + file;
     std::cout << ">> file_io::save_single_object_to_disk - filename: '" << filename << "'." << std::endl;
     FILE *fp = fopen(filename.c_str(), "wb");
     if (!fp) {

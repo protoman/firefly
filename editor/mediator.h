@@ -5,9 +5,9 @@
 #include "file/file_io.h"
 #include "file/fio_scenes.h"
 #include "file/fio_strings.h"
-#include "file/v4/file_castlepoints.h"
-
+#include "file/v5/struct_file_map.h"
 #include "scenes/scenesmediator.h"
+
 
 struct st_player_graphics_data {
 	st_size frame_size;
@@ -50,7 +50,7 @@ public:
 	int editModeNPC;
 	int object_type;
 	int terrainType;
-	int zoom;
+    double zoom;
 	int link_type;
 	int npc_direction;
     int object_direction;
@@ -167,8 +167,14 @@ public:
     // stage dialogs, key is stage_n, vector represent the list for each text line
     std::vector<std::map<int, std::vector<std::string> > > stage_dialog_list;
 
-    CURRENT_FILE_FORMAT::st_file_castle_ponts points_castle1;
-    CURRENT_FILE_FORMAT::st_file_castle_ponts points_castle2;
+    // MAPS DATA //
+    std::vector<file_v5_map_header> file_v5_map_header_list;
+    std::vector<file_v5_map_link> file_v5_map_link_list;
+    std::map<int, std::vector<file_v5_map_tile>>  file_v5_map_tile_map; // map tiles
+    std::map<int, std::vector<file_v5_map_object>>  file_v5_map_object_map; // map objects
+    std::map<int, std::vector<file_v5_map_npc>>  file_v5_map_npc_map; // map enemies
+    int file_v5_selected_map;
+    int file_v5_selected_layer;
 
 
 private:

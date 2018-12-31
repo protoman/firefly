@@ -24,8 +24,6 @@ public slots:
     void on_color_selected1(QColor);
 
 private slots:
-    void on_stageListCombo_currentIndexChanged(int index);
-    void on_mapListCombo_currentIndexChanged(int index);
     void on_comboBox_currentIndexChanged(int index);
     void on_listWidget_2_currentRowChanged(int currentRow);
     void on_npc_listWidget_currentRowChanged(int currentRow);
@@ -50,7 +48,6 @@ private slots:
     void on_editModeNormal_button_clicked();
     void on_editModeLock_button_clicked();
     void on_editModeErase_button_clicked();
-    void on_stageTileset_comboBox_currentIndexChanged(const QString &arg1);
 
     void on_mapGFX_comboBox_currentIndexChanged(int index);
 
@@ -80,6 +77,28 @@ private slots:
 
 
     void on_difficultyMode_pushButton_clicked();
+
+    void on_addMap_pushButton_clicked();
+    void fill_map_selector();
+    void fill_map_v5_data();
+
+    void on_mapSelector_comboBox_currentIndexChanged(int index);
+
+    void on_v5_mapName_lineEdit_textChanged(const QString &arg1);
+
+    void on_mapSizeW_spinBox_valueChanged(int arg1);
+
+    void on_mapSizeH_spinBox_valueChanged(int arg1);
+
+    void on_generateMapTiles_pushButton_clicked();
+
+    void generateMapTiles();
+
+    void on_v5_tileset_comboBox_currentIndexChanged(const QString &arg1);
+
+    void on_layerSelector_comboBox_currentIndexChanged(int index);
+
+    void set_layer_data();
 
 private:
     void fill_data();

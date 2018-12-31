@@ -4,15 +4,11 @@
 
 
 
-#include "timerlib.h"
-extern timerLib timer;
-
-#include "graphicslib.h"
-extern graphicsLib graphLib;
 
 
-fps_control::fps_control() : fps_timer(0)
+fps_control::fps_control()
 {
+    fps_timer = 0;
     fps_max = DEFAULT_FPS_MAX;
     fps_counter = 0;
     fps_min_fail_count = 0;
@@ -24,24 +20,18 @@ void fps_control::initialize()
 {
     max_frame_ticks = (1000.0/(float)fps_max)+0.00001;
     frame_count = 0;
-    last_second_ticks = timer.getTimer();
-    /*
-    fps_max = max;
-    float percent = (100 * fps_max) / DEFAULT_FPS_MAX;
-    std::cout << "FPS_CONTROL.set_max_fps[" << max << "], percent[" << percent << "]" << std::endl;
-    max_frame_ticks = (1000.0/(float)fps_max)+0.00001;
-    */
+    last_second_ticks = TimerView::get_instance()->getTimer();
 }
 
 bool fps_control::limit()
 {
-    if (timer.is_paused()) {
+    if (TimerView::get_instance()->is_paused()) {
         return true;
     }
     ++frame_count;
     target_ticks = last_second_ticks + static_cast<unsigned int>(frame_count * max_frame_ticks);
-    current_ticks = timer.getTimer();
-    //std::cout << "fps_control::limit::timer.ticks[" << timer.getTimer() << "], sdl.ticks[" << current_ticks << "]" << std::endl;
+    current_ticks = TimerView::get_instance()->getTimer();
+    //std::cout << "fps_control::limit::TimerView::get_instance()->ticks[" << TimerView::get_instance()->getTimer() << "], sdl.ticks[" << current_ticks << "]" << std::endl;
 
     average_ticks += current_ticks - last_frame_ticks;
     if (current_ticks - last_frame_ticks <= min_ticks)
@@ -57,7 +47,7 @@ bool fps_control::limit()
     if (current_ticks < target_ticks)
     {
         SDL_Delay(target_ticks - current_ticks);
-        current_ticks = timer.getTimer();
+        current_ticks = TimerView::get_instance()->getTimer();
     }
 
     last_frame_ticks = current_ticks;
@@ -73,7 +63,7 @@ bool fps_control::limit()
         min_ticks = 1000;
         max_ticks = 0;
         average_ticks = 0;
-        last_second_ticks = timer.getTimer();
+        last_second_ticks = TimerView::get_instance()->getTimer();
         return true;
     }
 
@@ -87,11 +77,11 @@ bool fps_control::limit()
 // ********************************************************************************************** //
 void fps_control::fps_count()
 {
-    if (timer.is_paused()) {
+    if (TimerView::get_instance()->is_paused()) {
         return;
     }
     fps_counter++;
-    if (fps_timer <= timer.getTimer()) {
+    if (fps_timer <= TimerView::get_instance()->getTimer()) {
         sprintf(_fps_buffer, "FPS: %d", fps_counter);
         if (fps_counter <= DEFAULT_FPS_MAX-4) {
             frame_drop_period = DEFAULT_FPS_MAX/(DEFAULT_FPS_MAX-fps_counter);
@@ -100,7 +90,7 @@ void fps_control::fps_count()
             frame_drop_period = 0;
         }
         fps_counter = 0;
-        fps_timer = timer.getTimer()+1000;
+        fps_timer = TimerView::get_instance()->getTimer()+1000;
     }
     if (fps_counter > 1) {
         if (fps_counter <= FPS_MINIMAL_LIMIT) {
@@ -112,7 +102,8 @@ void fps_control::fps_count()
             failed_min_fps = true;
         }
         std::string temp_str(_fps_buffer);
-        graphLib.draw_text(12, 2, temp_str);
+        // @TODO: set in sharedData //
+        //graphLib.draw_text(12, 2, temp_str);
     }
 }
 

@@ -7,7 +7,7 @@ framesPreviewArea::framesPreviewArea(QWidget *parent) : QWidget(parent), graphic
     myParent = parent;
 	editor_selectedTileX = 0;
 	editor_selectedTileY = 0;
-	parent->resize(QSize(999, 200));
+    parent->resize(QSize(999, 200));
     this->show();
 }
 

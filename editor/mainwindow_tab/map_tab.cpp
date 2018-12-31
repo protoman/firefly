@@ -72,16 +72,33 @@ void map_tab::fill_data()
     ui->npc_direction_combo->setCurrentIndex(Mediator::get_instance()->npc_direction);
     ui->object_direction_combo->setCurrentIndex(Mediator::get_instance()->object_direction);
 
-    common::fill_files_combo("images/tilesets", ui->stageTileset_comboBox);
-    QString tileset(Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].tileset_filename);
-    if (tileset.length() > 0) {
-        ui->stageTileset_comboBox->setCurrentIndex(ui->stageTileset_comboBox->findText(tileset));
-        Mediator::get_instance()->setPallete(tileset.toStdString());
-    } else {
-        ui->stageTileset_comboBox->setCurrentIndex(ui->stageTileset_comboBox->findText(QString("default.png")));
-        Mediator::get_instance()->setPallete("default.png");
+    fill_map_selector();
+    fill_map_v5_data();
+    common::fill_files_combo("images/tilesets", ui->v5_tileset_comboBox);
+    if (Mediator::get_instance()->file_v5_map_header_list.size() > 0) {
+        QString tilesetFilename(Mediator::get_instance()->file_v5_map_header_list.at(Mediator::get_instance()->file_v5_selected_map).tileset_filename);
+        std::cout << "################### tilesetFilename[" << tilesetFilename.toStdString() << "]" << std::endl;
+        if (tilesetFilename.length() > 0) {
+            ui->v5_tileset_comboBox->setCurrentIndex(ui->v5_tileset_comboBox->findText(tilesetFilename));
+            Mediator::get_instance()->setPallete(tilesetFilename.toStdString());
+            ui->editArea->update_files();
+            ui->editArea->repaint();
+        } else {
+            ui->v5_tileset_comboBox->setCurrentIndex(-1);
+            Mediator::get_instance()->setPallete("default.png");
+            ui->editArea->update_files();
+            ui->editArea->repaint();
+        }
     }
-
+    for (int i=0; i<BACKGROUND_LAYERS_MAX; i++) {
+        QString itemName = QString("[") + QString::number(i) + QString("] - ");
+        if (i<=9) {
+            itemName += QString("BACKGROUND #") + QString::number(i+1);
+        } else {
+            itemName += QString("FOREGROUND #") + QString::number(i-9);
+        }
+        ui->layerSelector_comboBox->addItem(itemName);
+    }
 
 
     _data_loading = false;
@@ -93,11 +110,8 @@ void map_tab::fill_background_list()
     // BACKGROUND //
     QString bg1_filename(Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[0].filename);
     common::fill_files_combo("images/map_backgrounds", ui->bg1_filename);
-    ui->bg1_filename->setCurrentIndex(ui->bg1_filename->findText(bg1_filename));
-    ui->bg1_y_pos->setValue(Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[0].adjust_y);
 
-    float bg1_speed = (float)Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[0].speed/10;
-    ui->bg1_speed->setValue(bg1_speed);
+    set_layer_data();
 
     std::stringstream ss;
     ss.str(std::string());
@@ -106,28 +120,13 @@ void map_tab::fill_background_list()
 
     ui->mapGFX_comboBox->setCurrentIndex(Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[0].gfx);
 
-    ui->autoScrollBG1_mode->setCurrentIndex(Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[0].auto_scroll);
 
     // FOREGROUND //
     QString fg_layer_filename(Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[1].filename);
 
-    common::fill_files_combo("images/map_backgrounds", ui->fb_image_comboBox);
-    ui->fb_image_comboBox->setCurrentIndex(ui->fb_image_comboBox->findText(fg_layer_filename));
-    ui->fg_position_spinBox->setValue(Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[1].adjust_y);
-    float fg_layer_speed = (float)Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[1].speed/10;
-    ui->fg_speed_doubleSpinBox->setValue(fg_layer_speed);
-    ui->fg_opacity_spinBox->setValue(Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[1].gfx);
     ui->mapGFXMode_comboBox->setCurrentIndex(Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[1].auto_scroll);
 
 
-    // TILESET //
-    QString tileset(Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].tileset_filename);
-    if (tileset.length() > 0) {
-        ui->stageTileset_comboBox->setCurrentIndex(ui->stageTileset_comboBox->findText(tileset));
-        Mediator::get_instance()->setPallete(tileset.toStdString());
-    } else {
-        ui->stageTileset_comboBox->setCurrentIndex(-1);
-    }
     CURRENT_FILE_FORMAT::file_stage temp_stage = Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage];
     bool autoscroll_checked = (bool)temp_stage.autoscroll[Mediator::get_instance()->currentMap];
     if (autoscroll_checked != true) {
@@ -143,46 +142,8 @@ void map_tab::fill_anim_tiles_data()
 {
 }
 
-void map_tab::on_stageListCombo_currentIndexChanged(int index)
-{
-    if (_data_loading == true) {
-        return;
-    }
-    bool data_loading_before = _data_loading;
-    _data_loading = true;
-    Mediator::get_instance()->currentMap = 0;
-    Mediator::get_instance()->currentStage = index;
-    ui->mapListCombo->setCurrentIndex(0);
-    fill_background_list();
 
-    QString tileset(Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].tileset_filename);
-    if (tileset.length() > 0) {
-        ui->stageTileset_comboBox->setCurrentIndex(ui->stageTileset_comboBox->findText(tileset));
-        Mediator::get_instance()->setPallete(tileset.toStdString());
-    } else {
-        ui->stageTileset_comboBox->setCurrentIndex(ui->stageTileset_comboBox->findText(QString("default.png")));
-        Mediator::get_instance()->setPallete("default.png");
-    }
 
-    ui->mapGFX_comboBox->setCurrentIndex(Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[0].gfx);
-
-    update_edit_area();
-    ui->pallete->repaint();
-    _data_loading = data_loading_before;
-}
-
-void map_tab::on_mapListCombo_currentIndexChanged(int index)
-{
-    if (index < 0) {
-        return;
-    }
-    bool data_loading_before = _data_loading;
-    _data_loading = true;
-    Mediator::get_instance()->currentMap = index;
-    fill_background_list();
-    _data_loading = data_loading_before;
-    update_edit_area();
-}
 
 void map_tab::on_comboBox_currentIndexChanged(int index)
 {
@@ -455,19 +416,6 @@ void map_tab::on_editModeErase_button_clicked()
 }
 
 
-void map_tab::on_stageTileset_comboBox_currentIndexChanged(const QString &arg1)
-{
-    if (_data_loading == true) { return; }
-    if (arg1.length() == 0) { // reset to default
-        Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].tileset_filename[0] = '\0';
-        Mediator::get_instance()->setPallete(std::string("default.png"));
-    } else {
-        sprintf(Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].tileset_filename, "%s", arg1.toStdString().c_str());
-        Mediator::get_instance()->setPallete(arg1.toStdString());
-    }
-    ui->pallete->repaint();
-    update_edit_area();
-}
 
 void map_tab::on_mapGFX_comboBox_currentIndexChanged(int index)
 {
@@ -615,4 +563,135 @@ void map_tab::on_difficultyMode_pushButton_clicked()
 //    } else if (Mediator::get_instance()->currentDifficultyMode == DIFFICULTY_MODE_LESS) {
 //        ui->difficultyMode_pushButton->setText("<=");
     }
+}
+
+void map_tab::on_addMap_pushButton_clicked()
+{
+    Mediator::get_instance()->file_v5_map_header_list.push_back(file_v5_map_header());
+    _data_loading = true;
+    fill_map_selector();
+    fill_data();
+    _data_loading = false;
+}
+
+void map_tab::fill_map_selector()
+{
+    ui->mapSelector_comboBox->clear();
+    for (unsigned int i=0; i<Mediator::get_instance()->file_v5_map_header_list.size(); i++) {
+        QString itemName = QString("[") + QString::number(i) + QString("] - ") + QString(Mediator::get_instance()->file_v5_map_header_list.at(i).map_name);
+        ui->mapSelector_comboBox->addItem(itemName);
+    }
+    ui->mapSelector_comboBox->setCurrentIndex(Mediator::get_instance()->file_v5_selected_map);
+}
+
+void map_tab::fill_map_v5_data()
+{
+    if (Mediator::get_instance()->file_v5_map_header_list.size() == 0) {
+        return;
+    }
+    ui->v5_mapName_lineEdit->setText(Mediator::get_instance()->file_v5_map_header_list.at(Mediator::get_instance()->file_v5_selected_map).map_name);
+    ui->mapSizeW_spinBox->setValue(Mediator::get_instance()->file_v5_map_header_list.at(Mediator::get_instance()->file_v5_selected_map).tiles_w);
+    ui->mapSizeH_spinBox->setValue(Mediator::get_instance()->file_v5_map_header_list.at(Mediator::get_instance()->file_v5_selected_map).tiles_h);
+}
+
+void map_tab::on_mapSelector_comboBox_currentIndexChanged(int index)
+{
+    if (_data_loading == true) { return; }
+    Mediator::get_instance()->file_v5_selected_map = index;
+    _data_loading = true;
+    fill_map_v5_data();
+    _data_loading = false;
+}
+
+
+void map_tab::on_v5_mapName_lineEdit_textChanged(const QString &arg1)
+{
+    if (_data_loading == true) { return; }
+    sprintf(Mediator::get_instance()->file_v5_map_header_list.at(Mediator::get_instance()->file_v5_selected_map).map_name, "%s", arg1.toStdString().c_str());
+    _data_loading = true;
+    fill_map_selector();
+    _data_loading = false;
+}
+
+void map_tab::on_mapSizeW_spinBox_valueChanged(int arg1)
+{
+    if (_data_loading == true) { return; }
+    Mediator::get_instance()->file_v5_map_header_list.at(Mediator::get_instance()->file_v5_selected_map).tiles_w = arg1;
+}
+
+void map_tab::on_mapSizeH_spinBox_valueChanged(int arg1)
+{
+    if (_data_loading == true) { return; }
+    Mediator::get_instance()->file_v5_map_header_list.at(Mediator::get_instance()->file_v5_selected_map).tiles_h = arg1;
+
+}
+
+void map_tab::on_generateMapTiles_pushButton_clicked()
+{
+    if (ui->mapSizeW_spinBox->value() == 0 || ui->mapSizeH_spinBox->value() == 0) {
+        QMessageBox::warning(this, "Error", "Invalid map size (zero).");
+        return;
+    }
+    QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Rockbot Editor :: Map Editor", tr("Generating tiles will erase any existing map data. Continue?\n"), QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
+    if (resBtn == QMessageBox::No) {
+        return;
+    } else {
+        generateMapTiles();
+    }
+}
+
+void map_tab::generateMapTiles()
+{
+    if (Mediator::get_instance()->file_v5_map_tile_map.find(Mediator::get_instance()->file_v5_selected_map) == Mediator::get_instance()->file_v5_map_tile_map.end()) {
+        std::cout << "map_tab::generateMapTiles - entry not found, adding it..." << std::endl;
+        Mediator::get_instance()->file_v5_map_tile_map.insert(std::pair<int, std::vector<file_v5_map_tile>>(Mediator::get_instance()->file_v5_selected_map, std::vector<file_v5_map_tile>()));
+    }
+    std::cout << "map_tab::generateMapTiles -generating [" << Mediator::get_instance()->file_v5_map_header_list.at(Mediator::get_instance()->file_v5_selected_map).tiles_w << "][" << Mediator::get_instance()->file_v5_map_header_list.at(Mediator::get_instance()->file_v5_selected_map).tiles_h << "] tiles in key [" << Mediator::get_instance()->file_v5_selected_map << "]" << std::endl;
+    Mediator::get_instance()->file_v5_map_tile_map.at(Mediator::get_instance()->file_v5_selected_map).clear();
+    for (int i=0; i< Mediator::get_instance()->file_v5_map_header_list.at(Mediator::get_instance()->file_v5_selected_map).tiles_w; i++) {
+        for (int j=0; j< Mediator::get_instance()->file_v5_map_header_list.at(Mediator::get_instance()->file_v5_selected_map).tiles_h; j++) {
+            Mediator::get_instance()->file_v5_map_tile_map.at(Mediator::get_instance()->file_v5_selected_map).push_back(file_v5_map_tile());
+        }
+    }
+    ui->editArea->repaint();
+}
+
+void map_tab::on_v5_tileset_comboBox_currentIndexChanged(const QString &arg1)
+{
+    if (_data_loading == true) { return; }
+    if (arg1.length() == 0) { // reset to default
+        Mediator::get_instance()->file_v5_map_header_list.at(Mediator::get_instance()->file_v5_selected_map).tileset_filename[0] = '\0';
+        Mediator::get_instance()->setPallete(std::string("default.png"));
+    } else {
+        sprintf(Mediator::get_instance()->file_v5_map_header_list.at(Mediator::get_instance()->file_v5_selected_map).tileset_filename, "%s", arg1.toStdString().c_str());
+        Mediator::get_instance()->setPallete(arg1.toStdString());
+    }
+    ui->pallete->repaint();
+    update_edit_area();
+}
+
+void map_tab::on_layerSelector_comboBox_currentIndexChanged(int index)
+{
+    Mediator::get_instance()->file_v5_selected_layer = index;
+    _data_loading = true;
+    set_layer_data();
+    _data_loading = false;
+}
+
+void map_tab::set_layer_data()
+{
+    if (Mediator::get_instance()->file_v5_map_header_list.size() == 0) {
+        return;
+    }
+    if (Mediator::get_instance()->file_v5_map_header_list.size() < Mediator::get_instance()->file_v5_selected_layer) {
+        return;
+    }
+    file_v5_map_header map_header = Mediator::get_instance()->file_v5_map_header_list.at(Mediator::get_instance()->file_v5_selected_map);
+    ui->bg1_filename->setCurrentIndex(ui->bg1_filename->findText(map_header.backgrounds[Mediator::get_instance()->file_v5_selected_layer].filename));
+    ui->bg1_y_pos->setValue(map_header.backgrounds[Mediator::get_instance()->file_v5_selected_layer].adjust_y);
+    float bg1_speed = (float)map_header.backgrounds[Mediator::get_instance()->file_v5_selected_layer].speed/10;
+    ui->bg1_speed->setValue(bg1_speed);
+
+    ui->autoScrollBG1_mode->setCurrentIndex(map_header.backgrounds[Mediator::get_instance()->file_v5_selected_layer].auto_scroll);
+
 }

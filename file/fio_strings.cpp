@@ -204,9 +204,6 @@ namespace format_v4 {
             sprintf(lines[strings_ingame_language], "%s", "IDIOMA");
             sprintf(lines[strings_ingame_video_windowed], "%s", "JANELA");
             sprintf(lines[strings_ingame_video_fullscreen], "%s", "TELA CHEIA");
-            sprintf(lines[strings_ingame_video_noscale], "%s", "SEM ESCALA  ");
-            sprintf(lines[strings_ingame_video_size2x], "%s", "TAMANHO X2    ");
-            sprintf(lines[strings_ingame_video_scale2x], "%s", "SCALE2X   ");
             sprintf(lines[strings_ingame_video_show_fps], "%s", "MOSTRAR FPS");
             sprintf(lines[strings_ingame_config_restart1], "%s", "POR FAVOR REINICIE O JOGO");
             sprintf(lines[strings_ingame_config_restart2], "%s", "PARA NOVA CONFIGURACAO");
@@ -375,9 +372,6 @@ namespace format_v4 {
             sprintf(lines[strings_ingame_language], "%s", "LANGUAGE");
             sprintf(lines[strings_ingame_video_windowed], "%s", "WINDOWED");
             sprintf(lines[strings_ingame_video_fullscreen], "%s", "FULLSCREEN");
-            sprintf(lines[strings_ingame_video_noscale], "%s", "NO SCALE  ");
-            sprintf(lines[strings_ingame_video_size2x], "%s", "SIZE2X    ");
-            sprintf(lines[strings_ingame_video_scale2x], "%s", "SCALE2X   ");
             sprintf(lines[strings_ingame_video_show_fps], "%s", "SHOW FPS");
             sprintf(lines[strings_ingame_config_restart1], "%s", "PLEASE RESTART THE GAME");
             sprintf(lines[strings_ingame_config_restart2], "%s", "FOR THE CONFIGURATION");

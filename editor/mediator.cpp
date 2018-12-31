@@ -12,7 +12,6 @@
 #define EDIT_MODE_NEW 0
 #define EDIT_MODE_EDIT 1
 
-#define PROJECTILE_FILE_V3 "data/game_projectile_list_v3.dat"
 
 // Global static pointer used to ensure a single instance of the class.
 Mediator* Mediator::_instance = nullptr;
@@ -312,6 +311,8 @@ Mediator::Mediator() : stage_data(), stage_extra_data() {
     colormap[66].g = 255;
     colormap[66].b = 255;
 
+    file_v5_selected_map = 0;
+    file_v5_selected_layer = 0;
 }
 
 void Mediator::save_dialogs()
@@ -319,7 +320,7 @@ void Mediator::save_dialogs()
 
     std::map<int, std::vector<std::string> >::iterator it;
     for (int i=0; i<LANGUAGE_COUNT; i++) {
-        std::cout << "stage_dialog_list.size[" << stage_dialog_list[i].size() << "]" << std::endl;
+        //std::cout << "stage_dialog_list.size[" << stage_dialog_list[i].size() << "]" << std::endl;
         for (it = stage_dialog_list[i].begin(); it != stage_dialog_list[i].end(); it++) {
             std::vector<std::string> list_copy = it->second;
 
@@ -369,6 +370,7 @@ std::string Mediator::getPallete() {
 
 void Mediator::setPallete(std::string filename)
 {
+    std::cout << "@@@@@@@@@@@@@@@@ Mediator::setPallete[" << filename << "]" << std::endl;
     selectedTileset =  filename;
 }
 
@@ -415,31 +417,7 @@ void Mediator::load_game() {
         }
     }
 
-    // *** AI V3 *** //
-    /*
-    ai_list = fio_cmm.load_from_disk<CURRENT_FILE_FORMAT::file_artificial_inteligence_v3>("game_ai_list_v3.dat");
-    if (ai_list.size() == 0) { // add one first item to avoid errors
-        for (int i=0; i<enemy_list.size(); i++) {
-            ai_list.push_back(CURRENT_FILE_FORMAT::file_artificial_inteligence_v3());
-        }
-    }
-    */
-    // *** AI V3 *** //
 
-
-    projectile_list_v2 = fio_cmm.load_from_disk<CURRENT_FILE_FORMAT::file_projectilev2>("data/game_projectile_list_v2.dat");
-    if (projectile_list_v2.size() == 0) {
-        projectile_list_v2.push_back(CURRENT_FILE_FORMAT::file_projectilev2());
-    }
-    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@ projectile_list_v2.size[" << projectile_list_v2.size() << "]" << std::endl;
-
-    // converts projectile_v2 into projectile_v3 //
-    /*
-    projectile_list_v3.clear();
-    for (int i=0; i<projectile_list_v2.size(); i++) {
-        projectile_list_v3.push_back(CURRENT_FILE_FORMAT::file_projectilev3(projectile_list_v2.at(i)));
-    }
-    */
     projectile_list_v3 = fio_cmm.load_from_disk<CURRENT_FILE_FORMAT::file_projectilev3>(PROJECTILE_FILE_V3);
     if (projectile_list_v3.size() == 0) {
         projectile_list_v3.push_back(CURRENT_FILE_FORMAT::file_projectilev3());
@@ -462,6 +440,19 @@ void Mediator::load_game() {
     }
 
     ScenesMediator::get_instance()->load_game_scenes();
+
+
+    // FILE V5 //
+    file_v5_map_header_list = fio_cmm.load_from_disk<file_v5_map_header>(FILE_V5_MAP_HEADER_LIST);
+    file_v5_map_link_list = fio_cmm.load_from_disk<file_v5_map_link>(FILE_V5_MAP_LINK_LIST);
+
+    for (int i=0; i<file_v5_map_header_list.size(); i++) {
+        Mediator::get_instance()->file_v5_map_tile_map.insert(std::pair<int, std::vector<file_v5_map_tile>>(i, std::vector<file_v5_map_tile>()));
+        QString filename = QString("/data/v5_map_") + QString::number(i) + QString("_tiles.dat");
+        Mediator::get_instance()->file_v5_map_tile_map.at(i) = fio_cmm.load_from_disk<file_v5_map_tile>(filename.toStdString());
+    }
+
+
 
 }
 
@@ -494,8 +485,7 @@ void Mediator::load_game_data()
 
         maps_data_object_list = fio_cmm.load_from_disk<CURRENT_FILE_FORMAT::file_map_object_v2>(std::string("/map_object_data.dat"));
 
-        points_castle1 = fio_cmm.load_single_object_from_disk<CURRENT_FILE_FORMAT::st_file_castle_ponts>(std::string("/castle1_points.dat"));
-        points_castle2 = fio_cmm.load_single_object_from_disk<CURRENT_FILE_FORMAT::st_file_castle_ponts>(std::string("/castle2_points.dat"));
+
     }
 }
 
@@ -547,10 +537,22 @@ void Mediator::save_game()
     // ######### convert npc to npc_v3.1.1 ######### //
     */
 
-    fio_cmm.save_single_object_to_disk<CURRENT_FILE_FORMAT::st_file_castle_ponts>("castle1_points.dat", points_castle1);
-    fio_cmm.save_single_object_to_disk<CURRENT_FILE_FORMAT::st_file_castle_ponts>("castle2_points.dat", points_castle2);
-
     ScenesMediator::get_instance()->save_game_scenes();
+
+
+    // FILE V5 //
+    fio_cmm.save_data_to_disk<file_v5_map_header>(FILE_V5_MAP_HEADER_LIST, file_v5_map_header_list);
+    fio_cmm.save_data_to_disk<file_v5_map_link>(FILE_V5_MAP_LINK_LIST, file_v5_map_link_list);
+
+    std::cout << "Mediator::save - saving map-tiles for maps[" << file_v5_map_header_list.size() << "]" << std::endl;
+
+    for (int i=0; i<file_v5_map_header_list.size(); i++) {
+        if (Mediator::get_instance()->file_v5_map_tile_map.find(i) != Mediator::get_instance()->file_v5_map_tile_map.end()) {
+            QString filename = QString("/data/v5_map_") + QString::number(i) + QString("_tiles.dat");
+            std::cout << "Mediator::save - saving map-tiles, map[" << i << "] has data, saving with filename[" << filename.toStdString() << "]" << std::endl;
+            fio_cmm.save_data_to_disk<file_v5_map_tile>(filename.toStdString(), Mediator::get_instance()->file_v5_map_tile_map.at(i));
+        }
+    }
 
     save_dialogs();
 }

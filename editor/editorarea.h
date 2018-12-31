@@ -69,6 +69,11 @@ protected:
   void mouseMoveEvent(QMouseEvent *event);
   void wheelEvent(QWheelEvent *event);
 
+  void drawTileset(QPainter *painter);
+  void drawLockTileset(QPainter *painter);
+  void drawMapEnemies(QPainter *painter);
+  void drawMapObjects(QPainter *painter);
+
   // variables
   int temp;
   int editor_selectedTileX, editor_selectedTileY;

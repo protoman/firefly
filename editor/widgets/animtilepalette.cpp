@@ -31,7 +31,7 @@ void animTilePalette::reload()
         image = image.scaled(image.width()*2, image.height()*2);
         image_list.push_back(image);
     }
-    this->resize(QSize(max*TILESIZE*2, TILESIZE*2));
+    this->resize(QSize(max*SHOW_TILESIZE, SHOW_TILESIZE));
     myParent->adjustSize();
 }
 
@@ -42,8 +42,8 @@ void animTilePalette::paintEvent(QPaintEvent *event)
     int col = 0;
     for (int i=0; i<image_list.size(); i++) {
         if (image_list.at(i).isNull() == false) {
-            QRectF target(QPoint(col*TILESIZE*2, row*TILESIZE*2), QSize(TILESIZE*2, TILESIZE*2));
-            QRectF source(QPoint(0, 0), QSize(TILESIZE*2, TILESIZE*2));
+            QRectF target(QPoint(col*SHOW_TILESIZE, row*SHOW_TILESIZE), QSize(SHOW_TILESIZE, SHOW_TILESIZE));
+            QRectF source(QPoint(0, 0), QSize(SHOW_TILESIZE, SHOW_TILESIZE));
             painter.drawPixmap(target, image_list.at(i), source);
             col++;
             if (col > EDITOR_ANIM_PALETE_MAX_COL) {
@@ -52,18 +52,18 @@ void animTilePalette::paintEvent(QPaintEvent *event)
             }
         }
     }
-    this->resize(this->width(), (row+1)*TILESIZE*2);
+    this->resize(this->width(), (row+1)*SHOW_TILESIZE);
     // draw the selection marker
     painter.setPen(QColor(255, 0, 0));
-    QRectF select(QPoint((selectedTileX*TILESIZE*2), (selectedTileY*TILESIZE*2)), QSize(TILESIZE*2, TILESIZE*2-1));
+    QRectF select(QPoint((selectedTileX*SHOW_TILESIZE), (selectedTileY*SHOW_TILESIZE)), QSize(SHOW_TILESIZE, SHOW_TILESIZE-1));
     painter.drawRect(select);
 }
 
 void animTilePalette::mousePressEvent(QMouseEvent *event)
 {
     QPoint pnt = event->pos();
-    selectedTileX = pnt.x()/(TILESIZE*2);
-    selectedTileY = pnt.y()/(TILESIZE*2);
+    selectedTileX = pnt.x()/(SHOW_TILESIZE);
+    selectedTileY = pnt.y()/(SHOW_TILESIZE);
     Mediator::get_instance()->setPalleteX(selectedTileX);
     Mediator::get_instance()->setPalleteY(selectedTileY);
 

@@ -36,5 +36,8 @@ signals:
 
 public slots:
    void changeTileSet(const QString &tileset);
+
+private:
+   double ADJUSTED_SIZE;
 };
 #endif

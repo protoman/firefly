@@ -7,17 +7,6 @@
 #include "aux_tools/stringutils.h"
 #include "aux_tools/exception_manager.h"
 
-#ifdef DREAMCAST
-#include <kos.h>
-#elif PLAYSTATION2
-#include <fileXio_rpc.h>
-typedef struct {
-    char displayname[64];
-    int  dircheck;
-    char filename[256];
-} entries;
-#endif
-
 #ifdef ANDROID
 #include <android/log.h>
 #endif
@@ -871,10 +860,6 @@ namespace format_v4 {
         if (config.get_current_platform() != config.platform) {
             config.reset();
         }
-#ifndef PC
-        config.video_filter = VIDEO_FILTER_NOSCALE;
-        std::cout << "IO::load_config - SET video_filter to " << VIDEO_FILTER_NOSCALE << ", value: " << config.video_filter << std::endl;
-#endif
 
         if (config.volume_music == 0) {
             config.volume_music = 128;

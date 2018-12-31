@@ -130,7 +130,7 @@ int StringsEditor::get_pick_mode()
 void StringsEditor::closeEvent(QCloseEvent *event)
 {
     if (pick_mode == pick_mode_edit) {
-        QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Rockbot Editor :: Movie Editor", tr("Save data before leaving?\n"), QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
+        QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Firefly Editor :: Movie Editor", tr("Save data before leaving?\n"), QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
         if (resBtn == QMessageBox::Yes) {
             save();
         } else if (resBtn == QMessageBox::Cancel) {

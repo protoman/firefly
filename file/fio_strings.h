@@ -9,15 +9,8 @@
 
 #include "file/v4/file_strings.h"
 
-class fio_strings
-{
-public:
-    fio_strings();
-};
-
 
 // namespace
-namespace format_v4 {
 class fio_strings
 {
 public:
@@ -65,7 +58,7 @@ private:
 
     // === COMMON STRINGS === //
     void create_default_common_strings();
-    void create_default_dialog_strings(int language);
+
 
 private:
     std::vector<std::string> string_list;
@@ -76,6 +69,6 @@ private:
     std::map<int,std::string> code_map;
 
 };
-} // namespace
+
 
 #endif // FIO_STRINGS_H

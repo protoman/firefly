@@ -59,13 +59,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->ProjectileScrollArea->setWidget(projectile_edit_tab);
 
 
-    // insert GAME_PROPERTIES tab form
-    game_prop_tab = new game_properties_tab();
-    ui->gamePropertiesScrollarea->setWidget(game_prop_tab);
-
     map_edit_tab = new map_tab();
     ui->MapScrollArea->setWidget(map_edit_tab);
-
 
     player_edit_tab = new player_edit();
     ui->PlayerScrollArea->setWidget(player_edit_tab);
@@ -165,7 +160,6 @@ void MainWindow::reload()
     Mediator::get_instance()->currentStage = 0;
     Mediator::get_instance()->current_player = 0;
     Mediator::get_instance()->current_weapon = 0;
-    game_prop_tab->reload();
     projectile_edit_tab->reload();
     stage_edit_tab->reload();
     weapon_edit_tab->reload();

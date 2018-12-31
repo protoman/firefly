@@ -59,19 +59,13 @@
          <number>0</number>
         </property>
         <item row="0" column="2">
-         <widget class="QLabel" name="label_11">
-          <property name="maximumSize">
-           <size>
-            <width>40</width>
-            <height>16777215</height>
-           </size>
-          </property>
+         <widget class="QPushButton" name="addMap_pushButton">
           <property name="text">
-           <string>Map:</string>
+           <string>Add</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="3">
+        <item row="2" column="3">
          <widget class="QComboBox" name="mapListCombo">
           <property name="maximumSize">
            <size>
@@ -81,7 +75,14 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
+        <item row="3" column="3">
+         <widget class="QPushButton" name="difficultyMode_pushButton">
+          <property name="text">
+           <string>&gt;=</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
          <widget class="QLabel" name="label_10">
           <property name="maximumSize">
            <size>
@@ -94,17 +95,58 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="stageListCombo"/>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_21">
+          <property name="text">
+           <string>Map:</string>
+          </property>
+         </widget>
         </item>
-        <item row="1" column="0">
+        <item row="0" column="1">
+         <widget class="QComboBox" name="mapSelector_comboBox"/>
+        </item>
+        <item row="3" column="2">
+         <widget class="QLabel" name="label_20">
+          <property name="text">
+           <string>Constraint:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
          <widget class="QLabel" name="label_19">
           <property name="text">
            <string>Difficulty:</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_24">
+          <property name="text">
+           <string>SPACER</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QPushButton" name="generateMapTiles_pushButton">
+          <property name="text">
+           <string>Generate Tiles</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="label_11">
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Map:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
          <widget class="QComboBox" name="difficulty_comboBox">
           <property name="currentIndex">
            <number>0</number>
@@ -126,19 +168,8 @@
           </item>
          </widget>
         </item>
-        <item row="1" column="3">
-         <widget class="QPushButton" name="difficultyMode_pushButton">
-          <property name="text">
-           <string>&gt;=</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QLabel" name="label_20">
-          <property name="text">
-           <string>Constraint:</string>
-          </property>
-         </widget>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="stageListCombo"/>
         </item>
        </layout>
       </item>
@@ -193,7 +224,7 @@
             <enum>QFrame::NoFrame</enum>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <property name="tabSpacing">
             <number>0</number>
@@ -202,9 +233,9 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>0</y>
-              <width>361</width>
-              <height>514</height>
+              <y>-178</y>
+              <width>362</width>
+              <height>572</height>
              </rect>
             </property>
             <attribute name="label">
@@ -213,7 +244,64 @@
             <layout class="QVBoxLayout" name="verticalLayout_11">
              <item>
               <layout class="QGridLayout" name="gridLayout_13">
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_22">
+                 <property name="text">
+                  <string>SPACER</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="0">
+                <widget class="QLabel" name="label_52">
+                 <property name="text">
+                  <string>Image:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="17" column="0">
+                <widget class="Line" name="line">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <widget class="QSpinBox" name="mapSizeH_spinBox">
+                 <property name="maximum">
+                  <number>999</number>
+                 </property>
+                </widget>
+               </item>
                <item row="3" column="2">
+                <widget class="QComboBox" name="v5_tileset_comboBox"/>
+               </item>
+               <item row="19" column="2">
+                <widget class="QCheckBox" name="checkBox_2">
+                 <property name="text">
+                  <string>show background image</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="18" column="0">
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>View Options:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="2">
+                <widget class="QComboBox" name="layerSelector_comboBox"/>
+               </item>
+               <item row="12" column="2">
                 <widget class="QDoubleSpinBox" name="bg1_speed">
                  <property name="minimum">
                   <double>0.000000000000000</double>
@@ -226,17 +314,17 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="2">
-                <widget class="QCheckBox" name="mapAutoScroll_checkBox">
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_58">
                  <property name="text">
-                  <string/>
+                  <string>BG Color:</string>
                  </property>
                 </widget>
                </item>
-               <item row="13" column="2">
-                <widget class="QCheckBox" name="checkBox">
+               <item row="20" column="2">
+                <widget class="QCheckBox" name="fg_show_checkBox">
                  <property name="text">
-                  <string>show background color</string>
+                  <string>show foreground image</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
@@ -244,16 +332,6 @@
                 </widget>
                </item>
                <item row="7" column="2">
-                <widget class="QDoubleSpinBox" name="fg_speed_doubleSpinBox">
-                 <property name="maximum">
-                  <double>4.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.100000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="2">
                 <widget class="QComboBox" name="mapGFX_comboBox">
                  <item>
                   <property name="text">
@@ -302,149 +380,76 @@
                  </item>
                 </widget>
                </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_52">
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_18">
                  <property name="text">
-                  <string>BG Image:</string>
+                  <string>GFX Mode:</string>
                  </property>
                 </widget>
                </item>
-               <item row="13" column="0">
-                <widget class="QLabel" name="label_15">
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_13">
                  <property name="text">
-                  <string>View Options:</string>
+                  <string>Layer:</string>
                  </property>
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QLabel" name="label_58">
+                <widget class="QLabel" name="label_25">
                  <property name="text">
-                  <string>BG Color:</string>
+                  <string>Size-W:</string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0">
+               <item row="0" column="2">
+                <widget class="QLineEdit" name="v5_mapName_lineEdit"/>
+               </item>
+               <item row="14" column="0">
                 <widget class="QLabel" name="label_16">
-                 <property name="text">
-                  <string>BG Auto-Scroll:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="2">
-                <widget class="QSpinBox" name="bg1_y_pos">
-                 <property name="maximum">
-                  <number>999</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="12" column="0">
-                <widget class="Line" name="line">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="15" column="0">
-                <spacer name="verticalSpacer_5">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="8" column="0">
-                <widget class="QLabel" name="label_9">
-                 <property name="text">
-                  <string>FG Y Position:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_3">
-                 <property name="maximumSize">
-                  <size>
-                   <width>110</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
                  <property name="text">
                   <string>Auto-Scroll:</string>
                  </property>
                 </widget>
                </item>
-               <item row="12" column="2">
-                <widget class="Line" name="line_2">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
+               <item row="1" column="2">
+                <widget class="QSpinBox" name="mapSizeW_spinBox">
+                 <property name="maximum">
+                  <number>999</number>
                  </property>
                 </widget>
                </item>
-               <item row="2" column="2">
+               <item row="11" column="2">
                 <widget class="QComboBox" name="bg1_filename"/>
                </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="label_6">
+               <item row="13" column="0">
+                <widget class="QLabel" name="label_56">
                  <property name="text">
-                  <string>FG Image:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="label_8">
-                 <property name="text">
-                  <string>FG Speed:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="15" column="2">
-                <widget class="QCheckBox" name="fg_show_checkBox">
-                 <property name="text">
-                  <string>show foreground image</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="2">
-                <widget class="QSpinBox" name="fg_position_spinBox">
-                 <property name="maximum">
-                  <number>320</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="2">
-                <widget class="QComboBox" name="fb_image_comboBox"/>
-               </item>
-               <item row="14" column="2">
-                <widget class="QCheckBox" name="checkBox_2">
-                 <property name="text">
-                  <string>show background image</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_61">
-                 <property name="text">
-                  <string>BG Speed:</string>
+                  <string>Y Position:</string>
                  </property>
                 </widget>
                </item>
                <item row="5" column="2">
+                <widget class="QCheckBox" name="mapAutoScroll_checkBox">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_14">
+                 <property name="text">
+                  <string>GFX Effect:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="0">
+                <widget class="QLabel" name="label_61">
+                 <property name="text">
+                  <string>Speed:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="2">
                 <widget class="QComboBox" name="autoScrollBG1_mode">
                  <item>
                   <property name="text">
@@ -478,49 +483,50 @@
                  </item>
                 </widget>
                </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_56">
+               <item row="18" column="2">
+                <widget class="QCheckBox" name="checkBox">
                  <property name="text">
-                  <string>BG Y Position:</string>
+                  <string>show background color</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
-               <item row="10" column="0">
-                <widget class="QLabel" name="label_14">
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_3">
+                 <property name="maximumSize">
+                  <size>
+                   <width>110</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
-                  <string>Map GFX Effect:</string>
+                  <string>Auto-Scroll:</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="2">
-                <widget class="QPushButton" name="bg_color_pick">
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_26">
                  <property name="text">
-                  <string>Pick</string>
+                  <string>Size-H:</string>
                  </property>
                 </widget>
                </item>
-               <item row="9" column="0">
-                <widget class="QLabel" name="label_17">
-                 <property name="text">
-                  <string>FG Opacity:</string>
+               <item row="20" column="0">
+                <spacer name="verticalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
                  </property>
-                </widget>
-               </item>
-               <item row="9" column="2">
-                <widget class="QSpinBox" name="fg_opacity_spinBox">
-                 <property name="maximum">
-                  <number>100</number>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
                  </property>
-                </widget>
+                </spacer>
                </item>
-               <item row="11" column="0">
-                <widget class="QLabel" name="label_18">
-                 <property name="text">
-                  <string>Map GFX Mode:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="11" column="2">
+               <item row="8" column="2">
                 <widget class="QComboBox" name="mapGFXMode_comboBox">
                  <property name="currentIndex">
                   <number>0</number>
@@ -542,6 +548,48 @@
                  </item>
                 </widget>
                </item>
+               <item row="17" column="2">
+                <widget class="Line" name="line_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_27">
+                 <property name="text">
+                  <string>Tileset:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_23">
+                 <property name="text">
+                  <string>Name:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="2">
+                <widget class="QPushButton" name="bg_color_pick">
+                 <property name="text">
+                  <string>Pick</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="2">
+                <widget class="QSpinBox" name="bg1_y_pos">
+                 <property name="maximum">
+                  <number>999</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string> </string>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </item>
             </layout>
@@ -551,8 +599,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>374</width>
-              <height>304</height>
+              <width>376</width>
+              <height>264</height>
              </rect>
             </property>
             <attribute name="label">
@@ -585,7 +633,7 @@
                   <property name="topMargin">
                    <number>0</number>
                   </property>
-                  <item row="2" column="1">
+                  <item row="1" column="1">
                    <widget class="QComboBox" name="comboBox">
                     <property name="currentIndex">
                      <number>0</number>
@@ -602,20 +650,10 @@
                     </item>
                    </widget>
                   </item>
-                  <item row="2" column="0">
+                  <item row="1" column="0">
                    <widget class="QLabel" name="label">
                     <property name="text">
                      <string>Level:</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QComboBox" name="stageTileset_comboBox"/>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_13">
-                    <property name="text">
-                     <string>Stage Tileset:</string>
                     </property>
                    </widget>
                   </item>
@@ -676,8 +714,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>374</width>
-              <height>304</height>
+              <width>376</width>
+              <height>264</height>
              </rect>
             </property>
             <attribute name="label">
@@ -708,15 +746,6 @@
                 <property name="icon">
                  <iconset resource="../resources/icons/icons.qrc">
                   <normaloff>:/toolbar_icons/stairs.png</normaloff>:/toolbar_icons/stairs.png</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Door</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="../resources/icons/icons.qrc">
-                  <normaloff>:/toolbar_icons/object-order-lower.png</normaloff>:/toolbar_icons/object-order-lower.png</iconset>
                 </property>
                </item>
                <item>
@@ -786,16 +815,6 @@
                </item>
                <item>
                 <property name="text">
-                 <string>Checkpoint</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normalon>:/toolbar_icons/Save</normalon>
-                 </iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
                  <string>Easy-Mode Block</string>
                 </property>
                 <property name="icon">
@@ -812,6 +831,26 @@
                   <normaloff>:/toolbar_icons/draw-square-inverted-corners.png</normaloff>:/toolbar_icons/draw-square-inverted-corners.png</iconset>
                 </property>
                </item>
+               <item>
+                <property name="text">
+                 <string>Diagonal Left</string>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normalon>:/toolbar_icons/draw-triangle.png</normalon>
+                 </iconset>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Diagonal Right</string>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normalon>:/toolbar_icons/games-difficult.png</normalon>
+                 </iconset>
+                </property>
+               </item>
               </widget>
              </item>
             </layout>
@@ -821,8 +860,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>374</width>
-              <height>304</height>
+              <width>376</width>
+              <height>264</height>
              </rect>
             </property>
             <attribute name="label">
@@ -904,8 +943,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>374</width>
-              <height>304</height>
+              <width>376</width>
+              <height>264</height>
              </rect>
             </property>
             <attribute name="label">
@@ -1014,8 +1053,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>374</width>
-              <height>304</height>
+              <width>376</width>
+              <height>264</height>
              </rect>
             </property>
             <attribute name="label">
@@ -1067,8 +1106,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>374</width>
-              <height>304</height>
+              <width>376</width>
+              <height>264</height>
              </rect>
             </property>
             <attribute name="label">
@@ -1085,8 +1124,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>354</width>
-                  <height>138</height>
+                  <width>356</width>
+                  <height>118</height>
                  </rect>
                 </property>
                 <widget class="animTilePalette" name="animTilePaletteWidget" native="true">
@@ -1515,6 +1554,8 @@
   </customwidget>
  </customwidgets>
  <resources>
+  <include location="../resources/icons/icons.qrc"/>
+  <include location="../resources/icons/icons.qrc"/>
   <include location="../resources/icons/icons.qrc"/>
  </resources>
  <connections/>
