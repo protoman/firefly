@@ -1,37 +1,35 @@
 #include "artificial_inteligence.h"
-#include "classmap.h"
 #include <cmath>
 #include <cstdlib>
 #include <algorithm>
 #include "character/classplayer.h"
 
+
 #ifdef ANDROID
 #include <android/log.h>
 #endif
 
+#include "defines.h"
 #include "game_mediator.h"
 #include "aux_tools/exception_manager.h"
 
-#include "game.h"
-extern game gameControl;
+#include "data/shareddata.h"
 
+#include "view/animation.h"
+#include "view/imageview.h"
+#include "view/soundview.h"
 
-#include "soundlib.h"
-extern soundLib soundManager;
+#include "gameManager.h"
 
-
-extern CURRENT_FILE_FORMAT::file_game game_data;
-extern CURRENT_FILE_FORMAT::st_save game_save;
-extern FREEZE_EFFECT_TYPES freeze_weapon_effect;
-
+#include "gameManager.h"
 #define JUMP_ROOF_MIN_SPEED 3
 #define MAX_NPC_SPAWN 3
 
 
-std::vector<character*> *artificial_inteligence::player_list=NULL;
+std::vector<character*> *artificial_inteligence::player_list=nullptr;
 
 
-artificial_inteligence::artificial_inteligence() :  walk_range(TILESIZE*6), target(NULL), speed_y(max_speed), acceleration_y(0.05), _ai_timer(0), _ai_chain_n(0), _trajectory_parabola(NULL)
+artificial_inteligence::artificial_inteligence() :  walk_range(TILESIZE*6), target(nullptr), speed_y(max_speed), acceleration_y(0.05), _ai_timer(0), _ai_chain_n(0), _trajectory_parabola(nullptr)
 {
     max_speed = GRAVITY_MAX_SPEED;
     _ghost_move_speed_reducer = 0;
@@ -44,7 +42,7 @@ artificial_inteligence::artificial_inteligence() :  walk_range(TILESIZE*6), targ
     _ai_state.main_status = 0;
     _parameter = 0;
     _show_reset_stand = false;
-    _auto_respawn_timer = timer.getTimer() + GameMediator::get_instance()->get_enemy(_number)->respawn_delay;
+    _auto_respawn_timer = TimerView::get_instance()->getTimer() + GameMediator::get_instance()->get_enemy(_number)->respawn_delay;
     _dest_point = position;
     _execution_state = 0;
     jump_attack_type = -1;
@@ -73,7 +71,7 @@ void artificial_inteligence::execute_ai()
     }
     //std::cout << "AI::execute_ai[" << name << "]" << std::endl;
     check_ai_reaction();
-    if (timer.getTimer() < _ai_timer) {
+    if (TimerView::get_instance()->getTimer() < _ai_timer) {
         return;
     }
     //std::cout << "AI::execute_ai[" << name << "] - _current_ai_type: " << _current_ai_type << ", _ai_state.sub_status: " << _ai_state.sub_status << ", parameter[" << (int)_parameter << "], direction[" << (int)state.direction << "]" << std::endl;
@@ -83,9 +81,9 @@ void artificial_inteligence::execute_ai()
         if (_current_ai_type != AI_ACTION_WAIT_RANDOM_TIME) { // this AI will set the delay itself
             if (_reaction_type == 0) {
                 int delay = GameMediator::get_instance()->ai_list.at(_number).states[_ai_chain_n].go_to_delay;
-                _ai_timer = timer.getTimer() + delay;
+                _ai_timer = TimerView::get_instance()->getTimer() + delay;
             } else {
-                _ai_timer = timer.getTimer() + 200;
+                _ai_timer = TimerView::get_instance()->getTimer() + 200;
             }
         }
 
@@ -144,15 +142,15 @@ void artificial_inteligence::check_ai_reaction()
         start_reaction = true;
 
         // if not sub-boss (that already have explosion), and dead-reaction is spawn npc, show explosions
-        soundManager.play_repeated_sfx(SFX_BIG_EXPLOSION, 1);
+        SoundView::get_instance()->play_repeated_sfx(SFX_BIG_EXPLOSION, 1);
         st_float_position pos1(position.x+2, position.y+20);
-        animation anim1(ANIMATION_STATIC, &graphLib.bomb_explosion_surface, pos1, st_position(-8, -8), 80, 2, state.direction, st_size(56, 56), gameControl.get_current_map_obj()->get_map_scrolling_ref());
-        gameControl.get_current_map_obj()->add_animation(anim1);
+        //animation anim1(ANIMATION_STATIC, &ImageView::get_instance()->bomb_explosion_surface, pos1, st_position(-8, -8), 80, 2, state.direction, st_size(56, 56), gameManager::get_instance()->get_current_map_obj()->get_map_scrolling_ref());
+        //gameManager::get_instance()->get_current_map_obj()->add_animation(anim1);
 
         st_float_position pos2(pos1.x+10, pos1.y-30);
-        animation anim2(ANIMATION_STATIC, &graphLib.bomb_explosion_surface, pos2, st_position(-8, -8), 80, 2, state.direction, st_size(56, 56), gameControl.get_current_map_obj()->get_map_scrolling_ref());
-        anim2.set_initial_delay(500);
-        gameControl.get_current_map_obj()->add_animation(anim2);
+        //animation anim2(ANIMATION_STATIC, &ImageView::get_instance()->bomb_explosion_surface, pos2, st_position(-8, -8), 80, 2, state.direction, st_size(56, 56), gameManager::get_instance()->get_current_map_obj()->get_map_scrolling_ref());
+        //anim2.set_initial_delay(500);
+        //gameManager::get_instance()->get_current_map_obj()->add_animation(anim2);
 
     } else if (dist_players.dist < walk_range && diff_y < 2 && GameMediator::get_instance()->ai_list.at(_number).reactions[AI_REACTION_PLAYER_SAME_Y].action > 0) {
         _reaction_type = 3;
@@ -174,7 +172,7 @@ void artificial_inteligence::check_ai_reaction()
 
         //std::cout << ">> SET INITIAL #3 <<" << std::endl;
         _ai_state.sub_status = IA_ACTION_STATE_INITIAL;
-        _ai_timer = timer.getTimer(); // start now, ignoring delay
+        _ai_timer = TimerView::get_instance()->getTimer(); // start now, ignoring delay
         _current_ai_type = get_ai_type();
     }
 }
@@ -219,7 +217,7 @@ void artificial_inteligence::define_ai_next_step()
 void artificial_inteligence::execute_ai_step()
 {
     //std::cout << "artificial_inteligence::execute_ai_step[" << name << "] - _number: " << (int)_number << ", _current_ai_type: " << (int)_current_ai_type << std::endl;
-    _ai_timer = timer.getTimer() + 20;
+    _ai_timer = TimerView::get_instance()->getTimer() + 20;
     if (_current_ai_type == AI_ACTION_WALK) {
         //std::cout << ">> AI:exec[" << name << "] WALK" << std::endl;
         execute_ai_step_walk();
@@ -307,18 +305,16 @@ struct_player_dist artificial_inteligence::dist_npc_players()
 {
     int dist;
     struct struct_player_dist res;
-    if (gameControl.get_current_map_obj() == NULL) {
+    if (gameManager::get_instance()->get_current_map_obj() == nullptr) {
         std::cout << "ERROR: trying to calc NPC-player distance before map pointer is set on NPC" << std::endl;
-        graphLib.show_debug_msg("EXIT #A.01");
         exception_manager::throw_param_exception(std::string("ERROR: trying to calc NPC-player distance before map pointer is set on NPC"), "");
     }
-    if (gameControl.get_current_map_obj()->_player_ref == NULL) {
+    if (gameManager::get_instance()->get_current_map_obj()->_player_ref == nullptr) {
         std::cout << "ERROR: trying to calc NPC-player distance before there is a player in the game or this NPC does not have set the player_list" << std::endl;
-        graphLib.show_debug_msg("EXIT #01");
         exception_manager::throw_param_exception(std::string("ERROR: trying to calc NPC-player but there is no player on player_list."), "");
     }
 
-    res.pObj = gameControl.get_current_map_obj()->_player_ref;
+    res.pObj = gameManager::get_instance()->get_current_map_obj()->_player_ref;
     dist = sqrt(pow((position.x - res.pObj->getPosition().x), 2) + pow((position.y - res.pObj->getPosition().y), 2));
     res.dist_xy.x = abs((float)position.x - res.pObj->getPosition().x);
     res.dist_xy.y = abs((float)position.y - res.pObj->getPosition().y);
@@ -334,30 +330,30 @@ struct_player_dist artificial_inteligence::dist_npc_players()
 void artificial_inteligence::ground_damage_players()
 {
     // check if player is on ground
-    st_float_position npc_pos = gameControl.get_current_map_obj()->_player_ref->getPosition();
-    npc_pos.x = (npc_pos.x + gameControl.get_current_map_obj()->_player_ref->get_size().width/2)/TILESIZE;
-    npc_pos.y = (npc_pos.y + gameControl.get_current_map_obj()->_player_ref->get_size().height)/TILESIZE;
-    int lock = gameControl.get_current_map_obj()->getMapPointLock(st_position(npc_pos.x, npc_pos.y));
+    st_float_position npc_pos = gameManager::get_instance()->get_current_map_obj()->_player_ref->getPosition();
+    npc_pos.x = (npc_pos.x + gameManager::get_instance()->get_current_map_obj()->_player_ref->get_size().width/2)/TILESIZE;
+    npc_pos.y = (npc_pos.y + gameManager::get_instance()->get_current_map_obj()->_player_ref->get_size().height)/TILESIZE;
+    int lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(npc_pos.x, npc_pos.y));
     //std::cout << "ground_damage_players - NPC[" << _player_ref->getName() << "].lock: " << lock << ", x: " << npc_pos.x << ", y: " << npc_pos.y << std::endl;
     if (lock != TERRAIN_UNBLOCKED && lock != TERRAIN_STAIR && lock != TERRAIN_WATER) {
         //std::cout << "&&&&&&&&&&&&& ground_damage_players - DAMAGING PLAYER[" << _player_ref->getName() << "]" << std::endl;
-        gameControl.get_current_map_obj()->_player_ref->damage(3, false);
+        gameManager::get_instance()->get_current_map_obj()->_player_ref->damage(3, false);
     }
 }
 
 void artificial_inteligence::push_back_players(short direction)
 {
-    gameControl.get_current_map_obj()->_player_ref->push_back(direction);
+    gameManager::get_instance()->get_current_map_obj()->_player_ref->push_back(direction);
 }
 
 void artificial_inteligence::pull_players(short direction)
 {
-    gameControl.get_current_map_obj()->_player_ref->pull(direction);
+    gameManager::get_instance()->get_current_map_obj()->_player_ref->pull(direction);
 }
 
 bool artificial_inteligence::auto_respawn() const
 {
-    if (GameMediator::get_instance()->get_enemy(_number)->respawn_delay > 0 && timer.getTimer() > _auto_respawn_timer)  {
+    if (GameMediator::get_instance()->get_enemy(_number)->respawn_delay > 0 && TimerView::get_instance()->getTimer() > _auto_respawn_timer)  {
         return true;
     }
     return false;
@@ -540,7 +536,7 @@ void artificial_inteligence::ia_action_jump_to_point(st_position point)
             }
             if (found_point == false) {
                 //std::cout << "AI::ia_action_jump_to_point - FINISHED #3 (hit-ground). xinc: " << xinc << std::endl;
-                if (_trajectory_parabola != NULL) {
+                if (_trajectory_parabola != nullptr) {
                     delete _trajectory_parabola;
                 }
                 _ignore_gravity = false; // enable gravity
@@ -549,7 +545,7 @@ void artificial_inteligence::ia_action_jump_to_point(st_position point)
                 set_animation_type(ANIM_TYPE_STAND);
                 moveCommands.right = 0;
                 moveCommands.left = 0;
-                _ai_timer = timer.getTimer() + 500;
+                _ai_timer = TimerView::get_instance()->getTimer() + 500;
                 if (xinc == 0) { // if didn't moved x, then must change AI to other action
                     //std::cout << "AI::ia_action_jump_to_point - FINISHED #4 (hit-ground)" << std::endl;
                     _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
@@ -689,7 +685,7 @@ void artificial_inteligence::ia_action_jump_to_roof()
 		int limit_y = 0;
 		for (int y=position.y; y>=0; y--) {
             st_position new_pos((position.x+frameSize.width/2)/TILESIZE, (y)/TILESIZE);
-            if (gameControl.get_current_map_obj()->is_point_solid(new_pos) == true) {
+            if (gameManager::get_instance()->get_current_map_obj()->is_point_solid(new_pos) == true) {
 				limit_y = y;
 				break;
 			}
@@ -753,7 +749,7 @@ void artificial_inteligence::ia_action_jump_fall()
             if (_show_reset_stand) std::cout << "AI::RESET_TO_STAND #2" << std::endl;
             set_animation_type(ANIM_TYPE_STAND);
 			_ai_state.sub_status = IA_ACTION_STATE_FINISHED;
-			_ai_timer = timer.getTimer() + 1200;
+			_ai_timer = TimerView::get_instance()->getTimer() + 1200;
             _ignore_gravity = false;
         }
 	}
@@ -768,15 +764,12 @@ void artificial_inteligence::ia_action_quake_attack()
 		//std::cout << "IA_STATE_QUAKE_ATTACK - ia_state.timer: EXEC" << std::endl;
 		_ai_state.initial_position.x++;
 		if (_ai_state.initial_position.x % 20) {
-            graphLib.set_screen_adjust(st_position(-QUAKE_SCREEN_MOVE, 0));
 			ground_damage_players();
 		} else if (_ai_state.initial_position.x % 25) {
-            graphLib.set_screen_adjust(st_position(QUAKE_SCREEN_MOVE, 0));
 			ground_damage_players();
 		}
-		_ai_state.timer = timer.getTimer() + 500;
+		_ai_state.timer = TimerView::get_instance()->getTimer() + 500;
 		if (_ai_state.initial_position.x > 200) {
-			graphLib.set_screen_adjust(st_position(0, 0));
             if (_show_reset_stand) std::cout << "AI::RESET_TO_STAND #3" << std::endl;
             set_animation_type(ANIM_TYPE_STAND);
 			_ai_state.sub_status = IA_ACTION_STATE_FINISHED;
@@ -1046,7 +1039,7 @@ void artificial_inteligence::execute_ai_step_walk()
             }
         }
     }
-    last_execute_time = timer.getTimer() + 20;
+    last_execute_time = TimerView::get_instance()->getTimer() + 20;
 }
 
 void artificial_inteligence::execute_ai_action_wait_until_player_in_range()
@@ -1085,7 +1078,7 @@ void artificial_inteligence::execute_ai_action_trow_projectile(Uint8 n, bool inv
             }
         }
 		state.animation_state = 0;
-        state.animation_timer = timer.getTimer() + (graphLib.character_graphics_list.find(name)->second).frames[state.direction][state.animation_type][state.animation_state].delay;
+        state.animation_timer = TimerView::get_instance()->getTimer() + (ImageView::get_instance()->character_graphics_list.find(name)->second).frames[state.direction][state.animation_type][state.animation_state].delay;
 		_ai_state.sub_status = IA_ACTION_STATE_EXECUTING;
         _did_shot = false;
 	} else {
@@ -1110,7 +1103,7 @@ void artificial_inteligence::execute_ai_action_trow_projectile(Uint8 n, bool inv
 // creates a projectile, return false if could not fire
 bool artificial_inteligence::throw_projectile(int projectile_type, bool invert_direction)
 {
-    CURRENT_FILE_FORMAT::file_projectilev3 temp_projectile = GameMediator::get_instance()->get_projectile(projectile_type);
+    file_projectilev3 temp_projectile = GameMediator::get_instance()->get_projectile(projectile_type);
     // some projectile types are limited to one
     if (temp_projectile.trajectory == TRAJECTORY_CENTERED && projectile_list.size() > 0) {
         _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
@@ -1154,8 +1147,8 @@ bool artificial_inteligence::throw_projectile(int projectile_type, bool invert_d
     }
 
     if (temp_projectile.trajectory == TRAJECTORY_TARGET_DIRECTION || temp_projectile.trajectory == TRAJECTORY_TARGET_EXACT || temp_projectile.trajectory == TRAJECTORY_ARC_TO_TARGET || temp_projectile.trajectory == TRAJECTORY_FOLLOW) {
-        if (!is_player() && gameControl.get_current_map_obj()->_player_ref != NULL) {
-            character* p_player = gameControl.get_current_map_obj()->_player_ref;
+        if (!is_player() && gameManager::get_instance()->get_current_map_obj()->_player_ref != nullptr) {
+            character* p_player = gameManager::get_instance()->get_current_map_obj()->_player_ref;
             temp_proj.set_target_position(p_player->get_position_ref());
         }
     }
@@ -1317,7 +1310,7 @@ void artificial_inteligence::execute_ai_step_fly()
                 }
                 state.animation_state = 0;
                 distance.width = 0;
-                state.animation_timer = timer.getTimer() + 200;
+                state.animation_timer = TimerView::get_instance()->getTimer() + 200;
             }
         } else if (_parameter == AI_ACTION_FLY_OPTION_UP) {
 			//std::cout << "artificial_inteligence::execute_ai_step_fly - UP" << std::endl;
@@ -1426,8 +1419,8 @@ void artificial_inteligence::execute_ai_step_fly()
                 }
 
                 if (GameMediator::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_TARGET_DIRECTION || GameMediator::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_TARGET_EXACT || GameMediator::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_ARC_TO_TARGET || GameMediator::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_FOLLOW) {
-                    if (!is_player() && gameControl.get_current_map_obj()->_player_ref != NULL) {
-                        character* p_player = gameControl.get_current_map_obj()->_player_ref;
+                    if (!is_player() && gameManager::get_instance()->get_current_map_obj()->_player_ref != nullptr) {
+                        character* p_player = gameManager::get_instance()->get_current_map_obj()->_player_ref;
                         temp_proj.set_target_position(p_player->get_position_ref());
                     }
                 }
@@ -1536,7 +1529,7 @@ void artificial_inteligence::execute_ai_save_point()
         std::cout << "execute_ai_save_point INIT/END" << std::endl;
         _saved_point = position;
         _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
-        last_execute_time = timer.getTimer() + 20;
+        last_execute_time = TimerView::get_instance()->getTimer() + 20;
     }
 }
 
@@ -1622,7 +1615,7 @@ void artificial_inteligence::execute_ai_step_dash()
             set_animation_type(ANIM_TYPE_STAND);
         }
     }
-    last_execute_time = timer.getTimer() + 20;
+    last_execute_time = TimerView::get_instance()->getTimer() + 20;
 }
 
 void artificial_inteligence::execute_ai_step_change_animation_type()
@@ -1665,7 +1658,7 @@ void artificial_inteligence::execute_ai_wait_random_time()
 {
     if (_ai_state.sub_status == IA_ACTION_STATE_INITIAL) {
         int delay = rand() % _parameter;
-        _ai_timer = timer.getTimer() + delay*1000;
+        _ai_timer = TimerView::get_instance()->getTimer() + delay*1000;
         std::cout << "IA_ACTION_STATE_INITIAL - rand: " << delay << std::endl;
         _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
     }
@@ -1802,9 +1795,9 @@ can_move_struct artificial_inteligence::check_can_move_to_point(st_float_positio
             if (state.direction == ANIM_DIRECTION_RIGHT) {
                 map_point.x = (position.x + frameSize.width)/TILESIZE;
             }
-            int map_lock = gameControl.get_current_map_obj()->getMapPointLock(map_point);
+            int map_lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(map_point);
             //if (!is_player()) std::cout << "AI::move_to_point[" << name << "] - HOLE check: " << map_lock << " - direction: " << (int)state.direction << std::endl;
-            if (map_lock == TERRAIN_UNBLOCKED || map_lock == TERRAIN_WATER || (map_lock == TERRAIN_EASYMODEBLOCK && game_save.difficulty != DIFFICULTY_EASY) || (map_lock == TERRAIN_HARDMODEBLOCK && game_save.difficulty != DIFFICULTY_HARD)) {
+            if (map_lock == TERRAIN_UNBLOCKED || map_lock == TERRAIN_WATER || (map_lock == TERRAIN_EASYMODEBLOCK && SharedData::get_instance()->game_save.difficulty != DIFFICULTY_EASY) || (map_lock == TERRAIN_HARDMODEBLOCK && SharedData::get_instance()->game_save.difficulty != DIFFICULTY_HARD)) {
                 //if (!is_player()) std::cout << "AI::move_to_point[" << name << "] - HOLE AHEAD - direction: " << (int)state.direction << std::endl;
                 return can_move_struct(0, 0, false, false, CAN_MOVE_LEAVE_TRUE);
             }
@@ -1817,9 +1810,9 @@ can_move_struct artificial_inteligence::check_can_move_to_point(st_float_positio
         }
 
         st_position map_point_ahead((position.x+xinc2)/TILESIZE, (position.y + frameSize.height-2)/TILESIZE);
-        int map_lock_ahead = gameControl.get_current_map_obj()->getMapPointLock(map_point_ahead);
+        int map_lock_ahead = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(map_point_ahead);
         st_position map_point_top((position.x+xinc2)/TILESIZE, (position.y - TILESIZE + frameSize.height-2)/TILESIZE);
-        int map_lock_top = gameControl.get_current_map_obj()->getMapPointLock(map_point_top);
+        int map_lock_top = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(map_point_top);
 
 
 
@@ -1852,13 +1845,13 @@ int artificial_inteligence::create_rand_x_point(int max_range)
 {
     bool keep_going = true;
     int rand_x = 0;
-    int scroll_x = gameControl.get_current_map_obj()->getMapScrolling().x;
+    int scroll_x = gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
     while (keep_going) {
         rand_x = position.x + rand() % max_range*2 - max_range;
         if (rand_x < scroll_x+TILESIZE || rand_x+frameSize.width > scroll_x+RES_W-TILESIZE) {
             continue;
         }
-        int point_lock = gameControl.get_current_map_obj()->getMapPointLock(st_position((rand_x+frameSize.width/2)/TILESIZE, (position.y+frameSize.height/2)/TILESIZE));
+        int point_lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position((rand_x+frameSize.width/2)/TILESIZE, (position.y+frameSize.height/2)/TILESIZE));
         if (point_lock == TERRAIN_WATER || point_lock == TERRAIN_UNBLOCKED) {
             keep_going = false;
         }
@@ -1875,7 +1868,7 @@ int artificial_inteligence::create_rand_y_point(int max_range)
         if (rand_y < 0 || rand_y+frameSize.height > RES_H-TILESIZE) {
             continue;
         }
-        int point_lock = gameControl.get_current_map_obj()->getMapPointLock(st_position((position.x+frameSize.width/2)/TILESIZE, (rand_y+frameSize.height/2)/TILESIZE));
+        int point_lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position((position.x+frameSize.width/2)/TILESIZE, (rand_y+frameSize.height/2)/TILESIZE));
         if (point_lock == TERRAIN_WATER || point_lock == TERRAIN_UNBLOCKED) {
             keep_going = false;
         }
@@ -1888,7 +1881,7 @@ st_position artificial_inteligence::create_rand_point(int max_range)
     bool keep_going = true;
     int rand_x = 0;
     int rand_y = 0;
-    int scroll_x = gameControl.get_current_map_obj()->getMapScrolling().x;
+    int scroll_x = gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
     while (keep_going) {
         rand_x = position.x + rand() % max_range*2 - max_range;
         rand_y = position.y + rand() % max_range*2 - max_range;
@@ -1901,7 +1894,7 @@ st_position artificial_inteligence::create_rand_point(int max_range)
         if (rand_y < 0 || rand_y+frameSize.height > RES_H-TILESIZE) {
             continue;
         }
-        int point_lock = gameControl.get_current_map_obj()->getMapPointLock(st_position((rand_x+frameSize.width/2)/TILESIZE, (rand_y+frameSize.height/2)/TILESIZE));
+        int point_lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position((rand_x+frameSize.width/2)/TILESIZE, (rand_y+frameSize.height/2)/TILESIZE));
         if (point_lock == TERRAIN_WATER || point_lock == TERRAIN_UNBLOCKED) {
             keep_going = false;
         }
@@ -1950,13 +1943,13 @@ int artificial_inteligence::find_wall(float initial_x, int direction)
     int ini_x = initial_x / TILESIZE;
     int pos_x = -1;
     if (direction == ANIM_DIRECTION_LEFT) {
-        pos_x = gameControl.get_current_map_obj()->get_first_lock_on_left(ini_x);
+        pos_x = gameManager::get_instance()->get_current_map_obj()->get_first_lock_on_left(ini_x);
     } else if (direction == ANIM_DIRECTION_RIGHT) {
-        pos_x = gameControl.get_current_map_obj()->get_first_lock_on_right(ini_x);
+        pos_x = gameManager::get_instance()->get_current_map_obj()->get_first_lock_on_right(ini_x);
     } else if (direction == ANIM_DIRECTION_UP) {
-        pos_x = gameControl.get_current_map_obj()->get_first_lock_on_bottom(ini_x, -1);
+        pos_x = gameManager::get_instance()->get_current_map_obj()->get_first_lock_on_bottom(ini_x, -1);
     } else if (direction == ANIM_DIRECTION_DOWN) {
-        pos_x = gameControl.get_current_map_obj()->get_first_lock_on_right(ini_x);
+        pos_x = gameManager::get_instance()->get_current_map_obj()->get_first_lock_on_right(ini_x);
     }
     std::cout << "AI::find_wall - pos_x: " << pos_x << std::endl;
     return pos_x;
@@ -2021,7 +2014,7 @@ void artificial_inteligence::execute_ai_replace_itself(bool morph)
     hitPoints.current = 0;
     _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
     // spawn new npc
-    classnpc* npc_ref = gameControl.get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y+frameSize.height/2), state.direction, false, false);
+    classnpc* npc_ref = gameManager::get_instance()->get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y+frameSize.height/2), state.direction, false, false);
     // is executing reaction and is dying and is map-boss -> set child as new map-boss
     if (_reaction_state == 1 && _reaction_type == 2 && _is_stage_boss == true) {
         std::cout << "########################## SET NEW BOSS (REPLACE)" << std::endl;
@@ -2053,13 +2046,13 @@ void artificial_inteligence::execute_ai_step_spawn_npc()
 
     //std::cout << "%%%%%%%%%%%%%%%% EXECUTE-SPAWN-NPC %%%%%%%%%%%%%%%%%%%%" << std::endl;
     // still spawning an NPC, leave
-    if (gameControl.get_current_map_obj()->_npc_spawn_list.size() > 0) {
+    if (gameManager::get_instance()->get_current_map_obj()->_npc_spawn_list.size() > 0) {
         //std::cout << ">>>>>>> still executing a previous spawn, leave" << std::endl;
         _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
         return;
     }
 
-    int child_count = gameControl.get_current_map_obj()->child_npc_count(get_number());
+    int child_count = gameManager::get_instance()->get_current_map_obj()->child_npc_count(get_number());
     if (child_count >= MAX_NPC_SPAWN) {
         //std::cout << ">> CAN'T SPAWN - child-count[" << child_count << "], max[" << MAX_NPC_SPAWN << "]" << std::endl;
         _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
@@ -2076,12 +2069,12 @@ void artificial_inteligence::execute_ai_step_spawn_npc()
         }
         classnpc* npc_ref;
         if (name == "TOP HAT") {
-            npc_ref = gameControl.get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y), state.direction, false, true);
+            npc_ref = gameManager::get_instance()->get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y), state.direction, false, true);
         } else {
-            npc_ref = gameControl.get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y+frameSize.height/2), state.direction, false, false);
+            npc_ref = gameManager::get_instance()->get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y+frameSize.height/2), state.direction, false, false);
         }
 
-        if (npc_ref == NULL) {
+        if (npc_ref == nullptr) {
             std::cout << "ERROR: Could not create child NPC, leaving" << std::endl;
             _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
             return;
@@ -2219,11 +2212,11 @@ void artificial_inteligence::ia_action_teleport()
                 // find wall to the left
                 if (_parameter == AI_ACTION_TELEPORT_OPTION_LEFT || (_parameter == AI_ACTION_TELEPORT_OPTION_AHEAD && state.direction == ANIM_DIRECTION_LEFT)) {
                     std::cout << "#1 - AI::AI_ACTION_TELEPORT_LEFT/AHEAD - x: " << position.x << std::endl;
-                    st_position dest_pos = gameControl.get_current_map_obj()->get_first_lock_in_direction(st_position(position.x, position.y+frameSize.height/2), st_size(walk_range, 0), ANIM_DIRECTION_LEFT);
+                    st_position dest_pos = gameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(st_position(position.x, position.y+frameSize.height/2), st_size(walk_range, 0), ANIM_DIRECTION_LEFT);
                     position.x = dest_pos.x;
                 // find wall to the right
                 } else if (_parameter == AI_ACTION_TELEPORT_OPTION_RIGHT || (_parameter == AI_ACTION_TELEPORT_OPTION_AHEAD && state.direction == ANIM_DIRECTION_RIGHT)) {
-                    st_position dest_pos = gameControl.get_current_map_obj()->get_first_lock_in_direction(st_position(position.x+frameSize.width, position.y+frameSize.height/2), st_size(walk_range, 0), ANIM_DIRECTION_RIGHT);
+                    st_position dest_pos = gameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(st_position(position.x+frameSize.width, position.y+frameSize.height/2), st_size(walk_range, 0), ANIM_DIRECTION_RIGHT);
                     std::cout << "#1 - AI::AI_ACTION_TELEPORT_RIGHT/AHEAD - x: " << position.x << ", walk_range[" << walk_range << "], dest.x[" << dest_pos.x << "]" << std::endl;
                     position.x = dest_pos.x-frameSize.width;
                 } else if (_parameter == AI_ACTION_TELEPORT_OPTION_TO_PLAYER) {
@@ -2232,7 +2225,7 @@ void artificial_inteligence::ia_action_teleport()
                 } else if (_parameter == AI_ACTION_TELEPORT_OPTION_RANDOM_X) {
                     std::cout << "#1 - AI::AI_ACTION_TELEPORT_OPTION_RANDOM_X - x: " << position.x << std::endl;
                     int rand_x = create_rand_x_point(walk_range);
-                    st_position dest_pos = gameControl.get_current_map_obj()->get_first_lock_in_direction(st_position(position.x, position.y+frameSize.height/2), st_size(abs(position.x-rand_x), 0), (rand_x > position.x));
+                    st_position dest_pos = gameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(st_position(position.x, position.y+frameSize.height/2), st_size(abs(position.x-rand_x), 0), (rand_x > position.x));
                     position.x = dest_pos.x;
                     //std::cout << "#2 - AI::AI_ACTION_TELEPORT_OPTION_RANDOM_X - x: " << position.x << std::endl;
                 } else if (_parameter == AI_ACTION_TELEPORT_OPTION_RANDOM_Y) {
@@ -2244,7 +2237,7 @@ void artificial_inteligence::ia_action_teleport()
                         pos = st_position(position.x+frameSize.width/2, position.y+frameSize.height);
                         direction = ANIM_DIRECTION_DOWN;
                     }
-                    st_position dest_pos = gameControl.get_current_map_obj()->get_first_lock_in_direction(pos, st_size(0, abs(position.y-rand_y)), direction);
+                    st_position dest_pos = gameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(pos, st_size(0, abs(position.y-rand_y)), direction);
                     if (direction == ANIM_DIRECTION_DOWN) {
                         position.y = dest_pos.y - frameSize.height;
                     } else {
@@ -2282,7 +2275,7 @@ void artificial_inteligence::ia_action_teleport()
                         }
                     }
                     int calc_y = abs(position.y-rand_pos.y);
-                    position = gameControl.get_current_map_obj()->get_first_lock_in_direction(pos, st_size(abs(position.x-rand_pos.x), calc_y), direction);
+                    position = gameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(pos, st_size(abs(position.x-rand_pos.x), calc_y), direction);
                     if (direction == ANIM_DIRECTION_UP_RIGHT || direction == ANIM_DIRECTION_DOWN_RIGHT) {
                         position.x -= frameSize.width;
                     }
@@ -2295,7 +2288,7 @@ void artificial_inteligence::ia_action_teleport()
                 } else {
                     std::cout << "AI::TELEPORT  unknown parameter #" << _parameter << std::endl;
                 }
-                _ai_timer = timer.getTimer() + 600;
+                _ai_timer = TimerView::get_instance()->getTimer() + 600;
                 _was_animation_reset = false;
                 _ignore_gravity = true;
                 state.animation_state = 0;

@@ -36,10 +36,10 @@ struct st_characterState {
 	{
 		hit_timer = 0;
 		direction = ANIM_DIRECTION_RIGHT;
-		last_used_teleporter = NULL;
+		last_used_teleporter = nullptr;
 		jump_timer = 0;
 		jump_mark = 0;
-		current_platform = NULL;
+		current_platform = nullptr;
 		animation_type = ANIM_TYPE_STAND;
 		animation_state = 0;
 		animation_timer = 0;

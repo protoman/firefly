@@ -1,33 +1,19 @@
 #include <cstdlib>
 #include <sstream>
 #include "classnpc.h"
-#include "graphicslib.h"
-#include "stage.h"
 #include "classplayer.h"
-#include "classmap.h"
 #include <math.h>
 #include <string.h>
 
 #include "game_mediator.h"
+#include "gameManager.h"
+#include "data/shareddata.h"
+#include "view/imageview.h"
+#include "view/timerview.h"
 
 #ifdef ANDROID
 #include <android/log.h>
 #endif
-
-#include "inputlib.h"
-extern inputLib input;
-
-#include "game.h"
-extern game gameControl;
-
-
-extern std::string FILEPATH;
-
-extern CURRENT_FILE_FORMAT::file_game game_data;
-extern CURRENT_FILE_FORMAT::file_stage stage_data;
-
-extern FREEZE_EFFECT_TYPES freeze_weapon_effect;
-extern int freeze_weapon_id;
 
 // ********************************************************************************************** //
 //                                                                                                //
@@ -54,17 +40,17 @@ classnpc::classnpc() : graphic_filename(), first_run(true), _is_player_friend(fa
 classnpc::classnpc(int stage_id, int map_id, int main_id, int id) : _is_player_friend(false) // map-loaded npc
 {
     build_basic_npc(stage_id, map_id, main_id);
-    facing = GameMediator::get_instance()->map_npc_data[id].direction;
+    facing = SharedData::get_instance()->file_v5_map_npc_map.at(map_id).at(id).direction;
     state.direction = facing;
 
     fflush(stdout);
 
-    start_point.x = (GameMediator::get_instance()->map_npc_data[id].start_point.x * TILESIZE) + GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.x;
+    start_point.x = ( SharedData::get_instance()->file_v5_map_npc_map.at(map_id).at(id).start_point.x * TILESIZE) + GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.x;
     if (GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.x != 0) {
         std::cout << ">>>>>>>>>>>>> bg_pos.x[" << GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.x << "]" << std::endl;
     }
-    start_point.y = (GameMediator::get_instance()->map_npc_data[id].start_point.y * TILESIZE) + GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.y;
-    static_bg_pos = st_position(GameMediator::get_instance()->map_npc_data[id].start_point.x * TILESIZE, GameMediator::get_instance()->map_npc_data[id].start_point.y * TILESIZE);
+    start_point.y = ( SharedData::get_instance()->file_v5_map_npc_map.at(map_id).at(id).start_point.y * TILESIZE) + GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.y;
+    static_bg_pos = st_position( SharedData::get_instance()->file_v5_map_npc_map.at(map_id).at(id).start_point.x * TILESIZE,  SharedData::get_instance()->file_v5_map_npc_map.at(map_id).at(id).start_point.y * TILESIZE);
     position.x = start_point.x;
     position.y = start_point.y;
     if (name == "OCTOPUS") {
@@ -134,42 +120,18 @@ classnpc::~classnpc()
 
 void classnpc::build_basic_npc(int stage_id, int map_id, int main_id)
 {
-    UNUSED(stage_id);
-    UNUSED(map_id);
 	_number = main_id;
 	// TODO - usar operador igual e também para cópia de toda a classe para ela mesma
-	graphicsLib_gSurface npc_sprite_surface;
+	st_imageData npc_sprite_surface;
 
-#ifdef ANDROID
-    __android_log_print(ANDROID_LOG_INFO, "###ROCKDROID2###", "CLASSNPC::build_basic_npc, id[%d]", _number);
-#endif
-
-    CURRENT_FILE_FORMAT::file_npc_v3_1_2* copyref = GameMediator::get_instance()->get_enemy(main_id);
+    file_npc_v3_1_2* copyref = GameMediator::get_instance()->get_enemy(main_id);
 
     name = std::string(copyref->name);
-
-#ifdef ANDROID
-    __android_log_print(ANDROID_LOG_INFO, "###ROCKDROID2###", "CLASSNPC::build_basic_npc, name#1[%s]", copyref->name);
-    __android_log_print(ANDROID_LOG_INFO, "###ROCKDROID2###", "CLASSNPC::build_basic_npc, name#2[%s]", name.c_str());
-#endif
-
 
 	add_graphic();
 
 
-
-	// set sprites to be persistent. they will be freed only by game.cpp
-    for (int i=0; i<CHAR_ANIM_DIRECTION_COUNT; i++) {
-		for (int j=0; j<ANIM_TYPE_COUNT; j++) {
-			for (int k=0; k<ANIM_FRAMES_COUNT; k++) {
-                (graphLib.character_graphics_list.find(name)->second).frames[i][j][k].frameSurface.persistent = true;
-			}
-		}
-	}
-
-
-
-    hitPoints.total = GameMediator::get_instance()->get_enemy(main_id)->hp.total;
+    hitPoints.total = GameMediator::get_instance()->get_enemy(main_id)->hp;
 	hitPoints.current = hitPoints.total;
 
     if (state.direction > CHAR_ANIM_DIRECTION_COUNT) {
@@ -215,11 +177,11 @@ void classnpc::build_basic_npc(int stage_id, int map_id, int main_id)
 		// load the graphic from file and set it into frameset
 
 
-        std::string temp_filename = FILEPATH + "images/sprites/enemies/" + graphic_filename;
+        std::string temp_filename = SharedData::get_instance()->FILEPATH + "images/sprites/enemies/" + graphic_filename;
         //printf(">> temp_filename: '%s'\n", temp_filename.c_str());
 
-        graphLib.surfaceFromFile(temp_filename, &npc_sprite_surface);
-        if (npc_sprite_surface.get_surface() == NULL) {
+        npc_sprite_surface = ImageView::get_instance()->imageFromFile(temp_filename);
+        if (npc_sprite_surface.surface == nullptr) {
 			std::cout << "initFrames - Error loading player surface from file\n";
 			return;
 		}
@@ -235,19 +197,18 @@ void classnpc::build_basic_npc(int stage_id, int map_id, int main_id)
 
 
     if (have_background_graphics() == false) {
-        graphicsLib_gSurface bg_surface;
+        st_imageData bg_surface;
         std::string bg_filename(GameMediator::get_instance()->get_enemy(main_id)->bg_graphic_filename);
         //std::cout << ">>>>>>>>> NPC[" << name << "].bg_filename: '" << bg_filename << "', length: " << bg_filename.length() << ", size: " << bg_filename.size() << std::endl;
         if (bg_filename.size() > 0) {
-            std::string full_bggraphic_filename = FILEPATH + "images/sprites/enemies/backgrounds/" + bg_filename;
-            //std::cout << ">>>>>>>>> NPC[" << name << "].bg_filename: " << bg_filename << std::endl;
-            graphLib.surfaceFromFile(full_bggraphic_filename, &bg_surface);
-            if (bg_surface.get_surface() == NULL) {
+            std::string full_bggraphic_filename = SharedData::get_instance()->FILEPATH + "images/sprites/enemies/backgrounds/" + bg_filename;
+            bg_surface = ImageView::get_instance()->imageFromFile(full_bggraphic_filename);
+            if (bg_surface.surface == nullptr) {
                 std::cout << "initFrames - Error loading NPC background surface from file '" << full_bggraphic_filename << std::endl;
                 return;
             }
             /*
-            graphLib.character_graphics_background_list.insert(std::pair<std::string, graphicsLib_gSurface>(name, bg_surface));
+            ImageView::get_instance()->character_graphics_background_list.insert(std::pair<std::string, st_imageData>(name, bg_surface));
             _has_background = true;
             */
         }
@@ -307,8 +268,8 @@ void classnpc::show()
 {
 #ifdef SHOW_HITBOXES
     st_rectangle hitbox = get_hitbox();
-    hitbox.x -= gameControl.get_current_map_obj()->getMapScrolling().x;
-    graphLib.draw_rectangle(hitbox, 0, 0, 255, 100);
+    hitbox.x -= gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
+    ImageView::get_instance()->draw_rectangle(hitbox, 0, 0, 255, 100);
 #endif
     character::show();
 }
@@ -371,11 +332,6 @@ void classnpc::initFrames()
 // ********************************************************************************************** //
 void classnpc::execute()
 {
-    if (freeze_weapon_effect == FREEZE_EFFECT_NPC && is_weak_to_freeze() == true) {
-        clean_projectiles();
-        return;
-    }
-
     if (is_dead() == true) {
         move_projectiles();
     } else {
@@ -390,23 +346,18 @@ void classnpc::execute()
 
 void classnpc::init_animation()
 {
-    animation_obj.init(name, FILEPATH + "images/sprites/enemies/" + graphic_filename, frameSize,  GameMediator::get_instance()->get_enemy(_number)->sprites);
+    animation_obj.init(name, SharedData::get_instance()->FILEPATH + "images/sprites/enemies/" + graphic_filename, frameSize,  GameMediator::get_instance()->get_enemy(_number)->sprites);
 }
 
 void classnpc::boss_move()
 {
     //std::cout << "NPC::boss_move::BEGIN" << std::endl;
-    if (hitPoints.current <= 0 || position.x < gameControl.get_current_map_obj()->getMapScrolling().x-TILESIZE*2 || position.x > gameControl.get_current_map_obj()->getMapScrolling().x+RES_W+TILESIZE*2) {
+    if (hitPoints.current <= 0 || position.x < gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x-TILESIZE*2 || position.x > gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x+RES_W+TILESIZE*2) {
         //std::cout << "classboss::execute - LEAVE #1" << std::endl;
         return;
     }
-    if (last_execute_time > timer.getTimer()) {
+    if (last_execute_time > TimerView::get_instance()->getTimer()) {
         //std::cout << "classboss::execute - LEAVE #2" << std::endl;
-        return;
-    }
-    if (freeze_weapon_effect == FREEZE_EFFECT_NPC && is_weak_to_freeze() == true) {
-        //std::cout << "classboss::execute - LEAVE #3" << std::endl;
-        clean_projectiles();
         return;
     }
 
@@ -418,16 +369,13 @@ void classnpc::boss_move()
     if (is_entirely_on_screen() == true && _initialized == 0 && _is_boss == true) { /// @TODO: move this logic to map (player should not move while boss is presenting)
         _initialized++;
         set_animation_type(ANIM_TYPE_TELEPORT);
-        gameControl.map_present_boss(is_stage_boss(), is_static_boss);
+        gameManager::get_instance()->map_present_boss(is_stage_boss(), is_static_boss);
         // set temp-background in map
         return;
     } else if (is_entirely_on_screen() == false && is_on_screen() == true &&  _initialized == 0 && _is_boss == true) {
         fall_to_ground();
         return;
     } else if (_initialized == 1 && _is_boss == true && is_static_boss == false) {
-#ifdef ANDROID
-        __android_log_print(ANDROID_LOG_INFO, "###ROCKDROID2###", "NPC::boss_move::GRAVITY #1, position.x[%f]", position.x);
-#endif
         if (position.x > RES_H/3 && gravity(true) == false) {
             _initialized++;
         }
@@ -438,7 +386,7 @@ void classnpc::boss_move()
         first_run = 1;
     }
 
-    if (_ai_timer > timer.getTimer()) {
+    if (_ai_timer > TimerView::get_instance()->getTimer()) {
         return;
     }
 
@@ -485,7 +433,7 @@ void classnpc::move_projectiles()
 	// animate projectiles
     //if (name == "Dynamite Bot") std::cout << "******* NPC::move_projectiles - projectile_list.size: " << projectile_list.size() << std::endl;
     std::vector<projectile>::iterator it;
-    st_rectangle player_hitbox = gameControl.get_current_map_obj()->get_player_hitbox();
+    st_rectangle player_hitbox = gameManager::get_instance()->get_current_map_obj()->get_player_hitbox();
 
 	for (it=projectile_list.begin(); it<projectile_list.end(); it++) {
         st_size moved = (*it).move();
@@ -515,18 +463,18 @@ void classnpc::move_projectiles()
             }
 
             if ((*it).check_collision(player_hitbox, st_position(moved.width, moved.height)) == true) {
-                if (gameControl.get_current_map_obj()->_player_ref->is_shielded((*it).get_direction()) == true && (*it).get_trajectory() != TRAJECTORY_BOMB && (*it).get_trajectory() != TRAJECTORY_LIGHTING&& (*it).get_trajectory() != TRAJECTORY_SLASH) {
+                if (gameManager::get_instance()->get_current_map_obj()->_player_ref->is_shielded((*it).get_direction()) == true && (*it).get_trajectory() != TRAJECTORY_BOMB && (*it).get_trajectory() != TRAJECTORY_LIGHTING&& (*it).get_trajectory() != TRAJECTORY_SLASH) {
                     (*it).reflect();
-                } else if (gameControl.get_current_map_obj()->_player_ref->is_using_circle_weapon() == true) {
+                } else if (gameManager::get_instance()->get_current_map_obj()->_player_ref->is_using_circle_weapon() == true) {
                     //std::cout << "consume_projectile #0" << std::endl;
                     (*it).consume_projectile();
-                    gameControl.get_current_map_obj()->_player_ref->consume_projectile();
+                    gameManager::get_instance()->get_current_map_obj()->_player_ref->consume_projectile();
                 } else {
                     int damage_pts = (*it).get_damage();
                     if (damage_pts < 2) {
                         damage_pts = 2;
                     }
-                    gameControl.get_current_map_obj()->_player_ref->damage(damage_pts, false);
+                    gameManager::get_instance()->get_current_map_obj()->_player_ref->damage(damage_pts, false);
                     if ((*it).get_vanishes_on_hit() == true) {
                         //std::cout << "consume_projectile #1" << std::endl;
                         (*it).consume_projectile();
@@ -535,17 +483,17 @@ void classnpc::move_projectiles()
             }
         } else { // NPC attacking other NPCs
 
-            for (int i=0; i<gameControl.get_current_map_obj()->_npc_list.size(); i++) {
-                st_rectangle other_npc_hitbox = gameControl.get_current_map_obj()->_npc_list.at(i).get_vulnerable_area();
+            for (int i=0; i<gameManager::get_instance()->get_current_map_obj()->_npc_list.size(); i++) {
+                st_rectangle other_npc_hitbox = gameManager::get_instance()->get_current_map_obj()->_npc_list.at(i).get_vulnerable_area();
 				//classnpc* enemy = (*enemy_it);
                 if (other_npc_hitbox.is_empty() == false && (*it).check_collision(other_npc_hitbox, st_position(moved.width, moved.height)) == true) {
 					//std::cout << "is_shielded::CALL 2" << std::endl;
-                    if (gameControl.get_current_map_obj()->_npc_list.at(i).is_intangible() == true) {
+                    if (gameManager::get_instance()->get_current_map_obj()->_npc_list.at(i).is_intangible() == true) {
                         continue;
-                    } else if (gameControl.get_current_map_obj()->_npc_list.at(i).is_shielded((*it).get_direction()) == true && (*it).get_trajectory() != TRAJECTORY_BOMB && (*it).get_trajectory() != TRAJECTORY_LIGHTING&& (*it).get_trajectory() != TRAJECTORY_SLASH) {
+                    } else if (gameManager::get_instance()->get_current_map_obj()->_npc_list.at(i).is_shielded((*it).get_direction()) == true && (*it).get_trajectory() != TRAJECTORY_BOMB && (*it).get_trajectory() != TRAJECTORY_LIGHTING&& (*it).get_trajectory() != TRAJECTORY_SLASH) {
                         (*it).reflect();
 					} else {
-                        gameControl.get_current_map_obj()->_npc_list.at(i).damage((*it).get_damage(), false);
+                        gameManager::get_instance()->get_current_map_obj()->_npc_list.at(i).damage((*it).get_damage(), false);
                         if ((*it).get_move_type() != TRAJECTORY_CHAIN) { /// @TODO non-destructable types
                             //std::cout << "consume_projectile #2" << std::endl;
                             (*it).consume_projectile();
@@ -583,7 +531,7 @@ void classnpc::move() {
     move_projectiles();
 
 
-    if (last_execute_time > timer.getTimer()) {
+    if (last_execute_time > TimerView::get_instance()->getTimer()) {
 		return;
 	}
 
@@ -638,13 +586,9 @@ void classnpc::death()
     _obj_jump.interrupt();
     _obj_jump.finish();
     dead = true;
-    _auto_respawn_timer = timer.getTimer() + GameMediator::get_instance()->get_enemy(_number)->respawn_delay;
-    //std::cout << "classnpc::death" << std::endl;
-    if (_ai_state.main_status == IA_STATE_QUAKE_ATTACK) {
-        graphLib.set_screen_adjust(st_position(0, 0));
-    }
+    _auto_respawn_timer = TimerView::get_instance()->getTimer() + GameMediator::get_instance()->get_enemy(_number)->respawn_delay;
     if (is_stage_boss()) {
-        gameControl.get_current_map_obj()->clear_animations();
+        gameManager::get_instance()->get_current_map_obj()->clear_animations();
     }
 }
 

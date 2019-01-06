@@ -1,7 +1,7 @@
 #include "strings_map.h"
 
 // Global static pointer used to ensure a single instance of the class.
-strings_map* strings_map::_instance = NULL;
+strings_map* strings_map::_instance = nullptr;
 
 
 strings_map::strings_map()

@@ -5,9 +5,7 @@
 #include <string>
 
 #include "defines.h"
-#include "graphicslib.h"
 #include "file/v4/file_game_v4.h"
-#include "game_mediator.h"
 
 
 class character_animation
@@ -16,7 +14,7 @@ public:
     // TODO: init frames data //
     character_animation();
 
-    void init(std::string set_name, std::string filename, st_size size, CURRENT_FILE_FORMAT::st_sprite_data data[ANIM_TYPE_COUNT][ANIM_FRAMES_COUNT]);
+    void init(std::string set_name, std::string filename, st_size size, st_sprite_data data[ANIM_TYPE_COUNT][ANIM_FRAMES_COUNT]);
     void show_sprite(st_position dest);
     void inc_sprite();
 
@@ -32,10 +30,10 @@ private:
     int frame_n;                                                                                    // current frame of animation
     ANIM_DIRECTION direction;                                                                       // direction charater is facing
     ANIM_TYPE type;                                                                                 // type of animation
-    CURRENT_FILE_FORMAT::st_sprite_data sprite_data[ANIM_TYPE_COUNT][ANIM_FRAMES_COUNT];            // data information for each sprite
+    st_sprite_data sprite_data[ANIM_TYPE_COUNT][ANIM_FRAMES_COUNT];            // data information for each sprite
     st_size sprite_size;                                                                       // size of each sprite
     long next_frame_timer;
-    graphicsLib_gSurface* graphic_ref;
+    st_imageData* graphic_ref;
     bool initialized;
 
 };

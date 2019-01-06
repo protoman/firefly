@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+#qt moc/ui files
+ui_*.h
+ui_*.cpp
+moc_*.h
+moc_*.cpp
+qrc_*.cpp
+*.pro.user
+.qmake.stash
+build/fireflygame

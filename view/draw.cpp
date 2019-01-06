@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "draw.h"
-
-#include "game_mediator.h"
+#ifdef ANDROID
+#include <android/log.h>
+#endif
 
 #define RAIN_DELAY 160
 #define FLASH_DELAY 260
@@ -20,35 +21,22 @@
 #define ENERGY_BALL_IMG_SIZE 10
 #define ENERGY_BALL_PERCENT_SLICE 5
 
-#ifdef ANDROID
-#include <android/log.h>
-#endif
 
-extern graphicsLib graphLib;
 
-#include "timerlib.h"
-extern timerLib timer;
-
-extern CURRENT_FILE_FORMAT::file_game game_data;
-
-extern std::string FILEPATH;
-
-#include "game.h"
-extern game gameControl;
-
-#include "inputlib.h"
-extern inputLib input;
-
-#include "strings_map.h"
-
-extern soundLib soundManager;
+//#include "strings_map.h"
 
 #define FADE_INC 2
 
 #include "file/file_io.h"
-extern CURRENT_FILE_FORMAT::file_io fio;
-extern CURRENT_FILE_FORMAT::st_save game_save;
-extern CURRENT_FILE_FORMAT::st_game_config game_config;
+
+#include "gameManager.h"
+#include "view/timerview.h"
+#include "view/textview.h"
+
+#include "game_mediator.h"
+
+
+draw* draw::_instance = nullptr;
 
 draw::draw() : _rain_pos(0), _effect_timer(0), _flash_pos(0), _flash_timer(0), screen_gfx(SCREEN_GFX_NONE), flash_effect_enabled(false)
 {
@@ -58,11 +46,11 @@ draw::draw() : _rain_pos(0), _effect_timer(0), _flash_pos(0), _flash_timer(0), s
     }
     _weapon_tooltip_timer = 0;
     _weapon_tooltip_n = 0;
-    _weapon_tooltip_pos_ref = NULL;
-    _weapon_tooltip_direction_ref = NULL;
+    _weapon_tooltip_pos_ref = nullptr;
+    _weapon_tooltip_direction_ref = nullptr;
     _train_effect_timer = 0;
     _train_effect_state = 0;
-    _train_sfx = NULL;
+    _train_sfx = nullptr;
     _lightingbolt_effect_timer = 0;
     _lightingbolt_effect_state = 0;
     // INFERNO EFFECT //
@@ -76,79 +64,83 @@ draw::draw() : _rain_pos(0), _effect_timer(0), _flash_pos(0), _flash_timer(0), s
 
 }
 
+draw *draw::get_instance()
+{
+    if (!_instance) {
+        _instance = new draw();
+    }
+    return _instance;
+}
+
 void draw::preload()
 {
-    std::string filename = GAMEPATH + "shared/images/teleport_small.png";
-    graphLib.surfaceFromFile(filename, &_teleport_small_gfx);
-    _teleport_small_gfx.init_colorkeys();
-    teleport_small_frame_count = _teleport_small_gfx.width/_teleport_small_gfx.height;
+    std::string filename = SharedData::get_instance()->GAMEPATH + std::string("shared/images/teleport_small.png");
+    _teleport_small_gfx = ImageView::get_instance()->imageFromFile(filename);
+    teleport_small_frame_count = _teleport_small_gfx.surface->w/_teleport_small_gfx.surface->h;
     if (teleport_small_frame_count <1) {
         teleport_small_frame_count = 1;
     }
 
-    filename = GAMEPATH + "shared/images/snowflacke.png";
-    graphLib.surfaceFromFile(filename, &snow_flacke);
+    filename = SharedData::get_instance()->GAMEPATH + "shared/images/snowflacke.png";
+    snow_flacke = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = GAMEPATH + "shared/images/rain.png";
-    graphLib.surfaceFromFile(filename, &rain_obj);
+    filename = SharedData::get_instance()->GAMEPATH + "shared/images/rain.png";
+    rain_obj = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = GAMEPATH + "shared/images/black_line.png";
-    graphLib.surfaceFromFile(filename, &shadow_line);
+    filename = SharedData::get_instance()->GAMEPATH + "shared/images/black_line.png";
+    shadow_line = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = GAMEPATH + "shared/images/boss_intro_bg.png";
-    graphLib.surfaceFromFile(filename, &boss_intro_bg);
+    filename = SharedData::get_instance()->GAMEPATH + "shared/images/boss_intro_bg.png";
+    boss_intro_bg = ImageView::get_instance()->imageFromFile(filename);
 
 
     // DROPABLE OBJECT GRAPHICS
     for (int i=0; i<GameMediator::get_instance()->object_list.size(); i++) {
         for (int j=0; j<DROP_ITEM_COUNT; j++) {
-            short obj_type_n = gameControl.get_drop_item_id(j);
+            short obj_type_n = gameManager::get_instance()->get_drop_item_id(j);
             if (obj_type_n != -1) {
                 get_object_graphic(obj_type_n);
             }
         }
     }
 
-    filename = GAMEPATH + "shared/images/hp_ball.png";
-    graphLib.surfaceFromFile(filename, &hud_player_hp_ball);
+    filename = SharedData::get_instance()->GAMEPATH + "shared/images/hp_ball.png";
+    hud_player_hp_ball = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = GAMEPATH + "shared/images/wpn_ball.png";
-    graphLib.surfaceFromFile(filename, &hud_player_wpn_ball);
-    hud_player_wpn_ball.init_colorkeys();
+    filename = SharedData::get_instance()->GAMEPATH + "shared/images/wpn_ball.png";
+    hud_player_wpn_ball = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = GAMEPATH + "shared/images/boss_hp_ball.png";
-    graphLib.surfaceFromFile(filename, &hud_boss_hp_ball);
+    filename = SharedData::get_instance()->GAMEPATH + "shared/images/boss_hp_ball.png";
+    hud_boss_hp_ball = ImageView::get_instance()->imageFromFile(filename);
 
+    filename = SharedData::get_instance()->FILEPATH + "/images/1up_icons.png";
+    hud_player_1up = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = FILEPATH + "/images/1up_icons.png";
-    graphLib.surfaceFromFile(filename, &hud_player_1up);
+    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/castle_point.png";
+    castle_point = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = FILEPATH + "images/backgrounds/castle_point.png";
-    graphLib.surfaceFromFile(filename, &castle_point);
+    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/d_pad.png";
+    input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_DPAD_LEFTRIGHT, st_imageData()));
+    input_images_map.at(INPUT_IMAGES_DPAD_LEFTRIGHT) = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = GAMEPATH + "/shared/images/buttons/d_pad.png";
-    input_images_map.insert(std::pair<e_INPUT_IMAGES, graphicsLib_gSurface>(INPUT_IMAGES_DPAD_LEFTRIGHT, graphicsLib_gSurface()));
-    graphLib.surfaceFromFile(filename, &input_images_map.at(INPUT_IMAGES_DPAD_LEFTRIGHT));
+    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/btn_a.png";
+    input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_A, st_imageData()));
+    input_images_map.at(INPUT_IMAGES_A) = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = GAMEPATH + "/shared/images/buttons/btn_a.png";
-    input_images_map.insert(std::pair<e_INPUT_IMAGES, graphicsLib_gSurface>(INPUT_IMAGES_A, graphicsLib_gSurface()));
-    graphLib.surfaceFromFile(filename, &input_images_map.at(INPUT_IMAGES_A));
+    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/btn_b.png";
+    input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_B, st_imageData()));
+    input_images_map.at(INPUT_IMAGES_B) = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = GAMEPATH + "/shared/images/buttons/btn_b.png";
-    input_images_map.insert(std::pair<e_INPUT_IMAGES, graphicsLib_gSurface>(INPUT_IMAGES_B, graphicsLib_gSurface()));
-    graphLib.surfaceFromFile(filename, &input_images_map.at(INPUT_IMAGES_B));
+    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/btn_x.png";
+    input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_X, st_imageData()));
+    input_images_map.at(INPUT_IMAGES_X) = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = GAMEPATH + "/shared/images/buttons/btn_x.png";
-    input_images_map.insert(std::pair<e_INPUT_IMAGES, graphicsLib_gSurface>(INPUT_IMAGES_X, graphicsLib_gSurface()));
-    graphLib.surfaceFromFile(filename, &input_images_map.at(INPUT_IMAGES_X));
+    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/btn_y.png";
+    input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_Y, st_imageData()));
+    input_images_map.at(INPUT_IMAGES_Y) = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = GAMEPATH + "/shared/images/buttons/btn_y.png";
-    input_images_map.insert(std::pair<e_INPUT_IMAGES, graphicsLib_gSurface>(INPUT_IMAGES_Y, graphicsLib_gSurface()));
-    graphLib.surfaceFromFile(filename, &input_images_map.at(INPUT_IMAGES_Y));
-
-
-    filename = FILEPATH + "images/backgrounds/map.png";
-    graphLib.surfaceFromFile(filename, &interstage_map);
+    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/map.png";
+    interstage_map = ImageView::get_instance()->imageFromFile(filename);
 }
 
 void draw::show_gfx()
@@ -173,10 +165,9 @@ void draw::show_gfx()
     if (flash_effect_enabled == true || screen_gfx == SCREEN_GFX_FLASH) {
         show_flash();
     }
-    show_weapon_tooltip();
 }
 
-graphicsLib_gSurface *draw::get_input_surface(e_INPUT_IMAGES input)
+st_imageData *draw::get_input_surface(e_INPUT_IMAGES input)
 {
     return &input_images_map.at(input);
 }
@@ -187,15 +178,15 @@ void draw::update_screen()
         if (current_alpha < 254) {
             current_alpha += 2;
         }
-        if (current_alpha_surface.width < RES_W) {
-            graphLib.initSurface(st_size(RES_W, RES_H), &current_alpha_surface);
-            graphLib.clear_surface_area(0, 0, RES_W, RES_H, current_alpha_color.r, current_alpha_color.g, current_alpha_color.b, current_alpha_surface);
+        if (current_alpha_surface.surface->w < RES_W) {
+            current_alpha_surface = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
+            ImageView::get_instance()->clear_surface_area(0, 0, RES_W, RES_H, current_alpha_color.r, current_alpha_color.g, current_alpha_color.b, current_alpha_surface);
         } else {
-            graphLib.set_surface_alpha(current_alpha, current_alpha_surface);
-            graphLib.showSurface(&current_alpha_surface);
+            ImageView::get_instance()->set_surface_alpha(current_alpha, current_alpha_surface);
+            ImageView::get_instance()->renderTexturePortionAt(0, 0, current_alpha_surface.surface->w, current_alpha_surface.surface->h, 0, 0, current_alpha_surface.texture);
         }
     }
-    graphLib.updateScreen();
+    ImageView::get_instance()->updateScreen();
 }
 
 void draw::set_gfx(Uint8 gfx, short mode)
@@ -203,14 +194,14 @@ void draw::set_gfx(Uint8 gfx, short mode)
     screen_gfx = gfx;
     screen_gfx_mode = mode;
     // free train sfx if not using it
-    if (_train_sfx != NULL && screen_gfx != SCREEN_GFX_TRAIN) {
+    if (_train_sfx != nullptr && screen_gfx != SCREEN_GFX_TRAIN) {
         Mix_FreeChunk(_train_sfx);
-        _train_sfx = NULL;
+        _train_sfx = nullptr;
     }
     if (screen_gfx == SCREEN_GFX_INFERNO) {
-        if (_inferno_surface.is_null()) {
-            graphLib.initSurface(st_size(RES_W, RES_H), &_inferno_surface);
-            graphLib.clear_surface_area(0, 0, RES_W, RES_H, 180, 0, 0, _inferno_surface);
+        if (_inferno_surface.surface == nullptr) {
+            ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
+            ImageView::get_instance()->clear_surface_area(0, 0, RES_W, RES_H, 180, 0, 0, _inferno_surface);
         }
     } else {
         free_inferno_surface();
@@ -230,157 +221,87 @@ void draw::set_flash_enabled(bool enabled)
 
 void draw::show_rain()
 {
-    for (int i=0; i<MAP_W; i++) {
-        for (int j=0; j<MAP_H; j++) {
-            graphLib.showSurfaceRegionAt(&rain_obj, st_rectangle(_rain_pos*TILESIZE, 0, TILESIZE, TILESIZE), st_position(i*TILESIZE, j*TILESIZE));
+    for (int i=0; i<RES_W/TILESIZE; i++) {
+        for (int j=0; j<RES_H/TILESIZE; j++) {
+            ImageView::get_instance()->renderTexturePortionAt(_rain_pos*TILESIZE, 0, TILESIZE, TILESIZE, i*TILESIZE, j*TILESIZE, rain_obj.texture);
         }
     }
-    if (timer.getTimer() > _effect_timer) {
+    if (TimerView::get_instance()->getTimer() > _effect_timer) {
         _rain_pos++;
         if (_rain_pos > 2) {
             _rain_pos = 0;
         }
-        _effect_timer = timer.getTimer() + RAIN_DELAY;
+        _effect_timer = TimerView::get_instance()->getTimer() + RAIN_DELAY;
         std::cout << "## DRAW::SHOW_RAIN::SET-EFFECT-TIMER: " << _effect_timer << std::endl;
     }
 }
 
 void draw::show_flash()
 {
-    if (flash_obj.get_surface() == NULL) {
+    if (flash_obj.surface == nullptr) {
         // load rain
-        std::string filename = GAMEPATH + "/shared/images/flash.png";
-        graphLib.surfaceFromFile(filename, &flash_obj);
+        std::string filename = SharedData::get_instance()->GAMEPATH + "/shared/images/flash.png";
+        flash_obj = ImageView::get_instance()->imageFromFile(filename);
     }
     for (int i=0; i<FLASH_POINTS_N; i++) {
-        graphLib.showSurfaceRegionAt(&flash_obj, st_rectangle(_flash_pos*FLASH_IMG_SIZE, 0, FLASH_IMG_SIZE, FLASH_IMG_SIZE), st_position(flash_points[i].x, flash_points[i].y));
+        ImageView::get_instance()->renderTexturePortionAt(_flash_pos*FLASH_IMG_SIZE, 0, FLASH_IMG_SIZE, FLASH_IMG_SIZE, flash_points[i].x, flash_points[i].y, flash_obj.texture);
     }
-    if (timer.getTimer() > _flash_timer) {
+    if (TimerView::get_instance()->getTimer() > _flash_timer) {
         _flash_pos++;
         if (_flash_pos > 2) {
             _flash_pos = 0;
         }
-        _flash_timer = timer.getTimer() + FLASH_DELAY;
+        _flash_timer = TimerView::get_instance()->getTimer() + FLASH_DELAY;
     }
 }
 
-void draw::show_boss_intro_sprites(int boss_id, bool show_fall)
-{
-    unsigned int intro_frames_n = 0;
-    //int intro_frames_rollback = 0;
-    st_position sprite_size;
-    graphicsLib_gSurface bgCopy, boss_graphics;
 
-    std::string graph_filename = FILEPATH + "images/sprites/enemies/" + std::string(GameMediator::get_instance()->get_enemy(boss_id)->graphic_filename);
-
-#ifdef ANDROID
-    __android_log_print(ANDROID_LOG_INFO, "###ROCKDROID2###", "DRAW::show_boss_intro_sprites, id[%d], filename[%s]", boss_id, graph_filename.c_str());
-#endif
-
-
-    sprite_size.x = GameMediator::get_instance()->get_enemy(boss_id)->frame_size.width;
-    sprite_size.y = GameMediator::get_instance()->get_enemy(boss_id)->frame_size.height;
-
-    //std::cout << ">>> sprite_size.x[" << sprite_size.x << "], sprite_size.y[" << sprite_size.y << "]" << std::endl;
-
-    graphLib.surfaceFromFile(graph_filename.c_str(), &boss_graphics);
-    int sprite_pos_y = BOSS_INTRO_BG_POS_Y-sprite_size.y/2;
-    st_position boss_pos(RES_W/2-sprite_size.x/2, sprite_pos_y);
-
-    graphLib.showSurface(&boss_intro_bg);
-
-    for (int i=0; i<ANIM_FRAMES_COUNT; i++) {
-        if (GameMediator::get_instance()->get_enemy(boss_id)->sprites[ANIM_TYPE_INTRO][i].used == true) {
-            intro_frames_n++;
-        }
-    }
-
-    // fall into position
-    if (show_fall == true) {
-        while (boss_pos.y < sprite_pos_y) {
-            boss_pos.y += 4;
-            graphLib.showSurface(&boss_intro_bg);
-            graphLib.copyArea(st_rectangle(0, 0, sprite_size.x, sprite_size.y), st_position(boss_pos.x, boss_pos.y), &boss_graphics, &graphLib.gameScreen);
-            graphLib.updateScreen();
-            timer.delay(5);
-        }
-        graphLib.updateScreen();
-        timer.delay(500);
-    } else {
-        boss_pos.y = sprite_pos_y;
-    }
-
-
-    // show intro sprites
-    if (intro_frames_n > 1) {
-        for (int i=0; i<ANIM_FRAMES_COUNT; i++) {
-            if (GameMediator::get_instance()->get_enemy(boss_id)->sprites[ANIM_TYPE_INTRO][i].used == true) {
-                //std::cout << "i: " << i << ", used: " << GameMediator::get_instance()->get_enemy(boss_id).sprites[ANIM_TYPE_INTRO][i].used << ", duration: " << GameMediator::get_instance()->get_enemy(boss_id).sprites[ANIM_TYPE_INTRO][i].duration << std::endl;
-                graphLib.showSurface(&boss_intro_bg);
-                graphLib.copyArea(st_rectangle(sprite_size.x * GameMediator::get_instance()->get_enemy(boss_id)->sprites[ANIM_TYPE_INTRO][i].sprite_graphic_pos_x, 0, sprite_size.x, sprite_size.y), st_position(boss_pos.x, boss_pos.y), &boss_graphics, &graphLib.gameScreen);
-                // only wait if not last frame
-                if (i<ANIM_FRAMES_COUNT-1 && GameMediator::get_instance()->get_enemy(boss_id)->sprites[ANIM_TYPE_INTRO][i+1].used) {
-                    graphLib.updateScreen();
-                    timer.delay(GameMediator::get_instance()->get_enemy(boss_id)->sprites[ANIM_TYPE_INTRO][i].duration);
-                }
-            }
-        }
-    } else { // just frow first sprite
-        graphLib.showSurface(&boss_intro_bg);
-        graphLib.copyArea(st_rectangle(0, 0, sprite_size.x, sprite_size.y), st_position(boss_pos.x, boss_pos.y), &boss_graphics, &graphLib.gameScreen);
-        graphLib.updateScreen();
-        timer.delay(200);
-    }
-}
 
 void draw::show_ready()
 {
     st_position dest_pos((RES_W/2)-26, (RES_H/2)-6);
-    graphicsLib_gSurface screen_copy;
-    graphLib.initSurface(st_size(RES_W, RES_H), &screen_copy);
-    graphLib.copyArea(st_position(0, 0), &graphLib.gameScreen, &screen_copy);
+    st_imageData screen_copy;
+    screen_copy = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
+    ImageView::get_instance()->copyScreenAreaToImage(0, 0, RES_W, RES_H, 0, 0, screen_copy);
 
     for (int i=0; i<6; i++) {
-        graphLib.draw_centered_text(dest_pos.y, strings_map::get_instance()->get_ingame_string(strings_ingame_ready_message, game_config.selected_language));
+        TextView::get_instance()->renderText(0, dest_pos.y, st_color(250, 250, 250), true, strings_map::get_instance()->get_ingame_string(strings_ingame_ready_message, SharedData::get_instance()->game_config.selected_language));
         update_screen();
-        timer.delay(200);
-        graphLib.copyArea(st_position(0, 0), &screen_copy, &graphLib.gameScreen);
+        TimerView::get_instance()->delay(200);
+
+        ImageView::get_instance()->copyScreenAreaToImage(0, 0, RES_W, RES_H, 0, 0, screen_copy);
+
         update_screen();
-        timer.delay(200);
+        TimerView::get_instance()->delay(200);
     }
 }
 
 void draw::show_bubble(int x, int y)
 {
-    if (_bubble_gfx.get_surface() == NULL) {
-        std::string filename = GAMEPATH + "shared/images/bubble.png";
-        graphLib.surfaceFromFile(filename, &_bubble_gfx);
+    if (_bubble_gfx.surface == nullptr) {
+        std::string filename = SharedData::get_instance()->GAMEPATH + "shared/images/bubble.png";
+        _bubble_gfx = ImageView::get_instance()->imageFromFile(filename);
     }
-    graphLib.showSurfaceAt(&_bubble_gfx, st_position(x, y), false);
+    ImageView::get_instance()->renderImageAt(x, y, _bubble_gfx);
 }
 
-void draw::set_teleport_small_colors(st_color color1, st_color color2)
-{
-    graphLib.change_surface_color(0, color1, &_teleport_small_gfx);
-    graphLib.change_surface_color(1, color2, &_teleport_small_gfx);
-}
 
 void draw::show_teleport_small(int x, int y)
 {
     if (teleport_small_frame_count > 0) {
-        int x_origin = teleport_small_frame * _teleport_small_gfx.height;
-        if (timer.getTimer() > teleport_small_frame_timer) {
+        int x_origin = teleport_small_frame * _teleport_small_gfx.surface->h;
+        if (TimerView::get_instance()->getTimer() > teleport_small_frame_timer) {
             teleport_small_frame++;
-            teleport_small_frame_timer = timer.getTimer()+100;
+            teleport_small_frame_timer = TimerView::get_instance()->getTimer()+100;
         }
-        //std::cout << "timer[" << timer.getTimer() << "], frame.timer[" << teleport_small_frame_timer << "], frames[" << teleport_small_frame_count << "], current frame[" << teleport_small_frame << "]" << std::endl;
+        //std::cout << "timer[" << TimerView::get_instance()->getTimer() << "], frame.timer[" << teleport_small_frame_timer << "], frames[" << teleport_small_frame_count << "], current frame[" << teleport_small_frame << "]" << std::endl;
         if (teleport_small_frame >= teleport_small_frame_count) {
             teleport_small_frame = 0;
         }
-        st_rectangle origin_rect(x_origin, 0, _teleport_small_gfx.height, _teleport_small_gfx.height);
-        graphLib.showSurfaceRegionAt(&_teleport_small_gfx, origin_rect, st_position(x, y));
+        st_rectangle origin_rect(x_origin, 0, _teleport_small_gfx.surface->h, _teleport_small_gfx.surface->h);
+        ImageView::get_instance()->renderTexturePortionAt(origin_rect.x, origin_rect.y, origin_rect.w, origin_rect.h, x, y, _teleport_small_gfx.texture);
     } else {
-        graphLib.showSurfaceAt(&_teleport_small_gfx, st_position(x, y), false);
+        ImageView::get_instance()->renderImageAt(x, y, _teleport_small_gfx);
     }
 }
 
@@ -394,13 +315,14 @@ int draw::show_credits_text(bool can_leave, std::vector<std::string> credit_text
     float bg2_speed = 3.5;
     float bg1_pos = 0;
     float bg2_pos = 0;
-    graphicsLib_gSurface bg1;
-    graphicsLib_gSurface bg2;
+    st_imageData bg1;
+    st_imageData bg2;
 
-    graphLib.surfaceFromFile(GAMEPATH + "/shared/images/star_field1.png", &bg1);
-    graphLib.surfaceFromFile(GAMEPATH + "/shared/images/star_field2.png", &bg2);
 
-    graphLib.blank_screen();
+    bg1 = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->GAMEPATH + "/shared/images/star_field1.png");
+    bg2 = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->GAMEPATH + "/shared/images/star_field2.png");
+
+    ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
 
 
     std::cout << "draw::show_credits_text::START" << std::endl;
@@ -408,9 +330,9 @@ int draw::show_credits_text(bool can_leave, std::vector<std::string> credit_text
     // add the initial lines to screen
     create_engine_credits_text();
 
-    timer.delay(200);
-    input.clean();
-    timer.delay(200);
+    TimerView::get_instance()->delay(200);
+    InputController::get_instance()->clean();
+    TimerView::get_instance()->delay(200);
 
     update_screen();
 
@@ -422,14 +344,14 @@ int draw::show_credits_text(bool can_leave, std::vector<std::string> credit_text
         //std::cout << "scrolled[" << scrolled << "], limit[" << limit << "]" << std::endl;
 
         //@TODO: draw stars fields //
-        graphLib.blank_screen();
-        graphLib.copyArea(st_position(0, bg1_pos), &bg1, &graphLib.gameScreen);
+        ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
+        ImageView::get_instance()->renderImageAt(0, bg1_pos, bg1);
         if (bg1_pos > 0) {
-            graphLib.copyArea(st_rectangle(0, RES_H-bg1_pos, RES_W, bg1_pos), st_position(0, 0), &bg1, &graphLib.gameScreen);
+            ImageView::get_instance()->renderTexturePortionAt(0, RES_H-bg1_pos, RES_W, bg1_pos, 0, 0, bg1.texture);
         }
-        graphLib.copyArea(st_position(0, bg2_pos), &bg2, &graphLib.gameScreen);
+        ImageView::get_instance()->renderImageAt(0, bg2_pos, bg2);
         if (bg2_pos > 0) {
-            graphLib.copyArea(st_rectangle(0, RES_H-bg2_pos, RES_W, bg2_pos), st_position(0, 0), &bg2, &graphLib.gameScreen);
+            ImageView::get_instance()->renderTexturePortionAt(0, RES_H-bg2_pos, RES_W, bg2_pos, 0, 0, bg2.texture);
         }
 
 
@@ -443,13 +365,13 @@ int draw::show_credits_text(bool can_leave, std::vector<std::string> credit_text
                 if (credit_text.at(i)[0] == '@') { // section
                     std::string text_out = credit_text.at(i);
                     text_out = text_out.substr(1, text_out.length()-1);
-                    graphLib.draw_centered_text(text_pos, text_out, graphLib.gameScreen, st_color(102, 255, 181));
+                    TextView::get_instance()->renderText(0, text_pos, st_color(250, 250, 250), true, text_out);
                 } else if (found_title_red != std::string::npos) { // main title
-                    graphLib.draw_centered_text(text_pos, credit_text.at(i), graphLib.gameScreen, st_color(249, 98, 98));
+                    TextView::get_instance()->renderText(0, text_pos, st_color(250, 250, 250), true, credit_text.at(i));
                 } else if (found_title_blue != std::string::npos) { // sub-title
-                    graphLib.draw_centered_text(text_pos, credit_text.at(i), graphLib.gameScreen, st_color(95, 151, 255));
+                    TextView::get_instance()->renderText(0, text_pos, st_color(250, 250, 250), true, credit_text.at(i));
                 } else {
-                    graphLib.draw_centered_text(text_pos, credit_text.at(i));
+                    TextView::get_instance()->renderText(0, text_pos, st_color(250, 250, 250), true, credit_text.at(i));
                 }
                 //std::cout << "text_pos[" << i << "][" << text_pos << "]" << std::endl;
             }
@@ -457,12 +379,12 @@ int draw::show_credits_text(bool can_leave, std::vector<std::string> credit_text
 
 
         if (can_leave) {
-            input.read_input();
-            if (input.wait_scape_time(STARS_DELAY) == 1 || input.p1_input[BTN_START] == 1) {
+            InputController::get_instance()->read_input();
+            if (InputController::get_instance()->wait_scape_time(STARS_DELAY) == 1 || InputController::get_instance()->p1_input[BTN_START] == 1) {
                 return 1;
             }
         } else {
-            timer.delay(STARS_DELAY);
+            TimerView::get_instance()->delay(STARS_DELAY);
         }
         posY--;
         scrolled++;
@@ -485,22 +407,21 @@ int draw::show_credits_text(bool can_leave, std::vector<std::string> credit_text
 
 int draw::show_credits(bool can_leave)
 {
-    soundManager.stop_music();
-    soundManager.load_music("rockbot_endcredits.mod");
-    soundManager.play_music();
+    SoundView::get_instance()->stop_music();
+    SoundView::get_instance()->load_music("rockbot_endcredits.mod");
+    SoundView::get_instance()->play_music();
     int res = show_credits_text(can_leave, create_engine_credits_text());
     if (res == 1) {
-        soundManager.stop_music();
-        soundManager.load_music(game_data.game_start_screen_music_filename);
-        soundManager.play_music();
+        SoundView::get_instance()->stop_music();
+        SoundView::get_instance()->load_music(SharedData::get_instance()->game_data.game_start_screen_music_filename);
+        SoundView::get_instance()->play_music();
         return 1;
     }
-    //graphLib.blank_screen();// should leave presented by on the screen
-    graphLib.updateScreen();
-    timer.delay(1000);
-    input.clean();
-    timer.delay(100);
-    input.wait_keypress();
+    ImageView::get_instance()->updateScreen();
+    TimerView::get_instance()->delay(1000);
+    InputController::get_instance()->clean();
+    TimerView::get_instance()->delay(100);
+    InputController::get_instance()->wait_keypress();
 }
 
 void draw::show_unlocked_charsMsg()
@@ -508,11 +429,11 @@ void draw::show_unlocked_charsMsg()
 
 }
 
-std::vector<string> draw::create_engine_credits_text()
+std::vector<std::string> draw::create_engine_credits_text()
 {
 
-    CURRENT_FILE_FORMAT::fio_strings fio_str;
-    std::vector<string> credits_list = fio_str.get_string_list_from_file(FILEPATH + "/game_credits.txt");
+    fio_strings fio_str;
+    std::vector<std::string> credits_list = fio_str.get_string_list_from_file(SharedData::get_instance()->FILEPATH + "/game_credits.txt");
 
     if (credits_list.size() > 0) {
         for (int i=0; i<6; i++) {
@@ -674,15 +595,15 @@ std::vector<string> draw::create_engine_credits_text()
 }
 
 
-void draw::draw_credit_line(graphicsLib_gSurface &surface, Uint8 initial_line,std::vector<std::string> credit_text)
+void draw::draw_credit_line(st_imageData &surface, Uint8 initial_line,std::vector<std::string> credit_text)
 {
     if (initial_line < credit_text.size()) {
         std::cout << "draw::draw_credit_line - text[" << credit_text.at(initial_line) << "]" << std::endl;
         std::size_t found = credit_text.at(initial_line).find("- ");
         if (found != std::string::npos) {
-            graphLib.draw_centered_text(RES_H, credit_text.at(initial_line), surface, st_color(95, 151, 255));
+            TextView::get_instance()->renderText(0, RES_H, st_color(95, 151, 255), true, credit_text.at(initial_line));
         } else {
-            graphLib.draw_centered_text(RES_H, credit_text.at(initial_line), surface, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE));
+            TextView::get_instance()->renderText(0, RES_H, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), true, credit_text.at(initial_line));
         }
     } else {
         std::cout << "ERROR draw_credit_line, initial_line[" << initial_line << "], credit_text.size()[" << credit_text.size() << "]" << std::endl;
@@ -694,22 +615,22 @@ void draw::draw_credit_line(graphicsLib_gSurface &surface, Uint8 initial_line,st
 
 
 
-graphicsLib_gSurface *draw::get_object_graphic(int obj_id)
+st_imageData *draw::get_object_graphic(int obj_id)
 {
-    std::map<unsigned int, graphicsLib_gSurface>::iterator it;
-    graphicsLib_gSurface temp_sprite;
+    std::map<unsigned int, st_imageData>::iterator it;
+    st_imageData temp_sprite;
 
     it = objects_sprite_list.find(obj_id);
     if (it == objects_sprite_list.end()) { // there is no graphic with this key yet, add it
         std::string graphic_filename(GameMediator::get_instance()->object_list.at(obj_id).graphic_filename);
         if (graphic_filename.length() > 0) {
-            std::string complete_filename(FILEPATH + "images/sprites/objects/" + graphic_filename);
-            graphLib.surfaceFromFile(complete_filename, &temp_sprite);
-            objects_sprite_list.insert(std::pair<unsigned int, graphicsLib_gSurface>(obj_id, temp_sprite));
+            std::string complete_filename(SharedData::get_instance()->FILEPATH + "images/sprites/objects/" + graphic_filename);
+            temp_sprite = ImageView::get_instance()->imageFromFile(complete_filename);
+            objects_sprite_list.insert(std::pair<unsigned int, st_imageData>(obj_id, temp_sprite));
             it = objects_sprite_list.find(obj_id);
         } else {
             std::cout << "ERROR: Invalid object graphic. Object_ID: '" + obj_id << "'" << std::endl;
-            return NULL;
+            return nullptr;
         }
     }
     return &(*it).second;
@@ -717,7 +638,7 @@ graphicsLib_gSurface *draw::get_object_graphic(int obj_id)
 
 void draw::remove_object_graphic(int obj_id)
 {
-    std::map<unsigned int, graphicsLib_gSurface>::iterator it;
+    std::map<unsigned int, st_imageData>::iterator it;
     it = objects_sprite_list.find(obj_id);
     if (it != objects_sprite_list.end()) {
         objects_sprite_list.erase(obj_id);
@@ -726,49 +647,49 @@ void draw::remove_object_graphic(int obj_id)
 
 void draw::show_ingame_warning(std::vector<std::string> message)
 {
-    graphLib.show_dialog(0);
-    st_position dialog_pos = graphLib.get_dialog_pos();
+    ImageView::get_instance()->show_dialog(0);
+    st_position dialog_pos = ImageView::get_instance()->get_dialog_pos();
     for (unsigned int i=0; i<message.size(); i++) {
-        graphLib.draw_text(dialog_pos.x+20, dialog_pos.y+16+(12*i), message[i]);
+        TextView::get_instance()->renderText(dialog_pos.x+20, dialog_pos.y+16+(12*i), st_color(250, 250, 250), false, message[i]);
     }
-    graphLib.show_dialog_button(0);
-    input.clean();
-    input.wait_keypress();
+    ImageView::get_instance()->show_dialog_button(0);
+    InputController::get_instance()->clean();
+    InputController::get_instance()->wait_keypress();
 }
 
 void draw::fade_in_screen(int r, int g, int b, int total_delay)
 {
-    graphicsLib_gSurface screen_copy;
-    graphLib.initSurface(st_size(RES_W, RES_H), &screen_copy);
-    graphLib.copy_gamescreen_area(st_rectangle(0, 0, RES_W, RES_H), st_position(0, 0), &screen_copy);
+    st_imageData screen_copy;
+    screen_copy = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
+    ImageView::get_instance()->copyScreenAreaToImage(0, 0, RES_W, RES_H, 0, 0, screen_copy);
 
-    graphicsLib_gSurface transparent_area;
-    graphLib.initSurface(st_size(RES_W, RES_H), &transparent_area);
-    graphLib.clear_surface_area(0, 0, RES_W, RES_H, r, g, b, transparent_area);
+    st_imageData transparent_area;
+    transparent_area = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
+    ImageView::get_instance()->clear_surface_area(0, 0, RES_W, RES_H, r, g, b, transparent_area);
 
     float step = 255.0/20.0;
     float alpha_value = 255;
     float delay = (total_delay / 25)-10;
 
     for (float i=0; i<=20; i++) {
-        graphLib.showSurface(&screen_copy);
-        graphLib.set_surface_alpha((int)alpha_value, transparent_area);
-        graphLib.showSurface(&transparent_area);
+        ImageView::get_instance()->renderImageAt(0, 0, screen_copy);
+        ImageView::get_instance()->set_surface_alpha((int)alpha_value, transparent_area);
+        ImageView::get_instance()->renderImageAt(0, 0, transparent_area);
         alpha_value -= step;
-        graphLib.updateScreen();
-        timer.delay(delay);
+        ImageView::get_instance()->updateScreen();
+        TimerView::get_instance()->delay(delay);
     }
 }
 
 void draw::fade_out_screen(int r, int g, int b, int total_delay)
 {
-    graphicsLib_gSurface screen_copy;
-    graphLib.initSurface(st_size(RES_W, RES_H), &screen_copy);
-    graphLib.copy_gamescreen_area(st_rectangle(0, 0, RES_W, RES_H), st_position(0, 0), &screen_copy);
+    st_imageData screen_copy;
+    screen_copy = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
+    ImageView::get_instance()->copyScreenAreaToImage(0, 0, RES_W, RES_H, 0, 0, screen_copy);
 
-    graphicsLib_gSurface transparent_area;
-    graphLib.initSurface(st_size(RES_W, RES_H), &transparent_area);
-    graphLib.clear_surface_area(0, 0, RES_W, RES_H, r, g, b, transparent_area);
+    st_imageData transparent_area;
+    transparent_area = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
+    ImageView::get_instance()->clear_surface_area(0, 0, RES_W, RES_H, r, g, b, transparent_area);
 
     float step = 255.0/20.0;
     float alpha_value = 0;
@@ -776,13 +697,13 @@ void draw::fade_out_screen(int r, int g, int b, int total_delay)
 
     for (float i=0; i<=20; i++) {
         //std::cout << "alpha_value[" << alpha_value << "], i[" << i << "], step[" << step << "]" << std::endl;
-        graphLib.showSurface(&screen_copy);
-        graphLib.set_surface_alpha((int)alpha_value, transparent_area);
+        ImageView::get_instance()->renderImageAt(0, 0, screen_copy);
+        ImageView::get_instance()->set_surface_alpha((int)alpha_value, transparent_area);
         alpha_value += step;
-        graphLib.showSurface(&transparent_area);
-        graphLib.updateScreen();
+        ImageView::get_instance()->renderImageAt(0, 0, transparent_area);
+        ImageView::get_instance()->updateScreen();
         if (delay >= 1) {
-            timer.delay(delay);
+            TimerView::get_instance()->delay(delay);
         }
     }
 }
@@ -802,16 +723,13 @@ void draw::remove_fade_out_effect()
 
 void draw::pixelate_screen()
 {
-    graphicsLib_gSurface res_surface;
-    graphLib.initSurface(st_size(RES_W, RES_H), &res_surface);
-
-    int width = graphLib.gameScreen.width;
-    int height = graphLib.gameScreen.height;
-
+    st_imageData res_surface = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
+    st_imageData screen_copy = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
+    ImageView::get_instance()->copyScreenAreaToImage(0, 0, RES_W, RES_H, 0, 0, screen_copy);
 
     for (int pixelationAmount=2; pixelationAmount<8; pixelationAmount++) {
-        for (int x = 0; x < width; x+= pixelationAmount) { // do the whole image
-            for (int y = 0; y < height; y+= pixelationAmount) {
+        for (int x = 0; x < RES_W; x+= pixelationAmount) { // do the whole image
+            for (int y = 0; y < RES_H; y+= pixelationAmount) {
 
                 int avR = 0;
                 int avG = 0;
@@ -821,7 +739,7 @@ void draw::pixelate_screen()
                 int pointsCount = 0;
                 for (int i=0; i<pixelationAmount; i++) {
                     for (int j=0; j<pixelationAmount; j++) {
-                        st_color pt_color = graphLib.gameScreen.get_point_color(x+i, y+j);
+                        st_color pt_color = screen_copy.get_point_color(x+i, y+j);
                         //res_surface.set_point_color((i+x), (j+y), pt_color.r, pt_color.g, pt_color.b);
 
                         avR += (int) (pt_color.r);
@@ -848,9 +766,9 @@ void draw::pixelate_screen()
             }
         }
         //std::cout << "pixelationAmount[" << pixelationAmount << "]" << std::endl;
-        graphLib.copyArea(st_position(0, 0), &res_surface, &graphLib.gameScreen);
-        graphLib.updateScreen();
-        timer.delay(20);
+        ImageView::get_instance()->renderImageAt(0, 0, res_surface);
+        ImageView::get_instance()->updateScreen();
+        TimerView::get_instance()->delay(20);
     }
     std::cout << "END" << std::endl;
     res_surface.freeGraphic();
@@ -861,21 +779,8 @@ void draw::add_weapon_tooltip(short weapon_n, const st_position &player_pos, con
 {
     _weapon_tooltip_n = weapon_n;
     _weapon_tooltip_pos_ref = &player_pos;
-    _weapon_tooltip_timer = timer.getTimer() + 1500;
+    _weapon_tooltip_timer = TimerView::get_instance()->getTimer() + 1500;
     _weapon_tooltip_direction_ref = &direction;
-}
-
-void draw::show_weapon_tooltip()
-{
-    if (timer.getTimer() < _weapon_tooltip_timer) {
-        int adjust_x = 5;
-        int adjust_y = 4-TILESIZE;
-        Uint8 direction_value = *_weapon_tooltip_direction_ref;
-        if (direction_value == ANIM_DIRECTION_LEFT) {
-            adjust_x = 10;
-        }
-        graphLib.draw_weapon_tooltip_icon(_weapon_tooltip_n, st_position(_weapon_tooltip_pos_ref->x+adjust_x, _weapon_tooltip_pos_ref->y+adjust_y), true);
-    }
 }
 
 st_float_position draw::get_radius_point(st_position center_point, int radius, float angle)
@@ -905,24 +810,24 @@ void draw::draw_castle_path(bool instant, st_position initial_point, st_position
 
     draw_castle_point(initial_point.x, initial_point.y);
     draw_castle_point(final_point.x, final_point.y);
-    graphLib.updateScreen();
+    ImageView::get_instance()->updateScreen();
 
     int pos_y = initial_point.y - 1;
     int pos_x = initial_point.x + 2;
 
     // first, move Y axis
     if (dist_y < 0) {
-        pos_y += castle_point.height + 1;
+        pos_y += castle_point.surface->h + 1;
     }
     std::cout << "ini.y[" << initial_point.y << "], end.y[" << final_point.y << "], dist_y[" << dist_y << "]" << std::endl;
     if (dist_y != 0) {
         for (int i=0; i<abs(dist_y)-2; i++) {
             // border left
-            graphLib.clear_area(pos_x-1, pos_y, 1, 1, 19, 19, 19);
+            ImageView::get_instance()->clearScreenArea(pos_x-1, pos_y, 1, 1, 19, 19, 19);
             // middle
-            graphLib.clear_area(pos_x, pos_y, 4, 1, 220, 220, 220);
+            ImageView::get_instance()->clearScreenArea(pos_x, pos_y, 4, 1, 220, 220, 220);
             // border right
-            graphLib.clear_area(pos_x+4, pos_y, 1, 1, 19, 19, 19);
+            ImageView::get_instance()->clearScreenArea(pos_x+4, pos_y, 1, 1, 19, 19, 19);
 
             if (dist_y > 0) {
                 pos_y--;
@@ -930,8 +835,8 @@ void draw::draw_castle_path(bool instant, st_position initial_point, st_position
                 pos_y++;
             }
             if (step_delay > 0) {
-                timer.delay(step_delay);
-                graphLib.updateScreen();
+                TimerView::get_instance()->delay(step_delay);
+                ImageView::get_instance()->updateScreen();
             }
         }
     }
@@ -960,19 +865,19 @@ void draw::draw_castle_path(bool instant, st_position initial_point, st_position
     if (dist_x != 0) {
         for (int i=0; i<max_dist_x; i++) {
             // top
-            graphLib.clear_area(temp_pos_x, pos_y-1, 1, 1, 19, 19, 19);
+            ImageView::get_instance()->clearScreenArea(temp_pos_x, pos_y-1, 1, 1, 19, 19, 19);
             // middle
-            graphLib.clear_area(temp_pos_x, pos_y, 1, 4, 220, 220, 220);
+            ImageView::get_instance()->clearScreenArea(temp_pos_x, pos_y, 1, 4, 220, 220, 220);
             // bottom
-            graphLib.clear_area(temp_pos_x, pos_y+4, 1, 1, 19, 19, 19);
+            ImageView::get_instance()->clearScreenArea(temp_pos_x, pos_y+4, 1, 1, 19, 19, 19);
             if (dist_x > 0) {
                 temp_pos_x--;
             } else {
                 temp_pos_x++;
             }
             if (step_delay > 0) {
-                timer.delay(step_delay);
-                graphLib.updateScreen();
+                TimerView::get_instance()->delay(step_delay);
+                ImageView::get_instance()->updateScreen();
             }
         }
     }
@@ -981,15 +886,15 @@ void draw::draw_castle_path(bool instant, st_position initial_point, st_position
 
 void draw::draw_castle_point(int x, int y)
 {
-    graphLib.copyArea(st_position(x, y), &castle_point, &graphLib.gameScreen);
+    ImageView::get_instance()->renderImageAt(x, y, castle_point);
 }
 
 void draw::show_interstage_map_bg(st_position pos)
 {
-    graphLib.showSurface(&interstage_map);
-    graphLib.showSurfaceRegionAt(&hud_player_1up, st_rectangle(TILESIZE, 0, TILESIZE, TILESIZE), st_position(pos.x-4, pos.y-4));
-    graphLib.updateScreen();
-    timer.delay(5000);
+    ImageView::get_instance()->renderImageAt(0, 0, interstage_map);
+    ImageView::get_instance()->renderTexturePortionAt(TILESIZE, 0, TILESIZE, TILESIZE, pos.x-4, pos.y-4, hud_player_1up.texture);
+    ImageView::get_instance()->updateScreen();
+    TimerView::get_instance()->delay(5000);
 }
 
 void draw::draw_explosion(st_position center_point, int radius, int angle_inc)
@@ -1007,96 +912,70 @@ void draw::draw_explosion(st_position center_point, int radius, int angle_inc)
         float angle_rad = (angle * 3.14)/180;
         points[j] = get_radius_point(center_point, radius, angle_rad);
         std::cout << "DRAW::draw_explosion - angle[" << angle_rad << "], point[" << j << "][" << points[j].x << "][" << points[j].y << "]" << std::endl;
-        graphLib.copyArea(st_rectangle(frame*32, 0, 32, 32), st_position(points[j].x, points[j].y), graphLib.get_preloaded_image(PRELOADED_IMAGES_EXPLOSION_BUBBLE), &graphLib.gameScreen);
+        ImageView::get_instance()->renderTexturePortionAt(frame*32, 0, 32, 32, points[j].x, points[j].y, ImageView::get_instance()->get_preloaded_image(PRELOADED_IMAGES_EXPLOSION_BUBBLE)->texture);
     }
     update_screen();
 }
 
 
-graphicsLib_gSurface *draw::get_dynamic_background(string filename)
+st_imageData *draw::get_dynamic_background(std::string filename)
 {
-    std::map<std::string, graphicsLib_gSurface>::iterator it;
+    std::map<std::string, st_imageData>::iterator it;
 
     it = maps_dynamic_background_list.find(filename);
     if (it == maps_dynamic_background_list.end()) {
-        return NULL;
+        return nullptr;
     }
 
     return &maps_dynamic_background_list.find(filename)->second;
 }
 
-graphicsLib_gSurface *draw::get_dynamic_foreground(string filename)
+st_imageData *draw::get_dynamic_foreground(std::string filename)
 {
-    std::map<std::string, graphicsLib_gSurface>::iterator it;
+    std::map<std::string, st_imageData>::iterator it;
 
     it = maps_dynamic_background_list.find(filename);
     if (it == maps_dynamic_background_list.end()) {
-        return NULL;
+        return nullptr;
     }
 
     return &maps_dynamic_background_list.find(filename)->second;
 }
 
-void draw::set_dynamic_bg_alpha(string filename, int alpha)
+void draw::set_dynamic_bg_alpha(std::string filename, int alpha)
 {
-    std::map<std::string, graphicsLib_gSurface>::iterator it;
+    std::map<std::string, st_imageData>::iterator it;
 
     it = maps_dynamic_background_list.find(filename);
     if (it == maps_dynamic_background_list.end()) {
         return;
     }
-    graphLib.set_surface_alpha(alpha, &maps_dynamic_background_list.find(filename)->second);
+    ImageView::get_instance()->set_surface_alpha(alpha, maps_dynamic_background_list.find(filename)->second);
 }
 
 
 void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weapon_value)
 {
-    // lifes
-    /*
-    graphLib.copyArea(st_rectangle(game_save.selected_player*hud_player_1up.height, 0, hud_player_1up.height, hud_player_1up.height), st_position(6, 20), &hud_player_1up, &graphLib.gameScreen);
-    char lifes_text[125];
-    sprintf(lifes_text, "x0%d", game_save.items.lifes);
-    graphLib.draw_text(26, 24, std::string(lifes_text));
-    */
-
-
+    // TODO::IURI - usar imagem de fundo //
+    ImageView::get_instance()->clearScreenArea(0, AREA_H, RES_W, HUD_H, 200, 200, 200);
     // player HP
-    int hp_percent = (100 * hp) / fio.get_heart_pieces_number(game_save);
+    int hp_percent = (100 * hp) / fio.get_heart_pieces_number(SharedData::get_instance()->game_save);
     draw_enery_ball(hp_percent, 3, hud_player_hp_ball);
-    /*
-    for (int i=0; i<5; i++) {
-        int min = 20*i;
-        int max2 = min+20;
-        //std::cout << "i[" << i << "], hp_percent[" << hp_percent << "], min[" << min << "], max1[" << max1 << "], max2[" << max2 << "]" << std::endl;
-
-        int img_origin_x = 0;
-        if (hp_percent < min) {
-            img_origin_x = hud_player_hp_ball.height*2;
-        } else if (hp_percent < max2) {
-            img_origin_x = hud_player_hp_ball.height;
-        }
-
-        graphLib.copyArea(st_rectangle(img_origin_x, 0, hud_player_hp_ball.height, hud_player_hp_ball.height), st_position(30+10*i, 9), &hud_player_hp_ball, &graphLib.gameScreen);
-    }
-    */
-
 
     if (selected_weapon != WEAPON_DEFAULT && selected_weapon < WEAPON_ITEM_ETANK) {
         // draw weapon
 
-        hud_player_wpn_ball.change_colorkey_color(COLOR_KEY_GREEN, GameMediator::get_instance()->player_list_v3_1[PLAYER_1].weapon_colors[selected_weapon].color1);
-        int wpn_percent = (100 * selected_weapon_value) / fio.get_heart_pieces_number(game_save);
+        int wpn_percent = (100 * selected_weapon_value) / fio.get_heart_pieces_number(SharedData::get_instance()->game_save);
         //std::cout << "selected_weapon_value[" << selected_weapon_value << "]" << std::endl;
         draw_enery_ball(wpn_percent, 62, hud_player_wpn_ball);
     } else if (selected_weapon != WEAPON_DEFAULT && selected_weapon >= WEAPON_ITEM_ETANK) {
-        hud_player_wpn_ball.change_colorkey_color(COLOR_KEY_GREEN, st_color(250, 250, 250));
         int wpn_percent = 0;
         if (selected_weapon == WEAPON_ITEM_ETANK) {
-            wpn_percent = game_save.items.energy_tanks*10;
+            wpn_percent = SharedData::get_instance()->game_save.items.energy_tanks*10;
         } else if (selected_weapon == WEAPON_ITEM_WTANK) {
-            wpn_percent = game_save.items.weapon_tanks*10;
+            wpn_percent = SharedData::get_instance()->game_save.items.weapon_tanks*10;
         } else if (selected_weapon == WEAPON_ITEM_STANK) {
-            wpn_percent = game_save.items.special_tanks*10;
+            wpn_percent = SharedData::get_instance()->game_save.items.special_tanks*10;
         }
         //std::cout << "selected_weapon_value[" << selected_weapon_value << "]" << std::endl;
         draw_enery_ball(wpn_percent, 62, hud_player_wpn_ball);
@@ -1104,15 +983,15 @@ void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weap
 
     // boss HP
 
-    if (gameControl.must_show_boss_hp() && _boss_current_hp != -99) {
+    if (gameManager::get_instance()->must_show_boss_hp() && _boss_current_hp != -99) {
         int boss_hp_percent = (100 * _boss_current_hp) / BOSS_INITIAL_HP;
-        graphLib.draw_text(RES_W-95, 10, "BOSS:");
+        TextView::get_instance()->renderText(RES_W-95, 10, st_color(250, 250, 250), false, "BOSS:");
         draw_enery_ball(boss_hp_percent, RES_W-55, hud_boss_hp_ball);
     }
 
 }
 
-void draw::draw_enery_ball(int value, int x_pos, graphicsLib_gSurface& ball_surface)
+void draw::draw_enery_ball(int value, int x_pos, st_imageData& ball_surface)
 {
     // 5 balls, each have 4 possible stages
     // so each slice of energy is 100 / (5*4) = 5%
@@ -1138,7 +1017,7 @@ void draw::draw_enery_ball(int value, int x_pos, graphicsLib_gSurface& ball_surf
             img_origin_x = ENERGY_BALL_IMG_SIZE*3;
         }
 
-        graphLib.copyArea(st_rectangle(img_origin_x, 0, ball_surface.height, ball_surface.height), st_position(x_pos+(10*i), 3), &ball_surface, &graphLib.gameScreen);
+        ImageView::get_instance()->renderTexturePortionAt(img_origin_x, 0, ball_surface.surface->w, ball_surface.surface->w, x_pos+(10*i), 3, ball_surface.texture);
     }
 }
 
@@ -1149,8 +1028,8 @@ void draw::set_boss_hp(int hp)
 
 void draw::show_boss_intro_bg()
 {
-    graphLib.showSurface(&boss_intro_bg);
-    graphLib.updateScreen();
+    ImageView::get_instance()->renderImageAt(0, 0, boss_intro_bg);
+    ImageView::get_instance()->updateScreen();
 }
 
 void draw::clear_maps_dynamic_background_list()
@@ -1158,7 +1037,7 @@ void draw::clear_maps_dynamic_background_list()
     maps_dynamic_background_list.clear();
 }
 
-void draw::add_dynamic_background(string filename, int auto_scroll_mode, st_color bg_color)
+void draw::add_dynamic_background(std::string filename, int auto_scroll_mode, st_color bg_color)
 {
     // only add if not existing in map
     if (maps_dynamic_background_list.find(filename) == maps_dynamic_background_list.end()) {
@@ -1166,19 +1045,19 @@ void draw::add_dynamic_background(string filename, int auto_scroll_mode, st_colo
 
         //std::cout << "DRAW::add_dynamic_background::ADD[" << filename << "]" << std::endl;
 
-        maps_dynamic_background_list.insert(std::pair<std::string,graphicsLib_gSurface>(filename, graphicsLib_gSurface()));
-        std::string bg1_filename(FILEPATH+"images/map_backgrounds/" + filename);
+        maps_dynamic_background_list.insert(std::pair<std::string,st_imageData>(filename, st_imageData()));
+        std::string bg1_filename(SharedData::get_instance()->FILEPATH+"images/map_backgrounds/" + filename);
 
 
-        graphicsLib_gSurface temp_surface;
-        graphLib.surfaceFromFile(bg1_filename, &temp_surface);
+        st_imageData temp_surface;
+        temp_surface = ImageView::get_instance()->imageFromFile(bg1_filename);
 
         //std::cout << "MAP::add_bg[" << bg1_filename << "], w[" << (int)temp_surface.width << "], h[" << (int)temp_surface.height << "]" << std::endl;
 
 
-        graphLib.initSurface(st_size(temp_surface.width, temp_surface.height), &maps_dynamic_background_list.find(filename)->second);
-        graphLib.clear_surface_area(0, 0, temp_surface.width, temp_surface.height, bg_color.r, bg_color.g, bg_color.b, maps_dynamic_background_list.find(filename)->second);
-        graphLib.copyArea(st_position(0, 0), &temp_surface, &maps_dynamic_background_list.find(filename)->second);
+        maps_dynamic_background_list.find(filename)->second = ImageView::get_instance()->initSurface(st_size(temp_surface.surface->w, temp_surface.surface->h));
+        ImageView::get_instance()->clear_surface_area(0, 0, temp_surface.surface->w, temp_surface.surface->h, bg_color.r, bg_color.g, bg_color.b, maps_dynamic_background_list.find(filename)->second);
+        ImageView::get_instance()->copyArea(st_position(0, 0), temp_surface, maps_dynamic_background_list.find(filename)->second);
         //maps_dynamic_background_list.find(filename)->second
     }
 }
@@ -1206,9 +1085,9 @@ void draw::show_snow_effect()
     std::vector<st_snow_particle>::iterator it;
 
 
-    //std::cout << "## DRAW::SHOW_SNOW - timer.getTimer(): " << timer.getTimer() << ", _effect_timer: " << _effect_timer << std::endl;
+    //std::cout << "## DRAW::SHOW_SNOW - TimerView::get_instance()->getTimer(): " << TimerView::get_instance()->getTimer() << ", _effect_timer: " << _effect_timer << std::endl;
 
-    if (timer.getTimer() > _effect_timer) {
+    if (TimerView::get_instance()->getTimer() > _effect_timer) {
 
         for (it=_snow_particles.begin(); it!=_snow_particles.end(); it++) {
             st_snow_particle *temp_particle = &(*it);
@@ -1232,17 +1111,13 @@ void draw::show_snow_effect()
                 temp_particle->position.y = 0;
 
             }
-            //graphLib.clear_area(temp_particle->position.x, temp_particle->position.y, 3, 3, 230, 230, 255);
-            graphLib.showSurfaceRegionAt(&snow_flacke, st_rectangle(0, 0, snow_flacke.width, snow_flacke.height), st_position(temp_particle->position.x, temp_particle->position.y));
+            ImageView::get_instance()->renderTexturePortionAt(0, 0, snow_flacke.surface->w, snow_flacke.surface->h, temp_particle->position.x, temp_particle->position.y, snow_flacke.texture);
         }
-        _effect_timer = timer.getTimer() + SNOW_DELAY;
-
-        //std::cout << "## DRAW::SHOW_SNOW::SET-EFFECT-TIMER: " << _effect_timer << ", current timer: " << timer.getTimer() << std::endl;
-
+        _effect_timer = TimerView::get_instance()->getTimer() + SNOW_DELAY;
     } else {
         for (it=_snow_particles.begin(); it!=_snow_particles.end(); it++) {
             st_snow_particle *temp_particle = &(*it);
-            graphLib.showSurfaceRegionAt(&snow_flacke, st_rectangle(0, 0, snow_flacke.width, snow_flacke.height), st_position(temp_particle->position.x, temp_particle->position.y));
+            ImageView::get_instance()->renderTexturePortionAt(0, 0, snow_flacke.surface->w, snow_flacke.surface->h, temp_particle->position.x, temp_particle->position.y, snow_flacke.texture);
         }
     }
 }
@@ -1251,55 +1126,52 @@ void draw::show_train_effect()
 {
     if (_train_effect_timer == 0) {
         std::cout << "TRAIN_EFFECT-RESET" << std::endl;
-        _train_effect_timer = timer.getTimer() + TRAIN_DELAY;
+        _train_effect_timer = TimerView::get_instance()->getTimer() + TRAIN_DELAY;
         _train_effect_state = 0;
-        if (_train_sfx == NULL) {
-            _train_sfx = soundManager.sfx_from_file("train.wav");
+        if (_train_sfx == nullptr) {
+            _train_sfx = SoundView::get_instance()->sfx_from_file("train.wav");
         }
     } else {
-        if (_train_effect_timer < timer.getTimer()) {
+        if (_train_effect_timer < TimerView::get_instance()->getTimer()) {
             if (_train_effect_state == 0) {
-                graphLib.set_screen_adjust(st_position(0, -TRAIN_EFFECT_SCREEN_MOVE));
-                _train_effect_timer = timer.getTimer() + TRAIN_EFFECT_DELAY;
+                _train_effect_timer = TimerView::get_instance()->getTimer() + TRAIN_EFFECT_DELAY;
                 _train_effect_state++;
-                soundManager.play_sfx_from_chunk(_train_sfx, 1);
+                SoundView::get_instance()->play_sfx_from_chunk(_train_sfx, 1);
             } else {
-                graphLib.set_screen_adjust(st_position(0, 0));
-                _train_effect_timer = timer.getTimer() + TRAIN_DELAY;
+                _train_effect_timer = TimerView::get_instance()->getTimer() + TRAIN_DELAY;
                 _train_effect_state = 0;
-                soundManager.play_sfx_from_chunk(_train_sfx, 1);
+                SoundView::get_instance()->play_sfx_from_chunk(_train_sfx, 1);
             }
         }
     }
-    //graphLib.set_screen_adjust(st_position(-QUAKE_SCREEN_MOVE, 0));
 }
 
 void draw::show_lightingbolt_effect()
 {
     if (_lightingbolt_effect_timer == 0) {
-        _lightingbolt_effect_timer = timer.getTimer() + LIGHTINGBOLT_DELAY1;
+        _lightingbolt_effect_timer = TimerView::get_instance()->getTimer() + LIGHTINGBOLT_DELAY1;
         return;
     }
-    if (_lightingbolt_effect_timer < timer.getTimer()) {
+    if (_lightingbolt_effect_timer < TimerView::get_instance()->getTimer()) {
         if (_lightingbolt_effect_state <= 5) {
-            _lightingbolt_effect_timer = timer.getTimer() + LIGHTINGBOLT_DELAY2;
+            _lightingbolt_effect_timer = TimerView::get_instance()->getTimer() + LIGHTINGBOLT_DELAY2;
             _lightingbolt_effect_state++;
         } else {
-            _lightingbolt_effect_timer = timer.getTimer() + LIGHTINGBOLT_DELAY1;
+            _lightingbolt_effect_timer = TimerView::get_instance()->getTimer() + LIGHTINGBOLT_DELAY1;
             _lightingbolt_effect_state = 0;
         }
     } else {
         if (_lightingbolt_effect_state % 2 != 0) {
             if (_lightingbolt_effect_state == 1) {
-                soundManager.play_shared_sfx("thunder.wav");
+                SoundView::get_instance()->play_shared_sfx("thunder.wav");
             }
-            graphicsLib_gSurface transparent_area;
-            graphLib.initSurface(st_size(RES_W, RES_H), &transparent_area);
-            graphLib.clear_surface_area(0, 0, RES_W, RES_H, 250, 250, 158, transparent_area);
-            graphLib.set_surface_alpha(80, transparent_area);
-            graphLib.showSurface(&transparent_area);
+            st_imageData transparent_area;
+            transparent_area = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
+            ImageView::get_instance()->clear_surface_area(0, 0, RES_W, RES_H, 250, 250, 158, transparent_area);
+            ImageView::get_instance()->set_surface_alpha(80, transparent_area);
+            ImageView::get_instance()->renderImageAt(0, 0, transparent_area);
 
-            graphLib.clear_area(0, 0, RES_W, RES_H, 250, 250, 158);
+            ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 250, 250, 158);
         }
     }
 }
@@ -1311,9 +1183,9 @@ void draw::show_shadow_top_effect()
     int alpha = 255;
     int alpha_step = alpha/12;
     for (int i=0; i<max; i+=10) {
-        graphLib.set_surface_alpha(alpha, &shadow_line);
+        ImageView::get_instance()->set_surface_alpha(alpha, shadow_line);
         //std::cout << "shadow.y[" << i << "], alpha[" << alpha << "]" << std::endl;
-        graphLib.copyArea(st_rectangle(0, 0, shadow_line.width, shadow_line.height), st_position(0, i), &shadow_line, &graphLib.gameScreen);
+        ImageView::get_instance()->renderTexturePortionAt(0, 0, shadow_line.surface->w, shadow_line.surface->h, 0, i, shadow_line.texture);
         alpha -= alpha_step;
     }
 }
@@ -1321,11 +1193,11 @@ void draw::show_shadow_top_effect()
 void draw::show_inferno_effect()
 {
     if (_inferno_surface.is_null()) {
-        graphLib.initSurface(st_size(RES_W, RES_H), &_inferno_surface);
-        graphLib.clear_surface_area(0, 0, RES_W, RES_H, 180, 0, 0, _inferno_surface);
+        _inferno_surface = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
+        ImageView::get_instance()->clear_surface_area(0, 0, RES_W, RES_H, 180, 0, 0, _inferno_surface);
     }
-    graphLib.set_surface_alpha(_inferno_alpha, _inferno_surface);
-    graphLib.showSurface(&_inferno_surface);
+    ImageView::get_instance()->set_surface_alpha(_inferno_alpha, _inferno_surface);
+    ImageView::get_instance()->renderImageAt(0, 0, _inferno_surface);
     if (_inferno_alpha_mode == 0) {
         _inferno_alpha += INFERNO_ALPHA_STEP;
         if (_inferno_alpha >= 180) {

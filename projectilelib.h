@@ -1,18 +1,12 @@
 #ifndef PROJECTILELIB_H
 #define PROJECTILELIB_H
 
-#include "file/format/st_common.h"
+#include "data/st_common.h"
 #include "defines.h"
 #include <string>
-#include "graphicslib.h"
 
 #include "aux_tools/trajectory_parabola.h"
 
-#include "graphic/draw.h"
-extern draw draw_lib;
-
-#include "timerlib.h"
-extern timerLib timer;
 
 // forward declaration
 class character;
@@ -67,7 +61,7 @@ public:
     Uint8 get_vanishes_on_hit() const;
     void set_trajectory(short new_trajectory);
     void set_target_position(st_float_position *pos);
-    graphicsLib_gSurface* get_surface();
+    st_imageData* get_surface();
     void inc_status(); // increase status, so we can explode a bomb or change centered (star circle) to linear
     st_rectangle get_area();
     short get_max_shots();
@@ -152,7 +146,7 @@ private:
     short frame_w;
 
     // used for rotated images
-    graphicsLib_gSurface rotated_surface;
+    st_imageData rotated_surface;
 
 };
 #endif // PROJECTILELIB_H

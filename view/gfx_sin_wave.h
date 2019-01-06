@@ -3,12 +3,12 @@
 
 
 #include "defines.h"
-#include "graphicslib.h"
+#include "data/st_common.h"
 
 class gfx_sin_wave
 {
 public:
-    gfx_sin_wave(graphicsLib_gSurface *set_surface);
+    gfx_sin_wave(st_imageData *set_surface);
     void set_speed(int set_speed);
     void set_max_amplitude(int set_max_amplitude);
     void show(int x, int y);
@@ -18,7 +18,7 @@ private:
     int speed;
     int amplitude;
     int max_amplitude;
-    graphicsLib_gSurface *surface;
+    st_imageData *surface;
 };
 
 #endif // GFX_SIN_WAVE_H

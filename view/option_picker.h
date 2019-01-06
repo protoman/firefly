@@ -1,7 +1,8 @@
 #ifndef OPTION_PICKER_H
 #define OPTION_PICKER_H
 
-#include "file/format/st_common.h"
+#include "data/st_common.h"
+#include "file/file_io.h"
 #include <string>
 #include <vector>
 
@@ -35,6 +36,7 @@ public:
 
 
 private:
+    file_io fio;
     st_position _position; /**< TODO */
     std::vector<st_menu_option> _items; /**< TODO */
     bool _draw_border; /**< TODO */

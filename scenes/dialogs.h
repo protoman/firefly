@@ -5,20 +5,12 @@
 #include <map>
 #include <vector>
 #include "defines.h"
-#include "file/format/st_common.h"
+#include "data/st_common.h"
 #include "file/format.h"
 
-/**
- * @brief
- *
- */
 class dialogs
 {
 public:
-/**
- * @brief
- *
- */
     dialogs();
     void show_dialog(std::string face_file, bool is_left, std::string lines[3], bool show_btn);
 
@@ -26,29 +18,13 @@ public:
 
     bool show_yes_no_dialog(std::string lines[3]);
 
-    /**
-     * @brief
-     *
-     * @param face_file
-     * @param is_left
-     * @param lines[]
-     * @param timer
-     * @param show_btn
-     */
     void show_timed_dialog(std::string face_file, bool is_left, std::string lines[3], short int timer, bool show_btn);
 
-    void showGotArmorDialog(e_ARMOR_PIECES armor_type);
-
 private:
-    /**
-     * @brief
-     *
-     * @param show_btn
-     */
     void draw_dialog_bg();
 
 private:
-    bool is_showing_dialog_bg; /**< TODO */
+    bool is_showing_dialog_bg;
 };
 
 #endif // DIALOGS_H

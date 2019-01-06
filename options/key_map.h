@@ -33,11 +33,11 @@ public:
 
     void config_buttons();
 
-    bool is_key_set(INPUT_COMMANDS key, format_v4::st_game_config game_config_copy);
+    bool is_key_set(INPUT_COMMANDS key, st_game_config game_config_copy);
 
-    void check_key_duplicates(CURRENT_FILE_FORMAT::st_game_config& game_config_copy, Uint8 set_key, bool is_joystick);
+    void check_key_duplicates(st_game_config& game_config_copy, Uint8 set_key, bool is_joystick);
 
-    void apply_key_codes_changes(CURRENT_FILE_FORMAT::st_game_config game_config_copy);
+    void apply_key_codes_changes(st_game_config game_config_copy);
 
 
 private:
@@ -59,7 +59,7 @@ private:
 
     std::string build_button_config_line(std::string prefix, std::string sufix);
 
-    Sint8 draw_config_buttons(format_v4::st_game_config &game_config_copy);
+    Sint8 draw_config_buttons(st_game_config &game_config_copy);
 
 
 

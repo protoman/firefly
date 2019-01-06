@@ -13,12 +13,11 @@ class classnpc;
 #include "character/classplayer.h"
 #include "character/classnpc.h"
 #include "sceneslib.h"
-#include "stage.h"
-#include "objects/object.h"
+#include "objects/GameObject.h"
 #include "class_config.h"
 #include "scenes/dialogs.h"
 #include "aux_tools/fps_control.h"
-
+#include "class_config.h"
 
 #ifdef PSP
 #include "ports/psp/psp_ram.h"
@@ -28,176 +27,67 @@ class classnpc;
  * @brief
  *
  */
-class game
+class gameManager
 {
 public:
-/**
- * @brief
- *
- */
-    game();
-    ~game();
+    static gameManager* get_instance();
+
+    void initHardwareLayer();
+    void preloadGameData();
+
     void initGame();
-    /**
-     * @brief
-     *
-     * @return bool
-     */
+
+
     bool show_game_intro();
-
     void show_beta_version_warning();
-
     void show_free_version_warning();
-
     void show_notice();
-
     void show_in_memorian();
-
-    /**
-     * @brief
-     *
-     */
     void quick_load_game();
-
     void set_player_direction(ANIM_DIRECTION dir);
     void show_player_at(int x, int y);
-
-
     void update_stage_scrolling();
     void show_game(bool can_characters_move, bool can_scroll_stage);
-    /**
-     * @brief
-     *
-     * @param st_position
-     * @return int
-     */
     Uint8 getMapPointLock(struct st_position);
-
-    /**
-     * @brief
-     *
-     * @return st_position
-     */
     st_float_position checkScrolling();
     void horizontal_screen_move(short direction, bool is_door, short tileX);
-
-
     void show_door_animation();
-
-    void got_weapon();
-
-    void show_interstage_map();
-
     void leave_stage();
-
     void return_to_intro_screen();
-
     void game_pause();
     void game_unpause();
     void show_ending();
-
-
     void draw_explosion(st_position center, bool show_players);
     void show_player();
-    /**
-     * @brief
-     *
-     * @param pos
-     * @param player_n
-     */
     void set_player_position(st_position pos);
-
-    /**
-     * @brief
-     *
-     * @param xinc
-     * @param yinc
-     * @param player_n
-     */
     void change_player_position(short xinc, short yinc);
-    /**
-     * @brief
-     *
-     * @param anim_type
-     * @param player_n
-     */
     void set_player_anim_type(ANIM_TYPE anim_type);
-    /**
-     * @brief
-     *
-     * @param player_n
-     * @return st_position
-     */
     st_position get_player_position();
-    /**
-     * @brief
-     *
-     * @param player_n
-     * @return st_size
-     */
     st_size get_player_size();
-    /**
-     * @brief
-     *
-     * @param direction
-     * @param player_n
-     */
     void set_player_direction(Uint8 direction);
     void map_present_boss(bool show_dialog, bool is_static_boss);
-
     character* get_player();
-
-    /**
-     * @brief
-     *
-     * @return object
-     */
-    object* get_player_platform();
-    /**
-     * @brief
-     *
-     */
+    GameObject* get_player_platform();
     void check_player_return_teleport(); // if player is inside a teleporter, killing a boss makes him teleport out
-    /**
-     * @brief
-     *
-     * @return bool
-     */
     bool must_show_boss_hp();
-
-
-    void reset_stage_maps();
     void remove_all_projectiles();
-
     void reset_beam_objects();
-
     void remove_temp_objects();
-
-
     void remove_players_slide();
     void show_map();
-    void set_current_stage(int stage);
     void set_current_map(int);
     st_float_position get_current_stage_scroll();
-    /**
-     * @brief
-     *
-     */
     void reset_scroll();
     short get_drop_item_id(short type);
     void get_drop_item_ids();
     bool show_config(short finished_stage);
     void show_savegame_error();
-    void showGotArmorDialog(e_ARMOR_PIECES armor_type);
     void object_teleport_boss(st_position dest_pos, Uint8 dest_map, Uint8 teleporter_id, bool must_return);
     void remove_current_teleporter_from_list(); // used when player dies
     void select_game_screen();
     std::string get_selected_game();
-    classMap* get_current_map_obj();
+    MapController *get_current_map_obj();
     bool is_player_on_teleporter();
-
-    unsigned short get_next_stage();
-    short get_last_castle_stage();
 
     short get_current_save_slot();
     void set_current_save_slot(short n);
@@ -205,55 +95,29 @@ public:
     void set_show_fps_enabled(bool enabled);
     bool get_show_fps_enabled();
 
+    void add_autoscroll_delay();
+
 private:
+    gameManager();
+    ~gameManager();
+    gameManager(gameManager const&) : _show_boss_hp(false), player1(0) {};             // copy constructor is private
+    gameManager& operator=(gameManager const&){};  // assignment operator is private
+
     void exit_game();
-    bool test_teleport(classPlayer *test_player);
-    bool check_player_is_on_teleport(classPlayer *test_player, int currentMap, int temp_x, int temp_y, int link_n, int transition_type, int &teleport_count, int &teleporter_dist, int &player_x, int &link_type);
-    bool is_link_teleporter(int type);
     void start_stage();
     void set_player_position_teleport_in(int initial_pos_x, int initial_pos_y);
     void show_player_teleport(int pos_x, int pos_y);
 
+    void loadGameData();
+    void loadMapData();
 
     void show_ready();
 
-    /**
-     * @brief
-     *
-     */
     void restart_stage();
-	//void load_game_objects();
-
-    /**
-     * @brief
-     *
-     * @param type
-     * @param map_n
-     * @param adjust_x
-     * @param pObj
-     */
     void transition_screen(Uint8 type, Uint8 map_n, short int adjust_x, classPlayer *pObj);
-    /**
-     * @brief
-     *
-     * @return short
-     */
     Uint8 get_current_map();
-    /**
-     * @brief
-     *
-     * @param char_obj
-     * @param pos_x
-     */
     void walk_character_to_screen_point_x(character* char_obj, short pos_x); // keeps walking (and jumping obstacles) until reaching a given point in screen (not in map, that should have its own function for that)
-    /**
-     * @brief
-     *
-     * @param set_teleport_n
-     * @param set_player_pos
-     */
     void set_player_teleporter(short set_teleport_n, st_position set_player_pos, bool is_object);
-
 
     void finish_player_teleporter();
 
@@ -262,21 +126,24 @@ private:
     bool subboss_alive_on_left(short tileX);
 
     void show_mem_debug(int n);
-
+    void change_map_scroll(st_float_position pos, bool check_lock, bool ignore_auto_scroll);
 
 
 public:
-    Uint8 currentStage;
     bool is_showing_boss_intro;
 
 
 
 private:
-    stage loaded_stage;
+    static gameManager* _instance;
+    file_io fio;
+    fio_common fio_cmm;
+
+
+    MapController mapController;
     classPlayer player1;
     scenesLib scenes;
     std::stringstream fps_msg;
-    struct CURRENT_FILE_FORMAT::st_game_config config;
     st_position selected_stage;
     class_config config_manager;
     dialogs game_dialogs;
@@ -299,6 +166,7 @@ private:
     bool show_fps_enabled;
 
     std::vector<st_position> map_interstage_points;
+    long autoscroll_timer = 0;
 
 
 

@@ -8,9 +8,6 @@
 
 #define JUMP_INITIAL_SPEED 5.375
 
-#include "game.h"
-extern game gameControl;
-
 
 classjump::classjump() : started(false)
 {

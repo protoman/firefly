@@ -3,9 +3,11 @@
 
 #include <string>
 #include <map>
-#include "graphicslib.h"
 
-class classMap; // forward declaration
+#include "data/st_common.h"
+#include "controller/mapcontroller.h"
+
+class MapController; // forward declaration
 
 #define TELEPORT_TIME 400
 
@@ -29,12 +31,11 @@ enum e_OBJECT_BOSS_DOOR_STATES {
  * @brief
  *
  */
-class object
+class GameObject
 {
 public:
-    //object(Uint8 id, struct CURRENT_FILE_FORMAT::file_object temp_obj); // game object constructor
-    object(short _id, classMap *set_map, st_position map_pos, st_position teleporter_dest, short map_dest); // map object constructor
-    ~object();
+    GameObject(short _id, MapController *set_map, st_position map_pos, st_position teleporter_dest, short map_dest); // map object constructor
+    ~GameObject();
     void reset();
     void reset_timer();
     void reset_obj_anim_timer();
@@ -184,7 +185,7 @@ private:
     short frame;																	// indicates what is the used frame
     struct st_position start_point;
     struct st_position position;
-    classMap *map;																// reference to the map this object is in
+    MapController *map;																// reference to the map this object is in
     bool _started;																// some object types will only start to act/move after player interaction
     unsigned int _start_timer;                                                           // holds the time of the activation (used for initial delay)
     bool _finished;																// indicates to map->show() that the object must be deleted

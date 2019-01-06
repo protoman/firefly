@@ -6,20 +6,16 @@
 #include <map>
 
 // local includes
-#include "file/format/st_hitPoints.h"
-#include "file/format/st_common.h"
+#include "data/st_common.h"
 #include "file/format/st_characterState.h"
-#include "graphicslib.h"
 #include "projectilelib.h"
 #include "character/movement/jump.h"
 #include "character/movement/inertia.h"
 #include "character/character_animation.h"
+#include "file/format/st_hitPoints.h"
 
 
-
-extern graphicsLib graphLib;
-
-class object; // forward declaration
+class GameObject; // forward declaration
 
 /**
  * @brief
@@ -41,7 +37,7 @@ enum ATTACK_TYPES {
     ATTACK_TYPE_COUNT
 };
 
-class classMap;		// advance declaration
+class MapController;		// advance declaration
 struct object_collision;
 
 
@@ -97,7 +93,7 @@ public:
     struct st_position get_real_position() const;
     void set_position(struct st_position);
     void inc_position(float inc_x, float inc_y);
-    void addSpriteFrame(int, int, graphicsLib_gSurface&, int);
+    void addSpriteFrame(int, int, st_imageData&, int);
     void set_is_player(bool set_player);
     bool is_player() const;
     void advance_frameset(); // changes the state for the next (or previous) frame
@@ -107,12 +103,12 @@ public:
     void show_sprite();
     void reset_sprite_animation_timer();
     void show_sprite_graphic(short direction, short type, short n, st_position pos);
-    graphicsLib_gSurface* get_current_frame_surface(short direction, short type, short frame_n);
+    st_imageData* get_current_frame_surface(short direction, short type, short frame_n);
     st_size get_size() const;
     st_rectangle get_hitbox(int anim_type=-1);          // used for collision with map/objects
     st_rectangle get_vulnerable_area(int anim_type=-1);         // used for collision agains projectiles, takes vulnerable_area into account
-    void set_platform(object*);
-    object* get_platform();
+    void set_platform(GameObject*);
+    GameObject* get_platform();
     int get_direction() const;
     void set_direction(int direction);
     void clean_projectiles();
@@ -137,7 +133,7 @@ public:
     bool is_shielded(int projectile_direction) const;
     bool is_intangible();
     short get_anim_type() const;
-    graphicsLib_gSurface* get_char_frame(int direction, int type, int frame);
+    st_imageData* get_char_frame(int direction, int type, int frame);
     st_color get_color_key(short int key_n) const;
     short int get_number() const;
     void charMove();
@@ -232,12 +228,11 @@ protected:
     // updown_trajectory: updown -1 is down, 0 is none, 1 is up
     // auto_charged: true will use charged (if have) or semi-charged as default projetile
     virtual void attack(bool dont_update_colors, short updown_trajectory, bool always_charged);
-    void change_char_color(Sint8 colorkey_n, st_color new_color, bool full_change);
     bool slide(st_float_position mapScrolling);
     bool jump(int, st_float_position);
     st_map_collision map_collision(const float incx, const short int incy, st_float_position mapScrolling, int hitbox_anim_type=-1);
-    bool is_on_teleporter_capsulse(object* object);
-    bool is_on_teleport_platform(object* object);
+    bool is_on_teleporter_capsulse(GameObject* GameObject);
+    bool is_on_teleport_platform(GameObject* GameObject);
     void check_map_collision_point(int &map_block, int &new_map_lock, int mode_xy, st_position map_pos);
     bool process_special_map_points(int map_lock, int incx, int incy, st_position map_pos);
     void check_platform_move(short map_lock);
@@ -255,7 +250,6 @@ protected:
     void advance_to_last_frame();
     int is_executing_effect_weapon(); // returns type, or -1 if none
     void check_reset_stand();
-    bool is_weak_to_freeze();                           // checks that this NPC is weak against the freeze weapon
     virtual bool can_air_dash();
     Uint8 get_projectile_max_shots(bool always_charged);
 
@@ -267,6 +261,11 @@ public:
 	// projectile list
     std::vector<projectile> projectile_list;
     std::vector<projectile> projectile_to_be_added_list;
+    bool _water_splash;									// used to prevent making a new splash until completaly inside or outside water
+
+
+
+
 
 protected:
 	// members static that can be moved to use game_data
@@ -321,7 +320,7 @@ protected:
     float hit_moved_back_n;
 	// external members
 
-    object* _platform; // used to move player when object moves
+    GameObject* _platform; // used to move player when object moves
 
     bool dead;
 
@@ -343,7 +342,6 @@ protected:
 
     int _dead_state; // 0 - alive, 1 - just died, 2 dead
     short slide_type; // 0 - dash (24 px height), 1 - slide (16px height)
-    bool _water_splash;									// used to prevent making a new splash until completaly inside or outside water
     bool _has_background;
     short _stairs_stopped_count; // used to prevent stopping stairs animation because of a single frame without player input
     short _charged_shot_projectile_id;
@@ -377,7 +375,7 @@ protected:
 
     std::vector<st_float_position> previous_position_list;
     bool must_show_dash_effect;
-    graphicsLib_gSurface dash_effect_shadow_surface_frame;
+    st_imageData dash_effect_shadow_surface_frame;
 };
 
 #endif // CHARACTER_H

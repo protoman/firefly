@@ -16,7 +16,7 @@ public:
 
 private:
     static strings_map* _instance;
-    CURRENT_FILE_FORMAT::fio_strings fio_str;
+    fio_strings fio_str;
 };
 
 #endif // STRINGS_MAP_H

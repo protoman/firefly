@@ -3,7 +3,6 @@
 
 #ifdef ANDROID
 
-extern CURRENT_FILE_FORMAT::file_io fio;
 extern jobject activity_ref;
 
 android_game_services::android_game_services()

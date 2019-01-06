@@ -1,8 +1,7 @@
 #include "character_animation.h"
-
-extern graphicsLib graphLib;
-#include "timerlib.h"
-extern timerLib timer;
+#include "game_mediator.h"
+#include "view/imageview.h"
+#include "view/timerview.h"
 
 // @TODO: flip on direction //
 
@@ -10,7 +9,7 @@ character_animation::character_animation() : initialized(false)
 {
 }
 
-void character_animation::init(std::string set_name, std::string filename, st_size size, CURRENT_FILE_FORMAT::st_sprite_data data[ANIM_TYPE_COUNT][ANIM_FRAMES_COUNT])
+void character_animation::init(std::string set_name, std::string filename, st_size size, st_sprite_data data[ANIM_TYPE_COUNT][ANIM_FRAMES_COUNT])
 {
     name = set_name;
     for (int i=0; i<ANIM_TYPE_COUNT; i++) {
@@ -20,9 +19,9 @@ void character_animation::init(std::string set_name, std::string filename, st_si
     }
     // if the char does not have image loaded yet, add it
     if (GameMediator::get_instance()->character_graphic_map.find(name) == GameMediator::get_instance()->character_graphic_map.end()) {
-        graphicsLib_gSurface sprites_img;
-        graphLib.surfaceFromFile(filename, &sprites_img);
-        std::pair<std::string, graphicsLib_gSurface> sprites_data(name, sprites_img);
+        st_imageData sprites_img;
+        sprites_img = ImageView::get_instance()->imageFromFile(filename);
+        std::pair<std::string, st_imageData> sprites_data(name, sprites_img);
         GameMediator::get_instance()->character_graphic_map.insert(sprites_data);
     }
     sprite_size = size;
@@ -42,21 +41,21 @@ void character_animation::show_sprite(st_position dest)
     // check if frame exists
     if (sprite_data[type][frame_n].used == true) {
         sprite_rect = st_rectangle(sprite_data[type][frame_n].sprite_graphic_pos_x*sprite_size.width, 0, sprite_size.width, sprite_size.height);
-        next_frame_timer = timer.getTimer() + sprite_data[type][frame_n].duration;
+        next_frame_timer = TimerView::get_instance()->getTimer() + sprite_data[type][frame_n].duration;
     // if current frame does not exist, use anim_stand and frame zero, instead
     } else if (sprite_data[ANIM_TYPE_STAND][0].used == true) {
         sprite_rect = st_rectangle(sprite_data[ANIM_TYPE_STAND][frame_n].sprite_graphic_pos_x*sprite_size.width, 0, sprite_size.width, sprite_size.height);
-        next_frame_timer = timer.getTimer() + sprite_data[ANIM_TYPE_STAND][frame_n].duration;
+        next_frame_timer = TimerView::get_instance()->getTimer() + sprite_data[ANIM_TYPE_STAND][frame_n].duration;
     } else {
-        next_frame_timer = timer.getTimer() + 100;
+        next_frame_timer = TimerView::get_instance()->getTimer() + 100;
     }
-    graphLib.copyArea(sprite_rect, dest, graphic_ref, &graphLib.gameScreen);
+    ImageView::get_instance()->renderTexturePortionAt(sprite_rect.x, sprite_rect.y, sprite_rect.w, sprite_rect.h, dest.x, dest.y, graphic_ref->texture);
     inc_sprite();
 }
 
 void character_animation::inc_sprite()
 {
-    if (timer.getTimer() < next_frame_timer) {
+    if (TimerView::get_instance()->getTimer() < next_frame_timer) {
         return;
     }
     if (frame_n+1 >= ANIM_FRAMES_COUNT) {

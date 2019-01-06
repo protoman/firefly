@@ -1,0 +1,9 @@
+- remodelar animation: deve apesar ser capaz de retornar a área da imagem que deve ser mostrada
+    # responsável por mostrar imagem deve ser GameController/ImageView
+    # lista de animações deve fica rno gameController, não no mapa
+
+- remover armas e seleção L/R e menu
+
+
+- EDITOR: não pode ter largura ou altura menores do que o tamanho de tela (descontando HUD)
+
