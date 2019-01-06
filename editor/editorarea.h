@@ -80,7 +80,6 @@ protected:
   int tempX, tempY;
   int editor_selected_object_pos;
   int editor_selected_object_pos_map;
-  void fill_area();
 
   int map_backup_n;
   bool mouse_released;

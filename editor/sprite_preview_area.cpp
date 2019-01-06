@@ -36,9 +36,9 @@ void sprite_preview_area::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
 
-    CURRENT_FILE_FORMAT::file_npc_v3_1_2 temp_npc = Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n);
+    file_npc_v3_1_2 temp_npc = Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n);
 
-    std::string filename = FILEPATH + "/images/sprites/enemies/" + Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).graphic_filename;
+    std::string filename = SharedData::get_instance()->FILEPATH + "/images/sprites/enemies/" + Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).graphic_filename;
 
     QPixmap fg_image(filename.c_str());
 
@@ -47,7 +47,7 @@ void sprite_preview_area::paintEvent(QPaintEvent *)
         fg_image.setMask(mask);
     }
 
-    std::string _bg_graphic_filename = FILEPATH + "/images/sprites/enemies/backgrounds/" + Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).bg_graphic_filename;
+    std::string _bg_graphic_filename = SharedData::get_instance()->FILEPATH + "/images/sprites/enemies/backgrounds/" + Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).bg_graphic_filename;
     QPixmap bg_image(_bg_graphic_filename.c_str());
 
     int total_w = Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.width;

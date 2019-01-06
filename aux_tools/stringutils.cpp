@@ -13,9 +13,9 @@ std::vector<std::string> StringUtils::split(std::string str, std::string sep)
     char* current;
     std::vector<std::string> arr;
     current = strtok(cstr, sep.c_str());
-    while(current != NULL){
+    while(current != nullptr){
         arr.push_back(current);
-        current=strtok(NULL, sep.c_str());
+        current=strtok(nullptr, sep.c_str());
     }
     return arr;
 }

@@ -1,8 +1,7 @@
 #include "sceneeditorwindow.h"
 #include "ui_sceneeditorwindow.h"
 
-extern std::string GAMEPATH;
-extern std::string GAMENAME;
+#include "data/shareddata.h"
 
 
 SceneEditorWindow::SceneEditorWindow(QWidget *parent) :
@@ -86,11 +85,11 @@ void SceneEditorWindow::save()
 
 void SceneEditorWindow::on_actionPlay_Movie_triggered()
 {
-    QString file = QString(GAMEPATH.c_str()) + QString("scenesviewer");
+    QString file = QString(SharedData::get_instance()->GAMEPATH.c_str()) + QString("scenesviewer");
 #ifdef WIN32
     file += QString(".exe");
 #endif
-    file += QString(" --gamename \"") + QString(GAMENAME.c_str()) + QString("\"") + QString(" --scenenumber ") + QString::number(ScenesMediator::get_instance()->selected_scene);
+    file += QString(" --gamename \"") + QString(SharedData::get_instance()->GAMENAME.c_str()) + QString("\"") + QString(" --scenenumber ") + QString::number(ScenesMediator::get_instance()->selected_scene);
     std::cout << ">>> EXEC: file: '" << file.toStdString() << "'." << std::endl;
     process.start(file);
 }

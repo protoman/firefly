@@ -17,9 +17,9 @@ void projectilePreviewArea::paintEvent(QPaintEvent *) {
 	std::string projectile_filename;
     std::string graphic_filename(Mediator::get_instance()->projectile_list_v3.at(Mediator::get_instance()->current_projectile).graphic_filename);
     if (graphic_filename.length() == 0) {
-        projectile_filename = FILEPATH + "/images/projectiles/projectile_normal.png";
+        projectile_filename = SharedData::get_instance()->FILEPATH + "/images/projectiles/projectile_normal.png";
 	} else {
-        projectile_filename = FILEPATH + "/images/projectiles/" + Mediator::get_instance()->projectile_list_v3.at(Mediator::get_instance()->current_projectile).graphic_filename;
+        projectile_filename = SharedData::get_instance()->FILEPATH + "/images/projectiles/" + Mediator::get_instance()->projectile_list_v3.at(Mediator::get_instance()->current_projectile).graphic_filename;
 	}
 
 	QPixmap image(projectile_filename.c_str());

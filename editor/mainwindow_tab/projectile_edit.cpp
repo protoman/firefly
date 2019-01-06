@@ -21,7 +21,7 @@ void projectile_edit::reload()
 
 void projectile_edit::fill_data()
 {
-    if (FILEPATH.length() == 0) {
+    if (SharedData::get_instance()->FILEPATH.length() == 0) {
         return;
     }
 
@@ -59,7 +59,7 @@ void projectile_edit::set_edit_data(int index)
     ui->damage->setValue(Mediator::get_instance()->projectile_list_v3.at(index).damage);
 
     if (Mediator::get_instance()->projectile_list_v3.size() == 0) {
-        Mediator::get_instance()->projectile_list_v3.push_back(CURRENT_FILE_FORMAT::file_projectilev3());
+        Mediator::get_instance()->projectile_list_v3.push_back(file_projectilev3());
     }
 
     ui->explosive_checkBox->setChecked(Mediator::get_instance()->projectile_list_v3.at(index).is_explosive);
@@ -150,7 +150,7 @@ void projectile_edit::on_damage_valueChanged(int arg1)
 
 void projectile_edit::on_pushButton_clicked()
 {
-    Mediator::get_instance()->projectile_list_v3.push_back(CURRENT_FILE_FORMAT::file_projectilev3());
+    Mediator::get_instance()->projectile_list_v3.push_back(file_projectilev3());
     ui->projectileList_combo->addItem(QString("[") + QString::number(Mediator::get_instance()->projectile_list_v3.size()-1) + QString("] Projectile Name"));
     ui->projectileList_combo->setCurrentIndex(Mediator::get_instance()->projectile_list_v3.size()-1);
 }

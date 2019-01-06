@@ -1,11 +1,35 @@
 #ifndef TEXTVIEW_H
 #define TEXTVIEW_H
 
+#include <string>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
-class textView
+#include "defines.h"
+#include "data/st_common.h"
+
+extern SDL_Renderer* gRenderer;
+
+class TextView
 {
 public:
-    textView();
+    static TextView *get_instance();
+    void init();
+    void renderText(int x, int y, st_color color, bool centered, std::string text);
+    void renderText(int x, int y, std::string text);
+    void draw_centered_text(int y, std::string text);
+
+
+private:
+    TextView();
+    TextView(TextView const&){};             // copy constructor is private
+    TextView& operator=(TextView const&){};  // assignment operator is private
+
+
+private:
+    static TextView* _instance;
+    TTF_Font *font;
+    TTF_Font *outline_font;
 };
 
 #endif // TEXTVIEW_H

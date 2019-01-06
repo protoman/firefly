@@ -1,6 +1,6 @@
 #include "animation_previewarea.h"
 
-extern std::string FILEPATH;
+#include "data/shareddata.h"
 
 AnimationPreviewArea::AnimationPreviewArea(QWidget *parent) : QWidget(parent)
 {
@@ -25,7 +25,7 @@ AnimationPreviewArea::~AnimationPreviewArea()
 
 void AnimationPreviewArea::set_filename(QString name)
 {
-    graphic_filename = QString(FILEPATH.c_str()) + QString("/images/scenes/animations/") + name;
+    graphic_filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/scenes/animations/") + name;
 }
 
 void AnimationPreviewArea::set_w(int set)

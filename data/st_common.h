@@ -2,59 +2,48 @@
 #define ST_COMMON_H
 
 // some small structures that do not need a separated file for each one
-#include <SDL/SDL.h>				//Include da SDL
 #include <vector>
 #include <iostream>
 #include <stdio.h>
 
 #include "defines.h"
+#include <SDL2/SDL.h>
+
+extern SDL_Renderer* gRenderer;
 
 /**
  * @brief
  *
  */
 struct st_position {
-    Sint16 x;
-    Sint16 y;
-	st_position() {
-		x = 0;
-		y = 0;
-	}
-/**
- * @brief
- *
- * @param setX
- * @param setY
- */
+    int x;
+    int y;
+    st_position() {
+        x = 0;
+        y = 0;
+    }
+
     st_position (int setX, int setY) {
-		x = setX;
-		y = setY;
-	}
-    /**
-     * @brief
-     *
-     * @param set_pt
-     * @return st_position &operator
-     */
-    st_position& operator=(const st_position &set_pt)
-	{
-		x = set_pt.x;
-		y = set_pt.y;
-		return *this;
-	}
-    /**
-     * @brief
-     *
-     * @param comp_pt
-     * @return bool operator
-     */
-    bool operator==(const st_position &comp_pt) const
-	{
-		if (x == comp_pt.x && y == comp_pt.y) {
-			return true;
-		}
-		return false;
-	}
+        x = setX;
+        y = setY;
+    }
+    st_position& operator=(const st_position &set_pt) {
+        x = set_pt.x;
+        y = set_pt.y;
+        return *this;
+    }
+    bool operator==(const st_position &comp_pt) const {
+        if (x == comp_pt.x && y == comp_pt.y) {
+            return true;
+        }
+        return false;
+    }
+    bool operator!=(const st_position &comp_pt) const {
+        if (x != comp_pt.x || y != comp_pt.y) {
+            return true;
+        }
+        return false;
+    }
 };
 
 
@@ -137,8 +126,8 @@ struct st_float_position {
  *
  */
 struct st_size {
-    Sint16 width;
-    Sint16 height;
+    int width;
+    int height;
 	st_size()
 	{
 		width = 0;
@@ -163,10 +152,10 @@ struct st_size {
  *
  */
 struct st_rectangle {
-    Sint16 x;
-    Sint16 y;
-    Sint16 w;
-    Sint16 h;
+    int x;
+    int y;
+    int w;
+    int h;
 	st_rectangle () {
 		x = 0;
 		y = 0;
@@ -205,9 +194,9 @@ struct st_rectangle {
 };
 
 struct st_color {
-    Sint16 r;
-    Sint16 g;
-    Sint16 b;
+    int r;
+    int g;
+    int b;
 	st_color () {
 		r = -1;
 		g = -1;
@@ -221,325 +210,6 @@ struct st_color {
 	}
 };
 
-// structure that holds a graphic surface or memory section
-/**
- * @brief
- *
- */
-struct graphicsLib_gSurface {
-    private:
-        SDL_Surface *gSurface;
-
-
-        SDL_Color get_pixel_color(Uint32 pixel) const {
-            if (!gSurface) {
-                return SDL_Color();
-            }
-            /*
-            if (x >= gSurface->w || y >= gSurface->h) {
-                return SDL_Color();
-            }
-            */
-
-            SDL_Color theKey;
-            //Uint32 pixel = ((Uint32*)gSurface->pixels)[y * gSurface->pitch/4 + x];
-            SDL_GetRGB(pixel, gSurface->format, &theKey.r, &theKey.g, &theKey.b);
-
-            return theKey;
-        }
-
-    public:
-        st_color get_point_color(int x, int y) {
-            Uint32 pixel = this->get_pixel(x, y);
-            SDL_Color px_color = get_pixel_color(pixel);
-            /*
-            if (pixel != 0) {
-                std::cout << "pixel[" << pixel << "]: [" << (int)px_color.r << "][" << (int)px_color.g << "][" << (int)px_color.b << "]" << std::endl;
-            }
-            */
-            return st_color((int)px_color.r, (int)px_color.g, (int)px_color.b);
-        }
-
-        void set_point_color(int set_x, int set_y, int set_r, int set_g, int set_b) {
-            /*
-            if (set_r != 0 && set_g != 0 && set_b != 0) {
-                std::cout << "set_point_color[" << set_x << "][" << set_y << "]: [" << set_r << "][" << set_g << "][" << set_b << "]" << std::endl;
-            }
-            */
-            if (gSurface == NULL || gSurface->format == NULL) {
-                return;
-            }
-            Uint32 new_color_n = SDL_MapRGB(gSurface->format, set_r, set_g, set_b);
-            put_pixel(set_x, set_y, new_color_n);
-        }
-
-
-    public:
-        int width;
-        int height;
-        bool persistent;
-        bool video_screen; /**< video-screen is freed by SDL_Quit, so we must not free it mannually */
-        bool show_debug;
-        bool is_rle_enabled;
-
-        graphicsLib_gSurface()
-        {
-            gSurface = NULL;
-            width = 0;
-            height = 0;
-            persistent = false;
-            video_screen = false;
-            show_debug = false;
-            is_rle_enabled = false;
-        }
-        // copy CONSTRUCTOR
-        graphicsLib_gSurface(const graphicsLib_gSurface &original)
-        {
-
-            if (original.gSurface == NULL) {
-                gSurface = NULL;
-                width = 0;
-                height = 0;
-                persistent = false;
-                video_screen = original.video_screen;
-                show_debug = false;
-                is_rle_enabled = false;
-            } else {
-                width = original.width;
-                height = original.height;
-                persistent = false;
-                video_screen = original.video_screen;
-                show_debug = false;
-                if (original.width > 0) {
-                    // copy surface
-                    gSurface = SDL_DisplayFormatAlpha(original.gSurface);
-                } else {
-                    gSurface = NULL;
-                }
-                is_rle_enabled = original.is_rle_enabled;
-            }
-        }
-
-        // assign constructor
-        graphicsLib_gSurface& operator=(const graphicsLib_gSurface& original)
-        {
-
-            if (original.gSurface == NULL) {
-                gSurface = NULL;
-                width = 0;
-                height = 0;
-                persistent = false;
-                video_screen = original.video_screen;
-                is_rle_enabled = false;
-            } else {
-                width = original.width;
-                height = original.height;
-                persistent = false;
-                video_screen = original.video_screen;
-                show_debug = false;
-                if (original.width > 0) {
-                    // copy surface
-                    gSurface = SDL_DisplayFormatAlpha(original.gSurface);
-                } else {
-                    gSurface = NULL;
-                }
-                is_rle_enabled = original.is_rle_enabled;
-            }
-        }
-
-        ~graphicsLib_gSurface()
-        {
-            setbuf(stdout, NULL);
-            freeGraphic();
-        }
-
-
-        bool is_on_tolerance(SDL_Color pixel_color, int r, int g, int b, int tolerance) {
-            if (pixel_color.r < r-tolerance || pixel_color.r > r+tolerance) {
-                return false;
-            }
-            if (pixel_color.g < g-tolerance || pixel_color.g > g+tolerance) {
-                return false;
-            }
-            if (pixel_color.b < b-tolerance || pixel_color.b > b+tolerance) {
-                return false;
-            }
-            return true;
-        }
-
-
-        std::vector<st_position> get_color_points(int r, int g, int b) {
-            std::vector<st_position> res;
-            for (int tolerance=0; tolerance<=6; tolerance++) {
-                for (Sint16 y=0; y<gSurface->h; y++) {
-                    for (Sint16 x=0; x<gSurface->w; x++) {
-                        Uint32 pixel = get_pixel(x, y);
-                        SDL_Color pixel_color = get_pixel_color(pixel);
-                        if (is_on_tolerance(pixel_color, r, g, b, tolerance) == true) {
-                            st_position pos = st_position(x, y);
-                            res.push_back(pos);
-                        }
-                    }
-                }
-                if (res.size() > 0) {
-                    break;
-                }
-            }
-
-            //std::cout << ">>>>>> get_color_points::END <<<<<<" << std::endl;
-
-            return res;
-        }
-
-        void set_surface(SDL_Surface *surface) {
-            // free old surface memory
-            if (gSurface != NULL) {
-                try {
-                    SDL_FreeSurface(gSurface);
-                } catch (std::exception e) {}
-            }
-            if (surface != NULL) {
-                gSurface = surface;
-                width = gSurface->w;
-                height = gSurface->h;
-            } else {
-                gSurface = NULL;
-            }
-        }
-
-
-        void enable_show_debug() {
-            show_debug = true;
-        }
-
-
-        SDL_Surface *get_surface() const {
-            return gSurface;
-        }
-
-        void freeGraphic()
-        {
-            if (width > 0 && width <= 3200) { // 3200 check is to handle invalid projectiles (trash in memory)
-                if (video_screen == false && gSurface != NULL) {
-                    //std::cout << "GSURFACE::freeGraphic - w: " << width << std::endl;
-                    width = -1;
-                    height = -1;
-                    SDL_FreeSurface(gSurface);
-                }
-            }
-            gSurface = NULL;
-        }
-
-
-        bool is_null() {
-            if (width <= 0 || height <= 0) {
-                //std::cout << "GSURFACE - invalid size[" << width << "][" << height << "]" << std::endl;
-                return true;
-            }
-            if (gSurface == NULL) {
-                //std::cout << "GSURFACE - SDL-Surface is NULL" << std::endl;
-                return true;
-            }
-        }
-
-
-        Uint8 get_pixel_8bpp(Sint16 x, Sint16 y) {
-            if (gSurface == NULL || gSurface->format == NULL) {
-                return 0;
-            }
-            if (x >= gSurface->w || y >= gSurface->h) {
-                return 0;
-            }
-            if (is_rle_enabled) {
-                return 0;
-            }
-
-            int bpp = gSurface->format->BytesPerPixel;
-
-            /* Here p is the address to the pixel we want to retrieve */
-            Uint8 *p = (Uint8 *) gSurface->pixels + y * gSurface->pitch + x * bpp;
-            if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
-                return p[0] << 16 | p[1] << 8 | p[2];
-            } else {
-                return p[0] | p[1] << 8 | p[2] << 16;
-            }
-
-        }
-
-
-
-        Uint32 get_pixel(Sint16 x, Sint16 y)
-        {
-            if (gSurface == NULL || gSurface->format == NULL) {
-                return 0;
-            }
-            if (x >= gSurface->w || y >= gSurface->h) {
-                return 0;
-            }
-            if (is_rle_enabled) {
-                return 0;
-            }
-
-            int bpp = gSurface->format->BytesPerPixel;
-
-            /* Here p is the address to the pixel we want to retrieve */
-            Uint8 *p = (Uint8 *) gSurface->pixels + y * gSurface->pitch + x * bpp;
-            switch (bpp) {
-            case 1:
-                return *p;
-            case 2:
-                return *(Uint16 *) p;
-            case 3:
-                if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-                    return p[0] << 16 | p[1] << 8 | p[2];
-                else
-                    return p[0] | p[1] << 8 | p[2] << 16;
-            case 4:
-                return *(Uint32 *) p;
-            default:
-                return 0;               /* shouldn't happen, but avoids warnings */
-            }
-        }
-
-        void put_pixel(int x, int y, Uint32 pixel)
-        {
-            if (gSurface == NULL || gSurface->format == NULL) {
-                return;
-            }
-            if (is_rle_enabled) {
-                return;
-            }
-            int bpp = gSurface->format->BytesPerPixel;
-            // Here p is the address to the pixel we want to set //
-            Uint8 *p = (Uint8 *)gSurface->pixels + y * gSurface->pitch + x * bpp;
-
-            switch(bpp) {
-            case 1:
-                *p = pixel;
-                break;
-
-            case 2:
-                *(Uint16 *)p = pixel;
-                break;
-
-            case 3:
-                if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
-                    p[0] = (pixel >> 16) & 0xff;
-                    p[1] = (pixel >> 8) & 0xff;
-                    p[2] = pixel & 0xff;
-                } else {
-                    p[0] = pixel & 0xff;
-                    p[1] = (pixel >> 8) & 0xff;
-                    p[2] = (pixel >> 16) & 0xff;
-                }
-                break;
-
-            case 4:
-                *(Uint32 *)p = pixel;
-                break;
-            }
-        }
-};
 
 
 /**
@@ -547,12 +217,12 @@ struct graphicsLib_gSurface {
  *
  */
 struct used_teleporter {
-    Sint8 teleporter_n; // number of the map_link (this is hardcoded, must be rebuilt in 0.2)
+    int teleporter_n; // number of the map_link (this is hardcoded, must be rebuilt in 0.2)
     bool finished; // indicates if already used
     struct st_position old_player_pos;
     bool active; // if true, then after beating the boss, the player must be teleported back to the teleporter origin
     st_float_position old_map_scroll;
-    Sint8 old_map_n;
+    int old_map_n;
     bool is_object;
 	used_teleporter() {
         teleporter_n = -1;
@@ -571,8 +241,8 @@ struct used_teleporter {
 
 
 struct st_position_int8 {
-    Sint8 x;
-    Sint8 y;
+    int x;
+    int y;
     st_position_int8() {
         x = 0;
         y = 0;
@@ -604,56 +274,14 @@ struct st_position_int8 {
 };
 
 
-struct st_position_uint8 {
-    Uint8 x;
-    Uint8 y;
-    st_position_uint8() {
-        x = 0;
-        y = 0;
-    }
-    st_position_uint8 (int setX, int setY) {
-        x = setX;
-        y = setY;
-    }
-    st_position_uint8& operator=(const st_position_uint8 &set_pt)
-    {
-        x = set_pt.x;
-        y = set_pt.y;
-        return *this;
-    }
-    bool operator==(const st_position_uint8 &comp_pt) const
-    {
-        if (x == comp_pt.x && y == comp_pt.y) {
-            return true;
-        }
-        return false;
-    }
-};
-
-
-struct st_size_int8 {
-    Sint8 width;
-    Sint8 height;
-    st_size_int8()
-    {
-        width = 0;
-        height = 0;
-    }
-    st_size_int8(int w, int h)
-    {
-        width = w;
-        height = h;
-    }
-};
-
 struct st_map_collision {
-    Sint8 block;
-    Sint8 terrain_type;
+    int block;
+    int terrain_type;
     st_map_collision() {
         block = 0;
         terrain_type = 0;
     }
-    st_map_collision(Sint8 set_block, Sint8 set_terrain_type) {
+    st_map_collision(int set_block, int set_terrain_type) {
         block = set_block;
         terrain_type = set_terrain_type;
     }
@@ -686,9 +314,193 @@ struct st_input_button_config {
     }
 };
 
-struct st_surface_with_direction {
-    graphicsLib_gSurface surface[2];
+struct st_imageData {
+    SDL_Texture* texture;
+    SDL_Surface* surface;
+
+    st_imageData() {
+        texture = nullptr;
+        surface = nullptr;
+    }
+
+    ~st_imageData() {
+        if (surface) {
+            SDL_FreeSurface(surface);
+        }
+        if (texture) {
+            SDL_DestroyTexture(texture);
+        }
+    }
+
+    // copy CONSTRUCTOR
+    st_imageData(const st_imageData &original)
+    {
+
+        if (original.surface == nullptr) {
+            surface = nullptr;
+            texture = nullptr;
+        } else {
+            // copy surface
+            surface = SDL_CreateRGBSurface(SDL_SWSURFACE , original.surface->w, original.surface->h, VIDEO_MODE_COLORS, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+            SDL_Rect srcRect = {0, 0, original.surface->w, original.surface->h};
+            SDL_BlitSurface(original.surface, &srcRect, surface, nullptr);
+            texture = SDL_CreateTextureFromSurface(gRenderer, surface);
+        }
+    }
+
+    // assign constructor
+    st_imageData& operator=(const st_imageData& original)
+    {
+
+        if (original.surface == nullptr) {
+            surface = nullptr;
+            texture = nullptr;
+        } else {
+            // copy surface
+            surface = SDL_CreateRGBSurface(SDL_SWSURFACE , original.surface->w, original.surface->h, VIDEO_MODE_COLORS, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+            SDL_Rect srcRect = {0, 0, original.surface->w, original.surface->h};
+            SDL_BlitSurface(original.surface, &srcRect, surface, nullptr);
+            texture = SDL_CreateTextureFromSurface(gRenderer, surface);
+        }
+    }
+
+    void freeGraphic()
+    {
+        SDL_FreeSurface(surface);
+        surface = nullptr;
+        SDL_DestroyTexture(texture);
+        texture = nullptr;
+    }
+
+    bool is_null() {
+        if (surface == nullptr || texture == nullptr) {
+            return true;
+        }
+        return false;
+    }
+
+
+    Uint32 get_pixel(Sint16 x, Sint16 y)
+    {
+        if (surface == nullptr || surface->format == nullptr) {
+            return 0;
+        }
+        if (x >= surface->w || y >= surface->h) {
+            return 0;
+        }
+
+        int bpp = surface->format->BytesPerPixel;
+
+        /* Here p is the address to the pixel we want to retrieve */
+        Uint8 *p = (Uint8 *) surface->pixels + y * surface->pitch + x * bpp;
+        switch (bpp) {
+        case 1:
+            return *p;
+        case 2:
+            return *(Uint16 *) p;
+        case 3:
+            if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+                return p[0] << 16 | p[1] << 8 | p[2];
+            else
+                return p[0] | p[1] << 8 | p[2] << 16;
+        case 4:
+            return *(Uint32 *) p;
+        default:
+            return 0;               /* shouldn't happen, but avoids warnings */
+        }
+    }
+
+
+    void put_pixel(int x, int y, Uint32 pixel)
+    {
+        if (surface == nullptr || surface->format == nullptr) {
+            return;
+        }
+        int bpp = surface->format->BytesPerPixel;
+        // Here p is the address to the pixel we want to set //
+        Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+
+        switch(bpp) {
+        case 1:
+            *p = pixel;
+            break;
+
+        case 2:
+            *(Uint16 *)p = pixel;
+            break;
+
+        case 3:
+            if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+                p[0] = (pixel >> 16) & 0xff;
+                p[1] = (pixel >> 8) & 0xff;
+                p[2] = pixel & 0xff;
+            } else {
+                p[0] = pixel & 0xff;
+                p[1] = (pixel >> 8) & 0xff;
+                p[2] = (pixel >> 16) & 0xff;
+            }
+            break;
+
+        case 4:
+            *(Uint32 *)p = pixel;
+            break;
+        }
+    }
+
+    SDL_Color get_pixel_color(Uint32 pixel) const {
+        if (!surface) {
+            return SDL_Color();
+        }
+        /*
+        if (x >= gSurface->w || y >= gSurface->h) {
+            return SDL_Color();
+        }
+        */
+
+        SDL_Color theKey;
+        //Uint32 pixel = ((Uint32*)gSurface->pixels)[y * gSurface->pitch/4 + x];
+        SDL_GetRGB(pixel, surface->format, &theKey.r, &theKey.g, &theKey.b);
+
+        return theKey;
+    }
+
+
+
+    st_color get_point_color(int x, int y) {
+        Uint32 pixel = this->get_pixel(x, y);
+        SDL_Color px_color = get_pixel_color(pixel);
+        /*
+        if (pixel != 0) {
+            std::cout << "pixel[" << pixel << "]: [" << (int)px_color.r << "][" << (int)px_color.g << "][" << (int)px_color.b << "]" << std::endl;
+        }
+        */
+        return st_color((int)px_color.r, (int)px_color.g, (int)px_color.b);
+    }
+
+    void set_point_color(int set_x, int set_y, int set_r, int set_g, int set_b) {
+        /*
+        if (set_r != 0 && set_g != 0 && set_b != 0) {
+            std::cout << "set_point_color[" << set_x << "][" << set_y << "]: [" << set_r << "][" << set_g << "][" << set_b << "]" << std::endl;
+        }
+        */
+        if (surface == NULL || surface->format == NULL) {
+            return;
+        }
+        Uint32 new_color_n = SDL_MapRGB(surface->format, set_r, set_g, set_b);
+        put_pixel(set_x, set_y, new_color_n);
+    }
+
+
+
 };
+
+
+
+struct st_surface_with_direction {
+    st_imageData surface[2];
+};
+
+
 
 
 #endif // ST_COMMON_H

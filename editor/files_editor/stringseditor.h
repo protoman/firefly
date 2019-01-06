@@ -65,8 +65,8 @@ signals:
 
 private:
     Ui::StringsEditor *ui;
-    CURRENT_FILE_FORMAT::fio_strings fio_str;
-    CURRENT_FILE_FORMAT::file_io fio;
+    fio_strings fio_str;
+    file_io fio;
     QSignalMapper signal_mapper;
     std::vector<std::string> string_list;
     std::vector<std::string> translation_string_list;

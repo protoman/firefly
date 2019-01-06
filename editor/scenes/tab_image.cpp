@@ -100,7 +100,7 @@ void tab_image::set_fields(int index)
 
 void tab_image::update_preview_image(int index)
 {
-    QString filename = QString(FILEPATH.c_str()) + QString("/images/scenes/") + QString(ScenesMediator::get_instance()->image_list.at(index).filename);
+    QString filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/scenes/") + QString(ScenesMediator::get_instance()->image_list.at(index).filename);
     ui->image_preview_widget->setImageFilename(filename);
     ui->image_preview_widget->repaint();
 }
@@ -108,7 +108,7 @@ void tab_image::update_preview_image(int index)
 
 void tab_image::on_add_Button_clicked()
 {
-    CURRENT_FILE_FORMAT::file_scene_show_image new_image;
+    file_scene_show_image new_image;
     sprintf(new_image.name, "%s%d", "Show Image #", ScenesMediator::get_instance()->image_list.size()+1);
     ScenesMediator::get_instance()->image_list.push_back(new_image);
     ui->select_comboBox->addItem(QString(new_image.name));

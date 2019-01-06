@@ -26,14 +26,14 @@ common::~common()
 void common::fill_files_combo(std::string directory, QComboBox* combo, bool show_none)
 {
     // ignore as game was not initialized yet. the form will need to call reload to work in this case
-    if (FILEPATH.length() == 0) {
+    if (SharedData::get_instance()->FILEPATH.length() == 0) {
         return;
     }
 
     combo->clear(); // delete all previous entries
 
     combo->addItem(QString("")); // for "empty"
-    std::string str_filepath(FILEPATH+directory);
+    std::string str_filepath(SharedData::get_instance()->FILEPATH+directory);
     QString filepath(str_filepath.c_str());
     QDir dir = QDir(filepath);
 
@@ -67,7 +67,7 @@ void common::fill_graphicfiles_listwidget(std::string directory, QListWidget* li
 
     QListWidgetItem* item;
 
-    std::string str_filepath(FILEPATH+directory);
+    std::string str_filepath(SharedData::get_instance()->FILEPATH+directory);
     QString filepath(str_filepath.c_str());
     QDir dir = QDir(filepath);
     if (!dir.exists()) {
@@ -85,7 +85,7 @@ void common::fill_graphicfiles_listwidget(std::string directory, QListWidget* li
         } else {
             item = new QListWidgetItem;
             item->setText(fileInfo.fileName());
-            std::string filename = FILEPATH + directory + "/" + fileInfo.fileName().toStdString();
+            std::string filename = SharedData::get_instance()->FILEPATH + directory + "/" + fileInfo.fileName().toStdString();
             //std::cout << ">> MainWindow::fill_graphicfiles_listwidget DEBUG: filename: '" << filename << std::endl;
             QPixmap image(filename.c_str());
             if (image.isNull() == false && image.width() > 0) {
@@ -103,7 +103,7 @@ void common::fill_graphicfiles_combobox(std::string directory, QComboBox *comboW
 {
     comboWidget->clear(); // delete all previous entries
 
-    std::string str_filepath(FILEPATH+directory);
+    std::string str_filepath(SharedData::get_instance()->FILEPATH+directory);
     QString filepath(str_filepath.c_str());
     QDir dir = QDir(filepath);
     if (!dir.exists()) {
@@ -119,7 +119,7 @@ void common::fill_graphicfiles_combobox(std::string directory, QComboBox *comboW
         if (fileInfo.fileName().length() > 30) {
             std::cout << "ERROR: file '" << fileInfo.fileName().toStdString() << "' surpasses the maximum number of file-characters (" << FS_CHAR_NAME_SIZE << ")" << std::endl;
         } else {
-            std::string filename = FILEPATH + directory + "/" + fileInfo.fileName().toStdString();
+            std::string filename = SharedData::get_instance()->FILEPATH + directory + "/" + fileInfo.fileName().toStdString();
             QIcon icon(filename.c_str());
             comboWidget->addItem(icon, fileInfo.fileName());
         }
@@ -152,37 +152,7 @@ void common::fill_object_combo(QComboBox* combo)
 	}
 }
 
-// weapons combo is filled with stages 1-9 (5 is skullcastle and do not count)
-void common::fill_weapons_combo(QComboBox *combo)
-{
-    combo->clear(); // delete all previous entries
 
-    QString temp_str = QString("[0] - Normal Weapon");
-    combo->addItem(temp_str);
-    for (int i=1; i<9; i++) {
-        temp_str = QString("[") + QString::number(i) + QString("] - ") + QString(Mediator::get_instance()->stage_data.stages[i].name + QString(" (") + QString(Mediator::get_instance()->stage_data.stages[i].boss.name) + QString (")"));
-        combo->addItem(temp_str);
-    }
-}
-
-void common::fill_weapons_names_combo(QComboBox *combo)
-{
-    combo->clear(); // delete all previous entries
-    for (int i=0; i<FS_MAX_WEAPONS; i++) {
-        QString temp_str = QString("[") + QString::number(i) + QString("] - ") + QString(Mediator::get_instance()->game_data.weapons[i].name);
-        combo->addItem(temp_str);
-    }
-}
-
-// same as fill_weapons_combo(), but also add jet and coil items
-void common::fill_weapons_combo_plus(QComboBox *combo)
-{
-    fill_weapons_combo(combo);
-    QString temp_str = QString(QString("[9] - Coil Item"));
-    combo->addItem(temp_str);
-    temp_str = QString(QString("[10] - Jet Item"));
-    combo->addItem(temp_str);
-}
 
 void common::fill_projectiles_combo(QComboBox *combo, bool add_empty_slot)
 {
@@ -293,14 +263,6 @@ void common::fill_ai_list(QComboBox *combo)
     }
 }
 
-void common::fill_stages_combo(QComboBox *combo)
-{
-    combo->clear(); // delete all previous entries
-    for (int i=0; i<FS_MAX_STAGES; i++) {
-        combo->addItem(QString("[") + QString::number(i) + QString("]: ") + QString(Mediator::get_instance()->stage_data.stages[i].name));
-    }
-}
-
 void common::fill_players_combo(QComboBox* combo)
 {
     combo->clear(); // delete all previous entries
@@ -336,7 +298,7 @@ void common::fill_npc_listwidget(QListWidget *listWidget)
         }
         temp_str += QString::number(i) + QString("] - ") + QString(Mediator::get_instance()->enemy_list.at(i).name);
         item->setText(temp_str);
-        std::string filename = FILEPATH + "/images/sprites/enemies/" + Mediator::get_instance()->enemy_list.at(i).graphic_filename;
+        std::string filename = SharedData::get_instance()->FILEPATH + "/images/sprites/enemies/" + Mediator::get_instance()->enemy_list.at(i).graphic_filename;
         QPixmap image(filename.c_str());
         image = image.copy(0, 0, Mediator::get_instance()->enemy_list.at(i).frame_size.width, Mediator::get_instance()->enemy_list.at(i).frame_size.height);
         if (image.isNull() == false && image.width() > 0) {
@@ -364,7 +326,7 @@ void common::fill_object_listWidget(QListWidget *listWidget)
 
         temp_str += QString::number(i) + QString("] - ") + QString(Mediator::get_instance()->object_list.at(i).name);
         item->setText(temp_str);
-        std::string filename = FILEPATH + "/images/sprites/objects/" + Mediator::get_instance()->object_list.at(i).graphic_filename;
+        std::string filename = SharedData::get_instance()->FILEPATH + "/images/sprites/objects/" + Mediator::get_instance()->object_list.at(i).graphic_filename;
         QPixmap image(filename.c_str());
         image = image.copy(0, 0, Mediator::get_instance()->object_list.at(i).size.width, Mediator::get_instance()->object_list.at(i).size.height);
         if (image.isNull() == false && image.width() > 0) {
@@ -427,7 +389,7 @@ std::vector<std::string> common::get_weapon_names_list()
 
 st_size common::calc_image_size(std::string file)
 {
-    std::string filename = FILEPATH + std::string("/images/scenes/animations/") + file;
+    std::string filename = SharedData::get_instance()->FILEPATH + std::string("/images/scenes/animations/") + file;
     QPixmap image(filename.c_str());
 
     if (image.isNull() == true || image.width() <= 0) {

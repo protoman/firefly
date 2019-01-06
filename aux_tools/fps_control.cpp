@@ -103,7 +103,7 @@ void fps_control::fps_count()
         }
         std::string temp_str(_fps_buffer);
         // @TODO: set in sharedData //
-        //graphLib.draw_text(12, 2, temp_str);
+        //TextView::get_instance()->renderText(12, 2, temp_str);
     }
 }
 

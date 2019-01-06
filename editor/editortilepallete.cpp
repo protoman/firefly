@@ -19,9 +19,9 @@ void EditorTilePallete::paintEvent(QPaintEvent *) {
 
    QString filename;
    if (Mediator::get_instance()->getPallete().length() < 1) {
-        filename = QString(FILEPATH.c_str()) + QString("/images/tilesets/") + QString("default.png");
+        filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/tilesets/") + QString("default.png");
    } else {
-        filename = QString(FILEPATH.c_str()) + QString("/images/tilesets/") + QString(Mediator::get_instance()->getPallete().c_str());
+        filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/tilesets/") + QString(Mediator::get_instance()->getPallete().c_str());
    }
 
    QPainter painter(this);

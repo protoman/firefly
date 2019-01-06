@@ -59,7 +59,7 @@ void addWizard::on_comboBox_currentIndexChanged(int value)
 
 void addWizard::fillNPCGraphicsList() {
     printf("DEBUG - fillNPCGraphicsList - START\n");
-    std::string file_dir = FILEPATH+std::string("/images/sprites/enemies/");
+    std::string file_dir = SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/");
     QDir dir = QDir(file_dir.c_str());
     dir.setFilter(QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot);
     dir.setSorting(QDir::Size | QDir::Reversed);

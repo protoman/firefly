@@ -19,15 +19,11 @@ public:
     static void fill_graphicfiles_combobox(std::string directory, QComboBox* comboWidget);
     static void fill_npc_combo(QComboBox* combo);
 	static void fill_object_combo(QComboBox* combo);
-	static void fill_weapons_combo(QComboBox* combo);
-    static void fill_weapons_names_combo(QComboBox* combo);
-    static void fill_weapons_combo_plus(QComboBox* combo); // same as fill_weapons_combo(), but also add jet and coil items
     static void fill_projectiles_combo(QComboBox* combo, bool add_empty_slot=false);
 	static void fill_trajectories_combo(QComboBox *combo);
     static void fill_ai_actions_combo(QComboBox *combo, bool include_null=false);
 	static void fill_ai_options_combo(int action, QComboBox *combo);
 	static void fill_ai_list(QComboBox *combo);
-    static void fill_stages_combo(QComboBox *combo);
     static void fill_players_combo(QComboBox *combo);
     static void fill_map_list_combo(QComboBox *combo);
     static void fill_npc_listwidget(QListWidget* listWidget);

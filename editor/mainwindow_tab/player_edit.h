@@ -25,9 +25,6 @@ public slots:
     void on_color_selected1(const QColor & color);
     void on_color_selected2(const QColor & color);
     void on_color_selected3(const QColor & color);
-    void pick_player_color1();
-    void pick_player_color2();
-    void pick_player_color3();
 
 private slots:
     void on_players_tab_list_combo_currentIndexChanged(int index);
@@ -65,8 +62,6 @@ private slots:
     void on_color3_picker_clicked();
 
     void on_chargedshot_combo_currentIndexChanged(int index);
-
-    void on_weaponlist_combo_currentIndexChanged(int index);
 
     void on_players_tab_movespeed_valueChanged(double arg1);
 

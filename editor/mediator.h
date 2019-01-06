@@ -6,6 +6,7 @@
 #include "file/fio_scenes.h"
 #include "file/fio_strings.h"
 #include "file/v5/struct_file_map.h"
+#include "file/fio_common.h"
 #include "scenes/scenesmediator.h"
 
 
@@ -51,7 +52,6 @@ public:
 	int object_type;
 	int terrainType;
     double zoom;
-	int link_type;
 	int npc_direction;
     int object_direction;
 	bool show_background_color;
@@ -67,7 +67,6 @@ public:
     bool show_npcs_flag;
     bool show_teleporters_flag;
     short stage_select_edit_mode;
-    short stage_select_stage_number;
     bool show_grid;
 
 
@@ -79,27 +78,14 @@ public:
     void setPallete(std::string filename);
 	void setPallete(char *value);
     void load_game();
-    void load_game_data();
     void save_game();
-    void save_map_data();
-    void convert_map_data_to_v2();
-
-    void convert_ai_list_to_v3();
-
-
     void clean_data();                                      // any sanity data cleaning goest here
-    void temp_fix_player_colors_order();
 
     //void convertProjectileListToV2();
 
 	int get_stage_n(const int map_n);
 
     void reload_game_scenes();
-
-    void save_dialogs();
-
-
-	// auxiliary functions for map_links
 
 
 	int npcGraphicSize_w;
@@ -115,66 +101,42 @@ public:
 
 
 	void centNumberFormat(int n);
-    //void getGameName(int n);
-	void resetMap(int);
 
 	struct st_player_graphics_data player_graphics_data;
 
 	int picked_color_n;
-	st_color colormap[67]; /// @TODO: colormap should be a combination of three enums
 	int current_weapon;
     int current_projectile;
 	int current_player;
     int current_ai;
 
     // old globals
-    CURRENT_FILE_FORMAT::file_game game_data;
-    CURRENT_FILE_FORMAT::file_stages stage_data;
-    CURRENT_FILE_FORMAT::file_stages_extra_data stage_extra_data;
-    CURRENT_FILE_FORMAT::file_castle castle_data;
-
-    // maps data
-    CURRENT_FILE_FORMAT::file_map maps_data[FS_MAX_STAGES][FS_STAGE_MAX_MAPS]; // stage, map_n
-    CURRENT_FILE_FORMAT::file_map_v2 maps_data_v2[FS_MAX_STAGES][FS_STAGE_MAX_MAPS]; // stage, map_n
-    std::vector<CURRENT_FILE_FORMAT::file_map_npc_v2> maps_data_npc_list;
-    std::vector<CURRENT_FILE_FORMAT::file_map_object_v2> maps_data_object_list;
+    file_game game_data;
 
 
-    std::vector<CURRENT_FILE_FORMAT::file_npc_v3_1_2> enemy_list;
-    std::vector<CURRENT_FILE_FORMAT::file_npc_v3_1_1> enemy_list_3_1_1;
+    std::vector<file_npc_v3_1_2> enemy_list;
 
-    std::vector<CURRENT_FILE_FORMAT::file_object> object_list;
-    std::vector<CURRENT_FILE_FORMAT::file_artificial_inteligence> ai_list;
-    //std::vector<CURRENT_FILE_FORMAT::file_artificial_inteligence_v3> ai_list;
+    std::vector<file_object> object_list;
+    std::vector<file_artificial_inteligence> ai_list;
+    //std::vector<file_artificial_inteligence_v3> ai_list;
 
 
-    //std::vector<CURRENT_FILE_FORMAT::file_projectile> projectile_list;
-    std::vector<CURRENT_FILE_FORMAT::file_projectilev2> projectile_list_v2;
-    std::vector<CURRENT_FILE_FORMAT::file_projectilev3> projectile_list_v3;
+    //std::vector<file_projectile> projectile_list;
+    std::vector<file_projectilev3> projectile_list_v3;
 
-    std::vector<CURRENT_FILE_FORMAT::file_scene_list> scene_list;
-    std::vector<CURRENT_FILE_FORMAT::file_anim_block> anim_block_list;
-    std::vector<CURRENT_FILE_FORMAT::file_player_v3_1_1> player_list_v3_1;
-    //std::vector<CURRENT_FILE_FORMAT::file_player_v3_1_1> player_list_v3_1_1;
+    std::vector<file_scene_list> scene_list;
+    std::vector<file_anim_block> anim_block_list;
+    std::vector<file_player_v3_1_1> player_list_v3_1;
+    //std::vector<file_player_v3_1_1> player_list_v3_1_1;
 
 
 
-    CURRENT_FILE_FORMAT::file_io fio;
-    CURRENT_FILE_FORMAT::fio_scenes fio_scenes;
-    bool GAME_FLAGS[FLAG_COUNT]; // compability for fio
+    file_io fio;
+    fio_scenes fio_scenes;
     std::string combobox_select_string;
 
     // stage dialogs, key is stage_n, vector represent the list for each text line
     std::vector<std::map<int, std::vector<std::string> > > stage_dialog_list;
-
-    // MAPS DATA //
-    std::vector<file_v5_map_header> file_v5_map_header_list;
-    std::vector<file_v5_map_link> file_v5_map_link_list;
-    std::map<int, std::vector<file_v5_map_tile>>  file_v5_map_tile_map; // map tiles
-    std::map<int, std::vector<file_v5_map_object>>  file_v5_map_object_map; // map objects
-    std::map<int, std::vector<file_v5_map_npc>>  file_v5_map_npc_map; // map enemies
-    int file_v5_selected_map;
-    int file_v5_selected_layer;
 
 
 private:
@@ -188,7 +150,7 @@ private:
     int palleteY;
     std::string selectedTileset;
     fio_common fio_cmm;
-    CURRENT_FILE_FORMAT::fio_strings fio_str;
+    fio_strings fio_str;
 };
 
 

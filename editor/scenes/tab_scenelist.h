@@ -52,7 +52,7 @@ private:
     QStringListModel model_objects;
     ObjectListModel model_scenes;
     bool data_loading;
-    CURRENT_FILE_FORMAT::fio_scenes fio;
+    fio_scenes fio;
     QProcess process;
 };
 

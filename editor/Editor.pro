@@ -65,27 +65,21 @@ SOURCES += main.cpp \
     dialognpcedit.cpp \
     dialogobjectedit.cpp \
     projectilepreviewarea.cpp \
-    ../file/file_io.cpp \
     player_preview_area.cpp \
     mainwindow_tab/npc_edit.cpp \
     common.cpp \
     mainwindow_tab/object_tab.cpp \
-    mainwindow_tab/weapon_edit.cpp \
-    mainwindow_tab/stage_edit.cpp \
     sprite_preview_area.cpp \
     mainwindow_tab/artificial_inteligence_tab.cpp \
     mainwindow_tab/projectile_edit.cpp \
     mainwindow_tab/map_tab.cpp \
     ../file/convert.cpp \
-    stage_swap_dialog.cpp \
     mainwindow_tab/player_edit.cpp \
     scenes/sceneeditorwindow.cpp \
     scenes/tab_text.cpp \
     mainwindow_tab/animtitle.cpp \
-    mainwindow_tab/armor_edit.cpp \
     aboutwindow.cpp \
     scenes/tab_image.cpp \
-    ../file/fio_scenes.cpp \
     scenes/imageareapreview.cpp \
     scenes/scenesmediator.cpp \
     scenes/tab_viewpoint.cpp \
@@ -105,10 +99,8 @@ SOURCES += main.cpp \
     newgamedialog.cpp \
     mainwindow_tab/gamescenes.cpp \
     files_editor/stringseditor.cpp \
-    ../file/fio_strings.cpp \
     ../aux_tools/stringutils.cpp \
     model/stringeditmodel.cpp \
-    ../file/fio_common.cpp \
     mainwindow_tab/anim_tiles_edit.cpp \
     framespreviewarea.cpp \
     widgets/animtilepalette.cpp \
@@ -117,7 +109,12 @@ SOURCES += main.cpp \
     files_editor/gametextcreditstab.cpp \
     ../aux_tools/exception_manager.cpp \
     mainwindow_tab/game_properties_tab.cpp \
-    mainwindow_tab/animtileedit.cpp
+    mainwindow_tab/animtileedit.cpp \
+    ../file/fio_common.cpp \
+    ../file/fio_scenes.cpp \
+    ../file/fio_strings.cpp \
+    ../file/file_io.cpp \
+    ../data/shareddata.cpp
 
 HEADERS += mainwindow.h \
     editorarea.h \
@@ -129,14 +126,10 @@ HEADERS += mainwindow.h \
     dialognpcedit.h \
     dialogobjectedit.h \
     projectilepreviewarea.h \
-    ../file/file_io.h \
-    ../file/format.h \
     player_preview_area.h \
     mainwindow_tab/npc_edit.h \
     common.h \
     mainwindow_tab/object_tab.h \
-    mainwindow_tab/weapon_edit.h \
-    mainwindow_tab/stage_edit.h \
     sprite_preview_area.h \
     mainwindow_tab/artificial_inteligence_tab.h \
     mainwindow_tab/projectile_edit.h \
@@ -144,12 +137,10 @@ HEADERS += mainwindow.h \
     mainwindow_tab/game_properties_tab.h \
     mainwindow_tab/map_tab.h \
     ../file/convert.h \
-    stage_swap_dialog.h \
     mainwindow_tab/player_edit.h \
     scenes/sceneeditorwindow.h \
     scenes/tab_text.h \
     mainwindow_tab/animtitle.h \
-    mainwindow_tab/armor_edit.h \
     ../defines.h \
     ../file/format/st_characterState.h \
     ../file/format/st_common.h \
@@ -185,11 +176,9 @@ HEADERS += mainwindow.h \
     ../file/v4/file_strings.h \
     mainwindow_tab/gamescenes.h \
     files_editor/stringseditor.h \
-    ../file/fio_strings.h \
     ../aux_tools/stringutils.h \
     model/stringeditmodel.h \
     ../file/v4/file_strings.h \
-    ../file/fio_common.h \
     mainwindow_tab/anim_tiles_edit.h \
     framespreviewarea.h \
     widgets/animtilepalette.h \
@@ -197,7 +186,19 @@ HEADERS += mainwindow.h \
     dialog_pick_color.h \
     files_editor/gametextcreditstab.h \
     ../aux_tools/exception_manager.h \
-    mainwindow_tab/animtileedit.h
+    mainwindow_tab/animtileedit.h \
+    ../file/v4/file_anim_block.h \
+    ../file/v4/file_config_v4.h \
+    ../file/v4/file_game_v4.h \
+    ../file/v4/file_map.h \
+    ../file/v4/file_save_v4.h \
+    ../file/v4/file_scene_v4.h \
+    ../file/v4/file_strings.h \
+    ../file/fio_common.h \
+    ../file/fio_scenes.h \
+    ../file/fio_strings.h \
+    ../data/shareddata.h \
+    ../file/file_io.h \
 
 FORMS += mainwindow.ui \
     addwizard.ui \

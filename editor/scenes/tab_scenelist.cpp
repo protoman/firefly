@@ -4,8 +4,8 @@
 
 #include <QMessageBox>
 
-extern std::string GAMEPATH;
-extern std::string GAMENAME;
+#include "data/shareddata.h"
+
 
 TabScenelist::TabScenelist(QWidget *parent) : QDialog(parent), ui(new Ui::ScenesList), model_scenes(this)
 {
@@ -46,7 +46,7 @@ TabScenelist::~TabScenelist()
 // add a new scene
 void TabScenelist::on_addScene_button_clicked()
 {
-    CURRENT_FILE_FORMAT::file_scene_list new_scene;
+    file_scene_list new_scene;
     sprintf(new_scene.name, "%s%d", "Scene List #", ScenesMediator::get_instance()->scenes_list.size()+1);
     ScenesMediator::get_instance()->scenes_list.push_back(new_scene);
     ui->sceneSelector->addItem(QString(new_scene.name));
@@ -97,39 +97,39 @@ void TabScenelist::change_fields_enabled(bool value)
 void TabScenelist::on_sceneTypeSelector_currentIndexChanged(int index)
 {
     QStringList list;
-    if (index == CURRENT_FILE_FORMAT::SCENETYPE_CLEAR_SCREEN) {
+    if (index == SCENETYPE_CLEAR_SCREEN) {
         list.append(QString("Clear"));
-    } else if (index == CURRENT_FILE_FORMAT::SCENETYPE_CLEAR_AREA) {
+    } else if (index == SCENETYPE_CLEAR_AREA) {
         for (unsigned int i=0; i<ScenesMediator::get_instance()->cleararea_list.size(); i++) {
             list.append(QString(ScenesMediator::get_instance()->cleararea_list.at(i).name));
         }
-    } else if (index == CURRENT_FILE_FORMAT::SCENETYPE_MOVE_IMAGE) {
+    } else if (index == SCENETYPE_MOVE_IMAGE) {
         for (unsigned int i=0; i<ScenesMediator::get_instance()->image_list.size(); i++) {
             list.append(QString(ScenesMediator::get_instance()->image_list.at(i).name));
         }
-    } else if (index == CURRENT_FILE_FORMAT::SCENETYPE_MOVE_VIEWPOINT) {
+    } else if (index == SCENETYPE_MOVE_VIEWPOINT) {
         for (unsigned int i=0; i<ScenesMediator::get_instance()->viewpoint_list.size(); i++) {
             list.append(QString(ScenesMediator::get_instance()->viewpoint_list.at(i).name));
         }
-    } else if (index == CURRENT_FILE_FORMAT::SCENETYPE_SHOW_ANIMATION) {
+    } else if (index == SCENETYPE_SHOW_ANIMATION) {
         for (unsigned int i=0; i<ScenesMediator::get_instance()->animation_list.size(); i++) {
             list.append(QString(ScenesMediator::get_instance()->animation_list.at(i).name));
         }
-    } else if (index == CURRENT_FILE_FORMAT::SCENETYPE_PLAY_SFX) {
+    } else if (index == SCENETYPE_PLAY_SFX) {
         for (unsigned int i=0; i<ScenesMediator::get_instance()->playsfx_list.size(); i++) {
             list.append(QString(ScenesMediator::get_instance()->playsfx_list.at(i).name));
         }
-    } else if (index == CURRENT_FILE_FORMAT::SCENETYPE_PLAY_MUSIC) {
+    } else if (index == SCENETYPE_PLAY_MUSIC) {
         for (unsigned int i=0; i<ScenesMediator::get_instance()->playmusic_list.size(); i++) {
             list.append(QString(ScenesMediator::get_instance()->playmusic_list.at(i).name));
         }
-    } else if (index == CURRENT_FILE_FORMAT::SCENETYPE_STOP_MUSIC) {
+    } else if (index == SCENETYPE_STOP_MUSIC) {
         // nothing to do
-    } else if (index == CURRENT_FILE_FORMAT::SCENETYPE_SHOW_TEXT) {
+    } else if (index == SCENETYPE_SHOW_TEXT) {
         for (unsigned int i=0; i<ScenesMediator::get_instance()->text_list.size(); i++) {
             list.append(QString(ScenesMediator::get_instance()->text_list.at(i).name));
         }
-    } else if (index == CURRENT_FILE_FORMAT::SCENETYPE_SUBSCENE) {
+    } else if (index == SCENETYPE_SUBSCENE) {
         for (unsigned int i=0; i<ScenesMediator::get_instance()->scenes_list.size(); i++) {
             //if (i != ui->sceneSelector->currentIndex()) {
                 list.append(QString(ScenesMediator::get_instance()->scenes_list.at(i).name));
@@ -158,7 +158,7 @@ void TabScenelist::on_addButton_clicked()
     int seek_n = selectedList.at(0).row();
 
     // can't add sub-scene equal to the current scene
-    if (n == seek_n && ui->sceneTypeSelector->currentIndex() == CURRENT_FILE_FORMAT::SCENETYPE_SUBSCENE) {
+    if (n == seek_n && ui->sceneTypeSelector->currentIndex() == SCENETYPE_SUBSCENE) {
         QMessageBox msgBox;
         msgBox.setText("Can't add scene itself as sub-scene of itself. This would create an infinite loop.");
         msgBox.exec();
@@ -234,11 +234,11 @@ void TabScenelist::on_removeButton_clicked()
 
 void TabScenelist::on_pushButton_clicked()
 {
-    QString file = QString(GAMEPATH.c_str()) + QString("scenesviewer");
+    QString file = QString(SharedData::get_instance()->GAMEPATH.c_str()) + QString("scenesviewer");
 #ifdef WIN32
     file += QString(".exe");
 #endif
-    file += QString(" --gamename \"") + QString(GAMENAME.c_str()) + QString("\"") + QString(" --scenenumber ") + QString::number(ui->sceneSelector->currentIndex());
+    file += QString(" --gamename \"") + QString(SharedData::get_instance()->GAMENAME.c_str()) + QString("\"") + QString(" --scenenumber ") + QString::number(ui->sceneSelector->currentIndex());
     std::cout << ">>> EXEC: file: '" << file.toStdString() << "'." << std::endl;
     process.start(file);
 }
@@ -262,7 +262,7 @@ void TabScenelist::on_up_pushButton_clicked()
         return;
     }
 
-    CURRENT_FILE_FORMAT::file_scene_object temp = ScenesMediator::get_instance()->scenes_list.at(ScenesMediator::get_instance()->selected_scene).objects[selected_row-1];
+    file_scene_object temp = ScenesMediator::get_instance()->scenes_list.at(ScenesMediator::get_instance()->selected_scene).objects[selected_row-1];
     ScenesMediator::get_instance()->scenes_list.at(ScenesMediator::get_instance()->selected_scene).objects[selected_row-1] = ScenesMediator::get_instance()->scenes_list.at(ScenesMediator::get_instance()->selected_scene).objects[selected_row];
     ScenesMediator::get_instance()->scenes_list.at(ScenesMediator::get_instance()->selected_scene).objects[selected_row] = temp;
 
@@ -285,7 +285,7 @@ void TabScenelist::on_down_pushButton_clicked()
         return;
     }
 
-    CURRENT_FILE_FORMAT::file_scene_object temp = ScenesMediator::get_instance()->scenes_list.at(ScenesMediator::get_instance()->selected_scene).objects[selected_row+1];
+    file_scene_object temp = ScenesMediator::get_instance()->scenes_list.at(ScenesMediator::get_instance()->selected_scene).objects[selected_row+1];
     ScenesMediator::get_instance()->scenes_list.at(ScenesMediator::get_instance()->selected_scene).objects[selected_row+1] = ScenesMediator::get_instance()->scenes_list.at(ScenesMediator::get_instance()->selected_scene).objects[selected_row];
     ScenesMediator::get_instance()->scenes_list.at(ScenesMediator::get_instance()->selected_scene).objects[selected_row] = temp;
 

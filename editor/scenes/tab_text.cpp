@@ -91,7 +91,7 @@ void TabText::set_fields(int index)
 
 void TabText::on_AddButton_clicked()
 {
-    CURRENT_FILE_FORMAT::file_scene_show_text new_text;
+    file_scene_show_text new_text;
     sprintf(new_text.name, "%s%d", "Show Text #", ScenesMediator::get_instance()->text_list.size()+1);
     ScenesMediator::get_instance()->text_list.push_back(new_text);
     ui->select_comboBox->addItem(QString(new_text.name));
@@ -116,22 +116,22 @@ void TabText::change_x_y_fields_enabled()
         ui->textX_spinBox->setEnabled(false);
         ui->textY_spinBox->setEnabled(false);
     } else {
-        if (ui->positionType->currentIndex() == CURRENT_FILE_FORMAT::text_position_type_centered) {
+        if (ui->positionType->currentIndex() == text_position_type_centered) {
             ui->textX_spinBox->setEnabled(false);
             ui->textY_spinBox->setEnabled(false);
-        } else if (ui->positionType->currentIndex() == CURRENT_FILE_FORMAT::text_position_type_center_x) {
+        } else if (ui->positionType->currentIndex() == text_position_type_center_x) {
             ui->textX_spinBox->setEnabled(false);
             ui->textY_spinBox->setEnabled(true);
-        } else if (ui->positionType->currentIndex() == CURRENT_FILE_FORMAT::text_position_type_center_y) {
+        } else if (ui->positionType->currentIndex() == text_position_type_center_y) {
             ui->textX_spinBox->setEnabled(true);
             ui->textY_spinBox->setEnabled(false);
-        } else if (ui->positionType->currentIndex() == CURRENT_FILE_FORMAT::text_position_type_dialogbottom) {
+        } else if (ui->positionType->currentIndex() == text_position_type_dialogbottom) {
             ui->textX_spinBox->setEnabled(false);
             ui->textY_spinBox->setEnabled(false);
-        } else if (ui->positionType->currentIndex() == CURRENT_FILE_FORMAT::text_position_type_dialogtop) {
+        } else if (ui->positionType->currentIndex() == text_position_type_dialogtop) {
             ui->textX_spinBox->setEnabled(false);
             ui->textY_spinBox->setEnabled(false);
-        } else if (ui->positionType->currentIndex() == CURRENT_FILE_FORMAT::text_position_type_user_defined) {
+        } else if (ui->positionType->currentIndex() == text_position_type_user_defined) {
             ui->textX_spinBox->setEnabled(true);
             ui->textY_spinBox->setEnabled(true);
         }

@@ -35,7 +35,7 @@ private slots:
 private:
     Ui::GameScenes *ui;
     bool data_loading;
-    CURRENT_FILE_FORMAT::fio_scenes fio_scn;
+    fio_scenes fio_scn;
 };
 
 #endif // GAMESCENES_H

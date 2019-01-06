@@ -6,7 +6,7 @@
 #include <QFileDialog>
 #include <QPainter>
 
-extern std::string FILEPATH;
+#include "data/shareddata.h"
 
 AnimPackImport::AnimPackImport(QWidget *parent) :
     QDialog(parent),
@@ -77,7 +77,7 @@ void AnimPackImport::on_buttonBox_accepted()
             QPixmap new_tile = image.copy(i*TILESIZE, j*TILESIZE, TILESIZE, TILESIZE);
             painter.drawPixmap(j*TILESIZE, 0, new_tile);
         }
-        QString new_filename = QString(FILEPATH.c_str()) + QString("/images/tilesets/anim/TEST_") + QString::number(i) + QString(".png");
+        QString new_filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/tilesets/anim/TEST_") + QString::number(i) + QString(".png");
         QFile new_file(new_filename);
         new_file.open(QIODevice::WriteOnly);
         new_image.save(&new_file, "PNG");

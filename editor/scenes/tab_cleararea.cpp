@@ -76,7 +76,7 @@ void TabClearArea::reload_button_color(int index)
 
 void TabClearArea::on_add_pushButton_clicked()
 {
-    CURRENT_FILE_FORMAT::file_scene_clear_area new_cleararea;
+    file_scene_clear_area new_cleararea;
     sprintf(new_cleararea.name, "%s%d", "Clear Area #", ScenesMediator::get_instance()->cleararea_list.size()+1);
     ScenesMediator::get_instance()->cleararea_list.push_back(new_cleararea);
     ui->select_comboBox->addItem(QString(new_cleararea.name));

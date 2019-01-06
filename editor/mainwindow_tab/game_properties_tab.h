@@ -18,15 +18,7 @@ public:
 
 
 private slots:
-    void on_special_item1_combo_currentIndexChanged(int index);
-
-    void on_special_item2_combo_currentIndexChanged(int index);
-
     void on_semicharged_shot_combo_currentIndexChanged(int index);
-
-    void on_stagefaces_stage_combo_currentIndexChanged(int index);
-
-    void on_stagefaces_face_combo_currentIndexChanged(const QString &arg1);
 
     void on_lineEdit_textChanged(const QString &arg1);
 
@@ -43,8 +35,6 @@ private slots:
     void on_stageSelectMusic_comboBox_currentIndexChanged(const QString &arg1);
 
     void on_stageNumber_comboBox_currentIndexChanged(int index);
-
-    void on_bossName_lineEdit_textChanged(const QString &arg1);
 
     void on_comboBox_currentIndexChanged(const QString &arg1);
 

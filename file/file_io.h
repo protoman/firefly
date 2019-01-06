@@ -13,57 +13,44 @@
 #include <stdio.h>
 
 
-extern std::string FILEPATH;
-extern std::string SAVEPATH;
-
-class file_io
-{
-public:
-
-
-};
-
 
 // ************************************************************************************************************* //
 
-namespace format_v4 {
+class file_io {
 
-    class file_io {
+public:
+    file_io();
+    void read_game(file_game& data_out) const;
+    void write_game(file_game& data_in) const;
 
-    public:
-        file_io();
-        void read_game(file_game& data_out) const;
-        void write_game(file_game& data_in) const;
+    bool file_exists(std::string filename) const;
+    std::vector<std::string> read_game_list();
+    std::vector<std::string> read_directory_list(std::string filename, bool dir_only);
+    std::vector<std::string> read_file_list(std::string filename);
 
-        bool file_exists(std::string filename) const;
-        std::vector<std::string> read_game_list();
-        std::vector<std::string> read_directory_list(std::string filename, bool dir_only);
-        std::vector<std::string> read_file_list(std::string filename);
+    std::string get_save_filename(short save_n);
+    bool write_save(st_save& data_in, short save_n);
+    bool read_save(st_save& data_out, short save_n);
+    bool save_exists(short save_n);
+    bool have_one_save_file();
+    bool can_access_castle(st_save& data_in);
 
-        std::string get_save_filename(short save_n);
-        bool write_save(st_save& data_in, short save_n);
-        bool read_save(st_save& data_out, short save_n);
-        bool save_exists(short save_n);
-        bool have_one_save_file();
-        bool check_convert_old_format_save();
-        bool can_access_castle(st_save& data_in);
+    void load_config(st_game_config &config);
+    void save_config(st_game_config &config) const;
 
-        void load_config(st_game_config &config);
-        void save_config(st_game_config &config) const;
+    void generate_files();
 
-        void generate_files();
-
-        int get_heart_pieces_number(st_save game_save);
+    int get_heart_pieces_number(st_save game_save);
 
 
-        std::string get_sufix();
+    std::string get_sufix();
 
 
-    private:
-        std::string sufix;
-        //fio_common fio_cmm;
-    };
-}
+private:
+    std::string sufix;
+    //fio_common fio_cmm;
+};
+
 
 
 

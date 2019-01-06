@@ -62,7 +62,7 @@ void TabMusic::reload()
 
 void TabMusic::on_add_pushButton_clicked()
 {
-    CURRENT_FILE_FORMAT::file_scene_play_music new_music;
+    file_scene_play_music new_music;
     sprintf(new_music.name, "%s%d", "Play Music #", ScenesMediator::get_instance()->playmusic_list.size()+1);
     ScenesMediator::get_instance()->playmusic_list.push_back(new_music);
     ui->select_comboBox->addItem(QString(new_music.name));

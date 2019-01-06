@@ -37,7 +37,7 @@ void npc_edit::reload()
 
 void npc_edit::fill_data()
 {
-    if (FILEPATH.length() == 0) {
+    if (SharedData::get_instance()->FILEPATH.length() == 0) {
         return;
     }
 	_data_loading = true;
@@ -45,16 +45,15 @@ void npc_edit::fill_data()
     common::fill_files_combo("images/sprites/enemies/backgrounds", ui->backgroundFileComboBox);
 
     common::fill_npc_combo(ui->npc_edit_tab_selectnpccombo);
-    common::fill_weapons_names_combo(ui->npc_edit_tab_weakness_list);
 
     if (Mediator::get_instance()->enemy_list.size() > 0) {
         // GRAPHIC FILE //
         ui->npc_edit_tab_graphiccombo->setCurrentIndex(ui->npc_edit_tab_graphiccombo->findText(QString(Mediator::get_instance()->enemy_list.at(0).graphic_filename)));
-        ui->npc_edit_tab_previewarea->set_graphicfile(FILEPATH+std::string("/images/sprites/enemies/")+std::string(Mediator::get_instance()->enemy_list.at(0).graphic_filename));
+        ui->npc_edit_tab_previewarea->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/")+std::string(Mediator::get_instance()->enemy_list.at(0).graphic_filename));
         // BACKGROUND //
         std::cout << ">>>>> BACKGROUND[" << Mediator::get_instance()->enemy_list.at(0).bg_graphic_filename << "]" << std::endl;
         ui->backgroundFileComboBox->setCurrentIndex(ui->backgroundFileComboBox->findText(QString(Mediator::get_instance()->enemy_list.at(0).bg_graphic_filename)));
-        ui->npc_edit_tab_previewarea->set_bg_graphicfile(FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+std::string(Mediator::get_instance()->enemy_list.at(0).bg_graphic_filename));
+        ui->npc_edit_tab_previewarea->set_bg_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+std::string(Mediator::get_instance()->enemy_list.at(0).bg_graphic_filename));
         ui->sprite_pos_x->setValue(Mediator::get_instance()->enemy_list.at(0).sprites_pos_bg.x);
         ui->sprite_pos_y->setValue(Mediator::get_instance()->enemy_list.at(0).sprites_pos_bg.y);
 
@@ -98,7 +97,7 @@ void npc_edit::fill_data()
 
 void npc_edit::add_frame_one()
 {
-    CURRENT_FILE_FORMAT::file_npc_v3_1_2* new_npc_ref = &Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n);
+    file_npc_v3_1_2* new_npc_ref = &Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n);
     if (new_npc_ref->sprites[ANIM_TYPE_STAND][0].used == false) {
         new_npc_ref->sprites[ANIM_TYPE_STAND][0].used = true;
         new_npc_ref->sprites[ANIM_TYPE_STAND][0].duration = 100;
@@ -149,16 +148,15 @@ void npc_edit::on_npc_edit_tab_selectnpccombo_currentIndexChanged(int index)
     Mediator::get_instance()->npcGraphicSize_h = Mediator::get_instance()->enemy_list.at(index).frame_size.height;
     Mediator::get_instance()->npcGraphicSize_w = Mediator::get_instance()->enemy_list.at(index).frame_size.width;
     ui->npc_edit_tab_movespeed->setValue(Mediator::get_instance()->enemy_list.at(index).speed);
-    ui->npc_edit_tab_NpcHP->setValue(Mediator::get_instance()->enemy_list.at(index).hp.total);
+    ui->npc_edit_tab_NpcHP->setValue(Mediator::get_instance()->enemy_list.at(index).hp);
     ui->npc_edit_tab_NpcName->setText(Mediator::get_instance()->enemy_list.at(index).name);
     ui->npc_edit_tab_range->setValue(Mediator::get_instance()->enemy_list.at(index).walk_range);
     ui->npc_edit_tab_shieldtype->setCurrentIndex(Mediator::get_instance()->enemy_list.at(index).shield_type);
 	ui->npc_edit_tab_weakness_list->setCurrentIndex(0);
-    ui->npc_edit_tab_weakness_points->setValue(Mediator::get_instance()->enemy_list.at(index).weakness[0].damage_multiplier);
 
-    ui->npc_edit_tab_previewarea->set_graphicfile(FILEPATH+std::string("/images/sprites/enemies/")+std::string(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).graphic_filename));
+    ui->npc_edit_tab_previewarea->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/")+std::string(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).graphic_filename));
 
-    ui->npc_edit_tab_previewarea->set_bg_graphicfile(FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+std::string(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename));
+    ui->npc_edit_tab_previewarea->set_bg_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+std::string(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename));
     ui->npc_edit_tab_previewarea->set_sprite_pos(Mediator::get_instance()->enemy_list.at(index).sprites_pos_bg);
     ui->npc_edit_tab_previewarea->repaint();
 	reload_frame_list(ui->frame_list_selector->currentIndex());
@@ -201,7 +199,7 @@ void npc_edit::on_npc_edit_tab_graphiccombo_currentIndexChanged(const QString &a
         return;
     }
     sprintf(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).graphic_filename, "%s", arg1.toStdString().c_str());
-    ui->npc_edit_tab_previewarea->set_graphicfile(FILEPATH+std::string("/images/sprites/enemies/")+arg1.toStdString());
+    ui->npc_edit_tab_previewarea->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/")+arg1.toStdString());
     add_frame_one();
     ui->npc_edit_tab_previewarea->repaint();
 }
@@ -298,7 +296,7 @@ void npc_edit::on_npc_edit_tab_NpcHP_valueChanged(int arg1)
     if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
         return;
     }
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).hp.total = arg1;
+    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).hp = arg1;
 }
 
 void npc_edit::on_npc_edit_tab_canshoot_toggled(bool checked)
@@ -360,26 +358,8 @@ void npc_edit::on_bg_graphic_combo_currentIndexChanged(const QString &arg1)
     } else {
         //std::cout << "*************** on_bg_graphic_combo_currentIndexChanged - SET to '" << arg1.toStdString() << "'" << std::endl;
         sprintf(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename, "%s", arg1.toStdString().c_str());
-        ui->npc_edit_tab_previewarea->set_bg_graphicfile(FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+std::string(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename));
+        ui->npc_edit_tab_previewarea->set_bg_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+std::string(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename));
     }
-}
-
-void npc_edit::on_npc_edit_tab_weakness_list_currentIndexChanged(int index)
-{
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
-        return;
-    }
-    _npcedit_tab_selected_weakness_weapon = index;
-    ui->npc_edit_tab_weakness_points->setValue(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).weakness[_npcedit_tab_selected_weakness_weapon].damage_multiplier);
-}
-
-void npc_edit::on_npc_edit_tab_weakness_points_valueChanged(int arg1)
-{
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
-        return;
-    }
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).weakness[_npcedit_tab_selected_weakness_weapon].damage_multiplier = arg1;
-
 }
 
 
@@ -413,7 +393,7 @@ void npc_edit::reload_frame_list(int index)
 
 	// insert all sprites for the given type into the combo
     //std::cout << ">> Adding frames for NPC[" << Mediator::get_instance()->game_data.game_npcs[i].name << "] - type: " << index << std::endl;
-    std::string filename = FILEPATH + "/images/sprites/enemies/" + Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).graphic_filename;
+    std::string filename = SharedData::get_instance()->FILEPATH + "/images/sprites/enemies/" + Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).graphic_filename;
     // @204
     for (int j=0; j<ANIM_FRAMES_COUNT; j++) {
         if (Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[index][j].used == true) {
@@ -474,7 +454,7 @@ void npc_edit::on_frameUp_clicked()
     if (ui->frameList_listWidget->selectedItems().size() == 0) {
         return;
     }
-    CURRENT_FILE_FORMAT::st_sprite_data temp = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()-1];
+    st_sprite_data temp = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()-1];
     Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()-1] = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()];
     Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()] = temp;
     reload_frame_list(ui->frame_list_selector->currentIndex());
@@ -491,7 +471,7 @@ void npc_edit::on_frameDown_clicked()
     if (Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()+1].used == false) {
         return;
     }
-    CURRENT_FILE_FORMAT::st_sprite_data temp = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()+1];
+    st_sprite_data temp = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()+1];
     Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()+1] = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()];
     Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()] = temp;
     reload_frame_list(ui->frame_list_selector->currentIndex());
@@ -705,9 +685,9 @@ void npc_edit::on_AddFrame_Button_clicked()
 void npc_edit::on_addEnemy_pushButton_clicked()
 {
     _data_loading = true;
-    Mediator::get_instance()->enemy_list.push_back(CURRENT_FILE_FORMAT::file_npc_v3_1_2());
+    Mediator::get_instance()->enemy_list.push_back(file_npc_v3_1_2());
     // add equivalent AI for enemy
-    Mediator::get_instance()->ai_list.push_back(CURRENT_FILE_FORMAT::file_artificial_inteligence());
+    Mediator::get_instance()->ai_list.push_back(file_artificial_inteligence());
     ui->npc_edit_tab_selectnpccombo->addItem(QString("[") + QString::number(Mediator::get_instance()->enemy_list.size()-1) + QString("] Enemy Name"));
     ui->npc_edit_tab_graphiccombo->setCurrentIndex(-1);
     _data_loading = false;
@@ -757,7 +737,7 @@ void npc_edit::on_backgroundFileComboBox_currentIndexChanged(const QString &arg1
         return;
     }
     sprintf(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename, "%s", arg1.toStdString().c_str());
-    ui->npc_edit_tab_previewarea->set_bg_graphicfile(FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+arg1.toStdString());
+    ui->npc_edit_tab_previewarea->set_bg_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+arg1.toStdString());
     add_frame_one();
     ui->npc_edit_tab_previewarea->repaint();
 }

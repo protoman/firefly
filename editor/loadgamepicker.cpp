@@ -7,9 +7,7 @@
 #include "file/file_io.h"
 #include "mainwindow.h"
 
-extern std::string FILEPATH;
-extern std::string GAMEPATH;
-extern std::string GAMENAME;
+#include "data/shareddata.h"
 
 loadGamePicker::loadGamePicker(QWidget *parent) :
     QDialog(parent),
@@ -17,7 +15,7 @@ loadGamePicker::loadGamePicker(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-    CURRENT_FILE_FORMAT::file_io fio;
+    file_io fio;
     std::vector<std::string> game_list = fio.read_game_list();
 
     for (int i=0; i<game_list.size(); i++) {
@@ -49,8 +47,8 @@ void loadGamePicker::on_buttonBox_accepted()
 {
     std::cout << ">>>>>>>>>> ui->gameList->currentRow(): " << ui->gameList->currentRow() << std::endl;
 
-    FILEPATH = GAMEPATH + std::string("/games/") + ui->gameList->currentItem()->text().toStdString() + std::string("/");
-    GAMENAME = ui->gameList->currentItem()->text().toStdString();
+    SharedData::get_instance()->FILEPATH = SharedData::get_instance()->GAMEPATH + std::string("/games/") + ui->gameList->currentItem()->text().toStdString() + std::string("/");
+    SharedData::get_instance()->GAMENAME = ui->gameList->currentItem()->text().toStdString();
     Mediator::get_instance()->load_game();
     emit game_picked();
 

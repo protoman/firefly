@@ -46,28 +46,30 @@ QVariant ObjectListModel::data(const QModelIndex &index, int role) const
         int seek_n = ScenesMediator::get_instance()->scenes_list.at(ScenesMediator::get_instance()->selected_scene).objects[row].seek_n;
         if (col == 0) {
             std::string name = std::string("NAME");
-            if (type == CURRENT_FILE_FORMAT::SCENETYPE_CLEAR_AREA) {
+            if (type == SCENETYPE_CLEAR_AREA) {
                 name = "[CLEAR-AREA] " + std::string(ScenesMediator::get_instance()->cleararea_list.at(seek_n).name);
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_MOVE_IMAGE) {
+            } else if (type == SCENETYPE_MOVE_IMAGE) {
                 name = "[IMG-MOVE] " + std::string(ScenesMediator::get_instance()->image_list.at(seek_n).name);
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_MOVE_VIEWPOINT) {
+            } else if (type == SCENETYPE_MOVE_VIEWPOINT) {
                 int list_size = ScenesMediator::get_instance()->viewpoint_list.size();
                 if (list_size > seek_n) {
                     name = "[VIEWPOINT] " + std::string(ScenesMediator::get_instance()->viewpoint_list.at(seek_n).name);
                 }
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_PLAY_MUSIC) {
+            } else if (type == SCENETYPE_PLAY_MUSIC) {
                 name = "[MUSIC] " + std::string(ScenesMediator::get_instance()->playmusic_list.at(seek_n).name);
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_PLAY_SFX) {
+            } else if (type == SCENETYPE_PLAY_SFX) {
                 name = "[SFX] " + std::string(ScenesMediator::get_instance()->playsfx_list.at(seek_n).name);
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_SHOW_ANIMATION) {
-                name = "[ANIMATION] " + std::string(ScenesMediator::get_instance()->animation_list.at(seek_n).name);
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_SHOW_TEXT) {
+            } else if (type == SCENETYPE_SHOW_ANIMATION) {
+                if (ScenesMediator::get_instance()->animation_list.size() > seek_n) {
+                    name = "[ANIMATION] " + std::string(ScenesMediator::get_instance()->animation_list.at(seek_n).name);
+                }
+            } else if (type == SCENETYPE_SHOW_TEXT) {
                 name = "[TEXT] " + std::string(ScenesMediator::get_instance()->text_list.at(seek_n).name);
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_STOP_MUSIC) {
+            } else if (type == SCENETYPE_STOP_MUSIC) {
                 name = "[STOP MUSIC] " + std::string("STOP MUSIC");
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_SUBSCENE) {
+            } else if (type == SCENETYPE_SUBSCENE) {
                 name = "[SUB-SCENE] " + std::string(ScenesMediator::get_instance()->scenes_list.at(seek_n).name);
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_CLEAR_SCREEN) {
+            } else if (type == SCENETYPE_CLEAR_SCREEN) {
                 name = "[CLEAR-SCREEN] " + std::string("CLEAR-SCREEN");
             }
             return QString(name.c_str());
@@ -132,7 +134,7 @@ Qt::ItemFlags ObjectListModel::flags(const QModelIndex &index) const
     if (index.column() == 0) {
         int type = ScenesMediator::get_instance()->scenes_list.at(ScenesMediator::get_instance()->selected_scene).objects[index.row()].type;
         /*
-        if (type != CURRENT_FILE_FORMAT::SCENETYPE_CLEAR_SCREEN) {
+        if (type != SCENETYPE_CLEAR_SCREEN) {
             result |= Qt::ItemIsEditable;
         }
         */
@@ -157,23 +159,23 @@ bool ObjectListModel::setData(const QModelIndex &index, const QVariant &value, i
             int type = ScenesMediator::get_instance()->scenes_list.at(ScenesMediator::get_instance()->selected_scene).objects[row].type;
             int seek_n = ScenesMediator::get_instance()->scenes_list.at(ScenesMediator::get_instance()->selected_scene).objects[row].seek_n;
 
-            if (type == CURRENT_FILE_FORMAT::SCENETYPE_CLEAR_AREA) {
+            if (type == SCENETYPE_CLEAR_AREA) {
                 sprintf(ScenesMediator::get_instance()->cleararea_list.at(seek_n).name, "%s", name.c_str());
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_MOVE_IMAGE) {
+            } else if (type == SCENETYPE_MOVE_IMAGE) {
                 sprintf(ScenesMediator::get_instance()->image_list.at(seek_n).name, "%s", name.c_str());
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_MOVE_VIEWPOINT) {
+            } else if (type == SCENETYPE_MOVE_VIEWPOINT) {
                 sprintf(ScenesMediator::get_instance()->viewpoint_list.at(seek_n).name, "%s", name.c_str());
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_PLAY_MUSIC) {
+            } else if (type == SCENETYPE_PLAY_MUSIC) {
                 sprintf(ScenesMediator::get_instance()->playmusic_list.at(seek_n).name, "%s", name.c_str());
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_PLAY_SFX) {
+            } else if (type == SCENETYPE_PLAY_SFX) {
                 sprintf(ScenesMediator::get_instance()->playsfx_list.at(seek_n).name, "%s", name.c_str());
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_SHOW_ANIMATION) {
+            } else if (type == SCENETYPE_SHOW_ANIMATION) {
                 sprintf(ScenesMediator::get_instance()->animation_list.at(seek_n).name, "%s", name.c_str());
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_SHOW_TEXT) {
+            } else if (type == SCENETYPE_SHOW_TEXT) {
                 sprintf(ScenesMediator::get_instance()->text_list.at(seek_n).name, "%s", name.c_str());
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_STOP_MUSIC) {
+            } else if (type == SCENETYPE_STOP_MUSIC) {
                 sprintf(ScenesMediator::get_instance()->cleararea_list.at(seek_n).name, "%s", name.c_str());
-            } else if (type == CURRENT_FILE_FORMAT::SCENETYPE_SUBSCENE) {
+            } else if (type == SCENETYPE_SUBSCENE) {
                 sprintf(ScenesMediator::get_instance()->scenes_list.at(seek_n).name, "%s", name.c_str());
             } else {
                 std::cout << "Invalid object to set name" << std::endl;

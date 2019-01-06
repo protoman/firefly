@@ -5,7 +5,6 @@
 #include "dialognpcedit.h"
 #include "dialogobjectedit.h"
 #include "loadgamepicker.h"
-#include "stage_swap_dialog.h"
 #include "newgamedialog.h"
 
 #include <QListView>
@@ -20,9 +19,7 @@
 
 #include "common.h"
 
-extern std::string GAMEPATH;
-extern std::string FILEPATH;
-extern std::string GAMENAME;
+#include "data/shareddata.h"
 
 bool background_filled = false;
 
@@ -46,14 +43,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->ObjectScrollArea->setWidget(object_edit_tab);
 
 
-	// insert OBJECT tab form
-	weapon_edit_tab = new weapon_edit();
-    ui->WeaponScrollArea->setWidget(weapon_edit_tab);
-
-	// insert STAGE tab form
-	stage_edit_tab = new stage_edit();
-    ui->StagesScrollarea->setWidget(stage_edit_tab);
-
     // insert PROJECTILE tab form
     projectile_edit_tab = new projectile_edit();
     ui->ProjectileScrollArea->setWidget(projectile_edit_tab);
@@ -64,9 +53,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     player_edit_tab = new player_edit();
     ui->PlayerScrollArea->setWidget(player_edit_tab);
-
-    armor_edit_tab = new armor_edit();
-    ui->armorScrollArea->setWidget(armor_edit_tab);
 
     game_scenes_tab = new GameScenes();
     ui->gameScenes_scrollArea->setWidget(game_scenes_tab);
@@ -161,14 +147,11 @@ void MainWindow::reload()
     Mediator::get_instance()->current_player = 0;
     Mediator::get_instance()->current_weapon = 0;
     projectile_edit_tab->reload();
-    stage_edit_tab->reload();
-    weapon_edit_tab->reload();
     object_edit_tab->reload();
     ai_edit_tab->reload();
     npc_edit_tab->reload();
     map_edit_tab->reload();
     player_edit_tab->reload();
-    armor_edit_tab->reload();
     anim_tiles_edit_tab->reload();
     game_scenes_tab->reload();
     this->show();
@@ -290,10 +273,6 @@ void MainWindow::on_spinBox_valueChanged(int value)
         Mediator::get_instance()->zoom = value;
 }
 
-void MainWindow::on_link_orientation_combobox_currentIndexChanged(int index)
-{
-    Mediator::get_instance()->link_type = index;
-}
 
 void MainWindow::on_npc_direction_combo_currentIndexChanged(int index)
 {
@@ -319,15 +298,6 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
 
 
-void MainWindow::on_bg1_filename_currentIndexChanged(const QString &arg1)
-{
-	if (arg1.toStdString() == std::string("None")) {
-        Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[0].filename[0] = '\0';
-	} else {
-        sprintf(Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[0].filename, "%s", arg1.toStdString().c_str());
-	}
-    map_edit_tab->update_edit_area();
-}
 
 void MainWindow::on_checkBox_clicked(bool checked)
 {
@@ -335,41 +305,7 @@ void MainWindow::on_checkBox_clicked(bool checked)
     map_edit_tab->update_edit_area();
 }
 
-void MainWindow::on_bg1_y_pos_valueChanged(int arg1)
-{
-    Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[0].adjust_y = arg1;
-    map_edit_tab->update_edit_area();
-}
 
-void MainWindow::on_bg1_speed_valueChanged(int arg1)
-{
-    Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[0].speed = arg1*10;
-    std::cout << "#1 *** on_bg1_speed_valueChanged - setvalue: " << arg1 << ", bg1.speed: " << Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[0].speed << std::endl;
-    map_edit_tab->update_edit_area();
-}
-
-
-void MainWindow::on_bg2_filename_currentIndexChanged(const QString &arg1)
-{
-	if (arg1.toStdString() == std::string("None")) {
-        Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[1].filename[0] = '\0';
-	} else {
-        sprintf(Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[1].filename, "%s", arg1.toStdString().c_str());
-	}
-}
-
-void MainWindow::on_bg2_y_pos_valueChanged(int arg1)
-{
-    Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[1].adjust_y = arg1;
-    map_edit_tab->update_edit_area();
-}
-
-
-void MainWindow::on_bg2_speed_valueChanged(int arg1)
-{
-    Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[1].speed = arg1*10;
-    map_edit_tab->update_edit_area();
-}
 
 
 void MainWindow::on_checkBox_2_clicked(bool checked)
@@ -384,44 +320,6 @@ void MainWindow::on_checkBox_3_clicked(bool checked)
     map_edit_tab->update_edit_area();
 }
 
-void MainWindow::on_stage_boss_weapon_combo_currentIndexChanged(int index)
-{
-    Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].boss.id_weapon = index;
-}
-
-void MainWindow::on_bg1_speed_valueChanged(double arg1)
-{
-    if (background_filled == false) {
-		return;
-	}
-    Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[0].speed = arg1*10;
-    std::cout << "#2 *** on_bg1_speed_valueChanged - setvalue: " << arg1 << ", bg1.speed: " << Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[0].speed << std::endl;
-    map_edit_tab->update_edit_area();
-}
-
-void MainWindow::on_bg2_speed_valueChanged(double arg1)
-{
-    if (background_filled == false) {
-		return;
-	}
-    Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[1].speed = arg1*10;
-    map_edit_tab->update_edit_area();
-}
-
-void MainWindow::on_actionReset_Map_triggered()
-{
-	for (int i=0; i<MAP_W; i++) {
-		for (int j=0; j<MAP_H; j++) {
-            Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].tiles[i][j].locked = 0;
-            Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].tiles[i][j].tile1.x = -1;
-            Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].tiles[i][j].tile1.y = -1;
-            Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].tiles[i][j].tile3.x = -1;
-            Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].tiles[i][j].tile3.y = -1;
-            Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[0].filename[0] = '\0';
-            Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][Mediator::get_instance()->currentMap].backgrounds[1].filename[0] = '\0';
-		}
-	}
-}
 
 void MainWindow::on_players_tab_maxshots_valueChanged(int arg1)
 {
@@ -487,17 +385,6 @@ void MainWindow::on_players_tab_list_combo_2_currentIndexChanged(int index)
     std::cout << "MainWindow::on_players_tab_list_combo_2_currentIndexChanged - index: " << index << ", max_shots: " << Mediator::get_instance()->player_list_v3_1[index].max_shots << std::endl;
 }
 
-void MainWindow::on_actionSwap_Maps_triggered()
-{
-    // open swap maps dialog
-    QDialog *stage_swap = new stage_swap_dialog;
-    stage_swap->show();
-}
-
-
-
-
-
 void MainWindow::on_actionScenes_Editor_triggered()
 {
     scenes_window->reload();
@@ -539,7 +426,7 @@ void MainWindow::on_actionImage_Browser_triggered()
 void MainWindow::on_new_game_accepted(QString name)
 {
     /// @TODO: create game files
-    QString games_folder_path = QString(GAMEPATH.c_str()) + QString("/games/");
+    QString games_folder_path = QString(SharedData::get_instance()->GAMEPATH.c_str()) + QString("/games/");
     if (QDir(games_folder_path).exists() == false) {
         if (QDir().mkdir(games_folder_path) == false) {
             QString error_msg = QString("Can't create games container folder '") + games_folder_path + QString("'.");
@@ -547,7 +434,7 @@ void MainWindow::on_new_game_accepted(QString name)
             return;
         }
     }
-    QString filepath = QString(GAMEPATH.c_str()) + QString("/games/") + name;
+    QString filepath = QString(SharedData::get_instance()->GAMEPATH.c_str()) + QString("/games/") + name;
     if (QDir().mkdir(filepath) == false) {
         QString error_msg = QString("Can't create new game folder '") + filepath + QString("'.");
         show_critial_error(error_msg);
@@ -555,32 +442,32 @@ void MainWindow::on_new_game_accepted(QString name)
     }
 
     // copy data directories
-    QString template_path = QString(GAMEPATH.c_str()) + QString("/template/");
+    QString template_path = QString(SharedData::get_instance()->GAMEPATH.c_str()) + QString("/template/");
     copy_path(template_path, filepath);
 
-    FILEPATH = GAMEPATH + std::string("/games/") + name.toStdString() + std::string("/");
+    SharedData::get_instance()->FILEPATH = SharedData::get_instance()->GAMEPATH + std::string("/games/") + name.toStdString() + std::string("/");
 
     // generate empty/default game files
-    CURRENT_FILE_FORMAT::file_io fio;
+    file_io fio;
     fio.generate_files();
 
-    CURRENT_FILE_FORMAT::fio_strings fio_str;
+    fio_strings fio_str;
     fio_str.create_files();
 
-    std::string scenes_filename = std::string(FILEPATH) + "/scenes/";
+    std::string scenes_filename = std::string(SharedData::get_instance()->FILEPATH) + "/scenes/";
 
     if (QDir(scenes_filename.c_str()).exists() == false) {
         QDir().mkdir(scenes_filename.c_str());
     }
 
-    CURRENT_FILE_FORMAT::fio_scenes fio_scenes;
+    fio_scenes fio_scenes;
     fio_scenes.generate_files();
 
 
     /// @TODO: copy image files
     Mediator::get_instance()->load_game();
 
-    GAMENAME = name.toStdString();
+    SharedData::get_instance()->GAMENAME = name.toStdString();
 
     reload();
 
@@ -605,21 +492,6 @@ void MainWindow::on_actionStrings_Editor_triggered()
     strings_editor_window->show();
 }
 
-void MainWindow::on_actionReset_Stage_Links_triggered()
-{
-    for (int i=0; i<FS_STAGE_MAX_LINKS; i++) {
-        Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].links[i].bidirecional = true;
-        Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].links[i].id_map_destiny = -1;
-        Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].links[i].id_map_origin = -1;
-        Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].links[i].is_door = false;
-        Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].links[i].pos_destiny.x = 0;
-        Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].links[i].pos_destiny.y = 0;
-        Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].links[i].pos_origin.x = 0;
-        Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].links[i].pos_origin.y = 0;
-        Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].links[i].size = 1;
-        Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].links[i].type = LINK_VERTICAL;
-    }
-}
 
 void MainWindow::on_actionZoomOne_triggered()
 {

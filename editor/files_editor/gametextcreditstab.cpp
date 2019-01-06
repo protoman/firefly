@@ -7,7 +7,7 @@
 #include "aux_tools/stringutils.h"
 #include "common.h"
 
-extern std::string FILEPATH;
+#include "data/shareddata.h"
 
 GameTextCreditsTab::GameTextCreditsTab(QWidget *parent) :
     QWidget(parent),
@@ -18,9 +18,7 @@ GameTextCreditsTab::GameTextCreditsTab(QWidget *parent) :
 
     current_stage = 0;
     data_loading = true;
-    common::fill_stages_combo(ui->stageSelect_comboBox);
     load_data();
-    set_stage_data(INTRO_STAGE);
     data_loading = false;
 }
 
@@ -31,16 +29,10 @@ GameTextCreditsTab::~GameTextCreditsTab()
 
 void GameTextCreditsTab::load_data()
 {
-    CURRENT_FILE_FORMAT::fio_strings fio_str;
-    game_credits_data = fio_str.get_string_list_from_file(FILEPATH + "/game_credits.txt");
+    fio_strings fio_str;
+    game_credits_data = fio_str.get_string_list_from_file(SharedData::get_instance()->FILEPATH + "/game_credits.txt");
     // read file and fill void spaces in boss credits with empty strings
-    boss_credits_data = fio_str.get_string_list_from_file(FILEPATH + "/boss_credits.txt");
-    int max_lines = STAGE_COUNT * 3;
-    if (boss_credits_data.size() < max_lines) {
-        for (int i=boss_credits_data.size(); i<max_lines; i++) {
-            boss_credits_data.push_back(std::string(""));
-        }
-    }
+    boss_credits_data = fio_str.get_string_list_from_file(SharedData::get_instance()->FILEPATH + "/boss_credits.txt");
 
     ui->gameCredits_textEdit->clear();
     for (int i=0; i<game_credits_data.size(); i++) {
@@ -59,7 +51,7 @@ void GameTextCreditsTab::set_stage_data(int stage_n)
 
 void GameTextCreditsTab::save_data()
 {
-    CURRENT_FILE_FORMAT::fio_strings fio_str;
+    fio_strings fio_str;
     QString game_credits_text = ui->gameCredits_textEdit->toPlainText();
     game_credits_text.replace("\r", "");
     QStringList splitted_list = game_credits_text.split("\n");
@@ -69,8 +61,8 @@ void GameTextCreditsTab::save_data()
       game_credits_data.push_back(str.toStdString());
     }
 
-    fio_str.save_game_strings(game_credits_data, FILEPATH + "/game_credits.txt");
-    fio_str.save_game_strings(boss_credits_data, FILEPATH + "/boss_credits.txt");
+    fio_str.save_game_strings(game_credits_data, SharedData::get_instance()->FILEPATH + "/game_credits.txt");
+    fio_str.save_game_strings(boss_credits_data, SharedData::get_instance()->FILEPATH + "/boss_credits.txt");
 }
 
 void GameTextCreditsTab::on_bossCredits_lineEdit1_textChanged(const QString &arg1)

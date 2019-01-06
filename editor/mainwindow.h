@@ -10,20 +10,18 @@
 
 #include "mainwindow_tab/npc_edit.h"
 #include "mainwindow_tab/object_tab.h"
-#include "mainwindow_tab/weapon_edit.h"
-#include "mainwindow_tab/stage_edit.h"
 #include "mainwindow_tab/projectile_edit.h"
 #include "mainwindow_tab/artificial_inteligence_tab.h"
 #include "mainwindow_tab/game_properties_tab.h"
 #include "mainwindow_tab/map_tab.h"
 #include "mainwindow_tab/player_edit.h"
-#include "mainwindow_tab/armor_edit.h"
 #include "mainwindow_tab/gamescenes.h"
 #include "mainwindow_tab/anim_tiles_edit.h"
 #include "scenes/sceneeditorwindow.h"
 #include "aboutwindow.h"
 #include "files_editor/fileseditor.h"
 #include "files_editor/stringseditor.h"
+
 
 namespace Ui
 {
@@ -69,7 +67,6 @@ public slots:
 
 
  void on_npc_direction_combo_currentIndexChanged(int index);
-	void on_link_orientation_combobox_currentIndexChanged(int index);
 	void on_spinBox_valueChanged(int );
 	void on_listWidget_2_currentRowChanged(int currentRow);
 	void on_toolBox_currentChanged(int index);
@@ -90,31 +87,12 @@ public slots:
 
 	void on_tabWidget_currentChanged(int index);
 
-	void on_bg1_filename_currentIndexChanged(const QString &arg1);
 
 	void on_checkBox_clicked(bool checked);
-
-	void on_bg1_y_pos_valueChanged(int arg1);
-
-	void on_bg2_filename_currentIndexChanged(const QString &arg1);
-
-	void on_bg2_y_pos_valueChanged(int arg1);
-
-	void on_bg1_speed_valueChanged(int arg1);
-
-	void on_bg2_speed_valueChanged(int arg1);
 
 	void on_checkBox_2_clicked(bool checked);
 
 	void on_checkBox_3_clicked(bool checked);
-
-	void on_stage_boss_weapon_combo_currentIndexChanged(int index);
-
-	void on_bg1_speed_valueChanged(double arg1);
-
-	void on_bg2_speed_valueChanged(double arg1);
-
-	void on_actionReset_Map_triggered();
 
 	void on_players_tab_maxshots_valueChanged(int arg1);
 
@@ -131,8 +109,6 @@ public slots:
     void on_chargedshot_combo_currentIndexChanged(int index);
 
     void on_players_tab_list_combo_2_currentIndexChanged(int index);
-
-    void on_actionSwap_Maps_triggered();
 
     void on_actionScenes_Editor_triggered();
 
@@ -154,8 +130,6 @@ private slots:
 
     void on_actionStrings_Editor_triggered();
 
-    void on_actionReset_Stage_Links_triggered();
-
     void on_actionZoomOne_triggered();
 
     void on_actionZoomTwo_triggered();
@@ -171,12 +145,9 @@ private:
     npc_edit *npc_edit_tab;
     artificial_inteligence_tab *ai_edit_tab;
     object_tab *object_edit_tab;
-    weapon_edit *weapon_edit_tab;
-    stage_edit *stage_edit_tab;
     projectile_edit *projectile_edit_tab;
     map_tab *map_edit_tab;
     player_edit *player_edit_tab;
-    armor_edit *armor_edit_tab;
     GameScenes *game_scenes_tab;
     anim_tiles_edit *anim_tiles_edit_tab;
 

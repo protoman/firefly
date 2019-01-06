@@ -8,13 +8,12 @@
 #include "mediator.h"
 #include "file/fio_strings.h"
 
-extern std::string FILEPATH;
-extern std::string GAMEPATH;
+#include "data/shareddata.h"
 
 TextPreviewArea::TextPreviewArea(QWidget *parent) : QWidget(parent)
 {
     selected_n = 0;
-    const QString font_filename = QString(GAMEPATH.c_str()) + QString("/fonts/sofia_regular.ttf");
+    const QString font_filename = QString(SharedData::get_instance()->GAMEPATH.c_str()) + QString("/fonts/sofia_regular.ttf");
     int id = QFontDatabase::addApplicationFont(font_filename);
     QString font_family = QFontDatabase::applicationFontFamilies(id).at(0);
     monospace = QFont(font_family);
@@ -46,7 +45,7 @@ void TextPreviewArea::paintEvent(QPaintEvent *event)
     //std::cout << ">>OK - DRAW TEXT PREVIEW << " << std::endl;
     painter.setPen(QColor(255, 255, 255, 255));
 
-    CURRENT_FILE_FORMAT::file_scene_show_text text_info = ScenesMediator::get_instance()->text_list.at(selected_n);
+    file_scene_show_text text_info = ScenesMediator::get_instance()->text_list.at(selected_n);
 
     int pos_x = 0;
     int pos_y = 0;
@@ -61,7 +60,7 @@ void TextPreviewArea::paintEvent(QPaintEvent *event)
 
     int lines_n = 0;
     int max_line_w = 0;
-    CURRENT_FILE_FORMAT::fio_strings fio_str;
+    fio_strings fio_str;
     for (int i=0; i<SCENE_TEXT_LINES_N; i++) {
         QString line = QString(scene_text_list[i].c_str());
         if (line.size() > 0) {
@@ -76,25 +75,25 @@ void TextPreviewArea::paintEvent(QPaintEvent *event)
     int center_y = (RES_H * 0.5) - (lines_n * (SCENES_LINE_H_DIFF * 0.5));
 
 
-    if (text_info.position_type == CURRENT_FILE_FORMAT::text_position_type_dialogbottom) {
+    if (text_info.position_type == text_position_type_dialogbottom) {
         pos_x = 10;
         pos_y = SCENES_TEXT_BOTTOM_POSY;
-    } else if (text_info.position_type == CURRENT_FILE_FORMAT::text_position_type_dialogtop) {
+    } else if (text_info.position_type == text_position_type_dialogtop) {
         pos_x = 10;
         pos_y = 10;
-    } else if (text_info.position_type == CURRENT_FILE_FORMAT::text_position_type_centered) {
+    } else if (text_info.position_type == text_position_type_centered) {
         pos_x = center_x;
         pos_y = center_y;
 
-    } else if (text_info.position_type == CURRENT_FILE_FORMAT::text_position_type_center_x) {
+    } else if (text_info.position_type == text_position_type_center_x) {
         pos_x = center_x;
         pos_y = text_info.y;
 
-    } else if (text_info.position_type == CURRENT_FILE_FORMAT::text_position_type_center_y) {
+    } else if (text_info.position_type == text_position_type_center_y) {
         pos_x = text_info.x;
         pos_y = center_y;
 
-    } else if (text_info.position_type == CURRENT_FILE_FORMAT::text_position_type_user_defined) {
+    } else if (text_info.position_type == text_position_type_user_defined) {
         pos_x = text_info.x;
         pos_y = text_info.y;
     }

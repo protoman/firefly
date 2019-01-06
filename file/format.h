@@ -5,8 +5,7 @@
 #include <sstream>
 
 #include "../defines.h"
-#include "../file/format/st_common.h"
-#include "../file/format/st_hitPoints.h"
+#include "../data/st_common.h"
 
 #include "file/v4/file_game_v4.h"
 #include "file/v4/file_scene_v4.h"

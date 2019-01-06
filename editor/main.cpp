@@ -20,46 +20,12 @@ int palleteY=0;
 #include "enum_names.h"
 #include "file/file_io.h"
 
-std::string GAMEPATH; // path without GAMES
-std::string FILEPATH; // path including GAMES/[GAME]
-std::string SAVEPATH;
-std::string GAMENAME;
 
-bool GAME_FLAGS[FLAG_COUNT];
+#include "data/shareddata.h"
 
 void remove_duplicated()
 {
-    /*
-	for (int i=0; i<MAX_STAGES; i++) {
-		for (int j=0; j<STAGE_MAX_MAPS; j++) {
-			// remove duplicated NPCS
-			for (int k=0; k<MAX_MAP_NPC_N; k++) {
-				for (int l=0; l<MAX_MAP_NPC_N; l++) {
-                    //maps_data[i][j].map_npcs[k].id_npc != -1 && maps_data[i][j].map_npcs[l].id_npc != -1 &&
-                    if (Mediator::get_instance()->maps_data[i][j].map_npcs[l].id_npc != -1 && k != l && Mediator::get_instance()->maps_data[i][j].map_npcs[k].start_point == Mediator::get_instance()->maps_data[i][j].map_npcs[l].start_point) {
-                        std::cout << ">>> removing duplicated NPC[" << l << "].id[" << Mediator::get_instance()->maps_data[i][j].map_npcs[l].id_npc << "] in stage[" << i << "].map[" << j << "] <<<" << std::endl;
-                        Mediator::get_instance()->maps_data[i][j].map_npcs[l].id_npc = -1;
-                        Mediator::get_instance()->maps_data[i][j].map_npcs[l].start_point.x = -1;
-                        Mediator::get_instance()->maps_data[i][j].map_npcs[l].start_point.y = -1;
-					}
-				}
-			}
-			// remove duplicated OBJECTS
-			for (int k=0; k<MAX_MAP_NPC_N; k++) {
-				for (int l=0; l<MAX_MAP_NPC_N; l++) {
-                    if (Mediator::get_instance()->maps_data[i][j].map_objects[k].id_object != -1 && Mediator::get_instance()->maps_data[i][j].map_objects[l].id_object != -1 && k != l && Mediator::get_instance()->maps_data[i][j].map_objects[k].start_point == Mediator::get_instance()->maps_data[i][j].map_objects[l].start_point) {
-                        std::cout << "# id1: " << (int)Mediator::get_instance()->maps_data[i][j].map_objects[k].id_object << ", id2: " << (int)Mediator::get_instance()->maps_data[i][j].map_objects[l].id_object;
-                        std::cout << ", pos#1[" << k << "], pos2[" << l << "]";
-                        std::cout << ", x1: " << Mediator::get_instance()->maps_data[i][j].map_objects[k].start_point.x << ", x2: " << Mediator::get_instance()->maps_data[i][j].map_objects[l].start_point.x << ", y1: " << Mediator::get_instance()->maps_data[i][j].map_objects[k].start_point.y << ", y2: " << Mediator::get_instance()->maps_data[i][j].map_objects[l].start_point.y << std::endl;
-                        Mediator::get_instance()->maps_data[i][j].map_objects[l].id_object = -1;
-                        Mediator::get_instance()->maps_data[i][j].map_objects[l].start_point.x = -1;
-                        Mediator::get_instance()->maps_data[i][j].map_objects[l].start_point.y = -1;
-					}
-				}
-			}
-		}
-	}
-    */
+
 }
 
 void adjust_sprites_size() {
@@ -95,10 +61,10 @@ int main(int argc, char *argv[])
 	std::string argvString = std::string(argv[0]);
 
 
-    GAMEPATH = argvString.substr(0, argvString.size()-EXEC_NAME.size());
-    std::cout << " *** EXEC_NAME: " << EXEC_NAME << ", FILEPATH: " << FILEPATH << ", SAVEPATH: " << SAVEPATH << " ***" << std::endl;
+    SharedData::get_instance()->GAMEPATH = argvString.substr(0, argvString.size()-EXEC_NAME.size());
+    std::cout << " *** EXEC_NAME: " << EXEC_NAME << ", FILEPATH: " << SharedData::get_instance()->FILEPATH << ", SAVEPATH: " << SharedData::get_instance()->SAVEPATH << " ***" << std::endl;
 
-    FILEPATH = "";
+    SharedData::get_instance()->FILEPATH = "";
 
     init_enum_names();
     assert_enum_items(); // check that stringfy variables are OK
@@ -117,8 +83,8 @@ int main(int argc, char *argv[])
         QObject::connect(new_game_dialog, SIGNAL(on_accepted(QString)), &w, SLOT(on_new_game_accepted(QString)));
         new_game_dialog->show();
     } else if (game_list.size() == 1) {
-        FILEPATH = GAMEPATH + std::string("/games/") + game_list.at(0) + std::string("/");
-        GAMENAME = game_list.at(0);
+        SharedData::get_instance()->FILEPATH = SharedData::get_instance()->GAMEPATH + std::string("/games/") + game_list.at(0) + std::string("/");
+        SharedData::get_instance()->GAMENAME = game_list.at(0);
         Mediator::get_instance()->load_game();
         w.reload();
         w.show();

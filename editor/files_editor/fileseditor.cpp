@@ -6,7 +6,7 @@
 #include <QDir>
 #include <map>
 
-extern std::string FILEPATH;
+#include "data/shareddata.h"
 
 FilesEditor::FilesEditor(QWidget *parent) : QMainWindow(parent), ui(new Ui::FilesEditor), model_directories(this)
 {
@@ -50,7 +50,7 @@ std::map<int, std::vector<std::string> > FilesEditor::get_dir_files_matrix(std::
 {
     std::map<int, std::vector<std::string> > res;
     for (int k=0; k<dir_list.size(); k++) {
-        QString filepath = QString(FILEPATH.c_str()) + QString(dir_list.at(k).c_str());
+        QString filepath = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString(dir_list.at(k).c_str());
         QDir dir = QDir(filepath);
         if (!dir.exists()) {
             std::cout << ">> FilesEditor::get_dir_files_matrix( ERROR: Directory '" << filepath.toStdString() << " does not exist. <<" << std::endl;
@@ -76,7 +76,7 @@ std::map<int, std::vector<std::string> > FilesEditor::get_dir_files_matrix(std::
 
 void FilesEditor::on_selected_image_changed(std::string image)
 {
-    QString filename = QString(FILEPATH.c_str()) + QString("/") + QString(image.c_str());
+    QString filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/") + QString(image.c_str());
     ui->image_preview_widget->setImageFilename(filename);
 }
 

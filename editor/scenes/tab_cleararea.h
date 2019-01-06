@@ -50,7 +50,7 @@ public slots:
 
 private:
     Ui::TabClearArea *ui;
-    CURRENT_FILE_FORMAT::fio_scenes fio;
+    fio_scenes fio;
     bool data_loading;
 };
 

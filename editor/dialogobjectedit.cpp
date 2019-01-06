@@ -55,7 +55,7 @@ void DialogObjectEdit::on_buttonBox_accepted()
 }
 
 void DialogObjectEdit::fillObjectGraphicsList() {
-    QString dirPath(QString(FILEPATH.c_str())+"/images/sprites/objects/");
+    QString dirPath(QString(SharedData::get_instance()->FILEPATH.c_str())+"/images/sprites/objects/");
     QDir dir = QDir(dirPath);
     dir.setFilter(QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot);
     dir.setSorting(QDir::Size | QDir::Reversed);
@@ -64,7 +64,7 @@ void DialogObjectEdit::fillObjectGraphicsList() {
 	for (int i = 0; i < list.size(); ++i) {
 		QFileInfo fileInfo = list.at(i);
 		if (i == 0) {
-            sprintf(Mediator::get_instance()->addNpcFilename, "%s/images/sprites/objects/%s", FILEPATH.c_str(), qPrintable(fileInfo.fileName()));
+            sprintf(Mediator::get_instance()->addNpcFilename, "%s/images/sprites/objects/%s", SharedData::get_instance()->FILEPATH.c_str(), qPrintable(fileInfo.fileName()));
 		}
 		ui->objectListCombobox->addItem(fileInfo.fileName());
 	}
@@ -85,7 +85,7 @@ void DialogObjectEdit::on_npcGraphicSizeSpin_h_valueChanged(int value)
 
 void DialogObjectEdit::on_objectListCombobox_currentIndexChanged(QString item)
 {
-    sprintf(Mediator::get_instance()->addNpcFilename, "%s/images/sprites/objects/%s", FILEPATH.c_str(), qPrintable(item));
+    sprintf(Mediator::get_instance()->addNpcFilename, "%s/images/sprites/objects/%s", SharedData::get_instance()->FILEPATH.c_str(), qPrintable(item));
 	ui->npcPreviewAreaWidget->repaint();
 }
 

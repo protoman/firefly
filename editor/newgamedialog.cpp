@@ -3,7 +3,7 @@
 
 #include <QDir>
 
-extern std::string GAMEPATH;
+#include "data/shareddata.h"
 
 NewGameDialog::NewGameDialog(QWidget *parent) : QDialog(parent), ui(new Ui::NewGameDialog)
 {
@@ -19,7 +19,7 @@ NewGameDialog::~NewGameDialog()
 
 bool NewGameDialog::game_folder_exists(QString name)
 {
-    QString filepath = QString(GAMEPATH.c_str()) + QString("/games/") + name;
+    QString filepath = QString(SharedData::get_instance()->GAMEPATH.c_str()) + QString("/games/") + name;
     return QDir(filepath).exists();
 }
 

@@ -7,7 +7,7 @@
 #include <QCloseEvent>
 
 
-extern std::string FILEPATH;
+#include "data/shareddata.h"
 
 StringsEditor::StringsEditor(QWidget *parent, int mode) : QDialog(parent), ui(new Ui::StringsEditor), string_edit_model(this), scenes_string_edit_model(this), target_qline(NULL), target_property(NULL)
 {
@@ -55,7 +55,7 @@ void StringsEditor::reload()
 
     if (ui->languageSelector_comboBox->count() > 0) {
         current_lang = ui->languageSelector_comboBox->currentText().toStdString();
-        std::string path_new = FILEPATH + std::string("/lang/strings_ingame_") + current_lang + std::string(".dat");
+        std::string path_new = SharedData::get_instance()->FILEPATH + std::string("/lang/strings_ingame_") + current_lang + std::string(".dat");
         load_language(path_new);
     }
 
@@ -143,7 +143,7 @@ void StringsEditor::closeEvent(QCloseEvent *event)
 
 void StringsEditor::fill_data()
 {
-    std::string lang_dir_filename = FILEPATH + std::string("/lang/");
+    std::string lang_dir_filename = SharedData::get_instance()->FILEPATH + std::string("/lang/");
     lang_dir_filename = StringUtils::clean_filename(lang_dir_filename);
     if (QDir(lang_dir_filename.c_str()).exists() == false) {
         QDir().mkdir(lang_dir_filename.c_str());
@@ -211,8 +211,8 @@ void StringsEditor::load_language(std::string filename)
 void StringsEditor::on_addLanguage_pushButton_clicked()
 {
     data_loading = true;
-    std::string path_old = FILEPATH + std::string("/strings_ingame_v4.dat");
-    std::string path_new = FILEPATH + std::string("/lang/strings_ingame_") + ui->languageName_lineEdit->text().toStdString() + std::string(".dat");
+    std::string path_old = SharedData::get_instance()->FILEPATH + std::string("/strings_ingame_v4.dat");
+    std::string path_new = SharedData::get_instance()->FILEPATH + std::string("/lang/strings_ingame_") + ui->languageName_lineEdit->text().toStdString() + std::string(".dat");
     QFile::copy(path_old.c_str(), path_new.c_str());
     load_language(path_new);
     ui->languageSelector_comboBox->addItem(ui->languageName_lineEdit->text().toStdString().c_str());
@@ -238,7 +238,7 @@ void StringsEditor::on_languageSelector_comboBox_currentTextChanged(const QStrin
     save_data();
     current_lang = arg1.toStdString();
     data_loading = true;
-    std::string path_new = FILEPATH + std::string("/lang/strings_ingame_") + arg1.toStdString() + std::string(".dat");
+    std::string path_new = SharedData::get_instance()->FILEPATH + std::string("/lang/strings_ingame_") + arg1.toStdString() + std::string(".dat");
     load_language(path_new);
     fill_translation();
     data_loading = false;

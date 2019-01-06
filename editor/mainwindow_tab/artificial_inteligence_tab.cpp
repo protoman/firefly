@@ -40,7 +40,7 @@ void artificial_inteligence_tab::on_ai_selector_currentIndexChanged(int index)
     // if no such AI exists in list yet, create it
     if (Mediator::get_instance()->enemy_list.size() > Mediator::get_instance()->ai_list.size()) {
         for (int i=Mediator::get_instance()->ai_list.size(); i<Mediator::get_instance()->enemy_list.size(); i++) {
-            Mediator::get_instance()->ai_list.push_back(CURRENT_FILE_FORMAT::file_artificial_inteligence());
+            Mediator::get_instance()->ai_list.push_back(file_artificial_inteligence());
         }
     }
 

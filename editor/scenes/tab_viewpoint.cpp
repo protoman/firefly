@@ -114,7 +114,7 @@ void tab_viewpoint::set_fields(int index)
 
 void tab_viewpoint::update_preview_image(int index)
 {
-    QString filename = QString(FILEPATH.c_str()) + QString("/images/scenes/") + QString(ScenesMediator::get_instance()->viewpoint_list.at(index).filename);
+    QString filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/scenes/") + QString(ScenesMediator::get_instance()->viewpoint_list.at(index).filename);
     ui->image_preview_widget->setImageFilename(filename);
     ui->image_preview_widget->repaint();
 }
@@ -133,7 +133,7 @@ void tab_viewpoint::on_filename_comboBox_currentIndexChanged(const QString &arg1
 
 void tab_viewpoint::on_add_Button_clicked()
 {
-    CURRENT_FILE_FORMAT::file_scene_show_viewpoint new_viewpoint;
+    file_scene_show_viewpoint new_viewpoint;
     sprintf(new_viewpoint.name, "%s%d", "Show Viewpoint #", ScenesMediator::get_instance()->viewpoint_list.size()+1);
     ScenesMediator::get_instance()->viewpoint_list.push_back(new_viewpoint);
     ui->select_comboBox->addItem(QString(new_viewpoint.name));

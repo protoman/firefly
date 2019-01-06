@@ -46,7 +46,7 @@ public slots:
 
 private:
     Ui::TabAnimation *ui;
-    CURRENT_FILE_FORMAT::fio_scenes fio;
+    fio_scenes fio;
     bool data_loading;
 };
 

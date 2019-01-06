@@ -41,7 +41,7 @@ void anim_tiles_edit::set_data(int index)
         return;
     }
     ui->graphic_combo->setCurrentIndex(ui->graphic_combo->findText(QString(Mediator::get_instance()->anim_block_list.at(index).filename)));
-    std::string filename = FILEPATH + std::string("images/tilesets/anim/") + std::string(Mediator::get_instance()->anim_block_list.at(index).filename);
+    std::string filename = SharedData::get_instance()->FILEPATH + std::string("images/tilesets/anim/") + std::string(Mediator::get_instance()->anim_block_list.at(index).filename);
     std::cout << "FILENAME: " << filename << std::endl;
     ui->animTileFrames_widget->set_graphicfile(filename);
     ui->animTileFrames_widget->set_sprite_pos(st_position(0, 0));
@@ -60,7 +60,7 @@ void anim_tiles_edit::onChangeFrame()
 
 void anim_tiles_edit::on_addBlock_button_clicked()
 {
-    Mediator::get_instance()->anim_block_list.push_back(CURRENT_FILE_FORMAT::file_anim_block());
+    Mediator::get_instance()->anim_block_list.push_back(file_anim_block());
     data_loading = true;
     common::fill_anim_block_combo(ui->currentBlock_combo);
     ui->currentBlock_combo->setCurrentIndex(Mediator::get_instance()->anim_block_list.size()-1);
@@ -72,7 +72,7 @@ void anim_tiles_edit::on_addBlock_button_clicked()
 void anim_tiles_edit::on_graphic_combo_currentIndexChanged(const QString &arg1)
 {
     if (data_loading == true) { return; }
-    std::string filename = FILEPATH + std::string("images/tilesets/anim/") + arg1.toStdString();
+    std::string filename = SharedData::get_instance()->FILEPATH + std::string("images/tilesets/anim/") + arg1.toStdString();
     ui->animTileFrames_widget->set_graphicfile(filename);
     ui->animTileFrames_widget->set_sprite_pos(st_position(0, 0));
     ui->animTileFrames_widget->repaint();

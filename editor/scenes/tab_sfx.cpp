@@ -62,7 +62,7 @@ void TabSfx::reload()
 
 void TabSfx::on_add_pushButton_clicked()
 {
-    CURRENT_FILE_FORMAT::file_scene_play_sfx new_sfx;
+    file_scene_play_sfx new_sfx;
     sprintf(new_sfx.name, "%s%d", "Play SFX #", ScenesMediator::get_instance()->playsfx_list.size()+1);
     ScenesMediator::get_instance()->playsfx_list.push_back(new_sfx);
     ui->select_comboBox->addItem(QString(new_sfx.name));

@@ -59,9 +59,9 @@ private:
 
 private:
     Ui::TabText *ui;
-    CURRENT_FILE_FORMAT::fio_scenes fio_scenes;
-    CURRENT_FILE_FORMAT::fio_strings fio_str;
-    CURRENT_FILE_FORMAT::file_io fio;
+    fio_scenes fio_scenes;
+    fio_strings fio_str;
+    file_io fio;
     bool data_loading;
     std::string scene_text_list[SCENE_TEXT_LINES_N];
     int currentIndex;

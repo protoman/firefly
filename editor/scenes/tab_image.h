@@ -65,7 +65,7 @@ private:
 
 private:
     Ui::tab_image *ui;
-    CURRENT_FILE_FORMAT::fio_scenes fio;
+    fio_scenes fio;
     bool data_loading;
 };
 

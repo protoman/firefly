@@ -28,14 +28,8 @@ private slots:
     void on_listWidget_2_currentRowChanged(int currentRow);
     void on_npc_listWidget_currentRowChanged(int currentRow);
     void on_npc_direction_combo_currentIndexChanged(int index);
-    void on_link_orientation_combobox_currentIndexChanged(int index);
-    void on_link_bidi_checkbox_toggled(bool checked);
-    void on_link_isdoor_checkbox_toggled(bool checked);
     void on_objectListWidget_currentRowChanged(int currentRow);
     void on_bg_color_pick_clicked();
-    void on_bg1_filename_currentIndexChanged(const QString &arg1);
-    void on_bg1_speed_valueChanged(double arg1);
-    void on_bg1_y_pos_valueChanged(int arg1);
     void on_checkBox_toggled(bool checked);
     void on_checkBox_2_toggled(bool checked);
     void on_object_direction_combo_currentIndexChanged(int index);
@@ -49,29 +43,11 @@ private slots:
     void on_editModeLock_button_clicked();
     void on_editModeErase_button_clicked();
 
-    void on_mapGFX_comboBox_currentIndexChanged(int index);
-
-    void on_autoScrollBG1_mode_currentIndexChanged(int index);
-
     void on_addAnimTile_toolButton_clicked();
 
     void on_toolButton_clicked();
 
     void on_paste_toolButton_clicked();
-
-    void on_mapAutoScroll_checkBox_clicked(bool checked);
-
-    void on_fb_image_comboBox_currentIndexChanged(const QString &arg1);
-
-    void on_fg_speed_doubleSpinBox_valueChanged(double arg1);
-
-    void on_fg_position_spinBox_valueChanged(int arg1);
-
-    void on_fg_show_checkBox_toggled(bool checked);
-
-    void on_fg_opacity_spinBox_valueChanged(int arg1);
-
-    void on_mapGFXMode_comboBox_currentIndexChanged(int index);
 
     void on_difficulty_comboBox_currentIndexChanged(int index);
 
@@ -100,6 +76,18 @@ private slots:
 
     void set_layer_data();
 
+    void on_bg1_filename_currentIndexChanged(const QString &arg1);
+
+    void on_bg1_speed_valueChanged(double arg1);
+
+    void on_bg1_y_pos_valueChanged(int arg1);
+
+    void on_autoScrollBG1_mode_currentIndexChanged(int index);
+
+    void on_repeatX_checkBox_toggled(bool checked);
+
+    void on_repeatY_checkBox_toggled(bool checked);
+
 private:
     void fill_data();
     void fill_background_list();
@@ -108,7 +96,7 @@ private:
 private:
     Ui::map_tab *ui;
     bool _data_loading;
-    CURRENT_FILE_FORMAT::file_io fio;
+    file_io fio;
 };
 
 #endif // MAP_TAB_H

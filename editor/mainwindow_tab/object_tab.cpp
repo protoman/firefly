@@ -27,7 +27,7 @@ void object_tab::fill_data()
 {
     _data_loaded = false;
     common::fill_files_combo("/images/sprites/objects", ui->graphicfile_combo);
-    ui->object_preview_area->set_graphicfile(FILEPATH+std::string("/images/sprites/objects/")+std::string(Mediator::get_instance()->object_list.at(0).graphic_filename));
+    ui->object_preview_area->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/objects/")+std::string(Mediator::get_instance()->object_list.at(0).graphic_filename));
     ui->object_preview_area->repaint();
 
     common::fill_object_combo(ui->objectlist_combo);
@@ -41,7 +41,7 @@ void object_tab::on_graphicfile_combo_currentIndexChanged(const QString &arg1)
 		return;
 	}
     sprintf(Mediator::get_instance()->object_list.at(_current_object).graphic_filename, "%s", arg1.toStdString().c_str());
-    ui->object_preview_area->set_graphicfile(FILEPATH+std::string("/images/sprites/objects/")+arg1.toStdString());
+    ui->object_preview_area->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/objects/")+arg1.toStdString());
     ui->object_preview_area->repaint();
 }
 
@@ -140,7 +140,7 @@ void object_tab::on_timer_valueChanged(int arg1)
 
 void object_tab::on_pushButton_clicked()
 {
-    Mediator::get_instance()->object_list.push_back(CURRENT_FILE_FORMAT::file_object());
+    Mediator::get_instance()->object_list.push_back(file_object());
     ui->objectlist_combo->addItem(QString("[") + QString::number(Mediator::get_instance()->object_list.size()-1) + QString("] Object"));
     ui->objectlist_combo->setCurrentIndex(Mediator::get_instance()->object_list.size()-1);
 

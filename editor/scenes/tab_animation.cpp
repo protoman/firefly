@@ -99,7 +99,7 @@ void TabAnimation::change_h(int value)
 
 void TabAnimation::on_add_pushButton_clicked()
 {
-    CURRENT_FILE_FORMAT::file_scene_show_animation new_animation;
+    file_scene_show_animation new_animation;
     sprintf(new_animation.name, "%s%d", "Show Animation #", ScenesMediator::get_instance()->animation_list.size()+1);
     ScenesMediator::get_instance()->animation_list.push_back(new_animation);
     ui->select_comboBox->addItem(QString(new_animation.name));

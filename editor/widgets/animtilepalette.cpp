@@ -23,7 +23,7 @@ void animTilePalette::reload()
     int max = Mediator::get_instance()->anim_block_list.size();
     //std::cout << "ANIMPALETTE::reload::max: " << max << std::endl;
     for (int i=0; i<max; i++) {
-        std::string filename = FILEPATH + "/images/tilesets/anim/" + std::string(Mediator::get_instance()->anim_block_list.at(i).filename);
+        std::string filename = SharedData::get_instance()->FILEPATH + "/images/tilesets/anim/" + std::string(Mediator::get_instance()->anim_block_list.at(i).filename);
         if (filename.find(".png") == std::string::npos) {
             continue;
         }

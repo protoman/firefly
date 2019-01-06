@@ -33,8 +33,8 @@ dialog_pick_color::dialog_pick_color(QWidget *parent) :
 		QPushButton *button = new QPushButton("");
 		button->setMaximumWidth(32);
 		button->setMaximumHeight(32);
-        button->setStyleSheet(QString("background-color: rgb(") + QString::number(Mediator::get_instance()->colormap[i].r) + QString(", ") +  QString::number(Mediator::get_instance()->colormap[i].g) + QString(", ") +  QString::number(Mediator::get_instance()->colormap[i].b) + QString("); border-style: outset; border-width: 1px; border-color: black;"));
-		connect(button, SIGNAL(clicked()), signalMapper, SLOT(map()));
+        //button->setStyleSheet(QString("background-color: rgb(") + QString::number(Mediator::get_instance()->colormap[i].r) + QString(", ") +  QString::number(Mediator::get_instance()->colormap[i].g) + QString(", ") +  QString::number(Mediator::get_instance()->colormap[i].b) + QString("); border-style: outset; border-width: 1px; border-color: black;"));
+        connect(button, SIGNAL(clicked()), signalMapper, SLOT(map()));
 		signalMapper->setMapping(button, i);
 		ui->gridLayout->addWidget(button, row, column);
 		column++;

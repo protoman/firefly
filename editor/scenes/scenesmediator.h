@@ -16,17 +16,17 @@ public:
     void load_game_scenes();
 
 public:
-    std::vector<CURRENT_FILE_FORMAT::file_scene_show_image> image_list;
-    std::vector<CURRENT_FILE_FORMAT::file_scene_show_viewpoint> viewpoint_list;
-    std::vector<CURRENT_FILE_FORMAT::file_scene_show_text> text_list;
-    std::vector<CURRENT_FILE_FORMAT::file_scene_clear_area> cleararea_list;
-    std::vector<CURRENT_FILE_FORMAT::file_scene_show_animation> animation_list;
-    std::vector<CURRENT_FILE_FORMAT::file_scene_play_sfx> playsfx_list;
-    std::vector<CURRENT_FILE_FORMAT::file_scene_play_music> playmusic_list;
+    std::vector<file_scene_show_image> image_list;
+    std::vector<file_scene_show_viewpoint> viewpoint_list;
+    std::vector<file_scene_show_text> text_list;
+    std::vector<file_scene_clear_area> cleararea_list;
+    std::vector<file_scene_show_animation> animation_list;
+    std::vector<file_scene_play_sfx> playsfx_list;
+    std::vector<file_scene_play_music> playmusic_list;
 
-    std::vector<CURRENT_FILE_FORMAT::file_scene_list> scenes_list;
+    std::vector<file_scene_list> scenes_list;
 
-    std::map<Uint8, Uint8> game_scenes_map;
+    std::map<int, int> game_scenes_map;
 
     int selected_scene;
 
@@ -34,7 +34,7 @@ private:
     ScenesMediator();
     ScenesMediator(ScenesMediator const&){};             // copy constructor is private
     ScenesMediator& operator=(ScenesMediator const&){};  // assignment operator is private
-    CURRENT_FILE_FORMAT::fio_scenes fio_scn;
+    fio_scenes fio_scn;
 
 
 private:

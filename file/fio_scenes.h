@@ -8,7 +8,7 @@
 
 #include "file/v4/file_scene_v4.h"
 
-extern std::string FILEPATH; /**< TODO */
+#include "data/shareddata.h"
 
 struct st_game_scene_item {
     int id;

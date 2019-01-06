@@ -8,7 +8,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 
-extern std::string FILEPATH;
+#include "data/shareddata.h"
 
 ButtonDelegate::ButtonDelegate(QObject *parent, std::vector<std::string> set_dir_list, std::map<int, std::vector<std::string> > set_data_map, QAbstractTableModel* model) : signal_mapper(new QSignalMapper(this))
 {
@@ -50,7 +50,7 @@ void ButtonDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, co
 {
     QPushButton *button = static_cast<QPushButton*>(editor);
     int row = index.row();
-    QString value = QString(FILEPATH.c_str()) + QString(dir_list.at(row).c_str());
+    QString value = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString(dir_list.at(row).c_str());
     model->setData(index, value, Qt::EditRole);
 }
 
@@ -68,12 +68,12 @@ void ButtonDelegate::onButtonClicked(int row)
 {
     if (operation_mode == 0) {
         QString filename = QFileDialog::getOpenFileName((QWidget*)_parent, tr("Open Image File 1"), "/home", tr("Image Files (*.png)"));
-        if (filename == NULL || filename.size() == 0) {
+        if (filename == nullptr || filename.size() == 0) {
             return;
         }
         QFileInfo file_info(filename);
         std::cout << ">>> filename: " << filename.toStdString() << std::endl;
-        std::string dest_path = FILEPATH + dir_list.at(row) + std::string("/") + file_info.fileName().toStdString();
+        std::string dest_path = SharedData::get_instance()->FILEPATH + dir_list.at(row) + std::string("/") + file_info.fileName().toStdString();
         std::cout << "ButtonDelegate::editorEvent::dest_path: " << dest_path << std::endl;
         if (QFile::copy(filename, QString(dest_path.c_str())) == false) {
             std::cout << "ButtonDelegate::editorEvent::ERROR: Can't copy file." << std::endl;
@@ -82,7 +82,7 @@ void ButtonDelegate::onButtonClicked(int row)
         emit data_changed(row);
     } else if (operation_mode == 1) {
         //QString path = QDir::toNativeSeparators(QApplication::applicationDirPath());
-        QString filepath = QString("file:///") + QString(FILEPATH.c_str()) + QString("/") + QString(dir_list.at(row).c_str());
+        QString filepath = QString("file:///") + QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/") + QString(dir_list.at(row).c_str());
         std::cout << ">>>>> filepath: " << filepath.toStdString() << std::endl;
         QDesktopServices::openUrl(QUrl(filepath));
     }

@@ -17,7 +17,7 @@ QWidget(parent), selected_player(0)
 
 void player_preview_area::update_sprites()
 {
-    QString filename = QString(FILEPATH.c_str()) + QString("/images/sprites/") + QString(Mediator::get_instance()->player_graphics_data.graphics_filename.c_str());
+    QString filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/sprites/") + QString(Mediator::get_instance()->player_graphics_data.graphics_filename.c_str());
     QPixmap sprites = QPixmap(filename);
     if (sprites.isNull() == true || sprites.width() <= 0) {
         return;
@@ -81,52 +81,11 @@ void player_preview_area::replace_colors()
         return;
     }
 
-    st_color color1 = Mediator::get_instance()->player_list_v3_1[player_n].weapon_colors[weapon_n].color1;
-    st_color color2 = Mediator::get_instance()->player_list_v3_1[player_n].weapon_colors[weapon_n].color2;
-    st_color color3 = Mediator::get_instance()->player_list_v3_1[player_n].weapon_colors[weapon_n].color3;
-
-    QColor replace_color1((int)color1.r, (int)color1.g, (int)color1.b);
-    QColor replace_color2((int)color2.r, (int)color2.g, (int)color2.b);
-    QColor replace_color3((int)color3.r, (int)color3.g, (int)color3.b);
-
-    QColor key_color1(55, 255, 0);
-    QColor key_color2(255, 0, 255);
-    QColor key_color3(0, 255, 255);
-
-
-
-    // convert qpixmap to qimage, so we can manipulate colors
-
-    //temp_image.setColor(64, replace_color1.rgb());
-    //temp_image.setColor(65, replace_color2.rgb());
-    //temp_image.setColor(66, replace_color3.rgb());
-
-
-    int color_count = _original_sprites.colorCount();
-    //std::cout << "replace1[" << replace_color1.rgb() << "], replace2[" << replace_color2.rgb() << "], replace3[" << replace_color3.rgb() << "]" << std::endl;
-    for (int i=0; i<color_count; i++) {
-        QRgb table_color = _colored_sprites.color(i);
-        //std::cout << "table_color[" << i << "][" << table_color << "]" << std::endl;
-
-
-        if (table_color == key_color1.rgb()) {
-            //std::cout << "replace-color#1[" << i << "]" << std::endl;
-            _colored_sprites.setColor(i, replace_color1.rgb());
-        } else if (table_color == key_color2.rgb()) {
-            //std::cout << "replace-color#2[" << i << "]" << std::endl;
-            _colored_sprites.setColor(i, replace_color2.rgb());
-        } else if (table_color == key_color3.rgb()) {
-            //std::cout << "replace-color#3[" << i << "]" << std::endl;
-            _colored_sprites.setColor(i, replace_color3.rgb());
-        }
-
-    }
 
     // convert back from qimage to qpixmap
     QPixmap temp_pixmap = temp_pixmap.fromImage(_colored_sprites);
     QColor transparent_mask_color = QColor(75, 125, 125);
     QPixmap player_mask = temp_pixmap.createMaskFromColor(qRgb(75, 125, 125), Qt::MaskInColor);
-    temp_pixmap.setMask(player_mask);
     _colored_sprites = temp_pixmap.toImage();
 
 
