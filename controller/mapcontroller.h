@@ -25,6 +25,15 @@ struct object_collision {
     }
 };
 
+struct st_layer_pos {
+    st_float_position pos;
+    bool is_fg;
+
+    st_layer_pos(bool isFg) {
+        this->is_fg = isFg;
+    }
+};
+
 
 struct water_bubble {
     st_position pos;
@@ -86,9 +95,11 @@ public:
     void add_bubble_animation(st_position pos);
     classnpc* collision_player_npcs(character*, const short int, const short int);
     st_float_position get_last_scrolled() const;
-    void addBackground(unsigned int n);
-    void clearBackgrounds();
-    void draw_dynamic_backgrounds();
+
+    // LAYERS //
+    void addLayer(unsigned int n, bool isFg);
+    void clearLayers();
+    void drawLayers(bool isFg);
 
     void draw_map_tiles();
 
@@ -149,6 +160,8 @@ public:
     void move_map(const short int move_x, const short int move_y);
 
     void reset_map();
+
+    void set_scroll_to_bottom();
 
     void add_animation(ANIMATION_TYPES pos_type, st_imageData* surface, const st_float_position &pos, st_position adjust_pos, unsigned int frame_time, unsigned int repeat_times, int direction, st_size framesize);
 
@@ -241,7 +254,8 @@ private:
 
     void set_map_enemy_static_background(std::string filename, st_position pos);
 
-
+    void preload_slope_images();
+    void draw_slope_tile(int x, int y, int dest_x, int dest_y);
 
 
 
@@ -265,7 +279,7 @@ private:
     st_float_position scrolled;                                             // stores the value the map scrolled in this cycle. used for character movement control (it should move taking the scroll in account)
     std::vector<bool> wall_scroll_lock;
 
-    std::map<unsigned int, st_float_position> layerScrollMap;
+    std::map<unsigned int, st_layer_pos> layerScrollMap;
     st_imageData static_bg;
     st_position static_bg_pos;
     short _platform_leave_counter;
@@ -276,8 +290,11 @@ private:
     std::vector<GameObject> object_list;
     // DRAW MEMBERS //
     int _show_map_pos_x;                                                    // this is used to compare the position that the map was drawn last time to the current scrolling to check if map needs to be redrawn
+    int _show_map_pos_y;                                                    // this is used to compare the position that the map was drawn last time to the current scrolling to check if map needs to be redrawn
     st_imageData map_screen;                                        // use to avoid having to draw the tilesets each time we update screen
     std::vector<anim_tile_desc> anim_tile_list;                             // list of animated tiles, so we don't need to loop through all tiles when drawing only the animated ones
+
+    std::map<int, st_imageData> slope_image_map;
 
 };
 

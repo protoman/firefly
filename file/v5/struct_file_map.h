@@ -16,14 +16,11 @@ objects - objectos colocados no mapa
 
 */
 
-enum e_TILE_TYPE {
-    TILE_TYPE_SOLID,
-    TILE_TYPE_ANIM,
-    TILE_TYPE_SLOPE,
-    TILE_TYPE_COUNT
-};
+
 
 #define BACKGROUND_LAYERS_MAX 15
+#define BACKGROUND_LAYERS_BG_COUNT 10
+#define BACKGROUND_LAYERS_FG_COUNT 5
 
 struct st_tile_piece {
     int x;
@@ -56,6 +53,7 @@ struct file_v5_map_background {
     unsigned int auto_scroll;                 // automatic move background even if player isn't moving. 0: don't move, 1: horizontal, 2: vertical
     bool repeatX;                            // if true, will repear on X axis to fill the screen
     bool repeatY;                            // if true, will repear on X axis to fill the screen
+    int alpha;
 
     file_v5_map_background()
     {
@@ -66,6 +64,7 @@ struct file_v5_map_background {
         sprintf(filename, "%s", "");
         repeatX = true;
         repeatY = false;
+        alpha = SDL_ALPHA_OPAQUE;
     }
 };
 
@@ -96,11 +95,15 @@ struct file_v5_map_header {
 struct file_v5_map_link { // DONE - Stage
     Sint8 id_map_origin;
     Sint8 id_map_destiny;
-    st_position pos_origin;
+    st_rectangle pos_origin;
     st_position pos_destiny;
+    e_LINK_DIRECTION link_direction;
+    int type;
     file_v5_map_link() {
         id_map_origin = -1;
         id_map_destiny = -1;
+        type = -1;
+        link_direction = LINK_DIRECTION_HORIZONTAL;
     }
 };
 
@@ -137,6 +140,21 @@ struct file_v5_map_object {
         difficulty_level = DIFFICULTY_EASY;
         difficulty_mode = DIFFICULTY_MODE_GREATER;
     }
+};
+
+struct slope_data {
+    int left = 0;
+    int right = 0;
+};
+
+struct file_v5_slope_tile {
+    char filename[FS_CHAR_FILENAME_SIZE];
+    slope_data slope[SLOPE_MAX_TILES];
+
+    file_v5_slope_tile() {
+        filename[0] = '\0';
+    }
+
 };
 
 

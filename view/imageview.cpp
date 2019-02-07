@@ -81,6 +81,23 @@ void ImageView::copyArea(st_position origin_pos, st_imageData &origin, st_imageD
     copyArea(st_rectangle(origin_pos.x, origin_pos.y, origin.surface->w, origin.surface->h), st_rectangle(0, 0, origin.surface->w, origin.surface->h), origin, dest);
 }
 
+void ImageView::copyAreaNoTexture(st_rectangle rect, st_position dest_pos, st_imageData &origin, st_imageData &dest)
+{
+    st_rectangle dest_rect(dest_pos.x, dest_pos.y, origin.surface->w, origin.surface->h);
+    copySDLPortion(rect, dest_rect, origin.surface, dest.surface);
+}
+
+void ImageView::rebuildTexture(st_imageData &origin)
+{
+    SDL_DestroyTexture(origin.texture);
+    origin.texture = SDL_CreateTextureFromSurface(gRenderer, origin.surface);
+}
+
+void ImageView::clear_surface(st_imageData &image)
+{
+    SDL_FillRect(image.surface, NULL, SDL_MapRGBA(image.surface->format, 0, 0, 0,SDL_ALPHA_TRANSPARENT));
+}
+
 void ImageView::copyArea(st_rectangle rect, st_position dest_pos, st_imageData& origin, st_imageData& dest)
 {
     copyArea(rect, st_rectangle(dest_pos.x, dest_pos.y, origin.surface->w, origin.surface->h), origin, dest);
@@ -471,10 +488,10 @@ void ImageView::clear_surface_area(short x, short y, short w, short h, short r, 
 void ImageView::set_surface_alpha(int alpha, st_imageData &image)
 {
     if (image.surface->w <= 0 || image.surface == nullptr) {
-        //std::cout << "[WARNING] GRAPHLIB::set_surface_alpha[&] - invalid surface, ignoring" << std::endl;
+        std::cout << "[WARNING] GRAPHLIB::set_surface_alpha[&] - invalid surface, ignoring" << std::endl;
         return;
     }
-    SDL_SetSurfaceAlphaMod(image.surface, alpha);
+    SDL_SetTextureAlphaMod(image.texture, alpha);
 }
 
 void ImageView::update_anim_tiles_timers()
@@ -535,6 +552,7 @@ void ImageView::placeTile(st_position origin_pos, st_position dest_pos, st_image
         std::cout << "placeTile - ERROR surfaceDestiny is nullptr - ignoring..." << std::endl;
         return;
     }
+
     struct st_rectangle origin_rectangle;
 
     origin_rectangle.x = origin_pos.x * TILESIZE;
@@ -543,7 +561,32 @@ void ImageView::placeTile(st_position origin_pos, st_position dest_pos, st_image
     origin_rectangle.w = TILESIZE;
     origin_rectangle.h = TILESIZE;
 
-    copyArea(origin_rectangle, dest_pos, tileset, dest);
+
+    copyAreaNoTexture(origin_rectangle, dest_pos, tileset, dest);
+
+}
+
+void ImageView::placeSlope(st_rectangle origin_pos, st_position dest_pos, st_imageData &origin, st_imageData &dest)
+{
+    if (!dest.surface) {
+        std::cout << "placeTile - ERROR surfaceDestiny is nullptr - ignoring..." << std::endl;
+        return;
+    }
+    if (!origin.surface) {
+        std::cout << "placeTile - ERROR surfaceOrigin is nullptr - ignoring..." << std::endl;
+        return;
+    }
+
+    struct st_rectangle origin_rectangle;
+
+    origin_rectangle.x = origin_pos.x;
+    origin_rectangle.y = origin_pos.y;
+
+    origin_rectangle.w = origin_pos.w;
+    origin_rectangle.h = origin_pos.h;
+
+
+    copyAreaNoTexture(origin_rectangle, dest_pos, origin, dest);
 }
 
 void ImageView::place_3rd_level_tile(int origin_x, int origin_y, int dest_x, int dest_y)

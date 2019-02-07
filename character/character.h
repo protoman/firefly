@@ -138,6 +138,7 @@ public:
     short int get_number() const;
     void charMove();
     void store_previous_position();
+    void check_y_scroll();
     void clear_move_commands();
     void reset_gravity_speed();
     bool gravity(bool boss_demo_mode);							// returns true if finished (reached ground)
@@ -223,6 +224,7 @@ public:
 private:
     ATTACK_TYPES check_must_attack(bool always_charged);
     void check_charging_colors(bool always_charged);
+    bool isOnSlope(int xinc);
 
 protected:
     // updown_trajectory: updown -1 is down, 0 is none, 1 is up
@@ -234,6 +236,7 @@ protected:
     bool is_on_teleporter_capsulse(GameObject* GameObject);
     bool is_on_teleport_platform(GameObject* GameObject);
     void check_map_collision_point(int &map_block, int &new_map_lock, int mode_xy, st_position map_pos);
+    int adjust_slope_y(int incx, int incy, st_position map_pos);
     bool process_special_map_points(int map_lock, int incx, int incy, st_position map_pos);
     void check_platform_move(short map_lock);
     void add_graphic();

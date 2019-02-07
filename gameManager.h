@@ -37,7 +37,6 @@ public:
 
     void initGame();
 
-
     bool show_game_intro();
     void show_beta_version_warning();
     void show_free_version_warning();
@@ -128,6 +127,7 @@ private:
     void show_mem_debug(int n);
     void change_map_scroll(st_float_position pos, bool check_lock, bool ignore_auto_scroll);
 
+    void init_map_and_player_to_bottom();
 
 public:
     bool is_showing_boss_intro;

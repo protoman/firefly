@@ -15,7 +15,8 @@
 #include "game_mediator.h"
 #include "gameManager.h"
 
-#define PLAYER_MOVE_SPEED 3.25 // higher is faster
+#define PLAYER_MOVE_SPEED 6.00 // higher is faster
+//#define PLAYER_MOVE_SPEED 1 // higher is faster
 #include "file/file_io.h"
 
 
@@ -30,11 +31,7 @@ classPlayer::classPlayer(int playerNumber) : teleporter_n(-1), selected_weapon(W
     std::cout << "### PLAYER::CREATE::number[" << _number << "]" << std::endl;
 
     _number = playerNumber;
-    if (_number == 3 || _number == 0) {
-        //_obj_jump.set_jump_acceleration(0.95);
-        _obj_jump.set_jump_limit(50);
-    }
-    position.y = -TILESIZE;
+    position.y = 0;
 	position.x = 80;
     hit_duration = 2000;
     hitPoints.total = PLAYER_INITIAL_HP;
@@ -58,10 +55,6 @@ void classPlayer::initialize()
     char temp_name[30];
     sprintf(temp_name, "PLAYER_%d", _number);
     name = std::string(temp_name);
-    if (_number == 3 || _number == 0) {
-        //_obj_jump.set_jump_acceleration(0.95);
-        _obj_jump.set_jump_limit(50);
-    }
 
     max_projectiles = GameMediator::get_instance()->player_list_v3_1[_number].max_shots;
     // it is a player, can't have zero projectiles!!
@@ -478,8 +471,9 @@ void classPlayer::damage_ground_npcs()
 // ********************************************************************************************** //
 void classPlayer::initFrames()
 {
-	frameSize.width = 29;
-    frameSize.height = 29;
+
+    frameSize.width = GameMediator::get_instance()->player_list_v3_1[_number].sprite_size.width;
+    frameSize.height = GameMediator::get_instance()->player_list_v3_1[_number].sprite_size.height;
 
 
     add_graphic();
@@ -770,10 +764,6 @@ void classPlayer::move()
 	} else {
 		moveCommands.dash = 0;
 	}
-
-    if (moveCommands.right == 1) {
-        std::cout << "MOVE-RIGHT" << std::endl;
-    }
 
     // players that shoot on diagonal can't move shile attacking
     if (can_shoot_diagonal()) {

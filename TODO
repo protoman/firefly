@@ -1,9 +1,32 @@
-- remodelar animation: deve apesar ser capaz de retornar a área da imagem que deve ser mostrada
+- editor de areas
+    # adicionar mapa: vai clicando em pontos
+    # cada ponto é uma tela (20x10)
+    # botão "done" para adicionar o mapa
+    # cria links entre mapas (deixa de ser definido pelo usuário, usa todo o lado esq/dir/cima/baixo)
+    # calcula tamanho do mapa, e gera tileset
+        # usar algo como -2, -2 para pontos do mapa que não poderão ser editados (áreas vazias)
+
+- editor global
+    # coloca áreas em um grid
+    # cria ligações entre áreas
+
+- implementar link entre mapas
+    # simplificar transição
+
+- FILE: adicionar parâmetro de SFX em cada layer (uso futuro, distorção, nove, chuva, etc)
+
+- melhorar performance editor preview-areas
+    # carregar imagem na função que muda filename
+
+- remodelar animation: deve ser capaz de retornar a área da imagem que deve ser mostrada
     # responsável por mostrar imagem deve ser GameController/ImageView
-    # lista de animações deve fica rno gameController, não no mapa
+    # lista de animações deve ficar no gameController, não no mapa
 
 - remover armas e seleção L/R e menu
-
+    # remover item coil/jet
 
 - EDITOR: não pode ter largura ou altura menores do que o tamanho de tela (descontando HUD)
+
+- ajustar scroll-y quando restaurar posição em checkpoint
+
 

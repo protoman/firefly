@@ -7,6 +7,7 @@
 #include "file/fio_strings.h"
 #include "file/v5/struct_file_map.h"
 #include "file/fio_common.h"
+#include "file/v5/struct_file_area.h"
 #include "scenes/scenesmediator.h"
 
 
@@ -137,6 +138,7 @@ public:
 
     // stage dialogs, key is stage_n, vector represent the list for each text line
     std::vector<std::map<int, std::vector<std::string> > > stage_dialog_list;
+
 
 
 private:

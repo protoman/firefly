@@ -202,6 +202,8 @@ void Mediator::load_game() {
     // FILE V5 //
     SharedData::get_instance()->file_v5_map_header_list = fio_cmm.load_from_disk<file_v5_map_header>(SharedData::get_instance()->FILEPATH + FILE_V5_MAP_HEADER_LIST);
     SharedData::get_instance()->file_v5_map_link_list = fio_cmm.load_from_disk<file_v5_map_link>(SharedData::get_instance()->FILEPATH + FILE_V5_MAP_LINK_LIST);
+    SharedData::get_instance()->slope_list = fio_cmm.load_from_disk<file_v5_slope_tile>(SharedData::get_instance()->FILEPATH + FILE_V5_MAP_SLOPE_LIST);
+    SharedData::get_instance()->area_list = fio_cmm.load_from_disk<struct_file_v5_area>(SharedData::get_instance()->FILEPATH + FILE_V5_AREA_LIST);
 
     for (int i=0; i<SharedData::get_instance()->file_v5_map_header_list.size(); i++) {
         SharedData::get_instance()->file_v5_map_tile_map.insert(std::pair<int, std::vector<file_v5_map_tile>>(i, std::vector<file_v5_map_tile>()));
@@ -211,7 +213,6 @@ void Mediator::load_game() {
     if (SharedData::get_instance()->file_v5_map_header_list.size() == 0) {
         SharedData::get_instance()->file_v5_map_header_list.push_back(file_v5_map_header());
     }
-
 
 
 }
@@ -250,6 +251,8 @@ void Mediator::save_game()
     // FILE V5 //
     fio_cmm.save_data_to_disk<file_v5_map_header>(SharedData::get_instance()->FILEPATH + FILE_V5_MAP_HEADER_LIST, SharedData::get_instance()->file_v5_map_header_list);
     fio_cmm.save_data_to_disk<file_v5_map_link>(SharedData::get_instance()->FILEPATH + FILE_V5_MAP_LINK_LIST, SharedData::get_instance()->file_v5_map_link_list);
+    fio_cmm.save_data_to_disk<file_v5_slope_tile>(SharedData::get_instance()->FILEPATH + FILE_V5_MAP_SLOPE_LIST, SharedData::get_instance()->slope_list);
+    fio_cmm.save_data_to_disk<struct_file_v5_area>(SharedData::get_instance()->FILEPATH + FILE_V5_AREA_LIST, SharedData::get_instance()->area_list);
 
     std::cout << "Mediator::save - saving map-tiles for maps[" << SharedData::get_instance()->file_v5_map_header_list.size() << "]" << std::endl;
 
@@ -260,6 +263,8 @@ void Mediator::save_game()
             fio_cmm.save_data_to_disk<file_v5_map_tile>(filename.toStdString(), SharedData::get_instance()->file_v5_map_tile_map.at(i));
         }
     }
+
+
 
 }
 

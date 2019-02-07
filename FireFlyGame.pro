@@ -24,7 +24,6 @@ linux {
 
 SOURCES += \
         main.cpp \
-    gamecontroller.cpp \
     view/textview.cpp \
     view/imageview.cpp \
     data/shareddata.cpp \
@@ -62,10 +61,10 @@ SOURCES += \
     ports/android/android_game_services.cpp \
     gameManager.cpp \
     objects/GameObject.cpp \
-    scenes/dialogs.cpp
+    scenes/dialogs.cpp \
+    options/pausemenu.cpp
 
 HEADERS += \
-    gamecontroller.h \
     view/textview.h \
     view/imageview.h \
     defines.h \
@@ -114,7 +113,10 @@ HEADERS += \
     ports/android/android_game_services.h \
     gameManager.h \
     objects/GameObject.h \
-    scenes/dialogs.h
+    scenes/dialogs.h \
+    options/pausemenu.h \
+    file/v5/struct_file_map.h \
+    file/v5/struct_file_area.h
 
 DISTFILES += \
     TODO

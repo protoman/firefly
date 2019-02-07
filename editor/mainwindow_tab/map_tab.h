@@ -88,6 +88,10 @@ private slots:
 
     void on_repeatY_checkBox_toggled(bool checked);
 
+    void on_layerAlpha_spinBox_valueChanged(int arg1);
+
+    void on_editModeSlope_Button_clicked();
+
 private:
     void fill_data();
     void fill_background_list();

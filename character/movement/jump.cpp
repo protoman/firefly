@@ -6,14 +6,14 @@
 // if not interrupted, jump takes 700 milisseconds
 // jump max high is 74 px
 
-#define JUMP_INITIAL_SPEED 5.375
+//#define JUMP_INITIAL_SPEED 5.375
+#define JUMP_INITIAL_SPEED 20.00
 
 
 classjump::classjump() : started(false)
 {
-    JUMP_ACCELERATION = 0.25;
-    JUMP_LIMIT = (TILESIZE*3)-6;
-    JUMP_LIMIT = 240;
+    JUMP_ACCELERATION = 0.96;
+    JUMP_LIMIT = (TILESIZE*3)+6;
     state = NOJUMP;
     jumps_number = 0;
     start_terrain_type = TERRAIN_UNBLOCKED;
@@ -80,7 +80,7 @@ void classjump::execute(int terrain_type)
             state = JUMPDOWN;
         } else if (is_bigjump == false && std::abs((double)moved) > JUMP_LIMIT) { // hardcoded limit of 3 tiles
             state = JUMPDOWN;
-            std::cout << "OBJUMP RESET SPEED #3" << std::endl;
+            std::cout << "OBJUMP RESET SPEED #3 - JUMP_LIMIT[" << JUMP_LIMIT << "]" << std::endl;
             speed = 0;
         }
     } else {

@@ -15,8 +15,9 @@
 #include "mainwindow_tab/game_properties_tab.h"
 #include "mainwindow_tab/map_tab.h"
 #include "mainwindow_tab/player_edit.h"
-#include "mainwindow_tab/gamescenes.h"
 #include "mainwindow_tab/anim_tiles_edit.h"
+#include "mainwindow_tab/slopeedittab.h"
+#include "mainwindow_tab/areaeditor.h"
 #include "scenes/sceneeditorwindow.h"
 #include "aboutwindow.h"
 #include "files_editor/fileseditor.h"
@@ -110,8 +111,6 @@ public slots:
 
     void on_players_tab_list_combo_2_currentIndexChanged(int index);
 
-    void on_actionScenes_Editor_triggered();
-
     void on_actionObjects_toggled(bool arg1);
 
     void on_actionNPCs_toggled(bool arg1);
@@ -122,12 +121,8 @@ public slots:
 
     void on_actionImage_Browser_triggered();
 
-    void on_scenes_editor_window_closed();
-
 
 private slots:
-    void on_actionMovie_Editor_triggered();
-
     void on_actionStrings_Editor_triggered();
 
     void on_actionZoomOne_triggered();
@@ -148,18 +143,18 @@ private:
     projectile_edit *projectile_edit_tab;
     map_tab *map_edit_tab;
     player_edit *player_edit_tab;
-    GameScenes *game_scenes_tab;
     anim_tiles_edit *anim_tiles_edit_tab;
+    SlopeEditTab* slope_edit_tab;
 
 
     // USED IN NPC TAB
 	std::string _npcedit_tab_graphic;
 	int _npcedit_tab_selectednpc;
 	bool _data_loading;
-    SceneEditorWindow* scenes_window;
     AboutWindow* about_window;
     FilesEditor* files_editor_window;
     StringsEditor* strings_editor_window;
+    AreaEditor* area_editor;
 };
 
 

@@ -200,6 +200,7 @@ void map_tab::on_editTile_button_clicked()
     ui->editTile_button->setChecked(true);
     ui->addAnimTile_toolButton->setChecked(false);
     ui->editModeNormal_button->setEnabled(true);
+    ui->editModeSlope_Button->setChecked(false);
 
     //ui->editModeNormal_button->setEnabled(true);
     ui->editModeLock_button->setEnabled(true);
@@ -221,6 +222,7 @@ void map_tab::on_editObject_button_clicked()
     ui->editObject_button->setChecked(true);
     ui->addAnimTile_toolButton->setChecked(false);
     ui->editModeNormal_button->setEnabled(true);
+    ui->editModeSlope_Button->setChecked(false);
 
     ui->editModeLock_button->setEnabled(false);
     ui->editModeErase_button->setEnabled(true);
@@ -240,6 +242,7 @@ void map_tab::on_editLink_button_clicked()
     ui->editObject_button->setChecked(false);
     ui->editLink_button->setChecked(true);
     ui->addAnimTile_toolButton->setChecked(false);
+    ui->editModeSlope_Button->setChecked(false);
     ui->editModeNormal_button->setEnabled(true);
 
     ui->editModeLock_button->setEnabled(false);
@@ -261,6 +264,7 @@ void map_tab::on_editNpc_button_clicked()
     ui->editNpc_button->setChecked(true);
     ui->addAnimTile_toolButton->setChecked(false);
     ui->editModeNormal_button->setEnabled(true);
+    ui->editModeSlope_Button->setChecked(false);
 
     ui->editModeLock_button->setEnabled(false);
     ui->editModeErase_button->setEnabled(true);
@@ -372,6 +376,7 @@ void map_tab::on_addAnimTile_toolButton_clicked()
     ui->editTile_button->setChecked(false);
     ui->addAnimTile_toolButton->setChecked(true);
     ui->editModeNormal_button->setEnabled(true);
+    ui->editModeSlope_Button->setChecked(false);
 
     //ui->editModeNormal_button->setEnabled(true);
     ui->editModeLock_button->setEnabled(false);
@@ -418,6 +423,27 @@ void map_tab::on_paste_toolButton_clicked()
 
     set_current_box(1);
     Mediator::get_instance()->editMode = EDITMODE_PASTE;
+    Mediator::get_instance()->editTool = EDITMODE_NORMAL;
+}
+
+void map_tab::on_editModeSlope_Button_clicked()
+{
+    ui->editNpc_button->setChecked(false);
+    ui->editSetSubBoss_button->setChecked(false);
+    ui->editSetBoss_button->setChecked(false);
+    ui->editObject_button->setChecked(false);
+    ui->editLink_button->setChecked(false);
+    ui->editTile_button->setChecked(false);
+    ui->addAnimTile_toolButton->setChecked(false);
+    ui->editModeSlope_Button->setChecked(true);
+
+    ui->editModeNormal_button->setEnabled(false);
+    ui->editModeLock_button->setEnabled(false);
+    ui->editModeErase_button->setEnabled(false);
+
+    set_current_box(1);
+    Mediator::get_instance()->editMode = EDITMODE_SLOPE;
+    std::cout << "SET-SLOPE-MODE [" << Mediator::get_instance()->editMode << "]" << std::endl;
     Mediator::get_instance()->editTool = EDITMODE_NORMAL;
 }
 
@@ -480,6 +506,7 @@ void map_tab::on_mapSelector_comboBox_currentIndexChanged(int index)
     SharedData::get_instance()->file_v5_selected_map = index;
     _data_loading = true;
     fill_map_v5_data();
+    ui->editArea->repaint();
     _data_loading = false;
 }
 
@@ -579,7 +606,7 @@ void map_tab::set_layer_data()
 
     ui->repeatX_checkBox->setChecked(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].repeatX);
     ui->repeatY_checkBox->setChecked(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].repeatY);
-
+    ui->layerAlpha_spinBox->setValue(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].alpha);
 }
 
 void map_tab::on_bg1_filename_currentIndexChanged(const QString &arg1)
@@ -625,3 +652,13 @@ void map_tab::on_repeatY_checkBox_toggled(bool checked)
     file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
     map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].repeatY = checked;
 }
+
+void map_tab::on_layerAlpha_spinBox_valueChanged(int arg1)
+{
+    if (_data_loading == true) { return; }
+    file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
+    map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].alpha = arg1;
+
+}
+
+

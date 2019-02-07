@@ -126,7 +126,7 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
             int *key_config_tmp = SharedData::get_instance()->game_config.keys_codes;
             if (SharedData::get_instance()->event.type == SDL_KEYDOWN || SharedData::get_instance()->event.type == SDL_KEYUP) {
 
-                std::cout << "InputController::read_input - SDL_KEYDOWN[" << SharedData::get_instance()->event.key.keysym.scancode << "]" << std::endl;
+                //std::cout << "InputController::read_input - SDL_KEYDOWN[" << SharedData::get_instance()->event.key.keysym.scancode << "]" << std::endl;
 
 #ifdef ANDROID
                 __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### SharedData::get_instance()->event.key.which[%d] ###", SharedData::get_instance()->event.key.which);

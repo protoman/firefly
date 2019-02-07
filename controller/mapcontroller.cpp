@@ -81,8 +81,13 @@ void MapController::loadMap()
         wall_scroll_lock.push_back(column_locked);
     }
 
+    _show_map_pos_x = -1;
+    _show_map_pos_y = -1;
     create_dynamic_background_surfaces();
-    map_screen = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
+    map_screen = ImageView::get_instance()->initSurface(st_size(RES_W+TILESIZE*2, AREA_H+TILESIZE*2));
+
+    preload_slope_images();
+
     draw_map_tiles();
 }
 
@@ -104,22 +109,35 @@ void MapController::reset_map()
     */
 }
 
+void MapController::set_scroll_to_bottom()
+{
+    scroll.y = gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE-AREA_H;
+    std::cout << "### MapController::set_scroll_to_bottom, y[" << scroll.y << "]" << std::endl;
+}
+
 
 void MapController::show()
 {
-    draw_dynamic_backgrounds();
+    drawLayers(false);
     if (get_map_gfx_mode() == SCREEN_GFX_MODE_BACKGROUND) {
         draw::get_instance()->show_gfx();
     }
+
+    //std::cout << "_show_map_pos_y[" << _show_map_pos_y << "], scroll.y[" << scroll.y << "]" << std::endl;
 
     // redraw screen, if needed
     if (_show_map_pos_x == -1 || abs(_show_map_pos_x - scroll.x) > TILESIZE) {
         draw_map_tiles();
     // use memory screen
+    } else if (_show_map_pos_y == -1 || abs(_show_map_pos_y - scroll.y) > TILESIZE) {
+        draw_map_tiles();
     }
     int diff_scroll_x = scroll.x - _show_map_pos_x;
-    ImageView::get_instance()->renderTexturePortionAt(diff_scroll_x+TILESIZE, 0, RES_W, RES_H, 0, 0, map_screen.texture);
+    int diff_scroll_y = scroll.y - _show_map_pos_y;
 
+    //std::cout << "MapController::show, diff_scroll_y.y[" << diff_scroll_y << "]" << std::endl;
+    //ImageView::get_instance()->renderTexturePortionAt(diff_scroll_x+TILESIZE, diff_scroll_y+TILESIZE, RES_W, AREA_H, 0, 0, map_screen.texture);
+    ImageView::get_instance()->renderTexturePortionAt(diff_scroll_x+TILESIZE, diff_scroll_y+TILESIZE, RES_W, AREA_H, 0, 0, map_screen.texture);
     // draw animated tiles
     draw_animated_tiles();
 
@@ -128,7 +146,7 @@ void MapController::show()
     }
 }
 
-void MapController::addBackground(unsigned int n)
+void MapController::addLayer(unsigned int n, bool isFg)
 {
     unsigned int mapNumber = SharedData::get_instance()->file_v5_selected_map;
     std::string filename = SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).backgrounds[n].filename;
@@ -136,13 +154,28 @@ void MapController::addBackground(unsigned int n)
     if (mapBackgroundMap.find(n) == mapBackgroundMap.end()) {
         mapBackgroundMap.insert(std::pair<unsigned int, st_background>(n, st_background()));
         mapBackgroundMap.at(n).imageData = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->FILEPATH+std::string("/images/map_backgrounds/")+filename);
+
+        SDL_SetTextureBlendMode(mapBackgroundMap.at(n).imageData.texture,
+        SDL_ComposeCustomBlendMode(
+        SDL_BLENDFACTOR_ONE,
+        SDL_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+        SDL_BLENDOPERATION_ADD,
+        SDL_BLENDFACTOR_ONE,
+        SDL_BLENDFACTOR_ONE,
+        SDL_BLENDOPERATION_ADD));
+
+
         mapBackgroundMap.at(n).position.y = SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).backgrounds[n].adjust_y;
 
-        layerScrollMap.insert(std::pair<unsigned int, st_float_position>(n, st_float_position()));
+        layerScrollMap.insert(std::pair<unsigned int, st_layer_pos>(n, st_layer_pos(isFg)));
+        if (n == 3) {
+            ImageView::get_instance()->set_surface_alpha(150, mapBackgroundMap.at(n).imageData);
+        }
     }
 }
 
-void MapController::clearBackgrounds()
+
+void MapController::clearLayers()
 {
     mapBackgroundMap.clear();
 }
@@ -165,10 +198,13 @@ void MapController::get_map_area_surface(st_imageData& mapSurface)
     // redraw screen, if needed
     if (_show_map_pos_x == -1 || abs(_show_map_pos_x - scroll.x) > TILESIZE) {
         draw_map_tiles();
-    // use memory screen
+    } else if (_show_map_pos_y == -1 || abs(_show_map_pos_y - scroll.y) > TILESIZE) {
+        draw_map_tiles();
     }
+    // use memory screen
     int diff_scroll_x = scroll.x - _show_map_pos_x;
-    ImageView::get_instance()->copyArea(st_rectangle(diff_scroll_x+TILESIZE, 0, RES_W, RES_H), st_position(0, 0), map_screen, mapSurface);
+    int diff_scroll_y = scroll.y - _show_map_pos_y;
+    ImageView::get_instance()->copyArea(st_rectangle(diff_scroll_x+TILESIZE, diff_scroll_y+TILESIZE, RES_W, RES_H), st_position(0, 0), map_screen, mapSurface);
 
     // draw animated tiles
     // @TODO-Iuri //
@@ -177,53 +213,79 @@ void MapController::get_map_area_surface(st_imageData& mapSurface)
 
 void MapController::draw_map_tiles()
 {
-
-
-    std::cout << ">>>>> MapController::draw_map_tiles #1 <<<<<<<<" << std::endl;
     _show_map_pos_x = scroll.x;
+    _show_map_pos_y = scroll.y;
 
     int tile_x_ini = scroll.x/TILESIZE-1;
     if (tile_x_ini < 0) {
         tile_x_ini = 0;
     }
 
+    int tile_y_ini = scroll.y/TILESIZE-1;
+    if (tile_y_ini < 0) {
+        tile_y_ini = 0;
+    }
+
+
     // TODO::IURI //
-    //ImageView::get_instance()->clear_surface(map_screen);
+    ImageView::get_instance()->clear_surface(map_screen);
 
     // draw the tiles of the screen region
     struct st_position pos_origin;
     struct st_position pos_destiny;
     int n = -1;
-    for (int i=tile_x_ini; i<tile_x_ini+(RES_W/TILESIZE)+3; i++) {
-        int diff = scroll.x - (tile_x_ini+1)*TILESIZE;
-        pos_destiny.x = n*TILESIZE - diff + TILESIZE;
-        for (int j=0; j<SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h; j++) {
+
+
+    int tile_end_x = tile_x_ini+(RES_W/TILESIZE)+3;
+    int tile_end_y = tile_y_ini+(AREA_H/TILESIZE)+2;
+    if (tile_end_x > SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w) {
+        tile_end_x = SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w;
+    }
+    if (tile_end_y > SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h) {
+        tile_end_y = SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h;
+    }
+    //std::cout << "MapController::draw_map_tiles - tile_y_ini[" << tile_y_ini << "], tile_end_y[" << tile_end_y << "]" << std::endl;
+    //std::cout << "MapController::draw_map_tiles - RES_W/TILESIZE[" << RES_W/TILESIZE << ", start[" << tile_x_ini << "], end[" << tile_end << "]" << std::endl;
+
+    for (int i=tile_x_ini; i<tile_end_x; i++) {
+        int diff_x = scroll.x - (tile_x_ini+1)*TILESIZE;
+        pos_destiny.x = n*TILESIZE - diff_x + TILESIZE;
+        for (int j=tile_y_ini; j<tile_end_y; j++) {
 
             // don't draw easy-mode blocks if game difficulty not set to easy
+            int diff_y = scroll.y - (tile_y_ini+1)*TILESIZE;
+            pos_destiny.y = j*TILESIZE - scroll.y + TILESIZE;
+            //std::cout << "pos_destiny.y[" << pos_destiny.y << "]" << std::endl;
 
 
             if (getTileFromPosition(i, j).locked == TERRAIN_EASYMODEBLOCK && SharedData::get_instance()->game_save.difficulty == DIFFICULTY_EASY) {
-                pos_destiny.y = j*TILESIZE;
                 ImageView::get_instance()->place_easymode_block_tile(pos_destiny, map_screen);
             } else if (getTileFromPosition(i, j).locked == TERRAIN_HARDMODEBLOCK && SharedData::get_instance()->game_save.difficulty == DIFFICULTY_HARD) {
-                pos_destiny.y = j*TILESIZE;
                 ImageView::get_instance()->place_hardmode_block_tile(pos_destiny, map_screen);
+            } else if (getTileFromPosition(i, j).tile_underlay.type == TILE_TYPE_SLOPE) {
+                //std::cout << "FOUND-SLOPE #1 i[" << i << "], j[" << j << "]" << std::endl;
+                draw_slope_tile(getTileFromPosition(i, j).tile_underlay.x,getTileFromPosition(i, j).tile_underlay.y, pos_destiny.x, pos_destiny.y);
             } else {
                 pos_origin.x = getTileFromPosition(i, j).tile_underlay.x;
                 pos_origin.y = getTileFromPosition(i, j).tile_underlay.y;
 
                 if (pos_origin.x >= 0 && pos_origin.y >= 0) {
-                    //std::cout << ">>>>> MapController::draw_map_tiles #2 x[" << i << "], y[" << j << "], tile.x[" << getTileFromPosition(i, j).tile_underlay.x << "], tile.y[" << getTileFromPosition(i, j).tile_underlay.x << "] <<<<<<<<" << std::endl;
                     if (map_screen.surface == nullptr) {
                         std::cout << "map_screen is NULL" << std::endl;
                     }
-                    pos_destiny.y = j*TILESIZE;
+                    /*
+                    if (i == 5) {
+                        std::cout << ">>>>> MapController::draw_map_tiles #2 diff_y[" << diff_y << "], scroll.y[" << scroll.y << "], tile_y_ini[" << tile_y_ini << "], x[" << i << "], y[" << j << "], tile.x[" << getTileFromPosition(i, j).tile_underlay.x << "], tile.y[" << getTileFromPosition(i, j).tile_underlay.x << "], dest.y[" << pos_destiny.y << "] <<<<<<<<" << std::endl;
+                    }
+                    */
                     ImageView::get_instance()->placeTile(pos_origin, pos_destiny, map_screen);
                 }
             }
         }
         n++;
     }
+    // re-generate texture
+    ImageView::get_instance()->rebuildTexture(map_screen);
 }
 
 void MapController::draw_animated_tiles()
@@ -331,7 +393,7 @@ void MapController::showAbove(int scroll_y, int temp_scroll_x, bool show_fg)
         }
     }
 
-
+    drawLayers(true);
 }
 
 // ********************************************************************************************** //
@@ -373,7 +435,7 @@ bool MapController::is_point_solid(st_position pos) const
 {
     short int lock_p = getMapPointLock(pos);
 
-    if (lock_p == TERRAIN_UNBLOCKED || lock_p != TERRAIN_WATER || lock_p == TERRAIN_CHECKPOINT || lock_p == TERRAIN_SCROLL_LOCK || (lock_p == TERRAIN_EASYMODEBLOCK && SharedData::get_instance()->game_save.difficulty != 0)) {
+    if (lock_p == TERRAIN_UNBLOCKED || lock_p != TERRAIN_WATER || lock_p == TERRAIN_CHECKPOINT || lock_p == TERRAIN_SCROLL_LOCK || (lock_p == TERRAIN_EASYMODEBLOCK && SharedData::get_instance()->game_save.difficulty != 0) || lock_p == TERRAIN_SLOPE) {
         return false;
     }
     return true;
@@ -428,7 +490,14 @@ void MapController::changeScrolling(st_float_position pos, bool check_lock)
         }
     }
 
-    scroll.y += pos.y;
+    // TODO: adjust layers position for vertical scrolling //
+    if (pos.y != 0) {
+        scroll.y += pos.y;
+        //std::cout << "scroll.y[" << scroll.y+AREA_H << "], map_h[" << gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE << "]" << std::endl;
+        if (scroll.y+AREA_H > gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE) {
+            scroll.y = gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE-AREA_H;
+        }
+    }
 }
 
 void MapController::changeLayerScroll(int x_change, int y_change)
@@ -438,10 +507,10 @@ void MapController::changeLayerScroll(int x_change, int y_change)
         float layer_speed = (float)getMapHeader().backgrounds[bg_n].speed/10;
 
         if (layerScrollMap.find(bg_n) == layerScrollMap.end()) {
-            layerScrollMap.insert(std::pair<unsigned int, st_float_position>(bg_n, st_float_position()));
+            layerScrollMap.insert(std::pair<unsigned int, st_layer_pos>(bg_n, st_layer_pos(false)));
         }
         if (getMapHeader().backgrounds[bg_n].auto_scroll == BG_SCROLL_MODE_NONE) {
-            layerScrollMap.at(bg_n).x -= ((float)x_change*layer_speed);
+            layerScrollMap.at(bg_n).pos.x -= ((float)x_change*layer_speed);
         }
     }
 
@@ -546,16 +615,20 @@ void MapController::load_map_npcs()
 }
 
 
-void MapController::draw_dynamic_backgrounds()
+void MapController::drawLayers(bool isFg)
 {
     // only draw solid background color, if map-heigth is less than RES_H
     //std::cout << "number[" << number << "], bg1_surface.height[" << bg1_surface.height << "], bg1.y[" << GameMediator::get_instance()->map_data[number].backgrounds[0].adjust_y << "]" << std::endl;
     file_v5_map_header& header_map_ref = SharedData::get_instance()->file_v5_map_header_list.at(number);
 
-    ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, header_map_ref.background_color.r, header_map_ref.background_color.g, header_map_ref.background_color.b);
+    if (isFg == false) {
+        ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, header_map_ref.background_color.r, header_map_ref.background_color.g, header_map_ref.background_color.b);
+    }
 
-
-    for (std::map<unsigned int, st_float_position>::iterator it = layerScrollMap.begin(); it != layerScrollMap.end(); ++it) {
+    for (std::map<unsigned int, st_layer_pos>::iterator it = layerScrollMap.begin(); it != layerScrollMap.end(); ++it) {
+        if (it->second.is_fg != isFg) {
+            continue;
+        }
         unsigned int bg_n = it->first;
         file_v5_map_background& bg_ref = SharedData::get_instance()->file_v5_map_header_list.at(number).backgrounds[bg_n];
 
@@ -564,16 +637,16 @@ void MapController::draw_dynamic_backgrounds()
         float bg1_speed = (float)bg_ref.speed/10;
         // dynamic background won't work in low-end graphics more
         if (bg_ref.auto_scroll == BG_SCROLL_MODE_LEFT) {
-            it->second.x -= bg1_speed;
+            it->second.pos.x -= bg1_speed;
             adjust_dynamic_background_position(bg_n);
         } else if (bg_ref.auto_scroll == BG_SCROLL_MODE_RIGHT) {
-            it->second.x += bg1_speed;
+            it->second.pos.x += bg1_speed;
             adjust_dynamic_background_position(bg_n);
         } else if (bg_ref.auto_scroll == BG_SCROLL_MODE_UP) {
-            it->second.y -= bg1_speed;
+            it->second.pos.y -= bg1_speed;
             adjust_dynamic_background_position(bg_n);
         } else if (bg_ref.auto_scroll == BG_SCROLL_MODE_DOWN) {
-            it->second.y += bg1_speed;
+            it->second.pos.y += bg1_speed;
             adjust_dynamic_background_position(bg_n);
         }
 
@@ -582,12 +655,12 @@ void MapController::draw_dynamic_backgrounds()
 
         //std::cout << "## bg1_speed[" << bg1_speed << "], bg_scroll.x[" << bg_scroll.x << "]" << std::endl;
 
-        float x1 = it->second.x;
+        float x1 = it->second.pos.x;
         if (x1 > 0.0) { // moving to right
             x1 = (RES_W - x1) * -1;
         }
 
-        float y1 = it->second.y + bg_ref.adjust_y;
+        float y1 = it->second.pos.y + bg_ref.adjust_y;
 
 
         if (surface_bg->surface != nullptr && surface_bg->surface->w > 0) {
@@ -599,16 +672,17 @@ void MapController::draw_dynamic_backgrounds()
                 }
             }
 
+
             for (unsigned int j=0; j<repeat_y_n; j++) {
                 // draw leftmost part
                 ImageView::get_instance()->renderTexturePortionAt(0, 0, surface_bg->surface->w, surface_bg->surface->h, x1, y1+(j*surface_bg->surface->h), surface_bg->texture);
                 // draw rightmost part, if needed
 
-                if (abs(it->second.x) > RES_W) {
+                if (abs(it->second.pos.x) > RES_W) {
                     //std::cout << "### MUST DRAW SECOND BG-POS-LEFT ###" << std::endl;
                     float bg_pos_x = RES_W - (abs(x1)-RES_W);
                     ImageView::get_instance()->renderTexturePortionAt(0, 0, surface_bg->surface->w, surface_bg->surface->h, bg_pos_x, y1+(j*surface_bg->surface->h), surface_bg->texture);
-                }  else if (surface_bg->surface->w - abs(it->second.x) < RES_W) {
+                }  else if (surface_bg->surface->w - abs(it->second.pos.x) < RES_W) {
                     int repeat_x_n = 1;
                     if (bg_ref.repeatX) {
                         int repeat_x_n = RES_W/surface_bg->surface->w;
@@ -616,14 +690,13 @@ void MapController::draw_dynamic_backgrounds()
                     //std::cout << ">>>>>>>>>>>>>> repeat_x_n[" << repeat_x_n << "]" << std::endl;
                     for (unsigned int i=0; i<repeat_x_n; i++) {
                         //std::cout << "### MUST DRAW SECOND BG-POS-RIGHT ###" << std::endl;
-                        float bg_pos_x = surface_bg->surface->w - (int)abs(it->second.x) + i*surface_bg->surface->w;
+                        float bg_pos_x = surface_bg->surface->w - (int)abs(it->second.pos.x) + i*surface_bg->surface->w;
                         ImageView::get_instance()->renderTexturePortionAt(0, 0, surface_bg->surface->w, surface_bg->surface->h, bg_pos_x, y1+(j*surface_bg->surface->h), surface_bg->texture);
                     }
                 }
             }
         }
     }
-
 }
 
 
@@ -639,32 +712,32 @@ void MapController::adjust_dynamic_background_position(unsigned int bg_n)
 
     // esq -> direita: #1 bg_limt[640], scroll.x[-640.799]
 
-    if (layerScrollMap.at(bg_n).x < -bg_limit) {
+    if (layerScrollMap.at(bg_n).pos.x < -bg_limit) {
         //std::cout << "#1 bg_limt[" << bg_limit << "], scroll.x[" << bg_scroll.x << "]" << std::endl;
         //std::cout << "RESET BG-SCROLL #1" << std::endl;
-        layerScrollMap.at(bg_n).x = 0;
-    } else if (layerScrollMap.at(bg_n).x > bg_limit) {
+        layerScrollMap.at(bg_n).pos.x = 0;
+    } else if (layerScrollMap.at(bg_n).pos.x > bg_limit) {
         //std::cout << "#2 bg_limt[" << bg_limit << "], scroll.x[" << bg_scroll.x << "]" << std::endl;
         //std::cout << "RESET BG-SCROLL #2" << std::endl;
-        layerScrollMap.at(bg_n).x = 0;
-    } else if (layerScrollMap.at(bg_n).x > 0) {
+        layerScrollMap.at(bg_n).pos.x = 0;
+    } else if (layerScrollMap.at(bg_n).pos.x > 0) {
         //std::cout << "#3 bg_limt[" << bg_limit << "], scroll.x[" << bg_scroll.x << "]" << std::endl;
         //std::cout << "RESET BG-SCROLL #3" << std::endl;
-        layerScrollMap.at(bg_n).x = -(surface_bg->surface->w); // erro aqui
+        layerScrollMap.at(bg_n).pos.x = -(surface_bg->surface->w); // erro aqui
     }
 
 
-    if (layerScrollMap.at(bg_n).y < -RES_H) {
-        layerScrollMap.at(bg_n).y = 0;
-    } else if (layerScrollMap.at(bg_n).y > RES_H) {
-        layerScrollMap.at(bg_n).y = 0;
+    if (layerScrollMap.at(bg_n).pos.y < -RES_H) {
+        layerScrollMap.at(bg_n).pos.y = 0;
+    } else if (layerScrollMap.at(bg_n).pos.y > RES_H) {
+        layerScrollMap.at(bg_n).pos.y = 0;
     }
 }
 
 // called when scroll changes
 void MapController::adjust_dynamic_backgrounds_position()
 {
-    for (std::map<unsigned int, st_float_position>::iterator it = layerScrollMap.begin(); it != layerScrollMap.end(); ++it) {
+    for (std::map<unsigned int, st_layer_pos>::iterator it = layerScrollMap.begin(); it != layerScrollMap.end(); ++it) {
         unsigned int bg_n = it->first;
         if (SharedData::get_instance()->file_v5_map_header_list.at(number).backgrounds[bg_n].auto_scroll == BG_SCROLL_MODE_NONE) {
             adjust_dynamic_background_position(bg_n);
@@ -692,6 +765,34 @@ void MapController::set_map_enemy_static_background(std::string filename, st_pos
         static_bg = ImageView::get_instance()->imageFromFile(filename);
     }
     static_bg_pos = pos;
+}
+
+void MapController::preload_slope_images()
+{
+    slope_image_map.clear();
+    for (int i=0; i<SharedData::get_instance()->slope_list.size(); i++) {
+        file_v5_slope_tile* slope_data = &SharedData::get_instance()->slope_list.at(i);
+        std::string full_filename = SharedData::get_instance()->FILEPATH + "/images/tilesets/slope/" + slope_data->filename;
+
+        file_io fio;
+        if (fio.file_exists(full_filename) == false) {
+            continue;
+        }
+        slope_image_map.insert(std::pair<int, st_imageData>(i, st_imageData()));
+        slope_image_map.at(i) = ImageView::get_instance()->imageFromFile(full_filename);
+        std::cout << ">>>>>>>>> ADDED SLOPE[" << i << "]" << std::endl;
+    }
+}
+
+void MapController::draw_slope_tile(int x, int y, int dest_x, int dest_y)
+{
+    if (slope_image_map.find(x) == slope_image_map.end()) {
+        std::cout << ">>> slope x[" << x << "] not found at list.size[" << slope_image_map.size() << "]" << std::endl;
+        return;
+    }
+    //std::cout << ">> MapController::draw_slope_tile DRAW - x[" << x << "], y[" << y << "], dest_x[" << dest_x << "], dest_y[" << dest_y << "], img_w[" << slope_image_map.at(x).surface->w << "], img_h[" << slope_image_map.at(x).surface->h << "]" << std::endl;
+    //ImageView::get_instance()->renderTexturePortionAt(0, 0, slope_image_map.at(x).surface->w, slope_image_map.at(x).surface->h, dest_x, dest_y, slope_image_map.at(x).texture);
+    ImageView::get_instance()->placeSlope(st_rectangle(TILESIZE*y, 0, TILESIZE, TILESIZE), st_position(dest_x, dest_y), slope_image_map.at(x), map_screen);
 }
 
 
@@ -833,6 +934,7 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
 {
 
     //std::cout << "get_first_lock_on_bottom, y_pos[" << y_pos << "]" << std::endl;
+    //std::cout << ">>>>>> MAP::get_first_lock_on_bottom - START" << std::endl;
 
     int tilex = x_pos/TILESIZE;
     int above_tiles_to_test = h/TILESIZE;
@@ -849,6 +951,7 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
         initial_y = y_pos/TILESIZE;
     }
 
+    //std::cout << ">>>>>> MAP::get_first_lock_on_bottom - initial_y[" << initial_y << "], above_tiles_to_test[" << (above_tiles_to_test+1) << "]" << std::endl;
     for (int i=initial_y; i>=above_tiles_to_test+1; i--) { // ignore here first tiles, as we need to test them next
 
         //std::cout << "get_first_lock_on_bottom, i[" << i << "]" << std::endl;
@@ -876,6 +979,7 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
             }
         }
     }
+    //std::cout << ">>>>>> MAP::get_first_lock_on_bottom - FAIL" << std::endl;
     return 0;
 }
 
@@ -952,7 +1056,7 @@ void MapController::set_bg_scroll(int scrollx)
 {
     for (std::map<unsigned int, st_background>::iterator it = mapBackgroundMap.begin(); it != mapBackgroundMap.end(); ++it) {
         unsigned int bg_n = it->first;
-        layerScrollMap.at(bg_n).x = scrollx;
+        layerScrollMap.at(bg_n).pos.x = scrollx;
     }
 }
 
@@ -1183,8 +1287,12 @@ void MapController::create_dynamic_background_surfaces()
     for (unsigned int i=0; i<BACKGROUND_LAYERS_MAX; i++) {
         std::string bg_filename = std::string(mapData.backgrounds[i].filename);
         if (bg_filename.length() > 0) {
-            std::cout << ">>>>>>>>>> MapController::create_dynamic_background_surfaces[" << i << "]], filename[" << bg_filename << "]" << std::endl;
-            addBackground(i);
+            //std::cout << ">>>>>>>>>> MapController::create_dynamic_background_surfaces[" << i << "]], filename[" << bg_filename << "]" << std::endl;
+            if (i < BACKGROUND_LAYERS_BG_COUNT) {
+                addLayer(i, false);
+            } else {
+                addLayer(i, true);
+            }
         }
     }
 }

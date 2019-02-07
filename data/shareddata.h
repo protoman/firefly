@@ -12,7 +12,7 @@
 #include "file/v4/file_scene_v4.h"
 #include "file/v4/file_anim_block.h"
 #include "file/v5/struct_file_map.h"
-
+#include "file/v5/struct_file_area.h"
 
 class SharedData
 {
@@ -54,6 +54,9 @@ public:
     std::vector<file_anim_block> anim_block_list;
     std::vector<file_player_v3_1_1> player_list_v3_1;
     std::vector<file_artificial_inteligence> ai_list;
+    std::vector<file_v5_slope_tile> slope_list;
+    std::vector<struct_file_v5_area> area_list;
+
     st_save game_save;
     st_checkpoint checkpoint;
 
@@ -66,6 +69,7 @@ public:
     std::map<unsigned int, std::vector<file_v5_map_npc>>  file_v5_map_npc_map; // map enemies
     unsigned int file_v5_selected_map = 0;
     unsigned int file_v5_selected_layer = 0;
+    unsigned int file_v5_selected_slope = 0;
 
 };
 

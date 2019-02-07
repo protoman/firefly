@@ -19,6 +19,8 @@
 	#include "../file/format.h"
 #endif
 
+
+
 extern int palleteX;
 extern int palleteY;
 
@@ -53,53 +55,58 @@ public:
   void update_files();
 
 private:
+  void preload_slope_images();
+  void draw_slope_tile(int x, int y, int dest_x, int dest_y, QPainter *painter);
+
+private:
 
   // variables
   int link_pos_x;
   int link_pos_y;
   int link_map_origin;
   int link_size;
+  e_LINK_DIRECTION link_direction;
 
 
 protected:
-  // methods
-  void paintEvent(QPaintEvent *event);
-  void mousePressEvent(QMouseEvent * event);
-  void mouseReleaseEvent(QMouseEvent * event);
-  void mouseMoveEvent(QMouseEvent *event);
-  void wheelEvent(QWheelEvent *event);
+    // methods
+    void paintEvent(QPaintEvent *event);
+    void mousePressEvent(QMouseEvent * event);
+    void mouseReleaseEvent(QMouseEvent * event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent *event);
 
-  void drawTileset(QPainter *painter);
-  void drawLockTileset(QPainter *painter);
-  void drawMapEnemies(QPainter *painter);
-  void drawMapObjects(QPainter *painter);
+    void drawTileset(QPainter *painter);
+    void drawLockTileset(QPainter *painter);
+    void drawMapEnemies(QPainter *painter);
+    void drawMapObjects(QPainter *painter);
 
-  // variables
-  int temp;
-  int editor_selectedTileX, editor_selectedTileY;
-  int tempX, tempY;
-  int editor_selected_object_pos;
-  int editor_selected_object_pos_map;
+    // variables
+    int temp;
+    int editor_selectedTileX, editor_selectedTileY;
+    int tempX, tempY;
+    int editor_selected_object_pos;
+    int editor_selected_object_pos_map;
 
-  int map_backup_n;
-  bool mouse_released;
-  bool selection_started;
+    int map_backup_n;
+    bool mouse_released;
+    bool selection_started;
 
-  int selection_start_x;
-  int selection_start_y;
-  std::vector<std::vector<st_tile_point> > selection_matrix;
-  int selection_current_x;
-  int selection_current_y;
+    int selection_start_x;
+    int selection_start_y;
+    std::vector<std::vector<st_tile_point> > selection_matrix;
+    int selection_current_x;
+    int selection_current_y;
 
-  QPixmap hard_mode_tile;
-  QPixmap easy_mode_tile;
-  QPixmap tileset_image;
-  QBitmap tileset_bitmap;
-  QPixmap bg1_image;
-  QPixmap fg_layer__image;
-  float fg_opacity;
+    QPixmap hard_mode_tile;
+    QPixmap easy_mode_tile;
+    QPixmap tileset_image;
+    QBitmap tileset_bitmap;
+    QPixmap bg1_image;
+    QPixmap fg_layer__image;
+    float fg_opacity;
 
-
+    std::map<int, QPixmap> slope_image_list;
 
 
 //signals:

@@ -54,21 +54,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     player_edit_tab = new player_edit();
     ui->PlayerScrollArea->setWidget(player_edit_tab);
 
-    game_scenes_tab = new GameScenes();
-    ui->gameScenes_scrollArea->setWidget(game_scenes_tab);
-
     anim_tiles_edit_tab = new anim_tiles_edit();
     ui->anim_tab_scrollArea->setWidget(anim_tiles_edit_tab);
 
-    scenes_window = new SceneEditorWindow;
-    QObject::connect(scenes_window, SIGNAL(scenes_editor_window_closed()), this, SLOT(on_scenes_editor_window_closed()));
-    scenes_window->hide();
+    slope_edit_tab = new SlopeEditTab;
+    ui->SlopeEditScrollArea->setWidget(slope_edit_tab);
 
+    area_editor = new AreaEditor;
+    ui->gameAreasScrollArea->setWidget(area_editor);
 }
 
 MainWindow::~MainWindow()
 {
-    delete scenes_window;
     delete ui;
 }
 
@@ -153,7 +150,8 @@ void MainWindow::reload()
     map_edit_tab->reload();
     player_edit_tab->reload();
     anim_tiles_edit_tab->reload();
-    game_scenes_tab->reload();
+    slope_edit_tab->reload();
+    area_editor->reload();
     this->show();
 }
 
@@ -385,12 +383,6 @@ void MainWindow::on_players_tab_list_combo_2_currentIndexChanged(int index)
     std::cout << "MainWindow::on_players_tab_list_combo_2_currentIndexChanged - index: " << index << ", max_shots: " << Mediator::get_instance()->player_list_v3_1[index].max_shots << std::endl;
 }
 
-void MainWindow::on_actionScenes_Editor_triggered()
-{
-    scenes_window->reload();
-    scenes_window->show();
-}
-
 void MainWindow::on_actionObjects_toggled(bool arg1)
 {
     Mediator::get_instance()->show_objects_flag = arg1;
@@ -480,12 +472,6 @@ void MainWindow::on_load_game_accepted()
     reload();
 }
 
-void MainWindow::on_actionMovie_Editor_triggered()
-{
-    scenes_window->reload();
-    scenes_window->show();
-}
-
 void MainWindow::on_actionStrings_Editor_triggered()
 {
     strings_editor_window = new StringsEditor(this, 0);
@@ -509,11 +495,6 @@ void MainWindow::on_actionZoomThree_triggered()
 {
     Mediator::get_instance()->zoom = 3;
     map_edit_tab->update_edit_area();
-}
-
-void MainWindow::on_scenes_editor_window_closed()
-{
-    game_scenes_tab->reload();
 }
 
 void MainWindow::on_actionGRID_toggled(bool arg1)

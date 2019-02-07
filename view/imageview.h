@@ -129,7 +129,10 @@ public:
     void copyArea(struct st_position origin_pos, struct st_imageData& origin, struct st_imageData& dest); // overload, use the whole width and height of given image
 
 
-    void clear_surface(struct st_imageData& surface);
+    void copyAreaNoTexture(struct st_rectangle rect, struct st_position dest_pos, st_imageData &origin, st_imageData &dest);
+    void rebuildTexture(st_imageData &origin);
+
+    void clear_surface(struct st_imageData& image);
     st_imageData imageFromFile(std::string filename);
     void renderTexturePortionAt(int origin_x, int origin_y, int origin_w, int origin_h, int dest_x, int dest_y, SDL_Texture* texture);
     void renderImageAt(int dest_x, int dest_y, st_imageData& image);
@@ -143,6 +146,7 @@ public:
     void place_easymode_block_tile(st_position destiny, st_imageData &surface);
     void place_hardmode_block_tile(st_position destiny, st_imageData &surface);
     void placeTile(struct st_position origin_pos, struct st_position dest_pos, st_imageData& dest);
+    void placeSlope(st_rectangle origin_pos, struct st_position dest_pos, st_imageData& origin, st_imageData& dest);
     void place_3rd_level_tile(int origin_x, int origin_y, int dest_x, int dest_y);
     void load_icons();
     void flip_image(st_imageData& original, st_imageData &res, e_flip_type flip_mode);

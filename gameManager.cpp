@@ -25,6 +25,7 @@
 #include "strings_map.h"
 
 #include "controller/inputcontroller.h"
+#include "options/pausemenu.h"
 
 #include "aux_tools/fps_control.h"
 
@@ -90,7 +91,7 @@ void gameManager::initHardwareLayer()
         exit(EXIT_FAILURE);
     }
 
-    gRenderer = SDL_CreateRenderer(SharedData::get_instance()->window, -1, SDL_RENDERER_ACCELERATED );
+    gRenderer = SDL_CreateRenderer(SharedData::get_instance()->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE );
     if (gRenderer == nullptr) {
         std::cout << "Renderer could not be created! SDL Error" << SDL_GetError() << "]" << std::endl;
         exit(EXIT_FAILURE);
@@ -142,6 +143,9 @@ void gameManager::loadGameData()
     }
     std::cout << "@@@@@@@@@@@@@@@@@@@@@@@ projectile_list_v3.size[" << SharedData::get_instance()->projectile_list_v3.size() << "]" << std::endl;
 
+    SharedData::get_instance()->slope_list = fio_cmm.load_from_disk<file_v5_slope_tile>(SharedData::get_instance()->FILEPATH+FILE_V5_MAP_SLOPE_LIST);
+    std::cout << "%%%%%%%%% slope_list[" << SharedData::get_instance()->slope_list.size() << "] %%%%%%%%%" << std::endl;
+
 }
 
 void gameManager::loadMapData()
@@ -164,6 +168,7 @@ void gameManager::loadMapData()
 
 void gameManager::initGame()
 {
+    std::cout << "### gameManager::initGame ###" << std::endl;
     player1.initialize();
     player1.initFrames();
     player1.set_is_player(true);
@@ -172,7 +177,7 @@ void gameManager::initGame()
 
     fps_manager.initialize();
     mapController.loadMap();
-
+    init_map_and_player_to_bottom();
 }
 
 
@@ -189,11 +194,9 @@ void gameManager::show_game(bool can_characters_move, bool can_scroll_stage)
     }
 
     // TODO::IURI //
-    /*
-    if (config_manager.execute_ingame_menu()) { // game is paused
+    if (PauseMenu::get_instance()->execute()) { // game is paused
         return;
     }
-    */
 
     // must jump a frame
     if (fps_manager.get_frame_drop_n() > 0 && fps_manager.get_current_frame_n() > 0) {
@@ -303,13 +306,15 @@ void gameManager::start_stage()
     mapController.reset_map();
 
     /// @TODO - this must be on a single method in soundlib
-    player1.set_position(st_position(RES_W/2 - 29/2, -TILESIZE));
+
+    init_map_and_player_to_bottom();
 
 	SoundView::get_instance()->stop_music();
 
     SoundView::get_instance()->load_stage_music(SharedData::get_instance()->file_v5_map_header_list.at(mapController.get_number()).music_filename);
 
     mapController.loadMap();
+    mapController.set_scroll_to_bottom();
 
     player1.cancel_slide();
     player1.reset_jump();
@@ -432,6 +437,7 @@ void gameManager::restart_stage()
 	_show_boss_hp = false;
     InputController::get_instance()->clean();
     mapController.loadMap();
+    mapController.set_scroll_to_bottom();
 	// TODO - this must be on a single method in soundlib
 
     player1.clean_projectiles();
@@ -1411,7 +1417,18 @@ void gameManager::change_map_scroll(st_float_position pos, bool check_lock, bool
             pos.x = 0;
         }
     }
-   mapController.changeScrolling(pos, check_lock);
+    mapController.changeScrolling(pos, check_lock);
+}
+
+void gameManager::init_map_and_player_to_bottom()
+{
+    std::cout << "### gameManager::initGame::set_scroll_to_bottom::CALL ###" << std::endl;
+    mapController.set_scroll_to_bottom();
+    int bottom_tile_y = mapController.get_first_lock_on_bottom(RES_W/4, -1, player1.get_size().width, player1.get_hitbox(ANIM_TYPE_STAND).h);
+    int bottom_y = bottom_tile_y*TILESIZE-player1.get_size().height+TILESIZE+1;
+    std::cout << "### bottom_y[" << bottom_y << "], bottom_tile.y[" << bottom_tile_y << "], player_h[" << player1.get_hitbox(ANIM_TYPE_STAND).h << "]" << std::endl;
+    player1.set_position(st_position(RES_W/4, bottom_y));
+    player1.set_animation_type(ANIM_TYPE_STAND);
 }
 
 MapController *gameManager::get_current_map_obj()

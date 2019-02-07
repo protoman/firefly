@@ -18,11 +18,6 @@
 #define STARS_DELAY 50
 #define CASTLE_PATH_DURATION 1000
 
-#define ENERGY_BALL_IMG_SIZE 10
-#define ENERGY_BALL_PERCENT_SLICE 5
-
-
-
 //#include "strings_map.h"
 
 #define FADE_INC 2
@@ -957,7 +952,7 @@ void draw::set_dynamic_bg_alpha(std::string filename, int alpha)
 void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weapon_value)
 {
     // TODO::IURI - usar imagem de fundo //
-    ImageView::get_instance()->clearScreenArea(0, AREA_H, RES_W, HUD_H, 200, 200, 200);
+    ImageView::get_instance()->clearScreenArea(0, AREA_H, RES_W, HUD_H, 0, 0, 0);
     // player HP
     int hp_percent = (100 * hp) / fio.get_heart_pieces_number(SharedData::get_instance()->game_save);
     draw_enery_ball(hp_percent, 3, hud_player_hp_ball);
@@ -993,31 +988,33 @@ void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weap
 
 void draw::draw_enery_ball(int value, int x_pos, st_imageData& ball_surface)
 {
+
     // 5 balls, each have 4 possible stages
     // so each slice of energy is 100 / (5*4) = 5%
+    const int ENERGY_BALL_PERCENT_SLICE = ball_surface.surface->h/2;
     for (int i=0; i<5; i++) {
         // less than min1 means black ball
-        int min1 = ENERGY_BALL_PERCENT_SLICE*4*i + 5;     // 1/4
-        int min2 = ENERGY_BALL_PERCENT_SLICE*4*i + 10;    // 2/4
-        int min3 = ENERGY_BALL_PERCENT_SLICE*4*i + 15;    // 3/4
-        int min4 = ENERGY_BALL_PERCENT_SLICE*4*i + 20;    // full
+        int min1 = ENERGY_BALL_PERCENT_SLICE*4*i + ENERGY_BALL_PERCENT_SLICE;     // 1/4
+        int min2 = ENERGY_BALL_PERCENT_SLICE*4*i + ENERGY_BALL_PERCENT_SLICE*2;    // 2/4
+        int min3 = ENERGY_BALL_PERCENT_SLICE*4*i + ENERGY_BALL_PERCENT_SLICE*3;    // 3/4
+        int min4 = ENERGY_BALL_PERCENT_SLICE*4*i + ENERGY_BALL_PERCENT_SLICE*4;    // full
         //std::cout << "i[" << i << "], hp_percent[" << hp_percent << "], min[" << min << "], max1[" << max1 << "], max2[" << max2 << "]" << std::endl;
 
-        int img_origin_x = ENERGY_BALL_IMG_SIZE*4;
+        int img_origin_x =  ball_surface.surface->h*4;
 
         //std::cout << "value[" << value << "], min1[" << min1 << "], min2[" << min2 << "], min3[" << min3 << "], min4[" << min4 << "]" << std::endl;
 
         if (value >= min4) {
             img_origin_x = 0;
         } else if (value >= min3) {
-            img_origin_x = ENERGY_BALL_IMG_SIZE;
+            img_origin_x =  ball_surface.surface->h;
         } else if (value >= min2) {
-            img_origin_x = ENERGY_BALL_IMG_SIZE*2;
+            img_origin_x =  ball_surface.surface->h*2;
         } else if (value >= min1) {
-            img_origin_x = ENERGY_BALL_IMG_SIZE*3;
+            img_origin_x =  ball_surface.surface->h*3;
         }
 
-        ImageView::get_instance()->renderTexturePortionAt(img_origin_x, 0, ball_surface.surface->w, ball_surface.surface->w, x_pos+(10*i), 3, ball_surface.texture);
+        ImageView::get_instance()->renderTexturePortionAt(img_origin_x, 0, ball_surface.surface->h, ball_surface.surface->h, x_pos+(ball_surface.surface->h*i), AREA_H+3, ball_surface.texture);
     }
 }
 

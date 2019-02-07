@@ -97,7 +97,6 @@ SOURCES += main.cpp \
     model/combolistdelegate.cpp \
     model/buttondelegate.cpp \
     newgamedialog.cpp \
-    mainwindow_tab/gamescenes.cpp \
     files_editor/stringseditor.cpp \
     ../aux_tools/stringutils.cpp \
     model/stringeditmodel.cpp \
@@ -114,7 +113,12 @@ SOURCES += main.cpp \
     ../file/fio_scenes.cpp \
     ../file/fio_strings.cpp \
     ../file/file_io.cpp \
-    ../data/shareddata.cpp
+    ../data/shareddata.cpp \
+    mainwindow_tab/slopeedittab.cpp \
+    widgets/slopepreviewwidget.cpp \
+    widgets/slopepickerwidget.cpp \
+    mainwindow_tab/areaeditor.cpp \
+    widgets/areaseditorarea.cpp
 
 HEADERS += mainwindow.h \
     editorarea.h \
@@ -174,7 +178,6 @@ HEADERS += mainwindow.h \
     ../file/v4/file_scene_v4.h \
     ../file/v4/file_stage_v4.h \
     ../file/v4/file_strings.h \
-    mainwindow_tab/gamescenes.h \
     files_editor/stringseditor.h \
     ../aux_tools/stringutils.h \
     model/stringeditmodel.h \
@@ -199,6 +202,11 @@ HEADERS += mainwindow.h \
     ../file/fio_strings.h \
     ../data/shareddata.h \
     ../file/file_io.h \
+    mainwindow_tab/slopeedittab.h \
+    widgets/slopepreviewwidget.h \
+    widgets/slopepickerwidget.h \
+    mainwindow_tab/areaeditor.h \
+    widgets/areaseditorarea.h
 
 FORMS += mainwindow.ui \
     addwizard.ui \
@@ -228,12 +236,13 @@ FORMS += mainwindow.ui \
     scenes/tab_animation.ui \
     files_editor/fileseditor.ui \
     newgamedialog.ui \
-    mainwindow_tab/gamescenes.ui \
     files_editor/stringseditor.ui \
     mainwindow_tab/anim_tiles_edit.ui \
     mainwindow_tab/anim/animpackimport.ui \
     dialog_pick_color.ui \
-    files_editor/gametextcreditstab.ui
+    files_editor/gametextcreditstab.ui \
+    mainwindow_tab/slopeedittab.ui \
+    mainwindow_tab/areaeditor.ui
 
 RESOURCES += resources/icons/icons.qrc
 INCLUDEPATH += ../common

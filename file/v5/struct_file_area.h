@@ -1,0 +1,4 @@
+#ifndef STRUCT_FILE_WORLD_H
+#define STRUCT_FILE_WORLD_H
+
+#endif // STRUCT_FILE_WORLD_H
