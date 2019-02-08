@@ -126,22 +126,26 @@ void EditorArea::draw_slope_tile(int x, int y, int dest_x, int dest_y, QPainter 
 
 void EditorArea::drawTileset(QPainter *painter)
 {
-
     // regular tiles
     if (SharedData::get_instance()->file_v5_map_tile_map.find(SharedData::get_instance()->file_v5_selected_map) != SharedData::get_instance()->file_v5_map_tile_map.end()) {
-        //SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).size()
         int map_w = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w;
         int map_h = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h;
         for (int i=0; i<map_w; i++) {
             for (int j=0; j<map_h; j++) {
                 int n = j*map_w + i;
+
                 if (SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).size() > 0) {
                     file_v5_map_tile tileItem = SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n);
+
+                    //std::cout << "TILE AT [" << i << "][" << j << "], type[" << tileItem.tile_underlay.type << "]" << std::endl;
 
                     if (tileItem.tile_underlay.x >= 0 && tileItem.tile_underlay.y >= 0) {
                         QRectF target(QPoint(i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
                         QRectF source(QPoint((tileItem.tile_underlay.x*TILESIZE), (tileItem.tile_underlay.y*TILESIZE)), QSize(TILESIZE, TILESIZE));
                         // used images depends upon tile type
+
+                        std::cout << "TILE AT [" << i << "][" << j << "], type[" << tileItem.tile_underlay.type << "]" << std::endl;
+
                         if (tileItem.tile_underlay.type == TILE_TYPE_SOLID) {
                             //std::cout << "FOUND SOLID_TILE AT [" << i << "][" << j << "]" << std::endl;
                             painter->drawPixmap(target, tileset_image, source);
@@ -185,6 +189,10 @@ void EditorArea::drawTileset(QPainter *painter)
 
                         }
 
+                    } else if (tileItem.tile_underlay.x == -2 && tileItem.tile_underlay.y == -2) {
+                        painter->setBrush(QColor(0, 0, 0, 255));
+                        std::cout << "UNUSED TILE x[" << i << "], y[" << j << "], n[" << n << "]" << std::endl;
+                        painter->drawRect(i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
                     }
                     // EASY-mode tiles
                     if (tileItem.locked == TERRAIN_EASYMODEBLOCK) {
@@ -210,6 +218,8 @@ void EditorArea::drawTileset(QPainter *painter)
                 }
             }
         }
+    } else {
+        std::cout << "EditorArea::drawTileset #99" << std::endl;
     }
 
 }
@@ -777,6 +787,17 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
             int n = editor_selectedTileY*map_w + editor_selectedTileX;
             std::cout << "mousePressEvent.DEBUG#1 - map_w[" << map_w << "], map_h[" << map_h << "], n[" << n << "]" << std::endl;
 
+            // out of map area
+            if (n >= SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).size()) {
+                return;
+            }
+
+            // unused tile
+            if (SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay.x == -2 && SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay.y == -2) {
+                std::cout << ">>>>>>>>>>> UNUSED TILE <<<<<<<<<<<<<" << std::endl;
+                return;
+            }
+
             if (Mediator::get_instance()->editTool == EDITMODE_NORMAL || Mediator::get_instance()->editTool == EDITMODE_ERASER || Mediator::get_instance()->editMode == EDITMODE_ANIM_TILE || Mediator::get_instance()->editMode == EDITMODE_SLOPE) {
                 std::cout << "mousePressEvent.DEBUG#2" << std::endl;
                 int valueType = TILE_TYPE_SOLID;
@@ -797,6 +818,7 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
                 }
 
                 if (SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).size() > 0) {
+
                     if (Mediator::get_instance()->layerLevel == 1) {
                         std::cout << "############ set tile[" << n << "], at[" << editor_selectedTileX << "][" << editor_selectedTileY << "] with [" << valueX << "][" << valueY << "][" << valueType << "]" << std::endl;
                         SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay.x = valueX;

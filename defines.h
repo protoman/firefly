@@ -134,6 +134,8 @@
 #define SLOPE_MAX_TILES 6
 
 #define GAME_AREA_SIZE 30
+#define GAME_AREA_W 20
+#define GAME_AREA_H 10
 
 enum SFX_LIST {
     SFX_NPC_HIT,
@@ -917,6 +919,7 @@ enum e_TILE_TYPE {
     TILE_TYPE_SOLID,
     TILE_TYPE_ANIM,
     TILE_TYPE_SLOPE,
+    TILE_TYPE_UNUSED,
     TILE_TYPE_COUNT
 };
 

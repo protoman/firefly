@@ -3,6 +3,9 @@
 
 #include <QWidget>
 
+#include "data/shareddata.h"
+#include "common.h"
+
 namespace Ui {
 class SlopeEditTab;
 }
@@ -14,9 +17,27 @@ class SlopeEditTab : public QWidget
 public:
     explicit SlopeEditTab(QWidget *parent = nullptr);
     ~SlopeEditTab();
+    void reload();
+
+private:
+    void fill_data();
+
+private slots:
+    void on_addSlopePushButton_clicked();
+
+    void on_currentSlopeComboBox_currentIndexChanged(int index);
+
+    void on_imageComboBox_currentIndexChanged(const QString &arg1);
+
+    void on_left_spinBox_valueChanged(int arg1);
+
+    void on_right_spinBox_valueChanged(int arg1);
+
+    void currentPosChanged(int pos);
 
 private:
     Ui::SlopeEditTab *ui;
+    bool data_loading = false;
 };
 
 #endif // SLOPEEDITTAB_H
