@@ -144,14 +144,14 @@ void EditorArea::drawTileset(QPainter *painter)
                         QRectF source(QPoint((tileItem.tile_underlay.x*TILESIZE), (tileItem.tile_underlay.y*TILESIZE)), QSize(TILESIZE, TILESIZE));
                         // used images depends upon tile type
 
-                        std::cout << "TILE AT [" << i << "][" << j << "], type[" << tileItem.tile_underlay.type << "]" << std::endl;
+                        //std::cout << "TILE AT [" << i << "][" << j << "], type[" << tileItem.tile_underlay.type << "]" << std::endl;
 
                         if (tileItem.tile_underlay.type == TILE_TYPE_SOLID) {
                             //std::cout << "FOUND SOLID_TILE AT [" << i << "][" << j << "]" << std::endl;
                             painter->drawPixmap(target, tileset_image, source);
                         } else if (tileItem.tile_underlay.type == TILE_TYPE_SLOPE) {
                             /// @TODO ///
-                            std::cout << "FOUND SLOPE_TILE AT [" << i << "][" << j << "], with x[" << tileItem.tile_underlay.x << "], y[" << tileItem.tile_underlay.y << "]" << std::endl;
+                            //std::cout << "FOUND SLOPE_TILE AT [" << i << "][" << j << "], with x[" << tileItem.tile_underlay.x << "], y[" << tileItem.tile_underlay.y << "]" << std::endl;
                             draw_slope_tile(tileItem.tile_underlay.x, tileItem.tile_underlay.y, i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom, painter);
 
 
@@ -190,8 +190,8 @@ void EditorArea::drawTileset(QPainter *painter)
                         }
 
                     } else if (tileItem.tile_underlay.x == -2 && tileItem.tile_underlay.y == -2) {
-                        painter->setBrush(QColor(0, 0, 0, 255));
-                        std::cout << "UNUSED TILE x[" << i << "], y[" << j << "], n[" << n << "]" << std::endl;
+                        //std::cout << "UNUSED TILE x[" << i << "], y[" << j << "], n[" << n << "]" << std::endl;
+                        painter->setBrush(QColor(240, 240, 240, 255));
                         painter->drawRect(i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
                     }
                     // EASY-mode tiles
@@ -267,6 +267,8 @@ void EditorArea::drawLockTileset(QPainter *painter)
                         terrainIcon = QString(":/toolbar_icons/draw-square-inverted-corners.png"); // hard block
                     } else if (tileItem.locked == TERRAIN_SLOPE) {
                         terrainIcon = QString(":/toolbar_icons/draw-triangle.png"); // diagonal left
+                    } else if (tileItem.locked == -2) {
+                        terrainIcon = QString(":/toolbar_icons/dialog-cancel.png"); // diagonal left
                     }
                     if (terrainIcon.length() > 0) {
                         QPixmap terrainImage(terrainIcon);
@@ -461,7 +463,7 @@ void EditorArea::paintEvent(QPaintEvent *) {
 
     if (Mediator::get_instance()->show_grid) {
         // DRAW GRID //
-        QPen pen(QColor(160, 160, 160), 1, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
+        QPen pen(QColor(120, 120, 120), 1, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
         QPen pen_red(QColor(180, 50, 50), 2, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
         painter.setPen(pen);
         int currentMap = SharedData::get_instance()->file_v5_selected_map;
@@ -478,7 +480,7 @@ void EditorArea::paintEvent(QPaintEvent *) {
             painter.drawLine(line);
         }
         painter.setPen(pen);
-        for (unsigned int i=1; i<SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_w; i++) {
+        for (unsigned int i=1; i<SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_h+1; i++) {
             pos = i*TILESIZE*Mediator::get_instance()->zoom-1;
             //QLineF line(0, 800, 16, 800);
             // linhas verticais

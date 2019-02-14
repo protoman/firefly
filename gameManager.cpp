@@ -162,7 +162,16 @@ void gameManager::loadMapData()
         char mapName[FS_CHAR_FILENAME_SIZE];
         sprintf(mapName, "/data/v5_map_%d_tiles.dat", i);
         SharedData::get_instance()->file_v5_map_tile_map.at(i) = fio_cmm.load_from_disk<file_v5_map_tile>(SharedData::get_instance()->FILEPATH+std::string(mapName));
+
+        // load map links
+        char map_link_name[FS_CHAR_FILENAME_SIZE];
+        sprintf(map_link_name, "/data/v5_map_%d_links.dat", i);
+        SharedData::get_instance()->file_v5_area_link_map.insert(std::pair<unsigned int, std::vector<struct_file_v5_area_link>>(i, std::vector<struct_file_v5_area_link>()));
+        if (fio.file_exists(map_link_name)) {
+            SharedData::get_instance()->file_v5_area_link_map.at(i) = fio_cmm.load_from_disk<struct_file_v5_area_link>(map_link_name);
+        }
     }
+    // set links on map tiles
 
 }
 

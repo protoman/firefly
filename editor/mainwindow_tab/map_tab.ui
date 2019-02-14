@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1042</width>
-    <height>593</height>
+    <height>993</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,1115 +30,498 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QWidget" name="Sidebar" native="true">
-     <property name="minimumSize">
-      <size>
-       <width>400</width>
-       <height>0</height>
-      </size>
+    <layout class="QGridLayout" name="gridLayout_3">
+     <property name="leftMargin">
+      <number>0</number>
      </property>
-     <property name="maximumSize">
-      <size>
-       <width>400</width>
-       <height>16777215</height>
-      </size>
+     <property name="bottomMargin">
+      <number>30</number>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="sizeConstraint">
-       <enum>QLayout::SetDefaultConstraint</enum>
-      </property>
-      <property name="topMargin">
-       <number>1</number>
-      </property>
-      <item>
-       <layout class="QGridLayout" name="gridLayout_6">
+     <item row="2" column="1">
+      <widget class="QGroupBox" name="groupBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>300</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
         <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
          <number>0</number>
         </property>
         <property name="bottomMargin">
          <number>0</number>
         </property>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_21">
-          <property name="text">
-           <string>Map:</string>
+        <item>
+         <widget class="QToolBox" name="toolBox">
+          <property name="enabled">
+           <bool>true</bool>
           </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="mapSelector_comboBox"/>
-        </item>
-        <item row="2" column="1">
-         <widget class="QComboBox" name="difficulty_comboBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
           <property name="currentIndex">
            <number>0</number>
           </property>
-          <item>
-           <property name="text">
-            <string>Easy</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Normal</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Hard</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QLabel" name="label_20">
-          <property name="text">
-           <string>Constraint:</string>
+          <property name="tabSpacing">
+           <number>6</number>
           </property>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <widget class="QPushButton" name="generateMapTiles_pushButton">
-          <property name="text">
-           <string>Generate Tiles</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_19">
-          <property name="text">
-           <string>Difficulty:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_24">
-          <property name="text">
-           <string>SPACER</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="addMap_pushButton">
-          <property name="text">
-           <string>Add</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="3">
-         <widget class="QPushButton" name="difficultyMode_pushButton">
-          <property name="text">
-           <string>&gt;=</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="groupBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="title">
-         <string/>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_5">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QToolBox" name="toolBox">
-           <property name="enabled">
-            <bool>true</bool>
+          <widget class="QWidget" name="page_map">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>294</width>
+             <height>246</height>
+            </rect>
            </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
-           </property>
-           <property name="currentIndex">
-            <number>0</number>
-           </property>
-           <property name="tabSpacing">
-            <number>6</number>
-           </property>
-           <widget class="QWidget" name="page_map_properties">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>362</width>
-              <height>609</height>
-             </rect>
-            </property>
-            <attribute name="label">
-             <string>Map Properties</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_11">
-             <item>
-              <layout class="QGridLayout" name="gridLayout_13">
-               <item row="1" column="2">
-                <widget class="QSpinBox" name="mapSizeW_spinBox">
-                 <property name="maximum">
-                  <number>998</number>
+           <attribute name="label">
+            <string>Palette</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_10">
+            <item>
+             <widget class="QWidget" name="verticalWidget" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>320</height>
+               </size>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_3">
+               <property name="topMargin">
+                <number>10</number>
+               </property>
+               <property name="bottomMargin">
+                <number>10</number>
+               </property>
+               <item>
+                <layout class="QGridLayout" name="gridLayout">
+                 <property name="topMargin">
+                  <number>0</number>
                  </property>
+                 <item row="1" column="1">
+                  <widget class="QComboBox" name="comboBox">
+                   <property name="currentIndex">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>Background</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Overlay</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label">
+                   <property name="text">
+                    <string>Level:</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QScrollArea" name="scrollArea_2">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="widgetResizable">
+                  <bool>false</bool>
+                 </property>
+                 <widget class="QWidget" name="scrollAreaWidgetContents_2">
+                  <property name="geometry">
+                   <rect>
+                    <x>0</x>
+                    <y>0</y>
+                    <width>284</width>
+                    <height>75</height>
+                   </rect>
+                  </property>
+                  <widget class="EditorTilePallete" name="pallete" native="true">
+                   <property name="geometry">
+                    <rect>
+                     <x>10</x>
+                     <y>0</y>
+                     <width>261</width>
+                     <height>71</height>
+                    </rect>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>100</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </widget>
                 </widget>
                </item>
-               <item row="5" column="0">
-                <widget class="QLabel" name="label_58">
-                 <property name="text">
-                  <string>BG Color:</string>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="terrain">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>294</width>
+             <height>246</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Terrain</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QListWidget" name="listWidget_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <item>
+               <property name="text">
+                <string>Solid</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../resources/icons/icons.qrc">
+                 <normaloff>:/toolbar_icons/Lock</normaloff>:/toolbar_icons/Lock</iconset>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Stairs</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../resources/icons/icons.qrc">
+                 <normaloff>:/toolbar_icons/stairs.png</normaloff>:/toolbar_icons/stairs.png</iconset>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Spikes</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../resources/icons/icons.qrc">
+                 <normaloff>:/toolbar_icons/edit-delete.png</normaloff>:/toolbar_icons/edit-delete.png</iconset>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Water</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../resources/icons/icons.qrc">
+                 <normaloff>:/toolbar_icons/flag-blue.png</normaloff>:/toolbar_icons/flag-blue.png</iconset>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Ice</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../resources/icons/icons.qrc">
+                 <normaloff>:/toolbar_icons/flag-green.png</normaloff>:/toolbar_icons/flag-green.png</iconset>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Move to Left</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../resources/icons/icons.qrc">
+                 <normaloff>:/toolbar_icons/arrow-left.png</normaloff>:/toolbar_icons/arrow-left.png</iconset>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Move to Right</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../resources/icons/icons.qrc">
+                 <normaloff>:/toolbar_icons/arrow-right.png</normaloff>:/toolbar_icons/arrow-right.png</iconset>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Sand</string>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normalon>:/toolbar_icons/arrow-down.png</normalon>
+                </iconset>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Scroll Lock</string>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normalon>:/toolbar_icons/system-switch-user.png</normalon>
+                </iconset>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Easy-Mode Block</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../resources/icons/icons.qrc">
+                 <normaloff>:/toolbar_icons/draw-polygon.png</normaloff>:/toolbar_icons/draw-polygon.png</iconset>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Hard-Mode Spike</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../resources/icons/icons.qrc">
+                 <normaloff>:/toolbar_icons/draw-square-inverted-corners.png</normaloff>:/toolbar_icons/draw-square-inverted-corners.png</iconset>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Slope</string>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normalon>:/toolbar_icons/draw-triangle.png</normalon>
+                </iconset>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="page_npc">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>294</width>
+             <height>246</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Enemy Placing</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QWidget" name="horizontalWidget" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <property name="leftMargin">
+                  <number>0</number>
                  </property>
-                </widget>
-               </item>
-               <item row="11" column="0">
-                <widget class="QLabel" name="label_61">
-                 <property name="text">
-                  <string>Speed:</string>
+                 <property name="topMargin">
+                  <number>0</number>
                  </property>
-                </widget>
-               </item>
-               <item row="17" column="0">
-                <widget class="Line" name="line">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>20</height>
-                  </size>
+                 <property name="rightMargin">
+                  <number>0</number>
                  </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="13" column="0">
-                <widget class="QLabel" name="label_16">
-                 <property name="text">
-                  <string>Auto-Scroll:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QLineEdit" name="v5_mapName_lineEdit"/>
-               </item>
-               <item row="7" column="2">
-                <widget class="QComboBox" name="mapGFXMode_comboBox">
-                 <property name="currentIndex">
+                 <property name="bottomMargin">
                   <number>0</number>
                  </property>
                  <item>
-                  <property name="text">
-                   <string>Full</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Background</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Overlay</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="4" column="2">
-                <widget class="QCheckBox" name="mapAutoScroll_checkBox">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="20" column="0">
-                <spacer name="verticalSpacer_5">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="9" column="0">
-                <widget class="QLabel" name="label_13">
-                 <property name="text">
-                  <string>Layer:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_3">
-                 <property name="maximumSize">
-                  <size>
-                   <width>110</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Auto-Scroll:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_25">
-                 <property name="text">
-                  <string>Size-W:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="15" column="0">
-                <widget class="QCheckBox" name="repeatX_checkBox">
-                 <property name="text">
-                  <string>Repeat-X</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="2">
-                <widget class="QComboBox" name="bg1_filename"/>
-               </item>
-               <item row="15" column="2">
-                <widget class="QCheckBox" name="repeatY_checkBox">
-                 <property name="text">
-                  <string>Repeat-Y</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="12" column="2">
-                <widget class="QSpinBox" name="bg1_y_pos">
-                 <property name="maximum">
-                  <number>999</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="2">
-                <widget class="QComboBox" name="mapGFX_comboBox">
-                 <item>
-                  <property name="text">
-                   <string>None</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Rain</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Snow</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Underwater</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Train</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Flash Stopper</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Lighting Bolt</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Shadow Top</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Inferno</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="17" column="2">
-                <widget class="Line" name="line_2">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="20" column="2">
-                <widget class="QCheckBox" name="fg_show_checkBox">
-                 <property name="text">
-                  <string>show foreground image</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="label_18">
-                 <property name="text">
-                  <string>GFX Mode:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_23">
-                 <property name="text">
-                  <string>Name:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="2">
-                <widget class="QComboBox" name="layerSelector_comboBox"/>
-               </item>
-               <item row="11" column="2">
-                <widget class="QDoubleSpinBox" name="bg1_speed">
-                 <property name="minimum">
-                  <double>0.000000000000000</double>
-                 </property>
-                 <property name="maximum">
-                  <double>4.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.100000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="19" column="2">
-                <widget class="QCheckBox" name="checkBox_2">
-                 <property name="text">
-                  <string>show background image</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="2">
-                <widget class="QPushButton" name="bg_color_pick">
-                 <property name="text">
-                  <string>Pick</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="18" column="2">
-                <widget class="QCheckBox" name="checkBox">
-                 <property name="text">
-                  <string>show background color</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="2">
-                <widget class="QComboBox" name="v5_tileset_comboBox"/>
-               </item>
-               <item row="12" column="0">
-                <widget class="QLabel" name="label_56">
-                 <property name="text">
-                  <string>Y Position:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="18" column="0">
-                <widget class="QLabel" name="label_15">
-                 <property name="text">
-                  <string>View Options:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="2">
-                <widget class="QSpinBox" name="mapSizeH_spinBox">
-                 <property name="maximum">
-                  <number>999</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="0">
-                <widget class="QLabel" name="label_6">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_26">
-                 <property name="text">
-                  <string>Size-H:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_27">
-                 <property name="text">
-                  <string>Tileset:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="0">
-                <widget class="QLabel" name="label_52">
-                 <property name="text">
-                  <string>Image:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="14" column="0">
-                <widget class="QLabel" name="label_8">
-                 <property name="text">
-                  <string>Alpha:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="13" column="2">
-                <widget class="QComboBox" name="autoScrollBG1_mode">
-                 <item>
-                  <property name="text">
-                   <string>None</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Up</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Down</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Left</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Right</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Diagonal TBD</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="label_14">
-                 <property name="text">
-                  <string>GFX Effect:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="14" column="2">
-                <widget class="QSpinBox" name="layerAlpha_spinBox">
-                 <property name="maximum">
-                  <number>255</number>
-                 </property>
-                 <property name="value">
-                  <number>255</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="page_map">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>376</width>
-              <height>222</height>
-             </rect>
-            </property>
-            <attribute name="label">
-             <string>Palette</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_10">
-             <item>
-              <widget class="QWidget" name="verticalWidget" native="true">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>320</height>
-                </size>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_3">
-                <property name="topMargin">
-                 <number>10</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>10</number>
-                </property>
-                <item>
-                 <layout class="QGridLayout" name="gridLayout">
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <item row="1" column="1">
-                   <widget class="QComboBox" name="comboBox">
-                    <property name="currentIndex">
-                     <number>0</number>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>Background</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Overlay</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label">
-                    <property name="text">
-                     <string>Level:</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <widget class="QScrollArea" name="scrollArea_2">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="widgetResizable">
-                   <bool>false</bool>
-                  </property>
-                  <widget class="QWidget" name="scrollAreaWidgetContents_2">
-                   <property name="geometry">
-                    <rect>
-                     <x>0</x>
-                     <y>0</y>
-                     <width>284</width>
-                     <height>75</height>
-                    </rect>
+                  <widget class="QLabel" name="label_7">
+                   <property name="text">
+                    <string>Direction:</string>
                    </property>
-                   <widget class="EditorTilePallete" name="pallete" native="true">
-                    <property name="geometry">
-                     <rect>
-                      <x>10</x>
-                      <y>0</y>
-                      <width>261</width>
-                      <height>71</height>
-                     </rect>
-                    </property>
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>100</width>
-                      <height>50</height>
-                     </size>
-                    </property>
-                   </widget>
                   </widget>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="terrain">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>376</width>
-              <height>222</height>
-             </rect>
-            </property>
-            <attribute name="label">
-             <string>Terrain</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_6">
-             <item>
-              <widget class="QListWidget" name="listWidget_2">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <item>
-                <property name="text">
-                 <string>Solid</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="../resources/icons/icons.qrc">
-                  <normaloff>:/toolbar_icons/Lock</normaloff>:/toolbar_icons/Lock</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Stairs</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="../resources/icons/icons.qrc">
-                  <normaloff>:/toolbar_icons/stairs.png</normaloff>:/toolbar_icons/stairs.png</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Spikes</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="../resources/icons/icons.qrc">
-                  <normaloff>:/toolbar_icons/edit-delete.png</normaloff>:/toolbar_icons/edit-delete.png</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Water</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="../resources/icons/icons.qrc">
-                  <normaloff>:/toolbar_icons/flag-blue.png</normaloff>:/toolbar_icons/flag-blue.png</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Ice</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="../resources/icons/icons.qrc">
-                  <normaloff>:/toolbar_icons/flag-green.png</normaloff>:/toolbar_icons/flag-green.png</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Move to Left</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="../resources/icons/icons.qrc">
-                  <normaloff>:/toolbar_icons/arrow-left.png</normaloff>:/toolbar_icons/arrow-left.png</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Move to Right</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="../resources/icons/icons.qrc">
-                  <normaloff>:/toolbar_icons/arrow-right.png</normaloff>:/toolbar_icons/arrow-right.png</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Sand</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normalon>:/toolbar_icons/arrow-down.png</normalon>
-                 </iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Scroll Lock</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normalon>:/toolbar_icons/system-switch-user.png</normalon>
-                 </iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Easy-Mode Block</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="../resources/icons/icons.qrc">
-                  <normaloff>:/toolbar_icons/draw-polygon.png</normaloff>:/toolbar_icons/draw-polygon.png</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Hard-Mode Spike</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="../resources/icons/icons.qrc">
-                  <normaloff>:/toolbar_icons/draw-square-inverted-corners.png</normaloff>:/toolbar_icons/draw-square-inverted-corners.png</iconset>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Slope</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normalon>:/toolbar_icons/draw-triangle.png</normalon>
-                 </iconset>
-                </property>
-               </item>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="page_npc">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>376</width>
-              <height>222</height>
-             </rect>
-            </property>
-            <attribute name="label">
-             <string>Enemy Placing</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_6">
-             <item>
-              <layout class="QVBoxLayout" name="verticalLayout_4">
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QWidget" name="horizontalWidget" native="true">
-                 <layout class="QHBoxLayout" name="horizontalLayout_5">
-                  <property name="leftMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item>
-                   <widget class="QLabel" name="label_7">
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="npc_direction_combo">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>16</height>
+                    </size>
+                   </property>
+                   <item>
                     <property name="text">
-                     <string>Direction:</string>
+                     <string>Left</string>
                     </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QComboBox" name="npc_direction_combo">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Right</string>
                     </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>0</width>
-                      <height>16</height>
-                     </size>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>Left</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Right</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="QListWidget" name="npc_listWidget">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="page_Link">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>376</width>
-              <height>222</height>
-             </rect>
-            </property>
-            <attribute name="label">
-             <string>Link Placing</string>
-            </attribute>
-            <widget class="QWidget" name="gridWidget" native="true">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>363</width>
-               <height>311</height>
-              </rect>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_2">
-              <item row="0" column="1">
-               <widget class="QComboBox" name="link_orientation_combobox">
-                <item>
-                 <property name="text">
-                  <string>Horizontal</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Vertical</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Teleporter</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Fade Teleport</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Teleporter [Left-Lock]</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Teleporter [Right-Lock]</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_2">
-                <property name="text">
-                 <string>Type:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_4">
-                <property name="text">
-                 <string>Bi-Direcional:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_5">
-                <property name="text">
-                 <string>Is Door:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QCheckBox" name="link_bidi_checkbox">
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <spacer name="verticalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="2" column="1">
-               <widget class="QCheckBox" name="link_isdoor_checkbox">
-                <property name="text">
-                 <string/>
-                </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
              </layout>
-            </widget>
-           </widget>
-           <widget class="QWidget" name="page_objects">
+            </item>
+            <item>
+             <widget class="QListWidget" name="npc_listWidget">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="page_Link">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>294</width>
+             <height>246</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Link Placing</string>
+           </attribute>
+           <widget class="QWidget" name="gridWidget" native="true">
             <property name="geometry">
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>376</width>
-              <height>222</height>
+              <width>363</width>
+              <height>311</height>
              </rect>
             </property>
-            <attribute name="label">
-             <string>Object Placing</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_6">
-             <item>
-              <widget class="QListWidget" name="objectListWidget">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="1">
+              <widget class="QComboBox" name="link_orientation_combobox">
+               <item>
+                <property name="text">
+                 <string>Horizontal</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Vertical</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Teleporter</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Fade Teleport</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Teleporter [Left-Lock]</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Teleporter [Right-Lock]</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Type:</string>
                </property>
               </widget>
              </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_4">
-               <property name="bottomMargin">
-                <number>0</number>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Bi-Direcional:</string>
                </property>
-               <item>
-                <widget class="QLabel" name="label_12">
-                 <property name="text">
-                  <string>Direction:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QComboBox" name="object_direction_combo">
-                 <item>
-                  <property name="text">
-                   <string>Left</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Right</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-              </layout>
+              </widget>
              </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="animTiles">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>376</width>
-              <height>222</height>
-             </rect>
-            </property>
-            <attribute name="label">
-             <string>Animated Tiles</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_6">
-             <item>
-              <widget class="QScrollArea" name="scrollArea_3">
-               <property name="widgetResizable">
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>Is Door:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QCheckBox" name="link_bidi_checkbox">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="checked">
                 <bool>true</bool>
                </property>
-               <widget class="QWidget" name="scrollAreaWidgetContents_3">
-                <property name="geometry">
-                 <rect>
-                  <x>0</x>
-                  <y>0</y>
-                  <width>356</width>
-                  <height>97</height>
-                 </rect>
-                </property>
-                <widget class="animTilePalette" name="animTilePaletteWidget" native="true">
-                 <property name="geometry">
-                  <rect>
-                   <x>10</x>
-                   <y>10</y>
-                   <width>291</width>
-                   <height>101</height>
-                  </rect>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>16</width>
-                   <height>16</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="baseSize">
-                  <size>
-                   <width>0</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">background-color: black;</string>
-                 </property>
-                </widget>
-               </widget>
               </widget>
              </item>
-             <item>
-              <spacer name="verticalSpacer_2">
+             <item row="3" column="0">
+              <spacer name="verticalSpacer">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
                </property>
@@ -1150,33 +533,497 @@
                </property>
               </spacer>
              </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="page">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>376</width>
-              <height>222</height>
-             </rect>
-            </property>
-            <attribute name="label">
-             <string>Slope Tiles</string>
-            </attribute>
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <item>
-              <widget class="SlopePickerWidget" name="slopePickerWidget" native="true"/>
+             <item row="2" column="1">
+              <widget class="QCheckBox" name="link_isdoor_checkbox">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
           </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
-    </widget>
+          <widget class="QWidget" name="page_objects">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>294</width>
+             <height>246</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Object Placing</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QListWidget" name="objectListWidget">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="label_12">
+                <property name="text">
+                 <string>Direction:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="object_direction_combo">
+                <item>
+                 <property name="text">
+                  <string>Left</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Right</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="animTiles">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>294</width>
+             <height>246</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Animated Tiles</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QScrollArea" name="scrollArea_3">
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="scrollAreaWidgetContents_3">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>274</width>
+                 <height>109</height>
+                </rect>
+               </property>
+               <widget class="animTilePalette" name="animTilePaletteWidget" native="true">
+                <property name="geometry">
+                 <rect>
+                  <x>10</x>
+                  <y>10</y>
+                  <width>291</width>
+                  <height>101</height>
+                 </rect>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="baseSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: black;</string>
+                </property>
+               </widget>
+              </widget>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="page">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>294</width>
+             <height>246</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Slope Tiles</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="SlopePickerWidget" name="slopePickerWidget" native="true"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QGroupBox" name="properties_groupBox">
+       <property name="maximumSize">
+        <size>
+         <width>300</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>GroupBox</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_13">
+          <item row="11" column="2">
+           <widget class="QCheckBox" name="repeatY_checkBox">
+            <property name="text">
+             <string>BG Repeat-Y</string>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="0">
+           <widget class="QCheckBox" name="repeatX_checkBox">
+            <property name="text">
+             <string>BG Repeat-X</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_52">
+            <property name="text">
+             <string>Image:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="2">
+           <widget class="QComboBox" name="autoScrollBG1_mode">
+            <item>
+             <property name="text">
+              <string>None</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Up</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Down</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Left</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Right</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Diagonal TBD</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QComboBox" name="v5_tileset_comboBox"/>
+          </item>
+          <item row="5" column="2">
+           <widget class="QComboBox" name="layerSelector_comboBox"/>
+          </item>
+          <item row="10" column="0">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Alpha:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="2">
+           <widget class="QDoubleSpinBox" name="bg1_speed">
+            <property name="minimum">
+             <double>0.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>4.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QComboBox" name="mapGFXMode_comboBox">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>Full</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Background</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Overlay</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_58">
+            <property name="text">
+             <string>BG Color:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QComboBox" name="mapGFX_comboBox">
+            <item>
+             <property name="text">
+              <string>None</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Rain</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Snow</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Underwater</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Train</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Flash Stopper</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Lighting Bolt</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Shadow Top</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Inferno</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QLabel" name="label_61">
+            <property name="text">
+             <string>Speed:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="QLabel" name="label_56">
+            <property name="text">
+             <string>Y Position:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="maximumSize">
+             <size>
+              <width>110</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Auto-Scroll:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QComboBox" name="bg1_filename"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_14">
+            <property name="text">
+             <string>GFX Effect:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_27">
+            <property name="text">
+             <string>Tileset:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="13" column="2">
+           <widget class="QCheckBox" name="checkBox">
+            <property name="text">
+             <string>show bg color</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="bg_color_pick">
+            <property name="text">
+             <string>Pick</string>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="2">
+           <widget class="QSpinBox" name="layerAlpha_spinBox">
+            <property name="maximum">
+             <number>255</number>
+            </property>
+            <property name="value">
+             <number>255</number>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_13">
+            <property name="text">
+             <string>Layer:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QCheckBox" name="mapAutoScroll_checkBox">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="2">
+           <widget class="QSpinBox" name="bg1_y_pos">
+            <property name="maximum">
+             <number>999</number>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="QLabel" name="label_16">
+            <property name="text">
+             <string>Auto-Scroll:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_18">
+            <property name="text">
+             <string>GFX Mode:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="13" column="0">
+           <widget class="QCheckBox" name="checkBox_2">
+            <property name="text">
+             <string>show bg image</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <layout class="QGridLayout" name="gridLayout_6">
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="mapSelector_comboBox"/>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="showHidePropertiesPushButton">
+         <property name="text">
+          <string>Properties</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_21">
+         <property name="text">
+          <string>Map:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="addMap_pushButton">
+         <property name="text">
+          <string>Add</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_8">

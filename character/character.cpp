@@ -263,7 +263,7 @@ void character::charMove() {
         if (state.animation_type == ANIM_TYPE_JUMP) {
             temp_move_speed = temp_move_speed*JUMP_X_SPEED_MULTIPLIER;
         }
-        //std::cout << "### MOVE::RIGHT#1 ###" << std::endl;
+        std::cout << "### MOVE::RIGHT#1 temp_move_speed[" << temp_move_speed << "], ###" << std::endl;
         for (float i=temp_move_speed; i>=0.1; i--) {
             if (state.animation_type == ANIM_TYPE_HIT) {
                 hit_moved_back_n += temp_move_speed;
@@ -524,8 +524,8 @@ void character::check_y_scroll()
 
     if (is_player()) {
         // BOTTOM //
-        if (realPosition.y+frameSize.height > AREA_H*0.6) {
-            int diffY = realPosition.y+frameSize.height - AREA_H*0.6;
+        if (realPosition.y+frameSize.height > AREA_H*0.8) {
+            int diffY = realPosition.y+frameSize.height - AREA_H*0.8;
             gameManager::get_instance()->get_current_map_obj()->changeScrolling(st_float_position(0, diffY), false);
         // TOP //
         } else if (realPosition.y < AREA_H*0.2) {
@@ -678,20 +678,38 @@ void character::check_charging_colors(bool always_charged)
 
 bool character::isOnSlope(int xinc)
 {
-    int map_pos_y = (position.y + frameSize.height + 3)/TILESIZE;
-    st_rectangle hitbox = get_hitbox(state.animation_type);
-    file_v5_map_tile tile_left = gameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc)/TILESIZE, map_pos_y);
-    if (tile_left.tile_underlay.type == TILE_TYPE_SLOPE) {
-        return true;
+    for (int i=6; i>-4; i-=3) {
+        int map_pos_y = (position.y + frameSize.height - i)/TILESIZE;
+        st_rectangle hitbox = get_hitbox(state.animation_type);
+        file_v5_map_tile tile_left = gameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc)/TILESIZE, map_pos_y);
+        if (tile_left.tile_underlay.type == TILE_TYPE_SLOPE) {
+            adjust_slope_y(xinc, 0, st_position((hitbox.x+xinc)/TILESIZE, map_pos_y));
+            was_on_slope = true;
+            return true;
+        }
+        file_v5_map_tile tile_center = gameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc+hitbox.w/2)/TILESIZE, map_pos_y);
+        if (tile_center.tile_underlay.type == TILE_TYPE_SLOPE) {
+            adjust_slope_y(xinc, 0, st_position((hitbox.x+xinc+hitbox.w/2)/TILESIZE, map_pos_y));
+            was_on_slope = true;
+            return true;
+        }
+
+        std::cout << "CHAR::isOnSlope::RIGHT.TEST - tile.x[" << (hitbox.x+xinc+hitbox.w)/TILESIZE << "], tile.y[" << map_pos_y << "]" << std::endl;
+
+        file_v5_map_tile tile_right = gameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc+hitbox.w)/TILESIZE, map_pos_y);
+        if (tile_right.tile_underlay.type == TILE_TYPE_SLOPE) {
+            adjust_slope_y(xinc, 0, st_position((hitbox.x+xinc+hitbox.w)/TILESIZE, map_pos_y));
+            std::cout << "CHAR::isOnSlope::RIGHT.TEST - TRUE" << std::endl;
+            was_on_slope = true;
+            return true;
+        }
     }
-    file_v5_map_tile tile_center = gameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc+hitbox.w/2)/TILESIZE, map_pos_y);
-    if (tile_center.tile_underlay.type == TILE_TYPE_SLOPE) {
-        return true;
+
+    if (was_on_slope == true) {
+        position.y -= TILESIZE-3;
+        fall_to_ground();
     }
-    file_v5_map_tile tile_right = gameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc+hitbox.w)/TILESIZE, map_pos_y);
-    if (tile_right.tile_underlay.type == TILE_TYPE_SLOPE) {
-        return true;
-    }
+    was_on_slope = false;
     return false;
 }
 
@@ -1271,6 +1289,10 @@ bool character::gravity(bool boss_demo_mode=false)
 	}
 
     if (_obj_jump.is_started() == false && can_fly == false && position.y < gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE+1 + frameSize.height) {
+
+        if (was_on_slope == true) {
+            return false;
+        }
 
         // tem que inicializar essa variável sempre que for false
         accel_speed_y = accel_speed_y + accel_speed_y*gravity_y;
@@ -3166,7 +3188,7 @@ void character::fall()
 // @TODO: find first ground from bottom, that have space for player (2 tiles above are free), check 2 tiles on the x-axis also
 void character::fall_to_ground()
 {
-    std::cout << "################## CHAR::fall_to_ground START" << std::endl;
+    std::cout << "################## CHAR::fall_to_ground START y[" << position.y << "]" << std::endl;
     _obj_jump.finish();
     if (hit_ground() == true) {
         return;
@@ -3174,7 +3196,7 @@ void character::fall_to_ground()
     for (int i=0; i<RES_H; i++) {
         char_update_real_position();
         position.y++;
-        if (position.y >= RES_H/2 && hit_ground() == true) {
+        if (hit_ground() == true) {
             std::cout << "################## CHAR::fall_to_ground STOP - y[" << position.y << "]" << std::endl;
             return;
         } else {

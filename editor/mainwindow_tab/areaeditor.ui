@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>724</width>
+    <width>1017</width>
     <height>405</height>
    </rect>
   </property>
@@ -18,73 +18,23 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="5" column="1">
-        <widget class="QPushButton" name="addMapPushButton">
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_4">
          <property name="maximumSize">
           <size>
-           <width>120</width>
+           <width>80</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="text">
-          <string>Add Map</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="addAreaPushButton">
-         <property name="maximumSize">
-          <size>
-           <width>120</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Add Area</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="Line" name="line_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="areaNameLineEdit">
-         <property name="maximumSize">
-          <size>
-           <width>120</width>
-           <height>16777215</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="0">
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="4" column="1">
-        <widget class="QComboBox" name="mapComboBox">
-         <property name="maximumSize">
-          <size>
-           <width>120</width>
-           <height>16777215</height>
-          </size>
+          <string>Name:</string>
          </property>
         </widget>
        </item>
        <item row="3" column="1">
+        <widget class="QComboBox" name="musicComboBox"/>
+       </item>
+       <item row="4" column="1">
         <widget class="Line" name="line">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -104,8 +54,8 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_4">
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_2">
          <property name="maximumSize">
           <size>
            <width>80</width>
@@ -113,20 +63,24 @@
           </size>
          </property>
          <property name="text">
-          <string>Name:</string>
+          <string>Map:</string>
          </property>
         </widget>
        </item>
-       <item row="9" column="1">
-        <widget class="QPushButton" name="pickColorPushButton">
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Music:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QComboBox" name="mapComboBox">
          <property name="maximumSize">
           <size>
            <width>120</width>
            <height>16777215</height>
           </size>
-         </property>
-         <property name="text">
-          <string>Pick Color</string>
          </property>
         </widget>
        </item>
@@ -140,20 +94,63 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_2">
+       <item row="10" column="1">
+        <widget class="QPushButton" name="pickColorPushButton">
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>120</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="text">
-          <string>Map:</string>
+          <string>Map Color</string>
          </property>
         </widget>
        </item>
-       <item row="8" column="1">
+       <item row="4" column="0">
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="addAreaPushButton">
+         <property name="maximumSize">
+          <size>
+           <width>120</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Add Area</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="areaNameLineEdit">
+         <property name="maximumSize">
+          <size>
+           <width>120</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QPushButton" name="addMapPushButton">
+         <property name="maximumSize">
+          <size>
+           <width>120</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Add Map</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="1">
         <widget class="QPushButton" name="generateTilesetPushButton">
          <property name="maximumSize">
           <size>
@@ -166,8 +163,21 @@
          </property>
         </widget>
        </item>
-       <item row="9" column="0">
-        <widget class="QPushButton" name="addLinkPushButton">
+       <item row="12" column="0">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="11" column="1">
+        <widget class="QPushButton" name="addHorizontalLinkPushButton">
          <property name="maximumSize">
           <size>
            <width>120</width>
@@ -175,7 +185,22 @@
           </size>
          </property>
          <property name="text">
-          <string>Add Link</string>
+          <string>H Link</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../resources/icons/icons.qrc">
+           <normaloff>:/toolbar_icons/arrow-right.png</normaloff>:/toolbar_icons/arrow-right.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0">
+        <widget class="QPushButton" name="addVerticalLinkPushButton">
+         <property name="text">
+          <string>V Link</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../resources/icons/icons.qrc">
+           <normaloff>:/toolbar_icons/arrow-down.png</normaloff>:/toolbar_icons/arrow-down.png</iconset>
          </property>
         </widget>
        </item>
@@ -207,6 +232,10 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../resources/icons/icons.qrc"/>
+  <include location="../resources/icons/icons.qrc"/>
+  <include location="../resources/icons/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

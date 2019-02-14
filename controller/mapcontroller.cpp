@@ -111,8 +111,15 @@ void MapController::reset_map()
 
 void MapController::set_scroll_to_bottom()
 {
-    scroll.y = gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE-AREA_H;
-    std::cout << "### MapController::set_scroll_to_bottom, y[" << scroll.y << "]" << std::endl;
+    //scroll.y = gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE-AREA_H;
+    int lockY = get_first_bottom_lock(0);
+    int scrollY = lockY*TILESIZE-AREA_H;
+    if (scrollY < 0) {
+        scrollY = 0;
+    }
+    scroll.y = scrollY;
+    //std::cout << "### MapController::set_scroll_to_bottom, y[" << scroll.y << "], lockY[" << lockY << "]" << std::endl;
+
 }
 
 
@@ -455,6 +462,77 @@ file_v5_map_header& MapController::getMapHeader()
     return SharedData::get_instance()->file_v5_map_header_list.at(number);
 }
 
+int MapController::get_first_bottom_lock(int initialY)
+{
+    bool isLockedY = true;
+    int initX = scroll.x/TILESIZE;
+    int endX = initX + RES_W/TILESIZE;
+    int lockedRow = SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h/TILESIZE;
+
+
+    int initY = (initialY)/TILESIZE;
+    int endY = initY + SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h;
+
+    if (endX >= SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w) {
+        endX = SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w-1;
+    }
+    if (endY >= SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h) {
+        endY = SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h-1;
+    }
+
+    //std::cout << "########## MapController::get_first_bottom_lock - initX[" << initX << "], endX[" << endX << "], initY[" << initY << "], endY[" << endY << "]" << std::endl;
+    for (int y=initY; y<=endY; y++) {
+        isLockedY = true;
+        for (int x=initX; x<endX; x++) {
+            file_v5_map_tile tile = getTileFromPosition(x, y);
+            //std::cout << "x[" << x << "], y[" << y << "], locked[" << tile.locked << "]" << std::endl;
+            if (tile.locked == TERRAIN_UNBLOCKED || tile.locked == TERRAIN_WATER) {
+                isLockedY = false;
+                break;
+            }
+        }
+        if (isLockedY) {
+            //std::cout << "LOCKED-ROW[" << y << "]" << std::endl;
+            lockedRow = y;
+            break;
+        }
+    }
+    //std::cout << ":::::::::: get_first_bottom_lock, scroll.y[" << scroll.y << "], lockedRow[" << lockedRow << "]" << std::endl;
+    return lockedRow;
+
+}
+
+bool MapController::isEdgeRowLocked(int incY, bool first)
+{
+    int y = (scroll.y+AREA_H-TILESIZE)/TILESIZE;
+    if (first == true) {
+        y = (scroll.y-TILESIZE+TILESIZE)/TILESIZE;
+    }
+
+    if (y < 0) {
+        return true;
+    }
+    int initX = scroll.x/TILESIZE;
+    int endX = initX + RES_W/TILESIZE;
+    if (endX >= SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w) {
+        endX = SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w-1;
+    }
+    bool isLockedY = true;
+    for (int x=initX; x<endX; x++) {
+        file_v5_map_tile tile = getTileFromPosition(x, y);
+        //std::cout << "x[" << x << "], y[" << y << "], locked[" << tile.locked << "]" << std::endl;
+        if (tile.locked == TERRAIN_UNBLOCKED || tile.locked == TERRAIN_WATER) {
+            isLockedY = false;
+            break;
+        }
+    }
+
+
+    //std::cout << "########### MapController::isLastRowLocked - first[" << first << "], incY[" << incY << "], scroll.y[" << scroll.y << "], y[" << y << "]" << std::endl;
+    return isLockedY;
+}
+
+
 
 // ********************************************************************************************** //
 //                                                                                                //
@@ -492,13 +570,42 @@ void MapController::changeScrolling(st_float_position pos, bool check_lock)
 
     // TODO: adjust layers position for vertical scrolling //
     if (pos.y != 0) {
-        scroll.y += pos.y;
-        //std::cout << "scroll.y[" << scroll.y+AREA_H << "], map_h[" << gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE << "]" << std::endl;
-        if (scroll.y+AREA_H > gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE) {
-            scroll.y = gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE-AREA_H;
+        //std::cout << "$$$$$$$$$$$$$$$ pos.y[" << pos.y << "]" << std::endl;
+        if (pos.y > 0) {
+            /*
+            int maxScrollY = get_first_bottom_lock(scroll.y+pos.y);
+            std::cout << "############### - maxScrollY[" << maxScrollY << "], scroll.y[" << scroll.y << "]" << std::endl;
+
+            if (maxScrollY*TILESIZE > scroll.y+AREA_H) {
+                scroll.y = maxScrollY*TILESIZE - AREA_H;
+                //std::cout << "scroll.y[" << scroll.y+AREA_H << "], map_h[" << gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE << "]" << std::endl;
+                if (scroll.y+AREA_H > gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE) {
+                    scroll.y = gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE-AREA_H;
+                }
+            }
+            */
+            bool locked = isEdgeRowLocked(pos.y, false);
+            if (locked == false) {
+                scroll.y += pos.y;
+            }
+        } else {
+            //std::cout << "%%%%%%%%%%%%%% CHECK-TOP" << std::endl;
+            bool locked = isEdgeRowLocked(pos.y, true);
+            if (locked == false) {
+                scroll.y += pos.y;
+                if (scroll.y < 0) {
+                    scroll.y = 0;
+                }
+            }
         }
     }
 }
+
+
+
+
+
+
 
 void MapController::changeLayerScroll(int x_change, int y_change)
 {

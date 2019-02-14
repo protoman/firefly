@@ -1093,6 +1093,7 @@ qrc_icons.cpp: ../editor/resources/icons/icons.qrc \
 		../editor/resources/icons/object-order-lower.png \
 		../editor/resources/icons/im-user.png \
 		../editor/resources/icons/opinion-disagree.png \
+		../editor/resources/icons/arrow_down.png \
 		../editor/resources/icons/configure.png \
 		../editor/resources/icons/face-normal.png \
 		../editor/resources/icons/icons.qrc \
@@ -1113,6 +1114,7 @@ qrc_icons.cpp: ../editor/resources/icons/icons.qrc \
 		../editor/resources/icons/draw-star.png \
 		../editor/resources/icons/zoom-in.png \
 		../editor/resources/icons/flag-red.png \
+		../editor/resources/icons/arrow_right.png \
 		../editor/resources/icons/list-remove.png \
 		../editor/resources/icons/quickopen.png \
 		../editor/resources/icons/zoom-out-24.png \
@@ -1130,6 +1132,7 @@ qrc_icons.cpp: ../editor/resources/icons/icons.qrc \
 		../editor/resources/icons/trash-empty.png \
 		../editor/resources/icons/document-save.png \
 		../editor/resources/icons/kopeteavailable.png \
+		../editor/resources/icons/arrow_left.png \
 		../editor/resources/icons/insert-image.png \
 		../editor/resources/icons/office-chart-pie.png \
 		../editor/resources/icons/tools-wizard.png \
@@ -1165,6 +1168,7 @@ qrc_icons.cpp: ../editor/resources/icons/icons.qrc \
 		../editor/resources/icons/mixer-lfe.png \
 		../editor/resources/icons/insert-text.png \
 		../editor/resources/icons/fileopen.png \
+		../editor/resources/icons/arrow_up.png \
 		../editor/resources/icons/dialog-warning.png \
 		../editor/resources/icons/draw-circle.png \
 		../editor/resources/icons/games-config-background.png \
@@ -1341,6 +1345,7 @@ moc_mainwindow.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QMainW
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -1530,6 +1535,7 @@ moc_editorarea.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWidge
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -1676,6 +1682,7 @@ moc_editortilepallete.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -1852,6 +1859,7 @@ moc_addwizard.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWidget
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -2028,6 +2036,7 @@ moc_addwizard.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWidget
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -2487,6 +2496,7 @@ moc_projectilepreviewarea.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWid
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -3517,6 +3527,7 @@ moc_player_edit.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWidg
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -3658,6 +3669,7 @@ moc_sceneeditorwindow.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/model/objectlistmodel.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QAbstractTableModel \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QStyleOptionViewItem \
@@ -3830,6 +3842,7 @@ moc_tab_text.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QDialog 
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../editor/files_editor/stringseditor.h \
@@ -4196,6 +4209,7 @@ moc_tab_image.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWidget
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/scenesmediator.h \
 		../file/format.h \
 		../editor/scenes/tab_image.h \
@@ -4424,6 +4438,7 @@ moc_tab_viewpoint.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWi
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/scenesmediator.h \
 		../file/format.h \
 		../editor/scenes/tab_viewpoint.h \
@@ -4553,6 +4568,7 @@ moc_tab_scenelist.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QDi
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/model/objectlistmodel.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QAbstractTableModel \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QStyleOptionViewItem \
@@ -4702,6 +4718,7 @@ moc_objectlistmodel.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QAbs
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/model/objectlistmodel.h \
 		moc_predefs.h \
 		../../../Programas/Qt/5.11.0/gcc_64/bin/moc
@@ -4942,6 +4959,7 @@ moc_tab_sfx.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWidget \
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/scenesmediator.h \
 		../file/format.h \
 		../editor/scenes/tab_sfx.h \
@@ -5062,6 +5080,7 @@ moc_tab_music.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWidget
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/scenesmediator.h \
 		../file/format.h \
 		../editor/scenes/tab_music.h \
@@ -5182,6 +5201,7 @@ moc_tab_cleararea.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWi
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/scenesmediator.h \
 		../file/format.h \
 		../editor/scenes/tab_cleararea.h \
@@ -5302,6 +5322,7 @@ moc_tab_animation.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWi
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/scenesmediator.h \
 		../file/format.h \
 		../editor/scenes/tab_animation.h \
@@ -5547,6 +5568,7 @@ moc_fileseditor.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QMain
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/files_editor/fileseditor.h \
 		moc_predefs.h \
 		../../../Programas/Qt/5.11.0/gcc_64/bin/moc
@@ -5629,6 +5651,7 @@ moc_image_directories_model.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtC
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/files_editor/image_directories_model.h \
 		moc_predefs.h \
 		../../../Programas/Qt/5.11.0/gcc_64/bin/moc
@@ -6451,6 +6474,7 @@ moc_framespreviewarea.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -7024,6 +7048,7 @@ moc_animtileedit.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWid
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -7146,6 +7171,7 @@ moc_slopeedittab.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWid
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/common.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QDir \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qdir.h \
@@ -7295,6 +7321,7 @@ moc_slopepreviewwidget.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidget
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/widgets/slopepreviewwidget.h \
 		moc_predefs.h \
 		../../../Programas/Qt/5.11.0/gcc_64/bin/moc
@@ -7419,6 +7446,7 @@ moc_slopepickerwidget.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QO
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/widgets/slopepickerwidget.h \
 		moc_predefs.h \
 		../../../Programas/Qt/5.11.0/gcc_64/bin/moc
@@ -7634,6 +7662,8 @@ moc_areaseditorarea.cpp: ../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QObj
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qfiledevice.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qvector2d.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qtouchdevice.h \
+		../defines.h \
+		../data/st_common.h \
 		../editor/widgets/areaseditorarea.h \
 		moc_predefs.h \
 		../../../Programas/Qt/5.11.0/gcc_64/bin/moc
@@ -7775,6 +7805,7 @@ ui_addwizard.h: ../editor/addwizard.ui \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -7911,6 +7942,7 @@ ui_dialognpcedit.h: ../editor/dialognpcedit.ui \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -8043,6 +8075,7 @@ ui_dialogobjectedit.h: ../editor/dialogobjectedit.ui \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -8176,6 +8209,7 @@ ui_npc_edit.h: ../editor/mainwindow_tab/npc_edit.ui \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -8425,6 +8459,7 @@ ui_object_tab.h: ../editor/mainwindow_tab/object_tab.ui \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -8569,6 +8604,7 @@ ui_projectile_edit.h: ../editor/mainwindow_tab/projectile_edit.ui \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -8724,6 +8760,7 @@ ui_map_tab.h: ../editor/mainwindow_tab/map_tab.ui \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -8865,6 +8902,7 @@ ui_map_tab.h: ../editor/mainwindow_tab/map_tab.ui \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -9091,7 +9129,8 @@ ui_map_tab.h: ../editor/mainwindow_tab/map_tab.ui \
 		../file/v4/file_scene_v4.h \
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	/home/iuri/Programas/Qt/5.11.0/gcc_64/bin/uic ../editor/mainwindow_tab/map_tab.ui -o ui_map_tab.h
 
 ui_stage_swap_dialog.h: ../editor/stage_swap_dialog.ui \
@@ -9227,6 +9266,7 @@ ui_tab_text.h: ../editor/scenes/tab_text.ui \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWidget \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qwidget.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
@@ -10139,6 +10179,7 @@ ui_anim_tiles_edit.h: ../editor/mainwindow_tab/anim_tiles_edit.ui \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -10277,7 +10318,8 @@ ui_slopeedittab.h: ../editor/mainwindow_tab/slopeedittab.ui \
 		../file/v4/file_scene_v4.h \
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	/home/iuri/Programas/Qt/5.11.0/gcc_64/bin/uic ../editor/mainwindow_tab/slopeedittab.ui -o ui_slopeedittab.h
 
 ui_areaeditor.h: ../editor/mainwindow_tab/areaeditor.ui \
@@ -10385,7 +10427,9 @@ ui_areaeditor.h: ../editor/mainwindow_tab/areaeditor.ui \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qfile.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qfiledevice.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qvector2d.h \
-		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qtouchdevice.h
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qtouchdevice.h \
+		../defines.h \
+		../data/st_common.h
 	/home/iuri/Programas/Qt/5.11.0/gcc_64/bin/uic ../editor/mainwindow_tab/areaeditor.ui -o ui_areaeditor.h
 
 compiler_yacc_decl_make_all:
@@ -10521,6 +10565,7 @@ main.o: ../editor/main.cpp ../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -10792,6 +10837,7 @@ mainwindow.o: ../editor/mainwindow.cpp ../editor/mainwindow.h \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -10854,7 +10900,6 @@ mainwindow.o: ../editor/mainwindow.cpp ../editor/mainwindow.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qgridlayout.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qlayout.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qboxlayout.h \
-		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QHBoxLayout \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QMenu \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qmenu.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QMenuBar \
@@ -10871,6 +10916,7 @@ mainwindow.o: ../editor/mainwindow.cpp ../editor/mainwindow.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWizard \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qwizard.h \
 		ui_addwizard.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QHBoxLayout \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QSpinBox \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qspinbox.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWizardPage \
@@ -11029,6 +11075,7 @@ editorarea.o: ../editor/editorarea.cpp ../editor/editorarea.h \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -11186,6 +11233,7 @@ editortilepallete.o: ../editor/editortilepallete.cpp ../editor/editortilepallete
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -11238,6 +11286,7 @@ mediator.o: ../editor/mediator.cpp ../editor/mediator.h \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -11667,6 +11716,7 @@ addwizard.o: ../editor/addwizard.cpp ../../../Programas/Qt/5.11.0/gcc_64/include
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -11831,6 +11881,7 @@ loadgamepicker.o: ../editor/loadgamepicker.cpp ../editor/loadgamepicker.h \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -12077,6 +12128,7 @@ dialognpcedit.o: ../editor/dialognpcedit.cpp ../../../Programas/Qt/5.11.0/gcc_64
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -12258,6 +12310,7 @@ dialogobjectedit.o: ../editor/dialogobjectedit.cpp ../editor/dialogobjectedit.h 
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -12393,6 +12446,7 @@ projectilepreviewarea.o: ../editor/projectilepreviewarea.cpp ../editor/projectil
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -12526,6 +12580,7 @@ player_preview_area.o: ../editor/player_preview_area.cpp ../editor/player_previe
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -12719,6 +12774,7 @@ npc_edit.o: ../editor/mainwindow_tab/npc_edit.cpp ../editor/mainwindow_tab/npc_e
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -12875,6 +12931,7 @@ common.o: ../editor/common.cpp ../editor/common.h \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -13055,6 +13112,7 @@ object_tab.o: ../editor/mainwindow_tab/object_tab.cpp ../editor/mainwindow_tab/o
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -13196,6 +13254,7 @@ sprite_preview_area.o: ../editor/sprite_preview_area.cpp ../editor/sprite_previe
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -13369,6 +13428,7 @@ artificial_inteligence_tab.o: ../editor/mainwindow_tab/artificial_inteligence_ta
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -13547,6 +13607,7 @@ projectile_edit.o: ../editor/mainwindow_tab/projectile_edit.cpp ../editor/mainwi
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -13706,7 +13767,6 @@ map_tab.o: ../editor/mainwindow_tab/map_tab.cpp ../editor/mainwindow_tab/map_tab
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qabstractitemmodel.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QDoubleSpinBox \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qspinbox.h \
-		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QFrame \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QGridLayout \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qgridlayout.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qlayout.h \
@@ -13717,12 +13777,6 @@ map_tab.o: ../editor/mainwindow_tab/map_tab.cpp ../editor/mainwindow_tab/map_tab
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QHBoxLayout \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QLabel \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qlabel.h \
-		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QLineEdit \
-		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qlineedit.h \
-		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qtextcursor.h \
-		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qtextformat.h \
-		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qpen.h \
-		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qtextoption.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QListWidget \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qlistwidget.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qlistview.h \
@@ -13745,6 +13799,8 @@ map_tab.o: ../editor/mainwindow_tab/map_tab.cpp ../editor/mainwindow_tab/map_tab
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qshortcut.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/QPainter \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qpainter.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qtextoption.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qpen.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QTimer \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qtimer.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qbasictimer.h \
@@ -13762,6 +13818,7 @@ map_tab.o: ../editor/mainwindow_tab/map_tab.cpp ../editor/mainwindow_tab/map_tab
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -13916,6 +13973,7 @@ player_edit.o: ../editor/mainwindow_tab/player_edit.cpp ../editor/mainwindow_tab
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -14122,6 +14180,7 @@ sceneeditorwindow.o: ../editor/scenes/sceneeditorwindow.cpp ../editor/scenes/sce
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/model/objectlistmodel.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QAbstractTableModel \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QStyleOptionViewItem \
@@ -14320,6 +14379,7 @@ tab_text.o: ../editor/scenes/tab_text.cpp ../editor/scenes/tab_text.h \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../editor/files_editor/stringseditor.h \
@@ -14508,6 +14568,7 @@ animtitle.o: ../editor/mainwindow_tab/animtitle.cpp ../editor/mainwindow_tab/ani
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -14758,6 +14819,7 @@ tab_image.o: ../editor/scenes/tab_image.cpp ../editor/scenes/tab_image.h \
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/scenesmediator.h \
 		../file/format.h \
 		ui_tab_image.h \
@@ -14946,6 +15008,7 @@ imageareapreview.o: ../editor/scenes/imageareapreview.cpp ../../../Programas/Qt/
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -14965,7 +15028,8 @@ scenesmediator.o: ../editor/scenes/scenesmediator.cpp ../editor/scenes/scenesmed
 		../file/fio_scenes.h \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o scenesmediator.o ../editor/scenes/scenesmediator.cpp
 
 tab_viewpoint.o: ../editor/scenes/tab_viewpoint.cpp ../editor/scenes/tab_viewpoint.h \
@@ -15082,6 +15146,7 @@ tab_viewpoint.o: ../editor/scenes/tab_viewpoint.cpp ../editor/scenes/tab_viewpoi
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/scenesmediator.h \
 		../file/format.h \
 		ui_tab_viewpoint.h \
@@ -15161,6 +15226,7 @@ textpreviewarea.o: ../editor/scenes/textpreviewarea.cpp ../editor/scenes/textpre
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QWidget \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qwidget.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
@@ -15403,6 +15469,7 @@ tab_scenelist.o: ../editor/scenes/tab_scenelist.cpp ../editor/scenes/tab_sceneli
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/model/objectlistmodel.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QAbstractTableModel \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QStyleOptionViewItem \
@@ -15594,7 +15661,8 @@ objectlistmodel.o: ../editor/scenes/model/objectlistmodel.cpp ../editor/scenes/m
 		../file/fio_scenes.h \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o objectlistmodel.o ../editor/scenes/model/objectlistmodel.cpp
 
 comboboxdelegate.o: ../editor/scenes/comboboxdelegate.cpp ../editor/scenes/comboboxdelegate.h \
@@ -15843,6 +15911,7 @@ tab_sfx.o: ../editor/scenes/tab_sfx.cpp ../editor/scenes/tab_sfx.h \
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/scenesmediator.h \
 		../file/format.h \
 		ui_tab_sfx.h \
@@ -16014,6 +16083,7 @@ tab_music.o: ../editor/scenes/tab_music.cpp ../editor/scenes/tab_music.h \
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/scenesmediator.h \
 		../file/format.h \
 		ui_tab_music.h \
@@ -16185,6 +16255,7 @@ tab_cleararea.o: ../editor/scenes/tab_cleararea.cpp ../editor/scenes/tab_clearar
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/scenesmediator.h \
 		../file/format.h \
 		ui_tab_cleararea.h \
@@ -16357,6 +16428,7 @@ tab_animation.o: ../editor/scenes/tab_animation.cpp ../editor/scenes/tab_animati
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/scenes/scenesmediator.h \
 		../file/format.h \
 		ui_tab_animation.h \
@@ -16552,7 +16624,8 @@ animation_previewarea.o: ../editor/scenes/animation_previewarea.cpp ../editor/sc
 		../file/v4/file_scene_v4.h \
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o animation_previewarea.o ../editor/scenes/animation_previewarea.cpp
 
 fileseditor.o: ../editor/files_editor/fileseditor.cpp ../editor/files_editor/fileseditor.h \
@@ -16677,6 +16750,7 @@ fileseditor.o: ../editor/files_editor/fileseditor.cpp ../editor/files_editor/fil
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		ui_fileseditor.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QVariant \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QAction \
@@ -16820,6 +16894,7 @@ image_directories_model.o: ../editor/files_editor/image_directories_model.cpp ..
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QFileDialog \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qfiledialog.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
@@ -17002,6 +17077,7 @@ combolistdelegate.o: ../editor/model/combolistdelegate.cpp ../editor/model/combo
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -17159,7 +17235,8 @@ buttondelegate.o: ../editor/model/buttondelegate.cpp ../editor/model/buttondeleg
 		../file/v4/file_scene_v4.h \
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o buttondelegate.o ../editor/model/buttondelegate.cpp
 
 newgamedialog.o: ../editor/newgamedialog.cpp ../editor/newgamedialog.h \
@@ -17304,7 +17381,8 @@ newgamedialog.o: ../editor/newgamedialog.cpp ../editor/newgamedialog.h \
 		../file/v4/file_scene_v4.h \
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o newgamedialog.o ../editor/newgamedialog.cpp
 
 stringseditor.o: ../editor/files_editor/stringseditor.cpp ../editor/files_editor/stringseditor.h \
@@ -17495,7 +17573,8 @@ stringseditor.o: ../editor/files_editor/stringseditor.cpp ../editor/files_editor
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/QCloseEvent \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o stringseditor.o ../editor/files_editor/stringseditor.cpp
 
 stringutils.o: ../aux_tools/stringutils.cpp ../aux_tools/stringutils.h
@@ -17737,6 +17816,7 @@ anim_tiles_edit.o: ../editor/mainwindow_tab/anim_tiles_edit.cpp ../editor/mainwi
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -17881,6 +17961,7 @@ framespreviewarea.o: ../editor/framespreviewarea.cpp ../editor/framespreviewarea
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -18009,6 +18090,7 @@ animtilepalette.o: ../editor/widgets/animtilepalette.cpp ../editor/widgets/animt
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -18197,7 +18279,8 @@ animpackimport.o: ../editor/mainwindow_tab/anim/animpackimport.cpp ../editor/mai
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qpainter.h \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o animpackimport.o ../editor/mainwindow_tab/anim/animpackimport.cpp
 
 dialog_pick_color.o: ../editor/dialog_pick_color.cpp ../editor/dialog_pick_color.h \
@@ -18342,6 +18425,7 @@ dialog_pick_color.o: ../editor/dialog_pick_color.cpp ../editor/dialog_pick_color
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -18518,7 +18602,8 @@ gametextcreditstab.o: ../editor/files_editor/gametextcreditstab.cpp ../editor/fi
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qitemselectionmodel.h \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gametextcreditstab.o ../editor/files_editor/gametextcreditstab.cpp
 
 exception_manager.o: ../aux_tools/exception_manager.cpp ../aux_tools/exception_manager.h
@@ -18695,6 +18780,7 @@ game_properties_tab.o: ../editor/mainwindow_tab/game_properties_tab.cpp ../edito
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -18825,6 +18911,7 @@ animtileedit.o: ../editor/mainwindow_tab/animtileedit.cpp ../editor/mainwindow_t
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
@@ -18849,6 +18936,7 @@ fio_scenes.o: ../file/fio_scenes.cpp ../file/fio_scenes.h \
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../aux_tools/exception_manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fio_scenes.o ../file/fio_scenes.cpp
 
@@ -18866,7 +18954,8 @@ fio_strings.o: ../file/fio_strings.cpp ../file/fio_strings.h \
 		../file/v4/file_scene_v4.h \
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fio_strings.o ../file/fio_strings.cpp
 
 file_io.o: ../file/file_io.cpp ../file/file_io.h \
@@ -18883,7 +18972,8 @@ file_io.o: ../file/file_io.cpp ../file/file_io.h \
 		../aux_tools/exception_manager.h \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o file_io.o ../file/file_io.cpp
 
 shareddata.o: ../data/shareddata.cpp ../data/shareddata.h \
@@ -18895,7 +18985,8 @@ shareddata.o: ../data/shareddata.cpp ../data/shareddata.h \
 		../file/v4/file_scene_v4.h \
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o shareddata.o ../data/shareddata.cpp
 
 slopeedittab.o: ../editor/mainwindow_tab/slopeedittab.cpp ../editor/mainwindow_tab/slopeedittab.h \
@@ -19011,6 +19102,7 @@ slopeedittab.o: ../editor/mainwindow_tab/slopeedittab.cpp ../editor/mainwindow_t
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/common.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QDir \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qdir.h \
@@ -19191,7 +19283,8 @@ slopepreviewwidget.o: ../editor/widgets/slopepreviewwidget.cpp ../editor/widgets
 		../file/v4/file_scene_v4.h \
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o slopepreviewwidget.o ../editor/widgets/slopepreviewwidget.cpp
 
 slopepickerwidget.o: ../editor/widgets/slopepickerwidget.cpp ../editor/widgets/slopepickerwidget.h \
@@ -19314,6 +19407,7 @@ slopepickerwidget.o: ../editor/widgets/slopepickerwidget.cpp ../editor/widgets/s
 		../file/v4/file_anim_block.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../editor/mediator.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QString \
 		../file/format.h \
@@ -19431,6 +19525,8 @@ areaeditor.o: ../editor/mainwindow_tab/areaeditor.cpp ../editor/mainwindow_tab/a
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qtouchdevice.h \
 		ui_areaeditor.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QVariant \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/QIcon \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qicon.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QApplication \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qapplication.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qcoreapplication.h \
@@ -19445,7 +19541,6 @@ areaeditor.o: ../editor/mainwindow_tab/areaeditor.cpp ../editor/mainwindow_tab/a
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qabstractspinbox.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qvalidator.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qregularexpression.h \
-		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qicon.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qslider.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qabstractslider.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qstyle.h \
@@ -19473,11 +19568,13 @@ areaeditor.o: ../editor/mainwindow_tab/areaeditor.cpp ../editor/mainwindow_tab/a
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qpushbutton.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qabstractbutton.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QSpacerItem \
+		../editor/widgets/areaseditorarea.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QObject \
+		../defines.h \
+		../data/st_common.h \
 		../editor/mediator.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QString \
 		../file/format.h \
-		../defines.h \
-		../data/st_common.h \
 		../file/v4/file_game_v4.h \
 		../file/v4/file_save_v4.h \
 		../file/v4/file_config_v4.h \
@@ -19488,11 +19585,22 @@ areaeditor.o: ../editor/mainwindow_tab/areaeditor.cpp ../editor/mainwindow_tab/a
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../file/fio_common.h \
 		../aux_tools/exception_manager.h \
-		../editor/scenes/scenesmediator.h
+		../editor/scenes/scenesmediator.h \
+		../editor/common.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QDir \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qdir.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qfileinfo.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QListWidget \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qlistwidget.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qlistview.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qabstractitemview.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qitemselectionmodel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o areaeditor.o ../editor/mainwindow_tab/areaeditor.cpp
 
 areaseditorarea.o: ../editor/widgets/areaseditorarea.cpp ../editor/widgets/areaseditorarea.h \
@@ -19598,7 +19706,32 @@ areaseditorarea.o: ../editor/widgets/areaseditorarea.cpp ../editor/widgets/areas
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qfile.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qfiledevice.h \
 		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qvector2d.h \
-		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qtouchdevice.h
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qtouchdevice.h \
+		../defines.h \
+		../data/st_common.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/QApplication \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qapplication.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qcoreapplication.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qeventloop.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qguiapplication.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qinputmethod.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/QPainter \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qpainter.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qtextoption.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/qpen.h \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtGui/QMouseEvent \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/QResource \
+		../../../Programas/Qt/5.11.0/gcc_64/include/QtCore/qresource.h \
+		../data/shareddata.h \
+		../file/v4/file_config_v4.h \
+		../file/v4/file_game_v4.h \
+		../file/v4/file_save_v4.h \
+		../file/v4/file_scene_v4.h \
+		../file/v4/file_anim_block.h \
+		../file/v5/struct_file_map.h \
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o areaseditorarea.o ../editor/widgets/areaseditorarea.cpp
 
 qrc_icons.o: qrc_icons.cpp 

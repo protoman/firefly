@@ -2,6 +2,7 @@
 #include "ui_areaeditor.h"
 
 #include "mediator.h"
+#include "common.h"
 
 AreaEditor::AreaEditor(QWidget *parent) :
     QWidget(parent),
@@ -17,6 +18,9 @@ AreaEditor::~AreaEditor()
 
 void AreaEditor::reload()
 {
+    data_loading = true;
+    //common::fill_files_combo("/music/", ui->musicComboBox);
+    data_loading = false;
     if (SharedData::get_instance()->area_list.size() == 0) {
         ui->addMapPushButton->setEnabled(false);
         ui->mapComboBox->setEnabled(false);
@@ -29,6 +33,13 @@ void AreaEditor::reload()
     ui->areaComboBox->clear();
     for (int i=0; i<SharedData::get_instance()->area_list.size(); i++) {
         ui->areaComboBox->addItem(QString("[") + QString::number(i) + "] - " + QString(SharedData::get_instance()->area_list.at(i).name));
+    }
+    int currentArea = ui->areaComboBox->currentIndex();
+    if (SharedData::get_instance()->area_list.size() > currentArea) {
+        //ui->graphic_combo->setCurrentIndex(ui->graphic_combo->findText(QString(Mediator::get_instance()->anim_block_list.at(index).filename)));
+        unsigned int new_index = ui->musicComboBox->findText(QString(SharedData::get_instance()->area_list.at(currentArea).music_filename));
+        std::cout << ">>>>>>>>>>>> LOAD music_filename, new_index[" << new_index << ", [" << SharedData::get_instance()->area_list.at(currentArea).music_filename << "]" << std::endl;
+        ui->musicComboBox->setCurrentIndex(new_index);
     }
     reload_map_combo();
 }
@@ -49,6 +60,8 @@ void AreaEditor::reload_map_combo()
         }
     }
 }
+
+
 
 void AreaEditor::on_addAreaPushButton_clicked()
 {
@@ -101,13 +114,30 @@ void AreaEditor::on_areaComboBox_currentIndexChanged(int index)
     data_loading = false;
 }
 
-void AreaEditor::on_generateTilesetPushButton_clicked()
+
+void AreaEditor::on_musicComboBox_currentIndexChanged(const QString &arg1)
 {
+    if (data_loading) { return; }
     unsigned int currentArea = ui->areaComboBox->currentIndex();
-    unsigned int currentMap = ui->mapComboBox->currentIndex() * (currentArea*GAME_AREA_SIZE);
     if (SharedData::get_instance()->area_list.size() <= currentArea) {
         return;
     }
+    sprintf(SharedData::get_instance()->area_list.at(currentArea).music_filename, "%s", arg1.toStdString().c_str());
+    std::cout << ">>>>>>>>>>>> SET music_filename[" << SharedData::get_instance()->area_list.at(currentArea).music_filename << "]" << std::endl;
+}
+
+
+void AreaEditor::on_generateTilesetPushButton_clicked()
+{
+    unsigned int currentArea = ui->areaComboBox->currentIndex();
+    unsigned int currentMap = ui->mapComboBox->currentIndex() + (currentArea*GAME_AREA_SIZE);
+    if (SharedData::get_instance()->area_list.size() <= currentArea) {
+        return;
+    }
+
+    std::cout << "AreaEditor::on_generateTilesetPushButton_clicke - currentArea[" << currentArea << "], currentMap[" << currentMap << "]" << std::endl;
+
+
     st_position top_leftmost_point = st_position(GAME_AREA_SIZE, GAME_AREA_SIZE);
     st_position bottom_rightmost_point = st_position(0, 0);
     // find left top-leftmost and bottom rightmost points
@@ -128,8 +158,9 @@ void AreaEditor::on_generateTilesetPushButton_clicked()
     std::cout << "top_leftmost_point.x[" << top_leftmost_point.x << "], y[" << top_leftmost_point.y << "]" << std::endl;
     std::cout << "bottom_rightmost_point.x[" << bottom_rightmost_point.x << "], y[" << bottom_rightmost_point.y << "]" << std::endl;
 
-    unsigned int size_w = bottom_rightmost_point.x - top_leftmost_point.x;
-    unsigned int size_h = bottom_rightmost_point.y - top_leftmost_point.y;
+    // +1 because count starts in zero
+    unsigned int size_w = bottom_rightmost_point.x - top_leftmost_point.x + 1;
+    unsigned int size_h = bottom_rightmost_point.y - top_leftmost_point.y + 1;
 
     int total_size_w = size_w*GAME_AREA_W;
     int total_size_h = size_h*GAME_AREA_H;
@@ -165,7 +196,7 @@ void AreaEditor::on_generateTilesetPushButton_clicked()
 
                     file_v5_map_tile* tileItem = &SharedData::get_instance()->file_v5_map_tile_map.at(currentMap).at(n);
 
-                    std::cout << "SET-POIINT-EMPTY x[" << i << "], y[" << j << "], n[" << n << "]" << std::endl;
+                    //std::cout << "SET-POIINT-EMPTY x[" << i << "], y[" << j << "], n[" << n << "]" << std::endl;
 
                     tileItem->locked = -2;
                     tileItem->tile_underlay.x = -2;
@@ -179,4 +210,21 @@ void AreaEditor::on_generateTilesetPushButton_clicked()
 
     //GAME_AREA_W
 
+}
+
+void AreaEditor::on_mapComboBox_currentIndexChanged(int index)
+{
+    if (data_loading) { return; }
+    ui->areaPreviewWidget->setCurrentMap(index);
+    ui->areaPreviewWidget->repaint();
+}
+
+void AreaEditor::on_addVerticalLinkPushButton_clicked()
+{
+    ui->areaPreviewWidget->set_edit_mode(AREA_EDIT_MODE_VLINK);
+}
+
+void AreaEditor::on_addHorizontalLinkPushButton_clicked()
+{
+    ui->areaPreviewWidget->set_edit_mode(AREA_EDIT_MODE_HLINK);
 }

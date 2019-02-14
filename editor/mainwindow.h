@@ -142,7 +142,6 @@ private:
     object_tab *object_edit_tab;
     projectile_edit *projectile_edit_tab;
     map_tab *map_edit_tab;
-    player_edit *player_edit_tab;
     anim_tiles_edit *anim_tiles_edit_tab;
     SlopeEditTab* slope_edit_tab;
 

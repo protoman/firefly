@@ -28,6 +28,14 @@ private slots:
 
     void on_generateTilesetPushButton_clicked();
 
+    void on_musicComboBox_currentIndexChanged(const QString &arg1);
+
+    void on_mapComboBox_currentIndexChanged(int index);
+
+    void on_addVerticalLinkPushButton_clicked();
+
+    void on_addHorizontalLinkPushButton_clicked();
+
 private:
     Ui::AreaEditor *ui;
     bool data_loading = false;

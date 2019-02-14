@@ -104,5 +104,9 @@
         <file>speaker.png</file>
         <file>face-angry.png</file>
         <file>face-normal.png</file>
+        <file>arrow_down.png</file>
+        <file>arrow_left.png</file>
+        <file>arrow_right.png</file>
+        <file>arrow_up.png</file>
     </qresource>
 </RCC>

@@ -39,7 +39,7 @@ Mediator::Mediator()  {
 	npc_direction = 0;
     object_direction = 0;
 
-	zoom = 1;
+    zoom = 0.5;
 	currentStage = 1;
     currentDifficulty = DIFFICULTY_EASY;
     currentDifficultyMode = DIFFICULTY_MODE_GREATER;
@@ -209,6 +209,14 @@ void Mediator::load_game() {
         SharedData::get_instance()->file_v5_map_tile_map.insert(std::pair<int, std::vector<file_v5_map_tile>>(i, std::vector<file_v5_map_tile>()));
         QString filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_tiles.dat");
         SharedData::get_instance()->file_v5_map_tile_map.at(i) = fio_cmm.load_from_disk<file_v5_map_tile>(filename.toStdString());
+
+        // load map links
+        QString filename_area_links = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_links.dat");
+        SharedData::get_instance()->file_v5_area_link_map.insert(std::pair<unsigned int, std::vector<struct_file_v5_area_link>>(i, std::vector<struct_file_v5_area_link>()));
+        if (fio.file_exists(filename_area_links.toStdString())) {
+            SharedData::get_instance()->file_v5_area_link_map.at(i) = fio_cmm.load_from_disk<struct_file_v5_area_link>(filename_area_links.toStdString());
+        }
+
     }
     if (SharedData::get_instance()->file_v5_map_header_list.size() == 0) {
         SharedData::get_instance()->file_v5_map_header_list.push_back(file_v5_map_header());
@@ -254,6 +262,7 @@ void Mediator::save_game()
     fio_cmm.save_data_to_disk<file_v5_slope_tile>(SharedData::get_instance()->FILEPATH + FILE_V5_MAP_SLOPE_LIST, SharedData::get_instance()->slope_list);
     fio_cmm.save_data_to_disk<struct_file_v5_area>(SharedData::get_instance()->FILEPATH + FILE_V5_AREA_LIST, SharedData::get_instance()->area_list);
 
+
     std::cout << "Mediator::save - saving map-tiles for maps[" << SharedData::get_instance()->file_v5_map_header_list.size() << "]" << std::endl;
 
     for (int i=0; i<SharedData::get_instance()->file_v5_map_header_list.size(); i++) {
@@ -261,6 +270,12 @@ void Mediator::save_game()
             QString filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_tiles.dat");
             std::cout << "Mediator::save - saving map-tiles, map[" << i << "] has data, saving with filename[" << filename.toStdString() << "]" << std::endl;
             fio_cmm.save_data_to_disk<file_v5_map_tile>(filename.toStdString(), SharedData::get_instance()->file_v5_map_tile_map.at(i));
+
+            // save area links //
+            QString filename_area_links = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_links.dat");
+            if (SharedData::get_instance()->file_v5_area_link_map.find(i) != SharedData::get_instance()->file_v5_area_link_map.end()) {
+                fio_cmm.save_data_to_disk<struct_file_v5_area_link>(filename_area_links.toStdString(), SharedData::get_instance()->file_v5_area_link_map.at(i));
+            }
         }
     }
 

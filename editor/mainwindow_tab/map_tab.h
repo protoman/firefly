@@ -49,26 +49,10 @@ private slots:
 
     void on_paste_toolButton_clicked();
 
-    void on_difficulty_comboBox_currentIndexChanged(int index);
-
-
-    void on_difficultyMode_pushButton_clicked();
-
     void on_addMap_pushButton_clicked();
     void fill_map_selector();
-    void fill_map_v5_data();
 
     void on_mapSelector_comboBox_currentIndexChanged(int index);
-
-    void on_v5_mapName_lineEdit_textChanged(const QString &arg1);
-
-    void on_mapSizeW_spinBox_valueChanged(int arg1);
-
-    void on_mapSizeH_spinBox_valueChanged(int arg1);
-
-    void on_generateMapTiles_pushButton_clicked();
-
-    void generateMapTiles();
 
     void on_v5_tileset_comboBox_currentIndexChanged(const QString &arg1);
 
@@ -92,15 +76,18 @@ private slots:
 
     void on_editModeSlope_Button_clicked();
 
+
+    void on_showHidePropertiesPushButton_clicked();
+
 private:
     void fill_data();
-    void fill_background_list();
-    void fill_anim_tiles_data();
     
 private:
     Ui::map_tab *ui;
     bool _data_loading;
     file_io fio;
+    int propertiesH;
+    bool properties_hidden = false;
 };
 
 #endif // MAP_TAB_H

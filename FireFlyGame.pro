@@ -116,7 +116,8 @@ HEADERS += \
     scenes/dialogs.h \
     options/pausemenu.h \
     file/v5/struct_file_map.h \
-    file/v5/struct_file_area.h
+    file/v5/struct_file_area.h \
+    file/v5/struct_file_area_link.h
 
 DISTFILES += \
     TODO

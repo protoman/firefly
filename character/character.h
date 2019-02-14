@@ -379,6 +379,7 @@ protected:
     std::vector<st_float_position> previous_position_list;
     bool must_show_dash_effect;
     st_imageData dash_effect_shadow_surface_frame;
+    bool was_on_slope = false;
 };
 
 #endif // CHARACTER_H

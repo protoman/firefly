@@ -13,6 +13,7 @@
 #include "file/v4/file_anim_block.h"
 #include "file/v5/struct_file_map.h"
 #include "file/v5/struct_file_area.h"
+#include "file/v5/struct_file_area_link.h"
 
 class SharedData
 {
@@ -67,6 +68,7 @@ public:
     std::map<unsigned int, std::vector<file_v5_map_tile>>  file_v5_map_tile_map; // map tiles
     std::map<unsigned int, std::vector<file_v5_map_object>>  file_v5_map_object_map; // map objects
     std::map<unsigned int, std::vector<file_v5_map_npc>>  file_v5_map_npc_map; // map enemies
+    std::map<unsigned int, std::vector<struct_file_v5_area_link>> file_v5_area_link_map;
     unsigned int file_v5_selected_map = 0;
     unsigned int file_v5_selected_layer = 0;
     unsigned int file_v5_selected_slope = 0;

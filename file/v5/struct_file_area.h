@@ -8,6 +8,7 @@ struct struct_file_v5_area {
     char name[V5_CHAR_NAME];
     int point[GAME_AREA_SIZE][GAME_AREA_SIZE];
     int map[GAME_AREA_SIZE];
+    char music_filename[FS_CHAR_FILENAME_SIZE];
     st_color color;
 
     struct_file_v5_area() {

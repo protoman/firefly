@@ -30,8 +30,14 @@ map_tab::~map_tab()
 
 void map_tab::reload()
 {
+    ui->gridLayout_6->setGeometry(QRect(0, 0, 100, 200));
     ui->animTilePaletteWidget->reload();
     ui->editArea->update_files();
+
+    properties_hidden = true;
+    propertiesH = ui->properties_groupBox->maximumHeight();
+    ui->properties_groupBox->setMaximumHeight(30);
+
     fill_data();
 }
 
@@ -56,7 +62,6 @@ void map_tab::on_color_selected1(QColor color)
     SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).background_color.r = color.red();
     SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).background_color.g = color.green();
     SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).background_color.b = color.blue();
-    fill_background_list();
     update_edit_area();
 }
 
@@ -67,15 +72,12 @@ void map_tab::fill_data()
         return;
     }
     _data_loading = true;
-    fill_anim_tiles_data();
     common::fill_npc_listwidget(ui->npc_listWidget);
     common::fill_object_listWidget(ui->objectListWidget);
-    fill_background_list();
     ui->npc_direction_combo->setCurrentIndex(Mediator::get_instance()->npc_direction);
     ui->object_direction_combo->setCurrentIndex(Mediator::get_instance()->object_direction);
 
     fill_map_selector();
-    fill_map_v5_data();
     common::fill_files_combo("images/tilesets", ui->v5_tileset_comboBox);
 
 
@@ -113,21 +115,6 @@ void map_tab::fill_data()
 
     _data_loading = false;
 }
-
-void map_tab::fill_background_list()
-{
-
-
-
-
-}
-
-void map_tab::fill_anim_tiles_data()
-{
-}
-
-
-
 
 void map_tab::on_comboBox_currentIndexChanged(int index)
 {
@@ -206,7 +193,7 @@ void map_tab::on_editTile_button_clicked()
     ui->editModeLock_button->setEnabled(true);
     ui->editModeErase_button->setEnabled(true);
 
-    set_current_box(1);
+    set_current_box(0);
     Mediator::get_instance()->editMode = EDITMODE_NORMAL;
     Mediator::get_instance()->editTool = EDITMODE_NORMAL;
 
@@ -227,7 +214,7 @@ void map_tab::on_editObject_button_clicked()
     ui->editModeLock_button->setEnabled(false);
     ui->editModeErase_button->setEnabled(true);
 
-    set_current_box(5);
+    set_current_box(4);
     Mediator::get_instance()->editMode = EDITMODE_OBJECT;
     Mediator::get_instance()->editTool = EDITMODE_NORMAL;
     update_edit_area();
@@ -248,7 +235,7 @@ void map_tab::on_editLink_button_clicked()
     ui->editModeLock_button->setEnabled(false);
     ui->editModeErase_button->setEnabled(true);
 
-    set_current_box(4);
+    set_current_box(3);
     Mediator::get_instance()->editMode = EDITMODE_LINK;
     Mediator::get_instance()->editTool = EDITMODE_LINK;
     update_edit_area();
@@ -269,7 +256,7 @@ void map_tab::on_editNpc_button_clicked()
     ui->editModeLock_button->setEnabled(false);
     ui->editModeErase_button->setEnabled(true);
 
-    set_current_box(3);
+    set_current_box(2);
     Mediator::get_instance()->editMode = EDITMODE_NPC;
     Mediator::get_instance()->editTool = EDITMODE_NORMAL;
 }
@@ -287,7 +274,7 @@ void map_tab::on_editSetSubBoss_button_clicked()
     ui->editModeLock_button->setEnabled(false);
     ui->editModeErase_button->setEnabled(false);
 
-    set_current_box(3);
+    set_current_box(2);
     Mediator::get_instance()->editMode = EDITMODE_SET_SUBBOSS;
     Mediator::get_instance()->editTool = EDITMODE_NORMAL;
 
@@ -306,7 +293,7 @@ void map_tab::on_editSetBoss_button_clicked()
     ui->editModeLock_button->setEnabled(false);
     ui->editModeErase_button->setEnabled(false);
 
-    set_current_box(3);
+    set_current_box(2);
     Mediator::get_instance()->editMode = EDITMODE_SET_BOSS;
     Mediator::get_instance()->editTool = EDITMODE_NORMAL;
 }
@@ -323,13 +310,13 @@ void map_tab::on_editModeNormal_button_clicked()
 
     Mediator::get_instance()->editTool = EDITMODE_NORMAL;
     if (ui->editTile_button->isChecked()) {
-        set_current_box(1);
+        set_current_box(0);
     } else if (ui->editNpc_button->isChecked()) {
-        set_current_box(3);
+        set_current_box(2);
     } else if (ui->editObject_button->isChecked()) {
-        set_current_box(5);
-    } else if (ui->editLink_button->isChecked()) {
         set_current_box(4);
+    } else if (ui->editLink_button->isChecked()) {
+        set_current_box(3);
     }
     update_edit_area();
 
@@ -344,7 +331,7 @@ void map_tab::on_editModeLock_button_clicked()
     ui->editSetSubBoss_button->setChecked(false);
     ui->editSetBoss_button->setChecked(false);
 
-    set_current_box(2);
+    set_current_box(1);
     Mediator::get_instance()->editTool = EDITMODE_LOCK;
     update_edit_area();
 }
@@ -382,7 +369,7 @@ void map_tab::on_addAnimTile_toolButton_clicked()
     ui->editModeLock_button->setEnabled(false);
     ui->editModeErase_button->setEnabled(true);
 
-    set_current_box(6);
+    set_current_box(5);
     Mediator::get_instance()->editMode = EDITMODE_ANIM_TILE;
     Mediator::get_instance()->editTool = EDITMODE_NORMAL;
 
@@ -402,7 +389,7 @@ void map_tab::on_toolButton_clicked()
     ui->editModeLock_button->setEnabled(false);
     ui->editModeErase_button->setEnabled(false);
 
-    set_current_box(1);
+    set_current_box(0);
     Mediator::get_instance()->editMode = EDITMODE_SELECT;
     Mediator::get_instance()->editTool = EDITMODE_NORMAL;
 }
@@ -421,7 +408,7 @@ void map_tab::on_paste_toolButton_clicked()
     ui->editModeLock_button->setEnabled(false);
     ui->editModeErase_button->setEnabled(false);
 
-    set_current_box(1);
+    set_current_box(0);
     Mediator::get_instance()->editMode = EDITMODE_PASTE;
     Mediator::get_instance()->editTool = EDITMODE_NORMAL;
 }
@@ -441,35 +428,12 @@ void map_tab::on_editModeSlope_Button_clicked()
     ui->editModeLock_button->setEnabled(false);
     ui->editModeErase_button->setEnabled(false);
 
-    set_current_box(1);
+    set_current_box(6);
     Mediator::get_instance()->editMode = EDITMODE_SLOPE;
     std::cout << "SET-SLOPE-MODE [" << Mediator::get_instance()->editMode << "]" << std::endl;
     Mediator::get_instance()->editTool = EDITMODE_NORMAL;
 }
 
-
-void map_tab::on_difficulty_comboBox_currentIndexChanged(int index)
-{
-    Mediator::get_instance()->currentDifficulty = index;
-    update_edit_area();
-}
-
-
-void map_tab::on_difficultyMode_pushButton_clicked()
-{
-    if (_data_loading == true) { return; }
-    Mediator::get_instance()->currentDifficultyMode++;
-    if (Mediator::get_instance()->currentDifficultyMode >= DIFFICULTY_MODE_COUNT) {
-        Mediator::get_instance()->currentDifficultyMode = DIFFICULTY_MODE_GREATER;
-    }
-    if (Mediator::get_instance()->currentDifficultyMode == DIFFICULTY_MODE_GREATER) {
-        ui->difficultyMode_pushButton->setText(">=");
-    } else if (Mediator::get_instance()->currentDifficultyMode == DIFFICULTY_MODE_EQUAL) {
-        ui->difficultyMode_pushButton->setText("=");
-//    } else if (Mediator::get_instance()->currentDifficultyMode == DIFFICULTY_MODE_LESS) {
-//        ui->difficultyMode_pushButton->setText("<=");
-    }
-}
 
 void map_tab::on_addMap_pushButton_clicked()
 {
@@ -490,78 +454,16 @@ void map_tab::fill_map_selector()
     ui->mapSelector_comboBox->setCurrentIndex(SharedData::get_instance()->file_v5_selected_map);
 }
 
-void map_tab::fill_map_v5_data()
-{
-    if (SharedData::get_instance()->file_v5_map_header_list.size() == 0) {
-        return;
-    }
-    ui->v5_mapName_lineEdit->setText(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).map_name);
-    ui->mapSizeW_spinBox->setValue(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w);
-    ui->mapSizeH_spinBox->setValue(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h);
-}
 
 void map_tab::on_mapSelector_comboBox_currentIndexChanged(int index)
 {
     if (_data_loading == true) { return; }
     SharedData::get_instance()->file_v5_selected_map = index;
     _data_loading = true;
-    fill_map_v5_data();
     ui->editArea->repaint();
     _data_loading = false;
 }
 
-
-void map_tab::on_v5_mapName_lineEdit_textChanged(const QString &arg1)
-{
-    if (_data_loading == true) { return; }
-    sprintf(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).map_name, "%s", arg1.toStdString().c_str());
-    _data_loading = true;
-    fill_map_selector();
-    _data_loading = false;
-}
-
-void map_tab::on_mapSizeW_spinBox_valueChanged(int arg1)
-{
-    if (_data_loading == true) { return; }
-    SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w = arg1;
-}
-
-void map_tab::on_mapSizeH_spinBox_valueChanged(int arg1)
-{
-    if (_data_loading == true) { return; }
-    SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h = arg1;
-
-}
-
-void map_tab::on_generateMapTiles_pushButton_clicked()
-{
-    if (ui->mapSizeW_spinBox->value() == 0 || ui->mapSizeH_spinBox->value() == 0) {
-        QMessageBox::warning(this, "Error", "Invalid map size (zero).");
-        return;
-    }
-    QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Rockbot Editor :: Map Editor", tr("Generating tiles will erase any existing map data. Continue?\n"), QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
-    if (resBtn == QMessageBox::No) {
-        return;
-    } else {
-        generateMapTiles();
-    }
-}
-
-void map_tab::generateMapTiles()
-{
-    if (SharedData::get_instance()->file_v5_map_tile_map.find(SharedData::get_instance()->file_v5_selected_map) == SharedData::get_instance()->file_v5_map_tile_map.end()) {
-        std::cout << "map_tab::generateMapTiles - entry not found, adding it..." << std::endl;
-        SharedData::get_instance()->file_v5_map_tile_map.insert(std::pair<int, std::vector<file_v5_map_tile>>(SharedData::get_instance()->file_v5_selected_map, std::vector<file_v5_map_tile>()));
-    }
-    std::cout << "map_tab::generateMapTiles -generating [" << SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w << "][" << SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h << "] tiles in key [" << SharedData::get_instance()->file_v5_selected_map << "]" << std::endl;
-    SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).clear();
-    for (int i=0; i< SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w; i++) {
-        for (int j=0; j< SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h; j++) {
-            SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).push_back(file_v5_map_tile());
-        }
-    }
-    ui->editArea->repaint();
-}
 
 void map_tab::on_v5_tileset_comboBox_currentIndexChanged(const QString &arg1)
 {
@@ -662,3 +564,15 @@ void map_tab::on_layerAlpha_spinBox_valueChanged(int arg1)
 }
 
 
+
+void map_tab::on_showHidePropertiesPushButton_clicked()
+{
+    properties_hidden = !properties_hidden;
+    if (properties_hidden == true) {
+        propertiesH = ui->properties_groupBox->maximumHeight();
+        ui->properties_groupBox->setMaximumHeight(30);
+    } else {
+        ui->properties_groupBox->setMaximumHeight(propertiesH);
+    }
+
+}

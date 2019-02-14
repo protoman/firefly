@@ -92,6 +92,10 @@ public:
     int get_first_lock_on_right(int x_pos) const;
     int get_first_lock_on_bottom(int x_pos, int y_pos);
     int get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h);
+
+    int get_first_bottom_lock(int initialY);
+    bool isEdgeRowLocked(int incY, bool first);
+
     void add_bubble_animation(st_position pos);
     classnpc* collision_player_npcs(character*, const short int, const short int);
     st_float_position get_last_scrolled() const;
