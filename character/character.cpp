@@ -1619,13 +1619,16 @@ bool character::slide(st_float_position mapScrolling)
 		return false;
 	}
 
-	// no need to slide
-    if (state.animation_type != ANIM_TYPE_SLIDE && moveCommands.dash != 1) {
+    //std::cout << "CHAR::SLIDE - ability.slide[" << SharedData::get_instance()->game_save.abilities[PROPERTY_NAME_SLIDE] << "]" << std::endl;
+    if (SharedData::get_instance()->game_save.abilities[PROPERTY_NAME_SLIDE] == false) {
+        std::cout << "SLIDE::OUT #5" << std::endl;
         return false;
     }
 
-    //std::cout << "CHAR::SLIDE - ability.slide[" << SharedData::get_instance()->game_save.abilities[PROPERTY_NAME_SLIDE] << "]" << std::endl;
-    if (SharedData::get_instance()->game_save.abilities[PROPERTY_NAME_SLIDE] == false) {
+
+    // no need to slide
+    if (state.animation_type != ANIM_TYPE_SLIDE && moveCommands.dash != 1) {
+        std::cout << "SLIDE::OUT #6" << std::endl;
         return false;
     }
 
@@ -1642,17 +1645,14 @@ bool character::slide(st_float_position mapScrolling)
     st_map_collision map_col = map_collision(0, adjust, gameManager::get_instance()->get_current_map_obj()->getMapScrolling(), ANIM_TYPE_SLIDE); // slide_adjust is used because of adjustments in slide collision
     int map_lock =  map_col.block;
 
-    // player have double jump (without being armor) can't use slide in ground
-    if (GameMediator::get_instance()->player_list_v3_1[_number].can_double_jump) {
-        if (did_hit_ground == true) {
-            if (is_player()) std::cout << "CHAR::SLIDE LEAVE #1.1" << std::endl;
-            return false;
-        }
-    }
 
+    st_map_collision map_col_above = map_collision(0, adjust-20, gameManager::get_instance()->get_current_map_obj()->getMapScrolling(), ANIM_TYPE_SLIDE); // slide_adjust is used because of adjustments in slide collision
+    int map_lock_above =  map_col_above.block;
+
+    std::cout << "SLIDE - map_lock[" << map_lock << "], map_lock_above[" << map_lock_above << "]" << std::endl;
 
     // releasing down (or dash button) interrupts the slide
-    if (moveCommands.dash != 1 && state.animation_type == ANIM_TYPE_SLIDE && (map_lock == BLOCK_UNBLOCKED || map_lock == BLOCK_WATER)) {
+    if (moveCommands.dash != 1 && state.animation_type == ANIM_TYPE_SLIDE && (map_lock == BLOCK_UNBLOCKED || map_lock == BLOCK_WATER) && (map_lock_above == BLOCK_UNBLOCKED || map_lock_above == BLOCK_WATER)) {
         if (did_hit_ground) {
             if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #Y.2" << std::endl;
             set_animation_type(ANIM_TYPE_STAND);
@@ -1664,7 +1664,7 @@ bool character::slide(st_float_position mapScrolling)
     }
 
 
-    if (state.slide_distance > TILESIZE*5 && (map_lock == BLOCK_UNBLOCKED || map_lock == BLOCK_WATER)) {
+    if (state.slide_distance > TILESIZE*5 && (map_lock == BLOCK_UNBLOCKED || map_lock == BLOCK_WATER) && (map_lock_above == BLOCK_UNBLOCKED || map_lock_above == BLOCK_WATER)) {
         if (did_hit_ground == true) {
             if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #Y.3" << std::endl;
             set_animation_type(ANIM_TYPE_STAND);
