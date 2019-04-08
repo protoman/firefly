@@ -144,11 +144,9 @@ void artificial_inteligence::check_ai_reaction()
         // if not sub-boss (that already have explosion), and dead-reaction is spawn npc, show explosions
         SoundView::get_instance()->play_repeated_sfx(SFX_BIG_EXPLOSION, 1);
         st_float_position pos1(position.x+2, position.y+20);
-        //animation anim1(ANIMATION_STATIC, &ImageView::get_instance()->bomb_explosion_surface, pos1, st_position(-8, -8), 80, 2, state.direction, st_size(56, 56), gameManager::get_instance()->get_current_map_obj()->get_map_scrolling_ref());
         //gameManager::get_instance()->get_current_map_obj()->add_animation(anim1);
 
         st_float_position pos2(pos1.x+10, pos1.y-30);
-        //animation anim2(ANIMATION_STATIC, &ImageView::get_instance()->bomb_explosion_surface, pos2, st_position(-8, -8), 80, 2, state.direction, st_size(56, 56), gameManager::get_instance()->get_current_map_obj()->get_map_scrolling_ref());
         //anim2.set_initial_delay(500);
         //gameManager::get_instance()->get_current_map_obj()->add_animation(anim2);
 
@@ -1059,7 +1057,7 @@ void artificial_inteligence::execute_ai_action_wait_until_player_in_range()
 	}
 }
 
-void artificial_inteligence::execute_ai_action_trow_projectile(Uint8 n, bool invert_direction)
+void artificial_inteligence::execute_ai_action_trow_projectile(unsigned short n, bool invert_direction)
 {
 	if (_ai_state.sub_status == IA_ACTION_STATE_INITIAL) {
         if (state.animation_type == ANIM_TYPE_WALK_AIR) {
@@ -1797,7 +1795,7 @@ can_move_struct artificial_inteligence::check_can_move_to_point(st_float_positio
             }
             int map_lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(map_point);
             //if (!is_player()) std::cout << "AI::move_to_point[" << name << "] - HOLE check: " << map_lock << " - direction: " << (int)state.direction << std::endl;
-            if (map_lock == TERRAIN_UNBLOCKED || map_lock == TERRAIN_WATER || (map_lock == TERRAIN_EASYMODEBLOCK && SharedData::get_instance()->game_save.difficulty != DIFFICULTY_EASY) || (map_lock == TERRAIN_HARDMODEBLOCK && SharedData::get_instance()->game_save.difficulty != DIFFICULTY_HARD)) {
+            if (map_lock == TERRAIN_UNBLOCKED || map_lock == TERRAIN_WATER) {
                 //if (!is_player()) std::cout << "AI::move_to_point[" << name << "] - HOLE AHEAD - direction: " << (int)state.direction << std::endl;
                 return can_move_struct(0, 0, false, false, CAN_MOVE_LEAVE_TRUE);
             }

@@ -23,6 +23,7 @@ linux {
 
 
 SOURCES += \
+    aux_tools/ability_name.cpp \
         main.cpp \
     view/textview.cpp \
     view/imageview.cpp \
@@ -65,6 +66,9 @@ SOURCES += \
     options/pausemenu.cpp
 
 HEADERS += \
+    aux_tools/ability_name.h \
+    file/v4/file_save_v4.h \
+    file/v5/struct_file_game_area_map.h \
     view/textview.h \
     view/imageview.h \
     defines.h \

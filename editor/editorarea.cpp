@@ -194,27 +194,6 @@ void EditorArea::drawTileset(QPainter *painter)
                         painter->setBrush(QColor(240, 240, 240, 255));
                         painter->drawRect(i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
                     }
-                    // EASY-mode tiles
-                    if (tileItem.locked == TERRAIN_EASYMODEBLOCK) {
-                        //std::cout << "TERRAIN_EASYMODEBLOCK" << std::endl;
-
-                        QRectF target(QPoint(i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
-                        QRectF source(QPoint(0, 0), QSize(TILESIZE, TILESIZE));
-                        painter->drawPixmap(target, easy_mode_tile, source);
-
-                        painter->setBrush(QColor(220, 210, 50, 100));
-                        painter->drawRect(i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
-
-                    // HARD-mode tiles
-                    } else if (tileItem.locked == TERRAIN_HARDMODEBLOCK) {
-                        QRectF target(QPoint(i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
-                        QRectF source(QPoint(0, 0), QSize(TILESIZE, TILESIZE));
-                        painter->drawPixmap(target, hard_mode_tile, source);
-
-                        painter->setBrush(QColor(190, 36, 230, 100));
-                        painter->drawRect(i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
-                    }
-
                 }
             }
         }
@@ -259,12 +238,10 @@ void EditorArea::drawLockTileset(QPainter *painter)
                         terrainIcon = QString(":/toolbar_icons/arrow-right.png");
                     } else if (tileItem.locked == TERRAIN_SAND) {
                         terrainIcon = QString(":/toolbar_icons/arrow-down.png");
-                    } else if (tileItem.locked == TERRAIN_SCROLL_LOCK) {
+                    } else if (tileItem.locked == TERRAIN_HSCROLL_LOCK) {
                         terrainIcon = QString(":/toolbar_icons/system-switch-user.png");
-                    } else if (tileItem.locked == TERRAIN_EASYMODEBLOCK) {
-                        terrainIcon = QString(":/toolbar_icons/draw-polygon.png"); // easy block
-                    } else if (tileItem.locked == TERRAIN_HARDMODEBLOCK) {
-                        terrainIcon = QString(":/toolbar_icons/draw-square-inverted-corners.png"); // hard block
+                    } else if (tileItem.locked == TERRAIN_VSCROLL_LOCK) {
+                        terrainIcon = QString(":/toolbar_icons/v_scroll_lock.png");
                     } else if (tileItem.locked == TERRAIN_SLOPE) {
                         terrainIcon = QString(":/toolbar_icons/draw-triangle.png"); // diagonal left
                     } else if (tileItem.locked == -2) {
@@ -306,13 +283,6 @@ void EditorArea::drawMapEnemies(QPainter *painter)
         std::cout << "EditorArea::drawMapEnemies currentMap[" << currentMap << "], npc-size[" << SharedData::get_instance()->file_v5_map_npc_map.at(currentMap).size() << "]" << std::endl;
         for (int i=0; i<SharedData::get_instance()->file_v5_map_npc_map.at(currentMap).size(); i++) {
             file_v5_map_npc map_npc = SharedData::get_instance()->file_v5_map_npc_map.at(currentMap).at(i);
-            if (map_npc.difficulty_mode == DIFFICULTY_MODE_GREATER && map_npc.difficulty_level > Mediator::get_instance()->currentDifficulty) {
-                std::cout << "EditorArea::drawMapEnemies - IGNORE due to difficulty #1" << std::endl;
-                continue; // only show enemies with equal or lower difficulty
-            } else if (map_npc.difficulty_mode == DIFFICULTY_MODE_EQUAL && map_npc.difficulty_level != Mediator::get_instance()->currentDifficulty) {
-                std::cout << "EditorArea::drawMapEnemies - IGNORE due to difficulty #2" << std::endl;
-                continue;
-            }
             //std::cout << "EditorArea::paintEvent #5.0.A [" << i << "]" << std::endl;
             int npc_id = map_npc.id_npc;
             if (npc_id >= Mediator::get_instance()->enemy_list.size() || npc_id < 0) {
@@ -400,16 +370,90 @@ void EditorArea::drawMapEnemies(QPainter *painter)
 
 void EditorArea::drawMapObjects(QPainter *painter)
 {
+    /// draw objects
+    //std::cout << "################### START LOOP" << std::endl;
+    unsigned int current_map = SharedData::get_instance()->file_v5_selected_map;
+    if (SharedData::get_instance()->file_v5_map_object_map.find(current_map) == SharedData::get_instance()->file_v5_map_object_map.end()) {
+        return;
+    }
+    for (int i=0; i<SharedData::get_instance()->file_v5_map_object_map.at(current_map).size(); i++) {
+        int obj_id = (int)SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).id_object;
+
+        //std::cout << "OBJ[" << i << "][" << Mediator::get_instance()->object_list.at(obj_id).name << "].stage[" << (int)SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).stage_id << "].map[" << (int)SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).map_id << "], currentStage[" << Mediator::get_instance()->currentStage << "], currentMap[" << SharedData::get_instance()->file_v5_selected_map << "]" << std::endl;
+
+
+        if (obj_id != -1) {
+            //if (obj_id == 20) { std::cout << "************************** paintEvent - draw_objects[" << i << "].id: " << obj_id << std::endl; }
+            std::string filename = SharedData::get_instance()->FILEPATH + "/images/sprites/objects/" + Mediator::get_instance()->object_list.at(obj_id).graphic_filename;
+            QPixmap temp_image(filename.c_str());
+            if (temp_image.isNull()) {
+                std::cout << "****************** Could not load file '" << filename.c_str() << "'" << std::endl;
+                painter->setBrush(QColor(255, 255, 255, 180));
+                painter->drawRect(SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).start_point.x*TILESIZE*Mediator::get_instance()->zoom, SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).start_point.y*TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
+            } else {
+                int obj_type = Mediator::get_instance()->object_list.at(obj_id).type;
+                int obj_direction = SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).direction;
+                if (obj_type == OBJ_RAY_HORIZONTAL) {
+                    int graphic_pos_x = 0;
+                    int graphic_pos_y = Mediator::get_instance()->object_list.at(obj_id).size.height;
+                    if (obj_direction == ANIM_DIRECTION_LEFT) {
+                        graphic_pos_x = Mediator::get_instance()->object_list.at(obj_id).size.width - TILESIZE;
+                        graphic_pos_y = 0;
+                    }
+                    //std::cout << "OBJ_RAY_HORIZONTAL - obj_direction: " << obj_direction << ", graphic_pos_x: " << graphic_pos_x << ", graphic_pos_y: " << graphic_pos_y << std::endl;
+                    QRectF target(QPoint(SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).start_point.x*TILESIZE*Mediator::get_instance()->zoom, SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).start_point.y*TILESIZE*Mediator::get_instance()->zoom), QSize(TILESIZE*Mediator::get_instance()->zoom, Mediator::get_instance()->object_list.at(obj_id).size.height*Mediator::get_instance()->zoom));
+                    QRectF source(QPoint(graphic_pos_x, graphic_pos_y), QSize(TILESIZE, Mediator::get_instance()->object_list.at(obj_id).size.height));
+                    painter->drawPixmap(target, temp_image, source);
+                } else if (obj_type == OBJ_RAY_VERTICAL) {
+                    int graphic_pos_y = Mediator::get_instance()->object_list.at(obj_id).size.height - TILESIZE;
+                    //std::cout << "OBJ_RAY_HORIZONTAL - graphic_pos_y: " << graphic_pos_y << std::endl;
+                    QRectF target(QPoint(SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).start_point.x*TILESIZE*Mediator::get_instance()->zoom, SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).start_point.y*TILESIZE*Mediator::get_instance()->zoom), QSize(Mediator::get_instance()->object_list.at(obj_id).size.width*Mediator::get_instance()->zoom, Mediator::get_instance()->object_list.at(obj_id).size.height*Mediator::get_instance()->zoom));
+                    QRectF source(QPoint(0, graphic_pos_y), QSize(Mediator::get_instance()->object_list.at(obj_id).size.width, Mediator::get_instance()->object_list.at(obj_id).size.height));
+                    painter->drawPixmap(target, temp_image, source);
+                } else if (obj_type == OBJ_DEATHRAY_HORIZONTAL && obj_direction == ANIM_DIRECTION_LEFT) {
+                    QRectF target(QPoint(SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).start_point.x*TILESIZE*Mediator::get_instance()->zoom - (Mediator::get_instance()->object_list.at(obj_id).size.width-TILESIZE)*Mediator::get_instance()->zoom, SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).start_point.y*TILESIZE*Mediator::get_instance()->zoom), QSize(Mediator::get_instance()->object_list.at(obj_id).size.width*Mediator::get_instance()->zoom, Mediator::get_instance()->object_list.at(obj_id).size.height*Mediator::get_instance()->zoom));
+                    QRectF source(QPoint(0, 0), QSize(Mediator::get_instance()->object_list.at(obj_id).size.width, Mediator::get_instance()->object_list.at(obj_id).size.height));
+                    painter->drawPixmap(target, temp_image, source);
+                } else {
+                    QRectF target(QPoint(SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).start_point.x*TILESIZE*Mediator::get_instance()->zoom, SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).start_point.y*TILESIZE*Mediator::get_instance()->zoom), QSize(Mediator::get_instance()->object_list.at(obj_id).size.width*Mediator::get_instance()->zoom, Mediator::get_instance()->object_list.at(obj_id).size.height*Mediator::get_instance()->zoom));
+                    QRectF source;
+                    if (obj_direction == ANIM_DIRECTION_RIGHT && temp_image.height() >= Mediator::get_instance()->object_list.at(obj_id).size.height) {
+                        source = QRectF(QPoint(0, Mediator::get_instance()->object_list.at(obj_id).size.height), QSize(Mediator::get_instance()->object_list.at(obj_id).size.width, Mediator::get_instance()->object_list.at(obj_id).size.height));
+                    } else {
+                        source = QRectF(QPoint(0, 0), QSize(Mediator::get_instance()->object_list.at(obj_id).size.width, Mediator::get_instance()->object_list.at(obj_id).size.height));
+                    }
+                    painter->drawPixmap(target, temp_image, source);
+                }
+            }
+            // draw object-teleporter origin
+            if (SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).teleporter_data.map_dest != -1) {
+                int obj_w = Mediator::get_instance()->object_list.at(obj_id).size.width;
+                int obj_h = Mediator::get_instance()->object_list.at(obj_id).size.height;
+                //std::cout << "OBJ.w: " << obj_w << ", obj_h: " << obj_h << std::endl;
+                int dest_x = SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).start_point.x*TILESIZE*Mediator::get_instance()->zoom + (obj_w/2)*Mediator::get_instance()->zoom - TILESIZE/2;
+                int dest_y = SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).start_point.y*TILESIZE*Mediator::get_instance()->zoom + (obj_h/2)*Mediator::get_instance()->zoom - TILESIZE/2;
+                //std::cout << "DRAW OBJECT TELEPORTER ORIGIN[" << i << "] - map: " << (int)SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).map_dest  << ", x: " << SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).start_point.x << ", y: " << SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(i).start_point.y << std::endl;
+                if (Mediator::get_instance()->object_list.at(obj_id).type == OBJ_FINAL_BOSS_TELEPORTER) {
+                    painter->setBrush(QColor(160, 60, 60, 180));
+                } else {
+                    painter->setBrush(QColor(60, 160, 60, 180));
+                }
+                painter->drawEllipse(dest_x, dest_y, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
+                // cyan border
+                painter->setBrush(Qt::NoBrush);
+                painter->setPen(QColor(0, 255, 255, 255));
+                painter->drawEllipse(dest_x, dest_y, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
+                painter->setPen(QColor(0, 0, 0, 255));
+                painter->drawText(dest_x+3, dest_y+TILESIZE-3, QString::number(i));
+            }
+        }
+    }
 
 }
 
 
-void EditorArea::paintEvent(QPaintEvent *) {
-
-    if (Mediator::get_instance()->currentStage < 0) {
-        return;
-    }
-
+void EditorArea::paintEvent(QPaintEvent *)
+{
     if (tileset_image.isNull()) {
         std::cout << "ERROR: EditorArea::paintEvent - Could not load palette image file." << std::endl;
         return;
@@ -549,98 +593,14 @@ void EditorArea::paintEvent(QPaintEvent *) {
     }
 
 
+    // DRAW OBJECTS //
 
-
-    /*
     if (Mediator::get_instance()->show_objects_flag == true) {
-        /// draw objects
-        //std::cout << "################### START LOOP" << std::endl;
-        for (int i=0; i<Mediator::get_instance()->maps_data_object_list.size(); i++) {
-            int obj_stage_id = (int)Mediator::get_instance()->maps_data_object_list[i].stage_id;
-            int obj_map_id = (int)Mediator::get_instance()->maps_data_object_list[i].map_id;
-            if (obj_stage_id != Mediator::get_instance()->currentStage || obj_map_id != SharedData::get_instance()->file_v5_selected_map) {
-                continue;
-            }
+        drawMapObjects(&painter);
 
+    }
 
-            if (Mediator::get_instance()->maps_data_object_list[i].difficulty_mode == DIFFICULTY_MODE_GREATER && Mediator::get_instance()->maps_data_object_list[i].difficulty_level > Mediator::get_instance()->currentDifficulty) {
-                continue; // only show enemies with equal or lower difficulty
-            } else if (Mediator::get_instance()->maps_data_object_list[i].difficulty_mode == DIFFICULTY_MODE_EQUAL && Mediator::get_instance()->maps_data_object_list[i].difficulty_level != Mediator::get_instance()->currentDifficulty) {
-                continue;
-            }
-
-            int obj_id = (int)Mediator::get_instance()->maps_data_object_list[i].id_object;
-
-            //std::cout << "OBJ[" << i << "][" << Mediator::get_instance()->object_list.at(obj_id).name << "].stage[" << (int)Mediator::get_instance()->maps_data_object_list[i].stage_id << "].map[" << (int)Mediator::get_instance()->maps_data_object_list[i].map_id << "], currentStage[" << Mediator::get_instance()->currentStage << "], currentMap[" << SharedData::get_instance()->file_v5_selected_map << "]" << std::endl;
-
-
-            if (obj_id != -1) {
-                //if (obj_id == 20) { std::cout << "************************** paintEvent - draw_objects[" << i << "].id: " << obj_id << std::endl; }
-                std::string filename = FILEPATH + "/images/sprites/objects/" + Mediator::get_instance()->object_list.at(obj_id).graphic_filename;
-                QPixmap temp_image(filename.c_str());
-                if (temp_image.isNull()) {
-                    std::cout << "****************** Could not load file '" << filename.c_str() << "'" << std::endl;
-                    painter.setBrush(QColor(255, 255, 255, 180));
-                    painter.drawRect(Mediator::get_instance()->maps_data_object_list[i].start_point.x*TILESIZE*Mediator::get_instance()->zoom, Mediator::get_instance()->maps_data_object_list[i].start_point.y*TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
-                } else {
-                    int obj_type = Mediator::get_instance()->object_list.at(obj_id).type;
-                    int obj_direction = Mediator::get_instance()->maps_data_object_list[i].direction;
-                    if (obj_type == OBJ_RAY_HORIZONTAL) {
-                        int graphic_pos_x = 0;
-                        int graphic_pos_y = Mediator::get_instance()->object_list.at(obj_id).size.height;
-                        if (obj_direction == ANIM_DIRECTION_LEFT) {
-                            graphic_pos_x = Mediator::get_instance()->object_list.at(obj_id).size.width - TILESIZE;
-                            graphic_pos_y = 0;
-                        }
-                        //std::cout << "OBJ_RAY_HORIZONTAL - obj_direction: " << obj_direction << ", graphic_pos_x: " << graphic_pos_x << ", graphic_pos_y: " << graphic_pos_y << std::endl;
-                        QRectF target(QPoint(Mediator::get_instance()->maps_data_object_list[i].start_point.x*TILESIZE*Mediator::get_instance()->zoom, Mediator::get_instance()->maps_data_object_list[i].start_point.y*TILESIZE*Mediator::get_instance()->zoom), QSize(TILESIZE*Mediator::get_instance()->zoom, Mediator::get_instance()->object_list.at(obj_id).size.height*Mediator::get_instance()->zoom));
-                        QRectF source(QPoint(graphic_pos_x, graphic_pos_y), QSize(TILESIZE, Mediator::get_instance()->object_list.at(obj_id).size.height));
-                        painter.drawPixmap(target, temp_image, source);
-                    } else if (obj_type == OBJ_RAY_VERTICAL) {
-                        int graphic_pos_y = Mediator::get_instance()->object_list.at(obj_id).size.height - TILESIZE;
-                        //std::cout << "OBJ_RAY_HORIZONTAL - graphic_pos_y: " << graphic_pos_y << std::endl;
-                        QRectF target(QPoint(Mediator::get_instance()->maps_data_object_list[i].start_point.x*TILESIZE*Mediator::get_instance()->zoom, Mediator::get_instance()->maps_data_object_list[i].start_point.y*TILESIZE*Mediator::get_instance()->zoom), QSize(Mediator::get_instance()->object_list.at(obj_id).size.width*Mediator::get_instance()->zoom, Mediator::get_instance()->object_list.at(obj_id).size.height*Mediator::get_instance()->zoom));
-                        QRectF source(QPoint(0, graphic_pos_y), QSize(Mediator::get_instance()->object_list.at(obj_id).size.width, Mediator::get_instance()->object_list.at(obj_id).size.height));
-                        painter.drawPixmap(target, temp_image, source);
-                    } else if (obj_type == OBJ_DEATHRAY_HORIZONTAL && obj_direction == ANIM_DIRECTION_LEFT) {
-                        QRectF target(QPoint(Mediator::get_instance()->maps_data_object_list[i].start_point.x*TILESIZE*Mediator::get_instance()->zoom - (Mediator::get_instance()->object_list.at(obj_id).size.width-TILESIZE)*Mediator::get_instance()->zoom, Mediator::get_instance()->maps_data_object_list[i].start_point.y*TILESIZE*Mediator::get_instance()->zoom), QSize(Mediator::get_instance()->object_list.at(obj_id).size.width*Mediator::get_instance()->zoom, Mediator::get_instance()->object_list.at(obj_id).size.height*Mediator::get_instance()->zoom));
-                        QRectF source(QPoint(0, 0), QSize(Mediator::get_instance()->object_list.at(obj_id).size.width, Mediator::get_instance()->object_list.at(obj_id).size.height));
-                        painter.drawPixmap(target, temp_image, source);
-                    } else {
-                        QRectF target(QPoint(Mediator::get_instance()->maps_data_object_list[i].start_point.x*TILESIZE*Mediator::get_instance()->zoom, Mediator::get_instance()->maps_data_object_list[i].start_point.y*TILESIZE*Mediator::get_instance()->zoom), QSize(Mediator::get_instance()->object_list.at(obj_id).size.width*Mediator::get_instance()->zoom, Mediator::get_instance()->object_list.at(obj_id).size.height*Mediator::get_instance()->zoom));
-                        QRectF source;
-                        if (obj_direction == ANIM_DIRECTION_RIGHT && temp_image.height() >= Mediator::get_instance()->object_list.at(obj_id).size.height) {
-                            source = QRectF(QPoint(0, Mediator::get_instance()->object_list.at(obj_id).size.height), QSize(Mediator::get_instance()->object_list.at(obj_id).size.width, Mediator::get_instance()->object_list.at(obj_id).size.height));
-                        } else {
-                            source = QRectF(QPoint(0, 0), QSize(Mediator::get_instance()->object_list.at(obj_id).size.width, Mediator::get_instance()->object_list.at(obj_id).size.height));
-                        }
-                        painter.drawPixmap(target, temp_image, source);
-                    }
-                }
-                // draw object-teleporter origin
-                if (Mediator::get_instance()->maps_data_object_list[i].map_dest != -1) {
-                    int obj_w = Mediator::get_instance()->object_list.at(obj_id).size.width;
-                    int obj_h = Mediator::get_instance()->object_list.at(obj_id).size.height;
-                    //std::cout << "OBJ.w: " << obj_w << ", obj_h: " << obj_h << std::endl;
-                    int dest_x = Mediator::get_instance()->maps_data_object_list[i].start_point.x*TILESIZE*Mediator::get_instance()->zoom + (obj_w/2)*Mediator::get_instance()->zoom - TILESIZE/2;
-                    int dest_y = Mediator::get_instance()->maps_data_object_list[i].start_point.y*TILESIZE*Mediator::get_instance()->zoom + (obj_h/2)*Mediator::get_instance()->zoom - TILESIZE/2;
-                    //std::cout << "DRAW OBJECT TELEPORTER ORIGIN[" << i << "] - map: " << (int)Mediator::get_instance()->maps_data_object_list[i].map_dest  << ", x: " << Mediator::get_instance()->maps_data_object_list[i].start_point.x << ", y: " << Mediator::get_instance()->maps_data_object_list[i].start_point.y << std::endl;
-                    if (Mediator::get_instance()->object_list.at(obj_id).type == OBJ_FINAL_BOSS_TELEPORTER) {
-                        painter.setBrush(QColor(160, 60, 60, 180));
-                    } else {
-                        painter.setBrush(QColor(60, 160, 60, 180));
-                    }
-                    painter.drawEllipse(dest_x, dest_y, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
-                    // cyan border
-                    painter.setBrush(Qt::NoBrush);
-                    painter.setPen(QColor(0, 255, 255, 255));
-                    painter.drawEllipse(dest_x, dest_y, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
-                    painter.setPen(QColor(0, 0, 0, 255));
-                    painter.drawText(dest_x+3, dest_y+TILESIZE-3, QString::number(i));
-                }
-            }
-        }
-
+        /*
 
         // DRAW OBJECT TELEPORT CIRCLES
         for (int k=0; k<FS_STAGE_MAX_MAPS; k++) {
@@ -936,8 +896,6 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
             new_npc.start_point.x = editor_selectedTileX;
             new_npc.start_point.y = editor_selectedTileY;
             new_npc.direction = Mediator::get_instance()->npc_direction;
-            new_npc.difficulty_level = Mediator::get_instance()->currentDifficulty;
-            new_npc.difficulty_mode = Mediator::get_instance()->currentDifficultyMode;
             SharedData::get_instance()->file_v5_map_npc_map.at(currentMap).push_back(new_npc);
             std::cout << "EditorArea::mousePressEvent - ADDED NPC in map[" << currentMap << "], pos[" << editor_selectedTileX << "][" << editor_selectedTileY << "]" << std::endl;
             repaint();
@@ -950,6 +908,44 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
     } else if (Mediator::get_instance()->editMode == EDITMODE_OBJECT) {
         std::cout << ">> EditorArea::mousePressEvent - EDITMODE_OBJECT" << std::endl;
 
+        std::cout << ">> EditorArea::mousePressEvent - EDITMODE_OBJECT" << std::endl;
+        int found_object = -1;
+
+        // search if there is an existing object in ths position, and if yes, remove it
+        unsigned int current_map = SharedData::get_instance()->file_v5_selected_map;
+        if (SharedData::get_instance()->file_v5_map_object_map.find(current_map) == SharedData::get_instance()->file_v5_map_object_map.end()) {
+            SharedData::get_instance()->file_v5_map_object_map.insert(std::pair<unsigned int, std::vector<file_v5_map_object>>(current_map, std::vector<file_v5_map_object>()));
+        } else {
+            for (int m=0; m<SharedData::get_instance()->file_v5_map_object_map.at(current_map).size(); m++) {
+                if (SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(m).id_object != -1 && SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(m).start_point.x == editor_selectedTileX && SharedData::get_instance()->file_v5_map_object_map.at(current_map).at(m).start_point.y == editor_selectedTileY) {
+                    found_object = m;
+                    break;
+                }
+            }
+        }
+
+        if (Mediator::get_instance()->editTool == EDITMODE_ERASER && found_object != -1) {
+            std::cout << "remove object - slot: " << found_object << std::endl;
+            SharedData::get_instance()->file_v5_map_object_map.at(current_map).erase(SharedData::get_instance()->file_v5_map_object_map.at(current_map).begin()+found_object);
+        } else if (Mediator::get_instance()->editTool == EDITMODE_NORMAL && found_object == -1 && Mediator::get_instance()->selectedNPC != -1) {
+                file_v5_map_object new_obj;
+                new_obj.id_object = Mediator::get_instance()->selectedNPC;
+                new_obj.start_point.x = editor_selectedTileX;
+                new_obj.start_point.y = editor_selectedTileY;
+                new_obj.direction = Mediator::get_instance()->object_direction;
+                // se item é teleportador, deve entrar no modo de colocar link de object
+                int obj_type = Mediator::get_instance()->object_list.at(Mediator::get_instance()->selectedNPC).type;
+                if (obj_type == OBJ_BOSS_TELEPORTER || obj_type == OBJ_FINAL_BOSS_TELEPORTER || obj_type == OBJ_PLATFORM_TELEPORTER || obj_type == OBJ_STAGE_BOSS_TELEPORTER) {
+                    editor_selected_object_pos = SharedData::get_instance()->file_v5_map_object_map.size();
+                    std::cout << "SET editor_selected_object_pos: " << editor_selected_object_pos << std::endl;
+                    Mediator::get_instance()->editTool = EDITMODE_OBJECT_LINK_PLACING;
+                    QApplication::setOverrideCursor(Qt::CrossCursor);
+                    // @TODO - desabilita todos os modos, não pode sair no meio de object-link-placing
+                    // @TODO - desabilitar mudar de estágio também (e isso tem que ser feito no link tb)
+                }
+                SharedData::get_instance()->file_v5_map_object_map.at(current_map).push_back(new_obj);
+                repaint();
+        }
 
 
 

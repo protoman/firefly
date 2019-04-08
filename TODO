@@ -1,15 +1,44 @@
+27 x17,1 cm
+
+- GAME-DESIGN:
+    # criar primeiro mapa
+
+- SLIDE:
+    # não pode parar o slide se estiver embaixo de um tile bloqueado
+
+- HUD:
+    # CRÉDITOS: https://opengameart.org/content/golden-ui-bigger-than-ever-edition
+    # mostrar arma #1 e #2
+    # mostrar items (item vai ter que ter um ícone)
+
+- menu:
+    # adicionar L/R para mudar tela
+    # desenhar fundo tela menu (moldura)
+        # upgrades, items e armas
+        # mapa
+        # options
+
+- npc:
+    # testar
+    # is_on_screen - adicionar suporte a scroll.y
+
+- player:
+    # is_on_screen - adicionar suporte a scroll.y
+
 - implementar link entre mapas
     # deve ser parte das áreas
     # ao carregar mapa no jogo, cria os links automaticamente
     # simplificar transição
 
-
 - corrigir pulo em slope
 
-- modificar wall-lock horizontal (fazer teste quando mudar de tile/draw_tiles)
+- corrigir slide/dash
 
+- corrigir hitbox: deve ser baseada no frameSize e porcentagens
 
 - link entre áreas deve ser automágico - 4 áreas por linha, liga com as dos lados e cima/baixo se houver (>0)
+
+- criar/implementar area-teleporter
 
 - FILE: adicionar parâmetro de SFX em cada layer (uso futuro, distorção, nove, chuva, etc)
 

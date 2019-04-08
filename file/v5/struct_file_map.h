@@ -89,8 +89,23 @@ struct file_v5_map_header {
         autoscroll = false;
         sprintf(music_filename, "%s", "");
     }
-
 };
+
+struct file_v5_map_room {
+    file_v5_map_tile tiles[MAP_ROOM_W][MAP_ROOM_H];
+    int area_x = -1;
+    int area_y = -1;
+};
+
+// this is used to save/load from disk (serialized)
+struct file_v5_map_room_data {
+    int area = -1;
+    int map = -1;
+    int area_x = -1;
+    int area_y = -1;
+    file_v5_map_room room;
+};
+
 
 struct file_v5_map_link { // DONE - Stage
     Sint8 id_map_origin;
@@ -111,34 +126,33 @@ struct file_v5_map_npc {
     Sint8 id_npc;
     struct st_position start_point;
     int direction;
-    int difficulty_level;
-    int difficulty_mode;
 
     file_v5_map_npc() {
         id_npc = -1;
         direction = 0;
-        difficulty_level = DIFFICULTY_EASY;
-        difficulty_mode = DIFFICULTY_MODE_GREATER;
     }
+};
+
+struct file_v5_map_teleporter_object {
+    st_position link_dest;                          // used for teleporter
+    Sint8 map_dest;
+    file_v5_map_teleporter_object() {
+        map_dest = -1;
+        link_dest.x = -1;
+        link_dest.y = -1;
+    }
+
 };
 
 struct file_v5_map_object {
     Sint8 id_object;
     struct st_position start_point;
     Uint8 direction;
-    st_position link_dest;                          // used for teleporter
-    Sint8 map_dest;
-    Uint8 difficulty_level;
-    Uint8 difficulty_mode;
+    file_v5_map_teleporter_object teleporter_data;
 
     file_v5_map_object() {
         id_object = -1;
         direction = 0;
-        map_dest = -1;
-        link_dest.x = -1;
-        link_dest.y = -1;
-        difficulty_level = DIFFICULTY_EASY;
-        difficulty_mode = DIFFICULTY_MODE_GREATER;
     }
 };
 

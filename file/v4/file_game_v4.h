@@ -245,6 +245,7 @@ struct file_object { // DONE - Game
     bool animation_auto_start;                                  // false means it will not be animated until started
     bool animation_reverse;                                     // start animating
     bool animation_loop;                                        // true = animation will loop, false = animation will run once
+    Sint16 given_ability;                                       // when object is of type ability, will give this to player
     file_object() {
         sprintf(name, "%s", "Object");
         graphic_filename[0] = '\0';
@@ -259,6 +260,7 @@ struct file_object { // DONE - Game
         animation_auto_start = true;
         animation_reverse = false;
         animation_loop = true;
+        given_ability = -1;
     }
 };
 

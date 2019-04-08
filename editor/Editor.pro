@@ -56,6 +56,7 @@ win32 {
 TARGET = ../build/editor
 TEMPLATE = app
 SOURCES += main.cpp \
+    ../aux_tools/property_name.cpp \
     mainwindow.cpp \
     editorarea.cpp \
     editortilepallete.cpp \
@@ -121,6 +122,7 @@ SOURCES += main.cpp \
     widgets/areaseditorarea.cpp
 
 HEADERS += mainwindow.h \
+    ../aux_tools/property_name.h \
     editorarea.h \
     editortilepallete.h \
     mediator.h \

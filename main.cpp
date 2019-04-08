@@ -57,6 +57,5 @@ int main()
         SDL_Delay(10);
     }
 
-    std::cout << "Hello World!" << std::endl;
     return 0;
 }

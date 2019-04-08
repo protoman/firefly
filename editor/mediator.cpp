@@ -34,13 +34,11 @@ Mediator::Mediator()  {
     selectedAnimTileset = 0;
 	terrainType = 1;
 	editModeNPC = EDIT_MODE_NEW;
-	currentMap = 0;
 	object_type = 3;
 	npc_direction = 0;
     object_direction = 0;
 
     zoom = 0.5;
-	currentStage = 1;
     currentDifficulty = DIFFICULTY_EASY;
     currentDifficultyMode = DIFFICULTY_MODE_GREATER;
 	sprintf(addNpcFilename, "%c", '\0');
@@ -217,10 +215,43 @@ void Mediator::load_game() {
             SharedData::get_instance()->file_v5_area_link_map.at(i) = fio_cmm.load_from_disk<struct_file_v5_area_link>(filename_area_links.toStdString());
         }
 
+        // load map objects //
+        QString filename_area_objects = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_objects.dat");
+        SharedData::get_instance()->file_v5_map_object_map.insert(std::pair<unsigned int, std::vector<file_v5_map_object>>(i, std::vector<file_v5_map_object>()));
+        if (fio.file_exists(filename_area_objects.toStdString())) {
+            SharedData::get_instance()->file_v5_map_object_map.at(i) = fio_cmm.load_from_disk<file_v5_map_object>(filename_area_objects.toStdString());
+        }
+
+
     }
     if (SharedData::get_instance()->file_v5_map_header_list.size() == 0) {
         SharedData::get_instance()->file_v5_map_header_list.push_back(file_v5_map_header());
     }
+
+    // MAP ROOMS - unserialize data to load //
+    std::vector<file_v5_map_room_data> serialized_room_data = fio_cmm.load_from_disk<file_v5_map_room_data>(SharedData::get_instance()->FILEPATH + FILE_V5_ROOM_LIST);
+    for (unsigned int i=0; i<serialized_room_data.size(); i++) {
+        st_position map_key = st_position(serialized_room_data.at(i).area, serialized_room_data.at(i).map);
+        if (SharedData::get_instance()->file_v5_room_map.find(map_key) == SharedData::get_instance()->file_v5_room_map.end()) {
+            SharedData::get_instance()->file_v5_room_map.insert(std::pair<st_position, std::vector<file_v5_map_room>>(map_key, std::vector<file_v5_map_room>()));
+        }
+        SharedData::get_instance()->file_v5_room_map.at(map_key).push_back(serialized_room_data.at(i).room);
+    }
+
+    /*
+    std::map<st_position, std::vector<file_v5_map_room>>::iterator it;
+    for (it = SharedData::get_instance()->file_v5_room_map.begin(); it != SharedData::get_instance()->file_v5_room_map.end(); it++) {
+        for (unsigned int i=0; i<it->second.size(); i++) {
+            file_v5_map_room_data item;
+            item.area = it->first.x;
+            item.map = it->first.y;
+            item.area_x = it->second[i].area_x;
+            item.area_y = it->second[i].area_y;
+            item.room = it->second[i];
+            serialized_room_data.push_back(item);
+        }
+    }
+    */
 
 
 }
@@ -266,25 +297,43 @@ void Mediator::save_game()
     std::cout << "Mediator::save - saving map-tiles for maps[" << SharedData::get_instance()->file_v5_map_header_list.size() << "]" << std::endl;
 
     for (int i=0; i<SharedData::get_instance()->file_v5_map_header_list.size(); i++) {
-        if (SharedData::get_instance()->file_v5_map_tile_map.find(i) != SharedData::get_instance()->file_v5_map_tile_map.end()) {
-            QString filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_tiles.dat");
-            std::cout << "Mediator::save - saving map-tiles, map[" << i << "] has data, saving with filename[" << filename.toStdString() << "]" << std::endl;
-            fio_cmm.save_data_to_disk<file_v5_map_tile>(filename.toStdString(), SharedData::get_instance()->file_v5_map_tile_map.at(i));
+        if (SharedData::get_instance()->file_v5_map_tile_map.find(i) == SharedData::get_instance()->file_v5_map_tile_map.end()) {
+            SharedData::get_instance()->file_v5_map_tile_map.insert(std::pair<int, std::vector<file_v5_map_tile>>(i, std::vector<file_v5_map_tile>()));
+        }
+        QString filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_tiles.dat");
+        std::cout << "Mediator::save - saving map-tiles, map[" << i << "], filename[" << filename.toStdString() << "]" << std::endl;
+        fio_cmm.save_data_to_disk<file_v5_map_tile>(filename.toStdString(), SharedData::get_instance()->file_v5_map_tile_map.at(i));
 
-            // save area links //
-            QString filename_area_links = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_links.dat");
-            if (SharedData::get_instance()->file_v5_area_link_map.find(i) != SharedData::get_instance()->file_v5_area_link_map.end()) {
-                fio_cmm.save_data_to_disk<struct_file_v5_area_link>(filename_area_links.toStdString(), SharedData::get_instance()->file_v5_area_link_map.at(i));
-            }
+        // save area links //
+        QString filename_area_links = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_links.dat");
+        if (SharedData::get_instance()->file_v5_area_link_map.find(i) != SharedData::get_instance()->file_v5_area_link_map.end()) {
+            fio_cmm.save_data_to_disk<struct_file_v5_area_link>(filename_area_links.toStdString(), SharedData::get_instance()->file_v5_area_link_map.at(i));
+        }
+
+        // map objects //
+        QString filename_area_objects = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_objects.dat");
+        if (SharedData::get_instance()->file_v5_map_object_map.find(i) != SharedData::get_instance()->file_v5_map_object_map.end()) {
+            fio_cmm.save_data_to_disk<file_v5_map_object>(filename_area_objects.toStdString(), SharedData::get_instance()->file_v5_map_object_map.at(i));
         }
     }
 
-
+    // MAP ROOMS - serialize data to save//
+    std::vector<file_v5_map_room_data> serialized_room_data;
+    std::map<st_position, std::vector<file_v5_map_room>>::iterator it;
+    for (it = SharedData::get_instance()->file_v5_room_map.begin(); it != SharedData::get_instance()->file_v5_room_map.end(); it++) {
+        for (unsigned int i=0; i<it->second.size(); i++) {
+            file_v5_map_room_data item;
+            item.area = it->first.x;
+            item.map = it->first.y;
+            item.area_x = it->second[i].area_x;
+            item.area_y = it->second[i].area_y;
+            item.room = it->second[i];
+            serialized_room_data.push_back(item);
+        }
+    }
+    fio_cmm.save_data_to_disk<file_v5_map_room_data>(SharedData::get_instance()->FILEPATH + FILE_V5_ROOM_LIST, serialized_room_data);
 
 }
-
-
-
 
 
 void Mediator::clean_data()

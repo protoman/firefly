@@ -2,6 +2,7 @@
 #define ENUM_NAMES_H
 
 #include <vector>
+#include <string>
 
 std::vector<std::string> PROJECTILE_TRAJECTORIES_NAMES;
 std::vector<std::string> AI_ACTION_NAMES;

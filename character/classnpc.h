@@ -32,8 +32,8 @@ public:
 	classnpc();
     ~classnpc();
     classnpc(std::string set_name);
-    classnpc(int stage_id, int map_id, int main_id, int id); // load data from game_data and create a new npc
-    classnpc(int stage_id, int map_id, int main_id, st_position npc_pos, short int direction, bool player_friend); // spawned npc
+    classnpc(int map_id, int main_id, int id); // load data from game_data and create a new npc
+    classnpc(int map_id, int main_id, st_position npc_pos, short int direction, bool player_friend); // spawned npc
     void initFrames();
     void execute();
     void init_animation();
@@ -87,7 +87,7 @@ protected:
      * @param map_id
      * @param main_id
      */
-    void build_basic_npc(int stage_id, int map_id, int main_id);
+    void build_basic_npc(int map_id, int main_id);
 
 
 

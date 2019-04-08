@@ -27,6 +27,7 @@ void object_tab::fill_data()
 {
     _data_loaded = false;
     common::fill_files_combo("/images/sprites/objects", ui->graphicfile_combo);
+    common::fill_abilities_combo(ui->givenAbilityComboBox);
     ui->object_preview_area->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/objects/")+std::string(Mediator::get_instance()->object_list.at(0).graphic_filename));
     ui->object_preview_area->repaint();
 
@@ -57,6 +58,12 @@ void object_tab::on_objectlist_combo_currentIndexChanged(int index)
     ui->graphic_w->setValue(Mediator::get_instance()->object_list.at(index).size.width);
     ui->graphic_h->setValue(Mediator::get_instance()->object_list.at(index).size.height);
     ui->type_combo->setCurrentIndex(Mediator::get_instance()->object_list.at(index).type);
+    if (Mediator::get_instance()->object_list.at(index).type == OBJ_ABILITY_ITEM) {
+        ui->givenAbilityComboBox->setEnabled(true);
+        ui->givenAbilityComboBox->setCurrentIndex(Mediator::get_instance()->object_list.at(index).given_ability);
+    } else {
+        ui->givenAbilityComboBox->setEnabled(false);
+    }
     ui->timer->setValue(Mediator::get_instance()->object_list.at(index).timer);
     ui->speed->setValue(Mediator::get_instance()->object_list.at(index).speed);
     ui->limit->setValue(Mediator::get_instance()->object_list.at(index).limit);
@@ -65,6 +72,7 @@ void object_tab::on_objectlist_combo_currentIndexChanged(int index)
     ui->animation_loop_checkbox->setChecked(Mediator::get_instance()->object_list.at(_current_object).animation_loop);
     ui->frame_duration_spinbox->setValue(Mediator::get_instance()->object_list.at(index).frame_duration);
     ui->animation_reverse_checkbox->setChecked(Mediator::get_instance()->object_list.at(_current_object).animation_reverse);
+
 }
 
 void object_tab::on_name_textChanged(const QString &arg1)
@@ -79,6 +87,13 @@ void object_tab::on_type_combo_currentIndexChanged(int index)
 	if (_data_loaded == false) {
 		return;
 	}
+    if (index == OBJ_ABILITY_ITEM) {
+        ui->givenAbilityComboBox->setEnabled(true);
+
+    } else {
+        ui->givenAbilityComboBox->setEnabled(false);
+        Mediator::get_instance()->object_list.at(_current_object).given_ability = -1;
+    }
     Mediator::get_instance()->object_list.at(_current_object).type = index;
 }
 
@@ -144,4 +159,10 @@ void object_tab::on_pushButton_clicked()
     ui->objectlist_combo->addItem(QString("[") + QString::number(Mediator::get_instance()->object_list.size()-1) + QString("] Object"));
     ui->objectlist_combo->setCurrentIndex(Mediator::get_instance()->object_list.size()-1);
 
+}
+
+void object_tab::on_givenAbilityComboBox_currentIndexChanged(int index)
+{
+    if (_data_loaded == false) { return; }
+    Mediator::get_instance()->object_list.at(_current_object).given_ability = index;
 }

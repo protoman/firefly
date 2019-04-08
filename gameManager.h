@@ -41,7 +41,6 @@ public:
     void show_beta_version_warning();
     void show_free_version_warning();
     void show_notice();
-    void show_in_memorian();
     void quick_load_game();
     void set_player_direction(ANIM_DIRECTION dir);
     void show_player_at(int x, int y);
@@ -49,7 +48,10 @@ public:
     void show_game(bool can_characters_move, bool can_scroll_stage);
     Uint8 getMapPointLock(struct st_position);
     st_float_position checkScrolling();
+
     void horizontal_screen_move(short direction, bool is_door, short tileX);
+    void vertical_screen_move(short direction, bool is_door, short tileX);
+
     void show_door_animation();
     void leave_stage();
     void return_to_intro_screen();
@@ -74,7 +76,7 @@ public:
     void remove_temp_objects();
     void remove_players_slide();
     void show_map();
-    void set_current_map(int);
+    void set_current_map(unsigned int);
     st_float_position get_current_stage_scroll();
     void reset_scroll();
     short get_drop_item_id(short type);
@@ -93,8 +95,16 @@ public:
     void save_game();
     void set_show_fps_enabled(bool enabled);
     bool get_show_fps_enabled();
-
     void add_autoscroll_delay();
+
+    bool check_map_link(int xinc, int yinc);
+
+    void transition_map(int new_map_n, st_position link_pos, e_transition_types transition_type);
+    void show_at_texture_renderer();
+
+    void show_hud(bool update_room);
+    void build_game_area_map(int x, int y, int map_tile_x, int map_tile_y);
+
 
 private:
     gameManager();
@@ -109,12 +119,14 @@ private:
 
     void loadGameData();
     void loadMapData();
+    int mapNumberFromAreaPosition(int area_n, int x, int y);
 
     void show_ready();
 
     void restart_stage();
     void transition_screen(Uint8 type, Uint8 map_n, short int adjust_x, classPlayer *pObj);
-    Uint8 get_current_map();
+    unsigned int get_current_map();
+    int get_current_area();
     void walk_character_to_screen_point_x(character* char_obj, short pos_x); // keeps walking (and jumping obstacles) until reaching a given point in screen (not in map, that should have its own function for that)
     void set_player_teleporter(short set_teleport_n, st_position set_player_pos, bool is_object);
 
@@ -167,8 +179,7 @@ private:
 
     std::vector<st_position> map_interstage_points;
     long autoscroll_timer = 0;
-
-
+    int current_area = 0;
 
 #ifdef PSP
     psp_ram _ram_counter;

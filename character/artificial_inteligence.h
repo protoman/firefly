@@ -218,7 +218,7 @@ protected:
      * @param n
      * @param invert_direction
      */
-    void execute_ai_action_trow_projectile(Uint8 n, bool invert_direction);
+    void execute_ai_action_trow_projectile(unsigned short n, bool invert_direction);
 
     bool throw_projectile(int projectile_type, bool invert_direction);
 

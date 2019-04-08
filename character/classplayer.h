@@ -124,17 +124,13 @@ private:
 
     bool shoryuken();
 
-    void consume_weapon(int value);
-
-
 
 private:
     file_io fio;
     int teleporter_n; /**< current teleporter being used, -1 if none */
-    short selected_weapon; /**< current selected weapon */
+    short selected_weapon = -1; /**< current selected weapon */
     bool l_key_released; /**< avoid changing weapon continuously if L key is held */
     bool r_key_released;            // < avoid changing weapon continuously if R key is held
-    bool _weapons_array[WEAPON_COUNT];
 };
 
 #endif // CLASSPLAYER_H

@@ -219,6 +219,7 @@ public:
     void add_projectile(short id, st_position pos, int trajectory, int direction);
     st_position get_attack_position();
     st_position get_attack_position(short direction);
+    st_float_position get_last_moved();
 
 
 private:
@@ -265,7 +266,7 @@ public:
     std::vector<projectile> projectile_list;
     std::vector<projectile> projectile_to_be_added_list;
     bool _water_splash;									// used to prevent making a new splash until completaly inside or outside water
-
+    st_float_position moved_dist;
 
 
 
@@ -284,6 +285,7 @@ protected:
     unsigned int hit_animation_timer; /// used to control "blinking" effect when hit
     unsigned int hit_animation_count;   // to control number of times blinking uses
     st_float_position position;
+
     st_position realPosition;
     unsigned int last_execute_time;
     struct st_characterMovements moveCommands;
@@ -344,7 +346,6 @@ protected:
     bool _is_falling;
 
     int _dead_state; // 0 - alive, 1 - just died, 2 dead
-    short slide_type; // 0 - dash (24 px height), 1 - slide (16px height)
     bool _has_background;
     short _stairs_stopped_count; // used to prevent stopping stairs animation because of a single frame without player input
     short _charged_shot_projectile_id;

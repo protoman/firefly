@@ -29,7 +29,7 @@
 #include "view/textview.h"
 
 #include "game_mediator.h"
-
+#include "file/v5/struct_file_game_area_map.h"
 
 draw* draw::_instance = nullptr;
 
@@ -136,6 +136,21 @@ void draw::preload()
 
     filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/map.png";
     interstage_map = ImageView::get_instance()->imageFromFile(filename);
+
+    filename = SharedData::get_instance()->FILEPATH + "images/hud.png";
+    hud_image = ImageView::get_instance()->imageFromFile(filename);
+
+    filename = SharedData::get_instance()->FILEPATH + "images/energy_bars.png";
+    hud_energy_bar = ImageView::get_instance()->imageFromFile(filename);
+
+    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/in_game_menu.png";
+    in_game_menu_bg = ImageView::get_instance()->imageFromFile(filename);
+
+    filename = SharedData::get_instance()->FILEPATH + "images/hud/door_h.png";
+    door_h = ImageView::get_instance()->imageFromFile(filename);
+
+    filename = SharedData::get_instance()->FILEPATH + "images/hud/door_v.png";
+    door_v = ImageView::get_instance()->imageFromFile(filename);
 }
 
 void draw::show_gfx()
@@ -652,51 +667,33 @@ void draw::show_ingame_warning(std::vector<std::string> message)
     InputController::get_instance()->wait_keypress();
 }
 
-void draw::fade_in_screen(int r, int g, int b, int total_delay)
-{
-    st_imageData screen_copy;
-    screen_copy = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
-    ImageView::get_instance()->copyScreenAreaToImage(0, 0, RES_W, RES_H, 0, 0, screen_copy);
 
+void draw::fade_screen(int r, int g, int b, int total_delay, bool reverse)
+{
     st_imageData transparent_area;
     transparent_area = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
-    ImageView::get_instance()->clear_surface_area(0, 0, RES_W, RES_H, r, g, b, transparent_area);
+    ImageView::get_instance()->clear_surface_area(0, 0, RES_W, AREA_H, r, g, b, transparent_area);
+    ImageView::get_instance()->rebuildTexture(transparent_area);
+    SDL_SetTextureBlendMode(transparent_area.texture, SDL_BLENDMODE_BLEND);
 
     float step = 255.0/20.0;
-    float alpha_value = 255;
     float delay = (total_delay / 25)-10;
+    float alpha_n = 0;
 
     for (float i=0; i<=20; i++) {
-        ImageView::get_instance()->renderImageAt(0, 0, screen_copy);
-        ImageView::get_instance()->set_surface_alpha((int)alpha_value, transparent_area);
-        ImageView::get_instance()->renderImageAt(0, 0, transparent_area);
-        alpha_value -= step;
+        if (reverse == false) {
+            //std::cout << "LOOP.DIRECT[" << i << "]" << std::endl;
+            ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, AREA_H, 0, 0, ImageView::get_instance()->get_texture_renderer());
+            ImageView::get_instance()->set_surface_alpha(alpha_n, transparent_area);
+            ImageView::get_instance()->renderImageAt(0, 0, transparent_area);
+        } else {
+            //std::cout << "LOOP.REVERSE[" << i << "]" << std::endl;
+            ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, AREA_H, 0, 0, ImageView::get_instance()->get_texture_renderer());
+            ImageView::get_instance()->set_surface_alpha(255-alpha_n, transparent_area);
+            ImageView::get_instance()->renderImageAt(0, 0, transparent_area);
+        }
         ImageView::get_instance()->updateScreen();
-        TimerView::get_instance()->delay(delay);
-    }
-}
-
-void draw::fade_out_screen(int r, int g, int b, int total_delay)
-{
-    st_imageData screen_copy;
-    screen_copy = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
-    ImageView::get_instance()->copyScreenAreaToImage(0, 0, RES_W, RES_H, 0, 0, screen_copy);
-
-    st_imageData transparent_area;
-    transparent_area = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
-    ImageView::get_instance()->clear_surface_area(0, 0, RES_W, RES_H, r, g, b, transparent_area);
-
-    float step = 255.0/20.0;
-    float alpha_value = 0;
-    float delay = (total_delay / 25)-10;
-
-    for (float i=0; i<=20; i++) {
-        //std::cout << "alpha_value[" << alpha_value << "], i[" << i << "], step[" << step << "]" << std::endl;
-        ImageView::get_instance()->renderImageAt(0, 0, screen_copy);
-        ImageView::get_instance()->set_surface_alpha((int)alpha_value, transparent_area);
-        alpha_value += step;
-        ImageView::get_instance()->renderImageAt(0, 0, transparent_area);
-        ImageView::get_instance()->updateScreen();
+        alpha_n += step;
         if (delay >= 1) {
             TimerView::get_instance()->delay(delay);
         }
@@ -892,6 +889,12 @@ void draw::show_interstage_map_bg(st_position pos)
     TimerView::get_instance()->delay(5000);
 }
 
+void draw::draw_in_game_menu_bg()
+{
+    ImageView::get_instance()->clearScreenArea(0, 0, RES_W, AREA_H, 0, 0, 20);
+    ImageView::get_instance()->renderImageAt(0, 0, in_game_menu_bg);
+}
+
 void draw::draw_explosion(st_position center_point, int radius, int angle_inc)
 {
     // 8 initial points
@@ -949,20 +952,77 @@ void draw::set_dynamic_bg_alpha(std::string filename, int alpha)
 }
 
 
-void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weapon_value)
+void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weapon_value, int room_n_x, int room_n_y)
 {
     // TODO::IURI - usar imagem de fundo //
     ImageView::get_instance()->clearScreenArea(0, AREA_H, RES_W, HUD_H, 0, 0, 0);
+    ImageView::get_instance()->renderImageAt(0, AREA_H, hud_image);
+
     // player HP
     int hp_percent = (100 * hp) / fio.get_heart_pieces_number(SharedData::get_instance()->game_save);
-    draw_enery_ball(hp_percent, 3, hud_player_hp_ball);
+
+
+    draw_enery_bars(hp_percent, 113, AREA_H+20, 0); // HP
+    draw_enery_bars(hp_percent, 113, AREA_H+43, 1); // MP
+
+
+
+    for (int x=-2; x<=2; x++) {
+        for (int y=-1; y<=1; y++) {
+            int map_x = room_n_x+x;
+            int map_y = room_n_y+y;
+            if (map_x < 0 || map_y < 0 || x >= GAME_AREA_SIZE || y >= GAME_AREA_SIZE) {
+                continue;
+            }
+            //std::cout << "x[" << x << "], y[" << y << "], map_x[" << map_x << "], map_y[" << map_y << "], left[" << SharedData::get_instance()->area_map[map_x][map_y].wall_left << "]" << std::endl;
+            if (SharedData::get_instance()->area_map[map_x][map_y].visited == true) {
+                ImageView::get_instance()->clearScreenArea(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x, HUD_GRID_CENTER_Y+(HUD_GRID_SIZE+HUD_GRID_BORDER)*y+2, HUD_GRID_SIZE, HUD_GRID_SIZE, 7, 65, 150);
+            }
+
+            // TODO: é mais rápido usar imagens para as portas que desenhar 3 linhas //
+            if (SharedData::get_instance()->area_map[map_x][map_y].wall_left == MAP_WALL_TYPE_LOCKED) {
+                //std::cout << "wall-left-lock x[" << map_x << "], y[" << map_y << "]" << std::endl;
+                ImageView::get_instance()->clearScreenArea(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x-HUD_GRID_BORDER, HUD_GRID_CENTER_Y+HUD_GRID_SIZE*y, 2, HUD_GRID_SIZE, 255, 255, 255);
+            } else if (SharedData::get_instance()->area_map[map_x][map_y].wall_left == MAP_WALL_TYPE_DOOR) {
+                ImageView::get_instance()->renderImageAt(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x-HUD_GRID_BORDER, HUD_GRID_CENTER_Y+HUD_GRID_SIZE*y, door_h);
+            }
+
+            if (SharedData::get_instance()->area_map[map_x][map_y].wall_right == MAP_WALL_TYPE_LOCKED) {
+                ImageView::get_instance()->clearScreenArea(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x+HUD_GRID_SIZE, HUD_GRID_CENTER_Y+HUD_GRID_SIZE*y, 2, HUD_GRID_SIZE, 255, 255, 255);
+            } else if (SharedData::get_instance()->area_map[map_x][map_y].wall_right == MAP_WALL_TYPE_DOOR) {
+                ImageView::get_instance()->renderImageAt(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x+HUD_GRID_SIZE, HUD_GRID_CENTER_Y+HUD_GRID_SIZE*y, door_h);
+            }
+
+            if (SharedData::get_instance()->area_map[map_x][map_y].wall_top == MAP_WALL_TYPE_LOCKED) {
+                ImageView::get_instance()->clearScreenArea(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x, HUD_GRID_CENTER_Y+(HUD_GRID_SIZE+HUD_GRID_BORDER)*y, HUD_GRID_SIZE, 2, 255, 255, 255);
+            } else if (SharedData::get_instance()->area_map[map_x][map_y].wall_top == MAP_WALL_TYPE_DOOR) {
+                ImageView::get_instance()->renderImageAt(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x, HUD_GRID_CENTER_Y+(HUD_GRID_SIZE+HUD_GRID_BORDER)*y, door_v);
+            }
+
+            if (SharedData::get_instance()->area_map[map_x][map_y].wall_bottom == MAP_WALL_TYPE_LOCKED) {
+                ImageView::get_instance()->clearScreenArea(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x, HUD_GRID_CENTER_Y+HUD_GRID_SIZE+HUD_GRID_BORDER+(HUD_GRID_SIZE+HUD_GRID_BORDER)*y, HUD_GRID_SIZE, 2, 255, 255, 255);
+            } else if (SharedData::get_instance()->area_map[map_x][map_y].wall_bottom == MAP_WALL_TYPE_DOOR) {
+                ImageView::get_instance()->renderImageAt(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x, HUD_GRID_CENTER_Y+HUD_GRID_SIZE+HUD_GRID_BORDER+(HUD_GRID_SIZE+HUD_GRID_BORDER)*y, door_v);
+            }
+        }
+    }
+    if (timer_hud_center_show == true) {
+        ImageView::get_instance()->clearScreenArea(HUD_GRID_CENTER_X+4, HUD_GRID_CENTER_Y+7, 13, 12, 227, 179, 2); // TODO: blink
+    }
+    unsigned long now_timer = TimerView::get_instance()->getTimer();
+    if (timer_hud_center < now_timer) {
+        timer_hud_center = now_timer + HUD_CENTER_BLINK_TIMER;
+        timer_hud_center_show = !timer_hud_center_show;
+    }
+
+    /*
 
     if (selected_weapon != WEAPON_DEFAULT && selected_weapon < WEAPON_ITEM_ETANK) {
         // draw weapon
 
         int wpn_percent = (100 * selected_weapon_value) / fio.get_heart_pieces_number(SharedData::get_instance()->game_save);
         //std::cout << "selected_weapon_value[" << selected_weapon_value << "]" << std::endl;
-        draw_enery_ball(wpn_percent, 62, hud_player_wpn_ball);
+        draw_enery_bars(wpn_percent, 62, hud_player_wpn_ball);
     } else if (selected_weapon != WEAPON_DEFAULT && selected_weapon >= WEAPON_ITEM_ETANK) {
         int wpn_percent = 0;
         if (selected_weapon == WEAPON_ITEM_ETANK) {
@@ -973,7 +1033,7 @@ void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weap
             wpn_percent = SharedData::get_instance()->game_save.items.special_tanks*10;
         }
         //std::cout << "selected_weapon_value[" << selected_weapon_value << "]" << std::endl;
-        draw_enery_ball(wpn_percent, 62, hud_player_wpn_ball);
+        draw_enery_bars(wpn_percent, 62, hud_player_wpn_ball);
     }
 
     // boss HP
@@ -981,40 +1041,31 @@ void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weap
     if (gameManager::get_instance()->must_show_boss_hp() && _boss_current_hp != -99) {
         int boss_hp_percent = (100 * _boss_current_hp) / BOSS_INITIAL_HP;
         TextView::get_instance()->renderText(RES_W-95, 10, st_color(250, 250, 250), false, "BOSS:");
-        draw_enery_ball(boss_hp_percent, RES_W-55, hud_boss_hp_ball);
+        draw_enery_bars(boss_hp_percent, RES_W-55, hud_boss_hp_ball);
     }
+    */
 
 }
 
-void draw::draw_enery_ball(int value, int x_pos, st_imageData& ball_surface)
+void draw::draw_enery_bars(int value, int x_pos, int y_pos, int type)
 {
-
+    int type_y = 0;
+    if (type == 1) {
+        type_y = 16;
+    }
     // 5 balls, each have 4 possible stages
     // so each slice of energy is 100 / (5*4) = 5%
-    const int ENERGY_BALL_PERCENT_SLICE = ball_surface.surface->h/2;
-    for (int i=0; i<5; i++) {
-        // less than min1 means black ball
-        int min1 = ENERGY_BALL_PERCENT_SLICE*4*i + ENERGY_BALL_PERCENT_SLICE;     // 1/4
-        int min2 = ENERGY_BALL_PERCENT_SLICE*4*i + ENERGY_BALL_PERCENT_SLICE*2;    // 2/4
-        int min3 = ENERGY_BALL_PERCENT_SLICE*4*i + ENERGY_BALL_PERCENT_SLICE*3;    // 3/4
-        int min4 = ENERGY_BALL_PERCENT_SLICE*4*i + ENERGY_BALL_PERCENT_SLICE*4;    // full
-        //std::cout << "i[" << i << "], hp_percent[" << hp_percent << "], min[" << min << "], max1[" << max1 << "], max2[" << max2 << "]" << std::endl;
-
-        int img_origin_x =  ball_surface.surface->h*4;
-
-        //std::cout << "value[" << value << "], min1[" << min1 << "], min2[" << min2 << "], min3[" << min3 << "], min4[" << min4 << "]" << std::endl;
-
-        if (value >= min4) {
-            img_origin_x = 0;
-        } else if (value >= min3) {
-            img_origin_x =  ball_surface.surface->h;
-        } else if (value >= min2) {
-            img_origin_x =  ball_surface.surface->h*2;
-        } else if (value >= min1) {
-            img_origin_x =  ball_surface.surface->h*3;
+    for (int i=0; i<10; i++) {
+        int full_part = (i+1)*10;
+        if (value >= full_part) {
+            ImageView::get_instance()->renderTexturePortionAt(0, type_y, 8, 16, x_pos+(8*i), y_pos, hud_energy_bar.texture);
+        } else {
+            ImageView::get_instance()->renderTexturePortionAt(8, type_y, 8, 16, x_pos+(8*i), y_pos, hud_energy_bar.texture);
         }
 
-        ImageView::get_instance()->renderTexturePortionAt(img_origin_x, 0, ball_surface.surface->h, ball_surface.surface->h, x_pos+(ball_surface.surface->h*i), AREA_H+3, ball_surface.texture);
+
+
+
     }
 }
 

@@ -44,6 +44,15 @@ struct st_position {
         }
         return false;
     }
+    bool operator<(const st_position &comp_pt) const {
+        if (y == comp_pt.y && x < comp_pt.x) {
+            return true;
+        }
+        if (y < comp_pt.y) {
+            return true;
+        }
+        return false;
+    }
 };
 
 
@@ -185,7 +194,15 @@ struct st_rectangle {
     }
     bool operator!=(const st_rectangle &comp_pt) const
     {
-        if (x != comp_pt.x || y != comp_pt.y || w != comp_pt.w && h != comp_pt.h) {
+        if (x != comp_pt.x || y != comp_pt.y || w != comp_pt.w || h != comp_pt.h) {
+            return true;
+        }
+        return false;
+    }
+
+    bool contains(int x_test, int y_test) {
+        std::cout << ">>>>>>>> contains - x_test[" << x_test << "], y_test[" << y_test << "], x[" << x << "], y[" << y << "], w[" << w << "], h[" << h << "]" << std::endl;
+        if (x_test >= x && x_test < x+w && y_test >= y && y_test < y+h) {
             return true;
         }
         return false;
@@ -341,7 +358,7 @@ struct st_imageData {
             texture = nullptr;
         } else {
             // copy surface
-            surface = SDL_CreateRGBSurface(SDL_SWSURFACE , original.surface->w, original.surface->h, VIDEO_MODE_COLORS, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+            surface = SDL_CreateRGBSurface(SDL_RLEACCEL , original.surface->w, original.surface->h, VIDEO_MODE_COLORS, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
             SDL_Rect srcRect = {0, 0, original.surface->w, original.surface->h};
             SDL_BlitSurface(original.surface, &srcRect, surface, nullptr);
             texture = SDL_CreateTextureFromSurface(gRenderer, surface);
@@ -357,7 +374,7 @@ struct st_imageData {
             texture = nullptr;
         } else {
             // copy surface
-            surface = SDL_CreateRGBSurface(SDL_SWSURFACE , original.surface->w, original.surface->h, VIDEO_MODE_COLORS, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+            surface = SDL_CreateRGBSurface(SDL_RLEACCEL , original.surface->w, original.surface->h, VIDEO_MODE_COLORS, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
             SDL_Rect srcRect = {0, 0, original.surface->w, original.surface->h};
             SDL_BlitSurface(original.surface, &srcRect, surface, nullptr);
             texture = SDL_CreateTextureFromSurface(gRenderer, surface);

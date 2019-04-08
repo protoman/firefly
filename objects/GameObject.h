@@ -148,6 +148,7 @@ public:
     void reset_timers();
     void set_teleport_out();
     bool is_consumable();                                       // if item is a energy, tank, life, that player can get
+    int get_ability();
     void enable_teleport_animation();                           // when this is called, object will show a teleporting in-animation
     void set_precise_position(st_position pos, int direction);                                // used to get a fine-tuning positioning instead of map-position
     void set_position(st_position pos);

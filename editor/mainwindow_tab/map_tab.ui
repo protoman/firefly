@@ -94,7 +94,7 @@
            <enum>QFrame::NoFrame</enum>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <property name="tabSpacing">
            <number>6</number>
@@ -310,7 +310,7 @@
               </item>
               <item>
                <property name="text">
-                <string>Scroll Lock</string>
+                <string>H-Scroll-Lock</string>
                </property>
                <property name="icon">
                 <iconset>
@@ -320,20 +320,12 @@
               </item>
               <item>
                <property name="text">
-                <string>Easy-Mode Block</string>
+                <string>V-Scroll-Lock</string>
                </property>
                <property name="icon">
-                <iconset resource="../resources/icons/icons.qrc">
-                 <normaloff>:/toolbar_icons/draw-polygon.png</normaloff>:/toolbar_icons/draw-polygon.png</iconset>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Hard-Mode Spike</string>
-               </property>
-               <property name="icon">
-                <iconset resource="../resources/icons/icons.qrc">
-                 <normaloff>:/toolbar_icons/draw-square-inverted-corners.png</normaloff>:/toolbar_icons/draw-square-inverted-corners.png</iconset>
+                <iconset>
+                 <normalon>:/toolbar_icons/v_scroll_lock.png</normalon>
+                </iconset>
                </property>
               </item>
               <item>
@@ -1414,7 +1406,6 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../resources/icons/icons.qrc"/>
   <include location="../resources/icons/icons.qrc"/>
   <include location="../resources/icons/icons.qrc"/>
  </resources>

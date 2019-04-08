@@ -69,7 +69,7 @@ template <class T> void fio_common::save_data_to_disk(std::string filename, std:
         return;
     }
 
-    std::cout << ">>file_io::save_data_to_disk - size: " << data.size() << std::endl;
+    //std::cout << ">>file_io::save_data_to_disk - size: " << data.size() << std::endl;
 
     for (unsigned int i=0; i<data.size(); i++) {
         int block_size = sizeof(T);

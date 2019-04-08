@@ -38,6 +38,8 @@ public:
 
     static void fill_anim_block_combo(QComboBox *combo);
 
+    static void fill_abilities_combo(QComboBox *combo);
+
 private:
 
 

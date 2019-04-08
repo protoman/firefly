@@ -25,14 +25,14 @@
 // ********************************************************************************************** //
 //                                                                                                //
 // ********************************************************************************************** //
-classPlayer::classPlayer(int playerNumber) : teleporter_n(-1), selected_weapon(WEAPON_DEFAULT), l_key_released(true), r_key_released(true)
+classPlayer::classPlayer(int playerNumber) : teleporter_n(-1), selected_weapon(-1), l_key_released(true), r_key_released(true)
 {
 
     std::cout << "### PLAYER::CREATE::number[" << _number << "]" << std::endl;
 
     _number = playerNumber;
     position.y = 0;
-	position.x = 80;
+    position.x = TILESIZE*MAP_ROOM_W*1.5;
     hit_duration = 2000;
     hitPoints.total = PLAYER_INITIAL_HP;
 	hitPoints.current = hitPoints.total;
@@ -60,9 +60,6 @@ void classPlayer::initialize()
     // it is a player, can't have zero projectiles!!
     if (max_projectiles < 1) {
         max_projectiles = 1;
-    }
-    if (GameMediator::get_instance()->player_list_v3_1[_number].can_slide == true) {
-        slide_type = 1;
     }
 
     //std::cout << "player.number[" << _number << "]" << std::endl;
@@ -94,7 +91,7 @@ bool classPlayer::get_item(object_collision &obj_info)
 	bool res = false;
 	// deal with non-blocking items
 	if (obj_info._object != nullptr && obj_info._object->finished() == false) {
-		//std::cout << "classPlayer::get_item" << std::endl;
+        //std::cout << "classPlayer::get_item" << std::endl;
 		switch (obj_info._object->get_type()) {
 		case OBJ_ENERGY_TANK:
             if (SharedData::get_instance()->game_save.items.energy_tanks < 9) { // max 9
@@ -102,27 +99,6 @@ bool classPlayer::get_item(object_collision &obj_info)
             }
 			obj_info._object->set_finished(true);
 
-            SoundView::get_instance()->play_sfx(SFX_GOT_ITEM);
-            res = true;
-			break;
-		case OBJ_WEAPON_TANK:
-            SharedData::get_instance()->game_save.items.weapon_tanks = 1; // max 1
-			obj_info._object->set_finished(true);
-            SoundView::get_instance()->play_sfx(SFX_GOT_ITEM);
-            res = true;
-			break;
-        case OBJ_SPECIAL_TANK:
-            SharedData::get_instance()->game_save.items.special_tanks = 1; // max 1
-            obj_info._object->set_finished(true);
-            SoundView::get_instance()->play_sfx(SFX_GOT_ITEM);
-            res = true;
-            break;
-        case OBJ_LIFE:
-            SharedData::get_instance()->game_save.items.lifes++;
-            if (SharedData::get_instance()->game_save.items.lifes > 9) {
-                SharedData::get_instance()->game_save.items.lifes = 9;
-            }
-			obj_info._object->set_finished(true);
             SoundView::get_instance()->play_sfx(SFX_GOT_ITEM);
             res = true;
 			break;
@@ -136,6 +112,19 @@ bool classPlayer::get_item(object_collision &obj_info)
 			recharge(ENERGY_TYPE_WEAPON, ENERGY_ITEM_SMALL);
             res = true;
 			break;
+        case OBJ_ABILITY_ITEM:
+        {
+            SoundView::get_instance()->play_sfx(SFX_GOT_ITEM);
+            obj_info._object->set_finished(true);
+            int given_ability = obj_info._object->get_ability();
+            if (given_ability == -1 || given_ability > ABILITIES_SLOTS) {
+                std::cout << "ERROR: given_ability[" << given_ability << "] is invalid for object [" + obj_info._object->get_id() << "]" << std::endl;
+                exit(-1);
+            }
+            SharedData::get_instance()->game_save.abilities[given_ability] = true;
+            res = true;
+            break;
+        }
         default:
 			//std::cout << "classPlayer::get_item - unknown item type: " << obj_info._object->get_type() << std::endl;
 			break;
@@ -147,20 +136,9 @@ bool classPlayer::get_item(object_collision &obj_info)
 void classPlayer::recharge(e_energy_types _en_type, int value)
 {
 	if (_en_type == ENERGY_TYPE_HP) {
+        // TODO::IURI - MP //
 		character::recharge(_en_type, value);
-	} else if (_en_type == ENERGY_TYPE_WEAPON) {
-        if (SharedData::get_instance()->game_save.items.weapons[selected_weapon] < PLAYER_INITIAL_HP) {
-            if (SharedData::get_instance()->game_save.items.weapons[selected_weapon] + value <= PLAYER_INITIAL_HP) {
-                SharedData::get_instance()->game_save.items.weapons[selected_weapon] += value;
-			} else {
-                SharedData::get_instance()->game_save.items.weapons[selected_weapon] = PLAYER_INITIAL_HP;
-			}
-            SoundView::get_instance()->play_sfx(SFX_GOT_ENERGY);
-			if (value > ENERGY_ITEM_SMALL) {
-                SoundView::get_instance()->play_sfx(SFX_GOT_ENERGY);
-			}
-		}
-	}
+    }
 }
 
 
@@ -222,15 +200,6 @@ bool classPlayer::shoryuken()
     return false;
 }
 
-void classPlayer::consume_weapon(int value)
-{
-    if (SharedData::get_instance()->game_save.items.weapons[selected_weapon] - value < 0) {
-        SharedData::get_instance()->game_save.items.weapons[selected_weapon] = 0;
-    } else {
-        SharedData::get_instance()->game_save.items.weapons[selected_weapon] -= value;
-    }
-}
-
 Uint8 classPlayer::get_max_hp()
 {
     return fio.get_heart_pieces_number(SharedData::get_instance()->game_save);
@@ -253,7 +222,7 @@ void classPlayer::attack(bool dont_update_colors)
     bool always_charged = false;
     // player with armor-special-type changes to auto-carged instead of charging shot
 
-    if (selected_weapon == WEAPON_DEFAULT) {
+    if (selected_weapon == -1) {
         /// @NOTE: desabilitei o tiro em diagonal pois vai precisar mudanças no sistema de arquivos para comportar as poses/frames de ataque para cima e para baixo
 
         if (SharedData::get_instance()->game_config.auto_charge_mode) {
@@ -278,9 +247,6 @@ void classPlayer::attack(bool dont_update_colors)
         if (_player_must_reset_colors == true) {
             _player_must_reset_colors = false;
         }
-        return;
-    } else if (SharedData::get_instance()->game_save.items.weapons[selected_weapon] <= 0) {
-        std::cout << "PLAYER::ATTACK - invalid weapon" << std::endl;
         return;
     }
 
@@ -323,27 +289,7 @@ void classPlayer::attack(bool dont_update_colors)
 
         std::cout << "PLAYER::ATTACK - used_weapon[" << used_weapon << "]" << std::endl;
 
-        if (used_weapon == WEAPON_ITEM_COIL) {
-            if (gameManager::get_instance()->get_current_map_obj()->have_player_object() == true) {
-                weapon_id = -1;
-            }
-        } else if (used_weapon == WEAPON_ITEM_JET) {
-            if (gameManager::get_instance()->get_current_map_obj()->have_player_object() == true) {
-                weapon_id = -1;
-            }
-        } else if (used_weapon == WEAPON_ITEM_ETANK) {
-            std::cout << "PLAYER::ATTACK - WEAPON_ITEM_ETANK" << std::endl;
-            class_config config_manager;
-            config_manager.set_player_ref(this);
-        } else if (used_weapon == WEAPON_ITEM_WTANK) {
-            class_config config_manager;
-            config_manager.set_player_ref(this);
-        } else if (used_weapon == WEAPON_ITEM_STANK) {
-            class_config config_manager;
-            config_manager.set_player_ref(this);
-        } else {
-            weapon_id = used_weapon;
-        }
+        weapon_id = used_weapon;
 
         if (weapon_id == 0) { /// @TODO - this is a temporary exit to handle incomplete weapons
             return;
@@ -402,17 +348,6 @@ void classPlayer::attack(bool dont_update_colors)
         }
 
         //std::cout << "Added projectile - id: " << game_data.weapons[weapon_id].id_projectile << std::endl;
-
-        if (selected_weapon != WEAPON_DEFAULT) {
-            if (weapon_trajectory == TRAJECTORY_QUAKE) {
-                consume_weapon(4);
-            } else if (weapon_trajectory == TRAJECTORY_FREEZE) {
-                consume_weapon(2);
-            } else if (used_weapon != WEAPON_ITEM_COIL && used_weapon != WEAPON_ITEM_JET) {
-                consume_weapon(1);
-            }
-        }
-
 
         attack_state = ATTACK_START;
         state.attack_timer = TimerView::get_instance()->getTimer();
@@ -479,10 +414,13 @@ void classPlayer::initFrames()
     add_graphic();
 
 	st_imageData playerSpriteSurface;
-	std::stringstream filename;
-    filename << SharedData::get_instance()->FILEPATH + "images/sprites/p" << (_number+1) << ".png";
-    //playerSpriteSurface.show_debug = true;
-    playerSpriteSurface = ImageView::get_instance()->imageFromFile(filename.str());
+    char filename[512];
+    sprintf(filename, "%s/images/sprites/p%d.png", SharedData::get_instance()->FILEPATH.c_str(), _number+1);
+
+    std::cout << "FILEPATH[" << SharedData::get_instance()->FILEPATH << "]" << std::endl;
+    std::cout << "p1.filename[" << filename << "]" << std::endl;
+
+    playerSpriteSurface = ImageView::get_instance()->imageFromFile(filename);
     if (playerSpriteSurface.surface == nullptr) {
 		std::cout << "initFrames - Error loading player surface from file\n";
 		return;
@@ -494,44 +432,49 @@ void classPlayer::initFrames()
     // @TODO - automatically add inverse direction (right) sprites
 
 	// STAND
-    addSpriteFrame(ANIM_TYPE_STAND, 3, playerSpriteSurface, 5000);
-    addSpriteFrame(ANIM_TYPE_STAND, 4, playerSpriteSurface, 150);
+    addSpriteFrame(ANIM_TYPE_STAND, 3, playerSpriteSurface, 170);
+    addSpriteFrame(ANIM_TYPE_STAND, 4, playerSpriteSurface, 170);
+    addSpriteFrame(ANIM_TYPE_STAND, 5, playerSpriteSurface, 170);
+    addSpriteFrame(ANIM_TYPE_STAND, 4, playerSpriteSurface, 170);
+
+
+
 	// WALK
-    addSpriteFrame(ANIM_TYPE_WALK, 7, playerSpriteSurface, WALK_FRAME_DELAY);
+    addSpriteFrame(ANIM_TYPE_WALK, 8, playerSpriteSurface, WALK_FRAME_DELAY);
+    addSpriteFrame(ANIM_TYPE_WALK, 9, playerSpriteSurface, WALK_FRAME_DELAY);
     addSpriteFrame(ANIM_TYPE_WALK, 8, playerSpriteSurface, WALK_FRAME_DELAY);
     addSpriteFrame(ANIM_TYPE_WALK, 7, playerSpriteSurface, WALK_FRAME_DELAY);
-    addSpriteFrame(ANIM_TYPE_WALK, 6, playerSpriteSurface, WALK_FRAME_DELAY);
 
 	// JUMP
-    addSpriteFrame(ANIM_TYPE_JUMP, 9, playerSpriteSurface, 150);
+    addSpriteFrame(ANIM_TYPE_JUMP, 10, playerSpriteSurface, 150);
 	// ATTACK
-    addSpriteFrame(ANIM_TYPE_ATTACK, 11, playerSpriteSurface, 150);
+    addSpriteFrame(ANIM_TYPE_ATTACK, 12, playerSpriteSurface, 150);
 	// ATTACK + JUMP
-    addSpriteFrame(ANIM_TYPE_JUMP_ATTACK, 10, playerSpriteSurface, 80);
+    addSpriteFrame(ANIM_TYPE_JUMP_ATTACK, 11, playerSpriteSurface, 80);
 	// ATTACK + WALK
-    addSpriteFrame(ANIM_TYPE_WALK_ATTACK, 12, playerSpriteSurface, 150);
     addSpriteFrame(ANIM_TYPE_WALK_ATTACK, 13, playerSpriteSurface, 150);
     addSpriteFrame(ANIM_TYPE_WALK_ATTACK, 14, playerSpriteSurface, 150);
+    addSpriteFrame(ANIM_TYPE_WALK_ATTACK, 15, playerSpriteSurface, 150);
 	// HIT
-    addSpriteFrame(ANIM_TYPE_HIT, 15, playerSpriteSurface, 100);
     addSpriteFrame(ANIM_TYPE_HIT, 16, playerSpriteSurface, 100);
+    addSpriteFrame(ANIM_TYPE_HIT, 17, playerSpriteSurface, 100);
 	// TELEPORT
     addSpriteFrame(ANIM_TYPE_TELEPORT, 0, playerSpriteSurface, 200);
     addSpriteFrame(ANIM_TYPE_TELEPORT, 1, playerSpriteSurface, 100);
     addSpriteFrame(ANIM_TYPE_TELEPORT, 2, playerSpriteSurface, 100);
 	// STAIRS
-    addSpriteFrame(ANIM_TYPE_STAIRS, 17, playerSpriteSurface, 5000);
+    addSpriteFrame(ANIM_TYPE_STAIRS, 18, playerSpriteSurface, 5000);
 	// stairs semi
-    addSpriteFrame(ANIM_TYPE_STAIRS_SEMI, 18, playerSpriteSurface, 5000);
-    addSpriteFrame(ANIM_TYPE_STAIRS_SEMI, 18, playerSpriteSurface, 5000);
-    addSpriteFrame(ANIM_TYPE_STAIRS, 17, playerSpriteSurface, 5000);
+    addSpriteFrame(ANIM_TYPE_STAIRS_SEMI, 19, playerSpriteSurface, 5000);
+    addSpriteFrame(ANIM_TYPE_STAIRS_SEMI, 19, playerSpriteSurface, 5000);
+    addSpriteFrame(ANIM_TYPE_STAIRS, 18, playerSpriteSurface, 5000);
 	// stairs + move
-    addSpriteFrame(ANIM_TYPE_STAIRS_MOVE, 17, playerSpriteSurface, 200);
+    addSpriteFrame(ANIM_TYPE_STAIRS_MOVE, 18, playerSpriteSurface, 200);
     // stairs + attack
-    addSpriteFrame(ANIM_TYPE_STAIRS_ATTACK, 19, playerSpriteSurface, 500);
+    addSpriteFrame(ANIM_TYPE_STAIRS_ATTACK, 20, playerSpriteSurface, 500);
 
     // slide
-    addSpriteFrame(ANIM_TYPE_SLIDE, 20, playerSpriteSurface, 1000);
+    addSpriteFrame(ANIM_TYPE_SLIDE, 21, playerSpriteSurface, 1000);
 
     // throw
     //addSpriteFrame(ANIM_TYPE_THROW, 21, 0, playerSpriteSurface, 1000);
@@ -781,7 +724,6 @@ void classPlayer::move()
     if (InputController::get_instance()->p1_input[BTN_L] != 1 && l_key_released == false) {
 		l_key_released = true;
 	}
-	int wpn_max = WEAPON_COUNT;
     //wpn_max--;
     if (InputController::get_instance()->p1_input[BTN_L] == 1 && l_key_released == true) {
 		l_key_released = false;
@@ -800,12 +742,6 @@ void classPlayer::move()
 	// send commands to the platform in special cases
 	if (_platform != nullptr) {
         if (_platform->get_type() == OBJ_ITEM_FLY && TimerView::get_instance()->getTimer() > _platform->get_timer()) {
-            consume_weapon(1);
-            if (SharedData::get_instance()->game_save.items.weapons[selected_weapon] == 0) {
-                _platform->set_finished(true);
-                _platform = nullptr;
-                return;
-            }
             _platform->set_timer(TimerView::get_instance()->getTimer()+240);
 		}
 		//std::cout << ">>> PLAYER SEND COMMAND FOR " << _platform->get_name() << ", type: " << _platform->get_type() << std::endl;
@@ -961,10 +897,6 @@ bool classPlayer::can_air_dash()
 
 void classPlayer::damage(unsigned int damage_points, bool ignore_hit_timer)
 {
-    if (damage_points > 1 && SharedData::get_instance()->game_save.difficulty == DIFFICULTY_EASY) {
-        damage_points--;
-        std::cout << "HARD-MODE, damage--[" << damage_points << "]" << std::endl;
-    }
     int new_damage_points = damage_points;
     character::damage(damage_points, ignore_hit_timer);
 }
@@ -981,7 +913,7 @@ void classPlayer::damage_spikes(bool ignore_hit_timer)
 
 void classPlayer::reset_charging_shot()
 {
-    if (selected_weapon != WEAPON_DEFAULT) { // only do this, if using normal weapon
+    if (selected_weapon != -1) { // only do this, if using normal weapon
         return;
     }
     state.attack_timer = 0;

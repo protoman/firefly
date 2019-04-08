@@ -38,8 +38,6 @@ public:
 	char gameName[50];
 	char centNumber[4];
 	int currentGame;
-	int currentMap;
-	int currentStage;
     int currentDifficulty;
     int currentDifficultyMode;
 	//QString *NpcPreviewFile;

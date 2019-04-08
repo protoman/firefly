@@ -239,8 +239,7 @@ bool GameObject::test_change_position(short xinc, short yinc)
         }
     }
 
-    if (((p1 == TERRAIN_HARDMODEBLOCK && SharedData::get_instance()->game_save.difficulty != DIFFICULTY_HARD) || (p1 == TERRAIN_EASYMODEBLOCK && SharedData::get_instance()->game_save.difficulty != DIFFICULTY_EASY) || p1 == TERRAIN_UNBLOCKED ||  p1 == TERRAIN_WATER || p1 == TERRAIN_SPIKE)
-            && ((p2 == TERRAIN_HARDMODEBLOCK && SharedData::get_instance()->game_save.difficulty != DIFFICULTY_HARD) || (p2 == TERRAIN_EASYMODEBLOCK && SharedData::get_instance()->game_save.difficulty != DIFFICULTY_EASY) || p2 == TERRAIN_UNBLOCKED ||  p2 == TERRAIN_WATER || p2 == TERRAIN_SPIKE)) {
+    if ((p1 == TERRAIN_UNBLOCKED ||  p1 == TERRAIN_WATER || p1 == TERRAIN_SPIKE) && (p2 == TERRAIN_UNBLOCKED ||  p2 == TERRAIN_WATER || p2 == TERRAIN_SPIKE)) {
         return true;
 	}
 
@@ -286,11 +285,20 @@ void GameObject::reset_timers()
 
 bool GameObject::is_consumable()
 {
-    if (type == OBJ_ENERGY_PILL_BIG || type == OBJ_ENERGY_PILL_SMALL || type == OBJ_ENERGY_TANK || type == OBJ_LIFE || type == OBJ_WEAPON_PILL_BIG || type == OBJ_WEAPON_PILL_SMALL || type == OBJ_WEAPON_TANK) {
+    if (type == OBJ_ENERGY_PILL_BIG || type == OBJ_ENERGY_PILL_SMALL || type == OBJ_ENERGY_TANK || type == OBJ_WEAPON_PILL_BIG || type == OBJ_WEAPON_PILL_SMALL || type == OBJ_ABILITY_ITEM) {
         return true;
     }
     return false;
 }
+
+int GameObject::get_ability()
+{
+    if (type != OBJ_ABILITY_ITEM || _id > SharedData::get_instance()->object_list.size()) {
+        return -1;
+    }
+    return SharedData::get_instance()->object_list.at(_id).given_ability;
+}
+
 
 void GameObject::enable_teleport_animation()
 {
@@ -325,6 +333,7 @@ void GameObject::set_position(st_position pos)
 // ********************************************************************************************** //
 void GameObject::show(int adjust_y, int adjust_x)
 {
+
 	st_rectangle graphic_origin;
 	st_position graphic_destiny;
 
@@ -335,6 +344,10 @@ void GameObject::show(int adjust_y, int adjust_x)
     float scroll_x = (float)map->getMapScrolling().x;
     if (adjust_x != 0) {
         scroll_x = adjust_x;
+    }
+    float scroll_y = (float)map->getMapScrolling().y;
+    if (adjust_y != 0) {
+        scroll_y = adjust_y;
     }
 
     if (draw::get_instance()->get_object_graphic(_id) == nullptr) {
@@ -391,8 +404,9 @@ void GameObject::show(int adjust_y, int adjust_x)
         }
     }
 
+
 	// checks if the Object is near the screen to show it
-    if (position.x+TILESIZE >= abs(scroll_x) && position.x-TILESIZE <= abs(scroll_x)+RES_W) {
+    if (is_on_screen() == true) {
 
         // animation
         if ((GameMediator::get_instance()->object_list.at(_id).animation_auto_start == true || (GameMediator::get_instance()->object_list.at(_id).animation_auto_start == false && _started == true)) && framesize_w * 2 <= (draw::get_instance()->get_object_graphic(_id)->surface->w))  { // have at least two frames
@@ -477,23 +491,13 @@ void GameObject::show(int adjust_y, int adjust_x)
 		// parte que vai ser colada
         graphic_destiny.x = position.x - scroll_x;
         //graphic_destiny.y = adjust_y + position.y - map->getMapScrolling().y;
-        graphic_destiny.y = adjust_y + position.y;
+        graphic_destiny.y = adjust_y + position.y - scroll_y;
 
         // -240 -> (160) -> -80
 
         //std::cout << "object::show::name[" << name << "]::adjust_y[" << adjust_y << "]::graphic_destiny.y[" << graphic_destiny.y << "]::position.y[" << position.y << "]" << std::endl;
 
         //std::cout << "obj[" << name << "] position.x: " << position.x << ", scroll_x: " << scroll_x << ", dest.x: " << graphic_destiny.x << ", dest.y: " << graphic_destiny.y << std::endl;
-        if (type == OBJ_LIFE) {
-            int init_x = graphic_origin.w*SharedData::get_instance()->game_save.selected_player;
-            // avoid drawing something we don't have
-            if (draw::get_instance()->get_object_graphic(_id)->surface->w < init_x + framesize_w) {
-                init_x = 0;
-            }
-            ImageView::get_instance()->renderTexturePortionAt(init_x, 0, graphic_origin.w, graphic_origin.h, graphic_destiny.x, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
-            return;
-        }
-
 
         if (draw::get_instance()->get_object_graphic(_id) != nullptr) { // there is no graphic with this key yet, add it
             ImageView::get_instance()->renderTexturePortionAt(graphic_origin.x, graphic_origin.y, graphic_origin.w, graphic_origin.h, graphic_destiny.x, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
@@ -555,7 +559,7 @@ void GameObject::show_deathray_vertical(int adjust_x, int adjust_y)
             } else {
                 int start_x = RES_H/TILESIZE;
                 if (map) {
-                    start_x = _state - SharedData::get_instance()->file_v5_map_header_list.at(map->number).tiles_h;
+                    start_x = _state - SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h;
                 }
                 // body
                 for (int i=start_x+1; i<_state; i++) {
@@ -661,6 +665,7 @@ bool GameObject::is_platform()
     if (type == OBJ_ITEM_FLY || type == OBJ_ITEM_JUMP || type == OBJ_ACTIVE_DISAPPEARING_BLOCK || type == OBJ_FALL_PLATFORM || type == OBJ_FLY_PLATFORM || type == OBJ_MOVING_PLATFORM_LEFTRIGHT || type == OBJ_MOVING_PLATFORM_UPDOWN || type == OBJ_ACTIVE_OPENING_SLIM_PLATFORM || type == OBJ_DAMAGING_PLATFORM) {
         return true;
     }
+    return false;
 }
 
 void GameObject::show_vertical_ray(int adjust_x, int adjust_y)
@@ -1351,7 +1356,9 @@ bool GameObject::is_on_screen()
 
     //if (realPosition.x < -TILESIZE*2 || realPosition.x > (RES_W+TILESIZE*2)) {
     if (abs((float)position.x) > scroll.x-RES_W/2 && abs((float)position.x) < scroll.x+RES_W*1.5) {
-        return true;
+        if (abs((float)position.y) > scroll.y-AREA_H/2 && abs((float)position.y) < scroll.y+AREA_H*1.5) {
+            return true;
+        }
     }
     return false;
 }

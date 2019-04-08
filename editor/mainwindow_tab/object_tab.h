@@ -48,6 +48,8 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_givenAbilityComboBox_currentIndexChanged(int index);
+
 private:
     Ui::object_tab *ui;
 	int _current_object;

@@ -3,6 +3,7 @@
 #include "controller/inputcontroller.h"
 #include "view/timerview.h"
 #include "view/imageview.h"
+#include "view/draw.h"
 
 #define GRID_SIZE 32
 
@@ -28,13 +29,7 @@ bool PauseMenu::execute()
         TimerView::get_instance()->delay(200);
     }
     if (is_paused == true) {
-        ImageView::get_instance()->clearScreenArea(0, 0, RES_W, AREA_H, 0, 0, 20);
-        for (int i=GRID_SIZE; i<AREA_H; i+=GRID_SIZE) {
-            ImageView::get_instance()->clearScreenArea(0, i, RES_W, 2, 79, 26, 97);
-        }
-        for (int i=GRID_SIZE; i<RES_W; i+=GRID_SIZE) {
-            ImageView::get_instance()->clearScreenArea(i, 0, 2, AREA_H, 79, 26, 97);
-        }
+        draw::get_instance()->draw_in_game_menu_bg();
     }
     return is_paused;
 }

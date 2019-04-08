@@ -13,6 +13,9 @@ void MapController::loadMap()
 {
     // TODO::IURO - reset objects, npcs, etc //
 
+    mapBackgroundMap.clear();
+    layerScrollMap.clear();
+
     unsigned int mapNumber = SharedData::get_instance()->file_v5_selected_map;
     if (SharedData::get_instance()->file_v5_map_header_list.size() <= mapNumber) {
         std::cout << "ERROR::map::loadMap - Invalid map number[" << mapNumber << "] for list.size[" << SharedData::get_instance()->file_v5_map_header_list.size() << "]" << std::endl;
@@ -29,9 +32,9 @@ void MapController::loadMap()
     std::vector<file_v5_map_tile> &mapTiles = SharedData::get_instance()->file_v5_map_tile_map.at(mapNumber);
 
     /*
-    object_list.clear();
     _npc_list.clear();
     */
+
 
     _level3_tiles.clear();
 
@@ -49,37 +52,7 @@ void MapController::loadMap()
 
 
     //load_map_npcs();
-    //load_map_objects();
-
-    //std::cout << "check-map-scroll-lock, object_list.size[" << object_list.size() << "]" << std::endl;
-    bool column_locked = true;
-    for (int i=0; i<mapData.tiles_w; i++) {
-        column_locked = true;
-        for (int j=0; j<mapData.tiles_h; j++) {
-            unsigned int n = j*mapData.tiles_w + i;
-            // check if a object-door ocuppies the position
-            bool obj_locked = false;
-            /*
-            std::vector<object>::iterator object_it;
-            for (object_it = object_list.begin(); object_it != object_list.end(); object_it++) {
-                object *obj_item = &(*object_it);
-
-                if (obj_item->get_type() == OBJ_BOSS_DOOR) {
-                    //std::cout << "obj[" << obj_item->get_name() << "], start[" << (obj_item->get_start_position().x/TILESIZE) << "][" << (obj_item->get_start_position().y/TILESIZE) << "], point[" << i << "][" << j << "]" << std::endl;
-                    if ((i >= obj_item->get_start_position().x/TILESIZE && i < obj_item->get_start_position().x/TILESIZE+obj_item->get_size().width/TILESIZE) && (j >= obj_item->get_start_position().y/TILESIZE && j < obj_item->get_start_position().y/TILESIZE+obj_item->get_size().height/TILESIZE)) {
-                        std::cout << "MapController::loadMap, obj[" << obj_item->get_name() << "] is locking scroll at [" << i << "][" << j << "]" << std::endl;
-                        obj_locked = true;
-                    }
-                }
-            }
-            */
-            if (obj_locked != true && mapTiles.at(n).locked != TERRAIN_SOLID && mapTiles.at(n).locked != TERRAIN_DOOR && mapTiles.at(n).locked != TERRAIN_SCROLL_LOCK && mapTiles.at(n).locked != TERRAIN_ICE && mapTiles.at(n).locked != TERRAIN_SPIKE) {
-                column_locked = false;
-                break;
-            }
-        }
-        wall_scroll_lock.push_back(column_locked);
-    }
+    load_map_objects();
 
     _show_map_pos_x = -1;
     _show_map_pos_y = -1;
@@ -162,15 +135,20 @@ void MapController::addLayer(unsigned int n, bool isFg)
         mapBackgroundMap.insert(std::pair<unsigned int, st_background>(n, st_background()));
         mapBackgroundMap.at(n).imageData = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->FILEPATH+std::string("/images/map_backgrounds/")+filename);
 
-        SDL_SetTextureBlendMode(mapBackgroundMap.at(n).imageData.texture,
-        SDL_ComposeCustomBlendMode(
-        SDL_BLENDFACTOR_ONE,
-        SDL_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
-        SDL_BLENDOPERATION_ADD,
-        SDL_BLENDFACTOR_ONE,
-        SDL_BLENDFACTOR_ONE,
-        SDL_BLENDOPERATION_ADD));
 
+        if (SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).backgrounds[n].alpha != 255) {
+            ImageView::get_instance()->set_surface_alpha(SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).backgrounds[n].alpha, mapBackgroundMap.at(n).imageData);
+            SDL_SetTextureBlendMode(mapBackgroundMap.at(n).imageData.texture, SDL_BLENDMODE_BLEND);
+        } else {
+            SDL_SetTextureBlendMode(mapBackgroundMap.at(n).imageData.texture,
+            SDL_ComposeCustomBlendMode(
+            SDL_BLENDFACTOR_ONE,
+            SDL_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+            SDL_BLENDOPERATION_ADD,
+            SDL_BLENDFACTOR_ONE,
+            SDL_BLENDFACTOR_ONE,
+            SDL_BLENDOPERATION_ADD));
+        }
 
         mapBackgroundMap.at(n).position.y = SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).backgrounds[n].adjust_y;
 
@@ -197,7 +175,7 @@ void MapController::get_map_area_surface(st_imageData& mapSurface)
         exception_manager::throw_general_exception(std::string("MapController::get_map_area_surface"), "Could not init map surface");
     }
 
-    st_color& map_color = SharedData::get_instance()->file_v5_map_header_list.at(number).background_color;
+    st_color& map_color = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).background_color;
     ImageView::get_instance()->clear_surface_area(0, 0, RES_W, RES_H, map_color.r, map_color.g, map_color.b, mapSurface);
 
     draw_dynamic_backgrounds_into_surface(mapSurface);
@@ -245,11 +223,11 @@ void MapController::draw_map_tiles()
 
     int tile_end_x = tile_x_ini+(RES_W/TILESIZE)+3;
     int tile_end_y = tile_y_ini+(AREA_H/TILESIZE)+2;
-    if (tile_end_x > SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w) {
-        tile_end_x = SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w;
+    if (tile_end_x > SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
+        tile_end_x = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w;
     }
-    if (tile_end_y > SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h) {
-        tile_end_y = SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h;
+    if (tile_end_y > SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h) {
+        tile_end_y = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h;
     }
     //std::cout << "MapController::draw_map_tiles - tile_y_ini[" << tile_y_ini << "], tile_end_y[" << tile_end_y << "]" << std::endl;
     //std::cout << "MapController::draw_map_tiles - RES_W/TILESIZE[" << RES_W/TILESIZE << ", start[" << tile_x_ini << "], end[" << tile_end << "]" << std::endl;
@@ -265,11 +243,7 @@ void MapController::draw_map_tiles()
             //std::cout << "pos_destiny.y[" << pos_destiny.y << "]" << std::endl;
 
 
-            if (getTileFromPosition(i, j).locked == TERRAIN_EASYMODEBLOCK && SharedData::get_instance()->game_save.difficulty == DIFFICULTY_EASY) {
-                ImageView::get_instance()->place_easymode_block_tile(pos_destiny, map_screen);
-            } else if (getTileFromPosition(i, j).locked == TERRAIN_HARDMODEBLOCK && SharedData::get_instance()->game_save.difficulty == DIFFICULTY_HARD) {
-                ImageView::get_instance()->place_hardmode_block_tile(pos_destiny, map_screen);
-            } else if (getTileFromPosition(i, j).tile_underlay.type == TILE_TYPE_SLOPE) {
+            if (getTileFromPosition(i, j).tile_underlay.type == TILE_TYPE_SLOPE) {
                 //std::cout << "FOUND-SLOPE #1 i[" << i << "], j[" << j << "]" << std::endl;
                 draw_slope_tile(getTileFromPosition(i, j).tile_underlay.x,getTileFromPosition(i, j).tile_underlay.y, pos_destiny.x, pos_destiny.y);
             } else {
@@ -317,12 +291,12 @@ void MapController::init_animated_tiles()
     // draw the tiles of the screen region
     struct st_position pos_origin;
     struct st_position pos_destiny;
-    for (int i=0; i<SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w; i++) {
+    for (int i=0; i<SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w; i++) {
         pos_destiny.x = i*TILESIZE;
-        for (int j=0; j<SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h; j++) {
-            int n = j*SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w + i;
-            pos_origin.x = SharedData::get_instance()->file_v5_map_tile_map.at(number).at(n).tile_underlay.x;
-            pos_origin.y = SharedData::get_instance()->file_v5_map_tile_map.at(number).at(n).tile_underlay.y;
+        for (int j=0; j<SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h; j++) {
+            int n = j*SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w + i;
+            pos_origin.x = SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay.x;
+            pos_origin.y = SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay.y;
 
             if (pos_origin.x < -1 && pos_origin.y == 0) {
                 int anim_tile_id = (pos_origin.x * -1) - 2;
@@ -348,7 +322,7 @@ void MapController::showAbove(int scroll_y, int temp_scroll_x, bool show_fg)
     short start_point = scroll_x/TILESIZE;
     if (start_point > 0) { start_point--; }
     short end_point = (scroll_x+RES_W)/TILESIZE;
-    if (end_point < SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w-1) { end_point++; }
+    if (end_point < SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w-1) { end_point++; }
     //std::cout << "showAbove - start_point: " << start_point << ", end_point: " << end_point << std::endl;
 
 
@@ -408,33 +382,40 @@ void MapController::showAbove(int scroll_y, int temp_scroll_x, bool show_fg)
 // ********************************************************************************************** //
 int MapController::getMapPointLock(st_position pos) const
 {
-    if (pos.x < 0 || pos.y < 0 || pos.y >= SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h || pos.x >= SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w) {
+    //std::cout << ">>>>> MapController::getMapPointLock x[" << pos.x << "], y[" << pos.y << "]" << std::endl;
+    if (pos.x < 0 || pos.y < 0 || pos.y >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h || pos.x >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
+        //std::cout << ">>>>> MapController::getMapPointLock OUT OF MAP" << std::endl;
         return TERRAIN_UNBLOCKED;
     }
-    int n = pos.y*SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w + pos.x;
-    return SharedData::get_instance()->file_v5_map_tile_map.at(number).at(n).locked;
+    int n = pos.y*SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w + pos.x;
+    return SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).locked;
 }
 
 st_tile_piece MapController::get_map_point_tile1(st_position pos)
 {
-    if (pos.x < 0 || pos.y < 0 || pos.y > RES_H/TILESIZE || pos.x > pos.x >= SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w) {
+    if (pos.x < 0 || pos.y < 0 || pos.y > RES_H/TILESIZE || pos.x >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
         st_tile_piece res;
         res.x = -1;
         res.y = -1;
         return res;
     }
-    int n = pos.y*SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w + pos.x;
-    return SharedData::get_instance()->file_v5_map_tile_map.at(number).at(n).tile_underlay;
+    int n = pos.y*SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w + pos.x;
+    return SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay;
 }
 
-unsigned int MapController::get_number()
+short MapController::get_map_point_lock(int tile_x, int tile_y)
 {
-    return number;
-}
-
-void MapController::set_number(unsigned int n)
-{
-    number = n;
+    if (tile_x < 0 || tile_y < 0 || tile_y > SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h || tile_x >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
+        std::cout << "INVALID TILE #1 x[" << tile_x << "], tile_y[" << tile_y << "]" << std::endl;
+        return -2;
+    }
+    int n = tile_y*SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w + tile_x;
+    //std::cout << "SEARCH TILE x[" << tile_x << "], tile_y[" << tile_y << "], n[" << n << "]" << std::endl;
+    if (n >= SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).size()) {
+        std::cout << "INVALID TILE #2 x[" << tile_x << "], tile_y[" << tile_y << "], n[" << n << "], list.size[" << SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).size() << "]" << std::endl;
+        return -2;
+    }
+    return SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).locked;
 }
 
 
@@ -442,7 +423,7 @@ bool MapController::is_point_solid(st_position pos) const
 {
     short int lock_p = getMapPointLock(pos);
 
-    if (lock_p == TERRAIN_UNBLOCKED || lock_p != TERRAIN_WATER || lock_p == TERRAIN_CHECKPOINT || lock_p == TERRAIN_SCROLL_LOCK || (lock_p == TERRAIN_EASYMODEBLOCK && SharedData::get_instance()->game_save.difficulty != 0) || lock_p == TERRAIN_SLOPE) {
+    if (lock_p == TERRAIN_UNBLOCKED || lock_p != TERRAIN_WATER || lock_p == TERRAIN_VSCROLL_LOCK || lock_p == TERRAIN_HSCROLL_LOCK || lock_p == TERRAIN_SLOPE) {
         return false;
     }
     return true;
@@ -450,16 +431,16 @@ bool MapController::is_point_solid(st_position pos) const
 
 file_v5_map_tile MapController::getTileFromPosition(int x, int y)
 {
-    if (x < 0 || y < 0 || y >= SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h || x >= SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w) {
+    if (x < 0 || y < 0 || y >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h || x >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
         return file_v5_map_tile();
     }
-    int n = y*SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w + x;
-    return SharedData::get_instance()->file_v5_map_tile_map.at(number).at(n);
+    int n = y*SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w + x;
+    return SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n);
 }
 
 file_v5_map_header& MapController::getMapHeader()
 {
-    return SharedData::get_instance()->file_v5_map_header_list.at(number);
+    return SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
 }
 
 int MapController::get_first_bottom_lock(int initialY)
@@ -467,17 +448,17 @@ int MapController::get_first_bottom_lock(int initialY)
     bool isLockedY = true;
     int initX = scroll.x/TILESIZE;
     int endX = initX + RES_W/TILESIZE;
-    int lockedRow = SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h/TILESIZE;
+    int lockedRow = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h/TILESIZE;
 
 
     int initY = (initialY)/TILESIZE;
-    int endY = initY + SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h;
+    int endY = initY + SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h;
 
-    if (endX >= SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w) {
-        endX = SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w-1;
+    if (endX >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
+        endX = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w-1;
     }
-    if (endY >= SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h) {
-        endY = SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h-1;
+    if (endY >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h) {
+        endY = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h-1;
     }
 
     //std::cout << "########## MapController::get_first_bottom_lock - initX[" << initX << "], endX[" << endX << "], initY[" << initY << "], endY[" << endY << "]" << std::endl;
@@ -514,8 +495,8 @@ bool MapController::isEdgeRowLocked(int incY, bool first)
     }
     int initX = scroll.x/TILESIZE;
     int endX = initX + RES_W/TILESIZE;
-    if (endX >= SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w) {
-        endX = SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w-1;
+    if (endX >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
+        endX = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w-1;
     }
     bool isLockedY = true;
     for (int x=initX; x<endX; x++) {
@@ -532,6 +513,43 @@ bool MapController::isEdgeRowLocked(int incY, bool first)
     return isLockedY;
 }
 
+bool MapController::isEdgeColumnLocked(int incX, bool first)
+{
+    //std::cout << "## MapController::isEdgeColumnLocked::START - incX[" << incX << "], first[" << first << "]" << std::endl;
+
+
+    int tileX = (scroll.x + incX + RES_W)/TILESIZE - 1;
+    if (incX < 0) {
+        tileX = (scroll.x + incX)/TILESIZE + 1;
+    }
+
+    if (tileX < 0 || tileX > SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
+        //std::cout << "## MapController::isEdgeColumnLocked - TRUE #1" << std::endl;
+        return true;
+    }
+    int inity = scroll.y/TILESIZE;
+    int endY = inity + AREA_H/TILESIZE;
+    if (endY >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h) {
+        endY = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h-1;
+    }
+    bool isLockedX = true;
+
+    //std::cout << "inity[" << inity << "], endY[" << endY << "]" << std::endl;
+
+    for (int y=inity; y<endY; y++) {
+        file_v5_map_tile tile = getTileFromPosition(tileX, y);
+        if (tile.locked == TERRAIN_UNBLOCKED || tile.locked == TERRAIN_WATER) {
+            //std::cout << "ONLOCKED - x[" << tileX << "], y[" << y << "], locked[" << tile.locked << "]" << std::endl;
+            isLockedX = false;
+            break;
+        }
+    }
+
+
+    //std::cout << "########### MapController::isEdgeColumnLocked - isLockedX[" << isLockedX << "], first[" << first << "], incY[" << incX << "], scroll.x[" << scroll.x << "], x[" << tileX << "]" << std::endl;
+    return isLockedX;
+}
+
 
 
 // ********************************************************************************************** //
@@ -539,6 +557,13 @@ bool MapController::isEdgeRowLocked(int incY, bool first)
 // ********************************************************************************************** //
 void MapController::changeScrolling(st_float_position pos, bool check_lock)
 {
+    if (abs(pos.x) > TILESIZE) {
+        if (pos.x > 0) {
+            pos.x = 1;
+        } else {
+            pos.x = -1;
+        }
+    }
     // moving player to right, screen to left
     if (pos.x > 0 && ((scroll.x/TILESIZE+RES_W/TILESIZE)-1 < getMapHeader().tiles_w-1)) {
         int x_change = pos.x;
@@ -546,22 +571,21 @@ void MapController::changeScrolling(st_float_position pos, bool check_lock)
             x_change = 1;
         }
         int tile_x = (scroll.x+RES_W-TILESIZE+2)/TILESIZE;
-        if (check_lock == false || wall_scroll_lock[tile_x] == false) {
-            scroll.x += x_change;
+        // this means there is a scroll-lock, so we ignore the excess
+        if (check_lock == false || isEdgeColumnLocked(pos.x, tile_x) == false) {
+            //std::cout << "MapController::changeScrolling #1, pos.x[" << pos.x << "], tile_x[" << tile_x << "]" << std::endl;
+            incScrollValue(x_change, 0);
             changeLayerScroll(x_change, 0);
             adjust_dynamic_backgrounds_position();
         }
     } else if (pos.x < 0) {
         int x_change = pos.x;
-        if (pos.x < -TILESIZE) {
-            x_change = -1;
-        }
         if (scroll.x/TILESIZE >= 0) { // if change is too big, do not update (TODO: must check all wall until lock)
             int tile_x = (scroll.x+TILESIZE-2)/TILESIZE;
             //std::cout << "#2 LEFT changeScrolling - scroll.x: " << scroll.x << ", testing tile_x: " << tile_x << std::endl;
-            if (check_lock == false || wall_scroll_lock[tile_x] == false) {
+            if (check_lock == false || isEdgeColumnLocked(pos.x, tile_x) == false) {
                 //std::cout << "MapController::changeScrolling - 2" << std::endl;
-                scroll.x += x_change;
+                incScrollValue(x_change, 0);
                 changeLayerScroll(x_change, 0);
                 adjust_dynamic_backgrounds_position();
             }
@@ -585,19 +609,37 @@ void MapController::changeScrolling(st_float_position pos, bool check_lock)
             }
             */
             bool locked = isEdgeRowLocked(pos.y, false);
-            if (locked == false) {
-                scroll.y += pos.y;
+            if (check_lock == false || locked == false) {
+                incScrollValue(0, pos.y);
             }
         } else {
             //std::cout << "%%%%%%%%%%%%%% CHECK-TOP" << std::endl;
             bool locked = isEdgeRowLocked(pos.y, true);
-            if (locked == false) {
-                scroll.y += pos.y;
-                if (scroll.y < 0) {
-                    scroll.y = 0;
-                }
+            if (check_lock == false || locked == false) {
+                incScrollValue(0, pos.y);
             }
         }
+    }
+}
+
+void MapController::incScrollValue(float xinc, float yinc)
+{
+    scroll.x += xinc;
+    scroll.y += yinc;
+    SharedData::get_instance()->area_scroll_x += xinc;
+    SharedData::get_instance()->area_scroll_y += yinc;
+
+    if (scroll.x < 0) {
+        scroll.x = 0;
+    }
+    if (scroll.y < 0) {
+        scroll.y = 0;
+    }
+    if (SharedData::get_instance()->area_scroll_x < 0) {
+        SharedData::get_instance()->area_scroll_x = 0;
+    }
+    if (SharedData::get_instance()->area_scroll_y < 0) {
+        SharedData::get_instance()->area_scroll_y = 0;
     }
 }
 
@@ -632,7 +674,7 @@ void MapController::set_scrolling(st_float_position pos)
     scrolled = pos;
     scroll.x = pos.x;
     scroll.y = pos.y;
-    //std::cout << "------- MapController::set_scrolling - map: " << number << ", pos.x: " << pos.x << "-------" << std::endl;
+    //std::cout << "------- MapController::set_scrolling - map: " << SharedData::get_instance()->file_v5_selected_map << ", pos.x: " << pos.x << "-------" << std::endl;
 }
 
 void MapController::reset_scrolling()
@@ -656,15 +698,8 @@ st_float_position MapController::getMapScrolling() const
 
 st_size MapController::get_size()
 {
-    return st_size(SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_w, SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h);
+    return st_size(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w, SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h);
 }
-
-st_float_position *MapController::get_map_scrolling_ref()
-{
-    return &scroll;
-}
-
-
 
 
 // ********************************************************************************************** //
@@ -682,18 +717,13 @@ void MapController::load_map_npcs()
     }
 
 
-    for (int i=0; i<SharedData::get_instance()->file_v5_map_npc_map.at(number).size(); i++) {
-        file_v5_map_npc& npc_ref = SharedData::get_instance()->file_v5_map_npc_map.at(number).at(i);
-        if (npc_ref.difficulty_mode == DIFFICULTY_MODE_GREATER && npc_ref.difficulty_level > SharedData::get_instance()->game_save.difficulty) {
-            continue;
-        } else if (npc_ref.difficulty_mode == DIFFICULTY_MODE_EQUAL && npc_ref.difficulty_level != SharedData::get_instance()->game_save.difficulty) {
-            continue;
-        }
+    for (int i=0; i<SharedData::get_instance()->file_v5_map_npc_map.at(SharedData::get_instance()->file_v5_selected_map).size(); i++) {
+        file_v5_map_npc& npc_ref = SharedData::get_instance()->file_v5_map_npc_map.at(SharedData::get_instance()->file_v5_selected_map).at(i);
 
         int npc_ic = npc_ref.id_npc;
 
         if (npc_ic != -1) {
-            classnpc new_npc = classnpc(stage_number, number, npc_ic, i);
+            classnpc new_npc = classnpc(SharedData::get_instance()->file_v5_selected_map, npc_ic, i);
 
 
             if (GameMediator::get_instance()->get_enemy(npc_ic)->is_boss == true) {
@@ -725,8 +755,8 @@ void MapController::load_map_npcs()
 void MapController::drawLayers(bool isFg)
 {
     // only draw solid background color, if map-heigth is less than RES_H
-    //std::cout << "number[" << number << "], bg1_surface.height[" << bg1_surface.height << "], bg1.y[" << GameMediator::get_instance()->map_data[number].backgrounds[0].adjust_y << "]" << std::endl;
-    file_v5_map_header& header_map_ref = SharedData::get_instance()->file_v5_map_header_list.at(number);
+    //std::cout << "number[" << SharedData::get_instance()->file_v5_selected_map << "], bg1_surface.height[" << bg1_surface.height << "], bg1.y[" << GameMediator::get_instance()->map_data[SharedData::get_instance()->file_v5_selected_map].backgrounds[0].adjust_y << "]" << std::endl;
+    file_v5_map_header& header_map_ref = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
 
     if (isFg == false) {
         ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, header_map_ref.background_color.r, header_map_ref.background_color.g, header_map_ref.background_color.b);
@@ -737,7 +767,7 @@ void MapController::drawLayers(bool isFg)
             continue;
         }
         unsigned int bg_n = it->first;
-        file_v5_map_background& bg_ref = SharedData::get_instance()->file_v5_map_header_list.at(number).backgrounds[bg_n];
+        file_v5_map_background& bg_ref = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).backgrounds[bg_n];
 
         //std::cout << ">>>>>>>>>>>>>>>>>>> bg_n[" << bg_n << "], filename[" << bg_ref.filename << "]" << std::endl;
 
@@ -811,7 +841,7 @@ void MapController::drawLayers(bool isFg)
 void MapController::adjust_dynamic_background_position(unsigned int bg_n)
 {
 
-    file_v5_map_background& bg_ref = SharedData::get_instance()->file_v5_map_header_list.at(number).backgrounds[bg_n];
+    file_v5_map_background& bg_ref = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).backgrounds[bg_n];
     st_imageData* surface_bg = get_dynamic_bg(bg_n);
 
     //int bg_limit = get_dynamic_bg()->width-RES_W;
@@ -846,7 +876,7 @@ void MapController::adjust_dynamic_backgrounds_position()
 {
     for (std::map<unsigned int, st_layer_pos>::iterator it = layerScrollMap.begin(); it != layerScrollMap.end(); ++it) {
         unsigned int bg_n = it->first;
-        if (SharedData::get_instance()->file_v5_map_header_list.at(number).backgrounds[bg_n].auto_scroll == BG_SCROLL_MODE_NONE) {
+        if (SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).backgrounds[bg_n].auto_scroll == BG_SCROLL_MODE_NONE) {
             adjust_dynamic_background_position(bg_n);
         }
     }
@@ -1007,23 +1037,23 @@ st_position MapController::get_first_lock_in_direction(st_position pos, st_size 
     return res;
 }
 
-int MapController::get_first_lock_on_left(int x_pos) const
+int MapController::get_first_lock_on_left(int x_pos)
 {
     for (int i=x_pos; i>= 0; i--) {
-        if (wall_scroll_lock[i] == true) {
+        if (isEdgeColumnLocked(-1, i) == true) {
             return i*TILESIZE;
         }
     }
     return -1;
 }
 
-int MapController::get_first_lock_on_right(int x_pos) const
+int MapController::get_first_lock_on_right(int x_pos)
 {
     int limit = (scroll.x+RES_W)/TILESIZE;
     x_pos += 1;
     std::cout << "MapController::get_first_lock_on_right - x_pos: " << x_pos << ", limit: " << limit << std::endl;
     for (int i=x_pos; i<=limit; i++) {
-        if (wall_scroll_lock[i] == true) {
+        if (isEdgeColumnLocked(1, i) == true) {
             std::cout << "MapController::get_first_lock_on_right - found lock at: " << i << std::endl;
             return i*TILESIZE;
         }
@@ -1053,7 +1083,7 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
         right_tiles_to_test = 1;
     }
 
-    int initial_y = SharedData::get_instance()->file_v5_map_header_list.at(number).tiles_h-1;
+    int initial_y = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h-1;
     if (y_pos >= 0) {
         initial_y = y_pos/TILESIZE;
     }
@@ -1064,7 +1094,7 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
         //std::cout << "get_first_lock_on_bottom, i[" << i << "]" << std::endl;
         int map_lock = getMapPointLock(st_position(tilex, i));
         bool found_bad_point = false;
-        if (map_lock != TERRAIN_UNBLOCKED && map_lock != TERRAIN_WATER && map_lock != TERRAIN_EASYMODEBLOCK && map_lock != TERRAIN_HARDMODEBLOCK) {
+        if (map_lock != TERRAIN_UNBLOCKED && map_lock != TERRAIN_WATER) {
             // found a stop point, now check above tiles
             for (int j=i-1; j>=i-above_tiles_to_test; j--) {
                 for (int k=0; k<right_tiles_to_test; k++) {
@@ -1110,15 +1140,6 @@ void MapController::drop_item(classnpc* npc_ref)
         // 1UP (1%), Big Energy (2%), Big Weapon (2%), Small Energy (15)%, Small Weapon (15%), Score Pearl (53%)
         // .byt 99, 97, 95, 80, 65, 12 (http://tasvideos.org/RandomGenerators.html)
         int drop_ratio[] = {99, 97, 95, 80, 65, 50};
-        if (SharedData::get_instance()->game_save.difficulty == DIFFICULTY_EASY) {
-            // 5%, 10%, 10%, 20%, 20%, 20% //
-            int drop_ratio_easy[] = {95, 85, 75, 55, 35, 15};
-            std::copy(drop_ratio_easy, drop_ratio_easy+6, drop_ratio);
-        } else if (SharedData::get_instance()->game_save.difficulty == DIFFICULTY_HARD) {
-            // 1%, 1%, 1%, 10%, 10%, 10% //
-            int drop_ratio_hard[] = {99, 98, 97, 87, 77, 67};
-            std::copy(drop_ratio_hard, drop_ratio_hard+6, drop_ratio);
-        }
 
         if (rand_n == drop_ratio[0]) {
             obj_type = DROP_ITEM_1UP;
@@ -1269,12 +1290,12 @@ bool MapController::subboss_alive_on_left(short tileX)
     return false;
 }
 
-void MapController::finish_object_teleporter(int number)
+void MapController::finish_object_teleporter(int obj_number)
 {
     for (std::vector<GameObject>::iterator it=object_list.begin(); it!=object_list.end(); it++) {
         GameObject& temp_obj = (*it);
-        std::cout << "number: " << number << ", obj.id: " << temp_obj.get_obj_map_id() << std::endl;
-        if (temp_obj.get_obj_map_id() == number) {
+        std::cout << "number: " << obj_number << ", obj.id: " << temp_obj.get_obj_map_id() << std::endl;
+        if (temp_obj.get_obj_map_id() == obj_number) {
             temp_obj.set_direction(ANIM_DIRECTION_RIGHT);
         }
     }
@@ -1284,7 +1305,7 @@ void MapController::activate_final_boss_teleporter()
 {
     for (std::vector<GameObject>::iterator it=object_list.begin(); it!=object_list.end(); it++) {
         GameObject& temp_obj = (*it);
-        std::cout << "number: " << number << ", obj.id: " << temp_obj.get_obj_map_id() << ", type: " << temp_obj.get_type() << ", OBJ_FINAL_BOSS_TELEPORTER: " << OBJ_FINAL_BOSS_TELEPORTER << std::endl;
+        std::cout << "number: " << SharedData::get_instance()->file_v5_selected_map << ", obj.id: " << temp_obj.get_obj_map_id() << ", type: " << temp_obj.get_type() << ", OBJ_FINAL_BOSS_TELEPORTER: " << OBJ_FINAL_BOSS_TELEPORTER << std::endl;
         if (temp_obj.get_type() == OBJ_FINAL_BOSS_TELEPORTER) {
             temp_obj.start();
         }
@@ -1294,13 +1315,13 @@ void MapController::activate_final_boss_teleporter()
 // @TODO::IURI - those methods need to receive the map_n parameter //
 Uint8 MapController::get_map_gfx()
 {
-    //return GameMediator::get_instance()->map_data[number].backgrounds[0].gfx;
+    //return GameMediator::get_instance()->map_data[SharedData::get_instance()->file_v5_selected_map].backgrounds[0].gfx;
     return 0;
 }
 
 Uint8 MapController::get_map_gfx_mode()
 {
-    //return GameMediator::get_instance()->map_data[number].backgrounds[1].auto_scroll;
+    //return GameMediator::get_instance()->map_data[SharedData::get_instance()->file_v5_selected_map].backgrounds[1].auto_scroll;
     return 0;
 }
 
@@ -1339,22 +1360,17 @@ void MapController::load_map_objects() {
         animation_list.pop_back();
     }
 
-    /*
-    for (int i=0; i<GameMediator::get_instance()->map_object_data.size(); i++) {
-        if (GameMediator::get_instance()->map_object_data[i].difficulty_mode == DIFFICULTY_MODE_GREATER && GameMediator::get_instance()->map_object_data[i].difficulty_level > game_save.difficulty) {
-            continue;
-        } else if (GameMediator::get_instance()->map_object_data[i].difficulty_mode == DIFFICULTY_MODE_EQUAL && GameMediator::get_instance()->map_object_data[i].difficulty_level != game_save.difficulty) {
-            continue;
-        }
+    object_list.clear();
 
-        if (GameMediator::get_instance()->map_object_data[i].id_object != -1 && GameMediator::get_instance()->map_object_data[i].stage_id == stage_number && GameMediator::get_instance()->map_object_data[i].map_id == number) {
-            GameObject temp_obj(GameMediator::get_instance()->map_object_data[i].id_object, this, GameMediator::get_instance()->map_object_data[i].start_point, GameMediator::get_instance()->map_object_data[i].link_dest, GameMediator::get_instance()->map_object_data[i].map_dest);
+    unsigned int mapNumber = SharedData::get_instance()->file_v5_selected_map;
+    for (int i=0; i<SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).size(); i++) {
+        if (SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).id_object != -1) {
+            GameObject temp_obj(SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).id_object, this, SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).start_point, SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).teleporter_data.link_dest, SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).teleporter_data.map_dest);
             temp_obj.set_obj_map_id(i);
-            temp_obj.set_direction(GameMediator::get_instance()->map_object_data[i].direction);
+            temp_obj.set_direction(SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).direction);
             object_list.push_back(temp_obj);
         }
     }
-    */
     std::cout << "MapController::load_map_objects, count[" << object_list.size() << "]" << std::endl;
 }
 
@@ -1478,9 +1494,6 @@ bool MapController::is_obj_ignored_by_enemies(Uint8 obj_type)
     if (obj_type == OBJ_ENERGY_TANK) {
         return true;
     }
-    if (obj_type == OBJ_WEAPON_TANK) {
-        return true;
-    }
     if (obj_type == OBJ_ENERGY_PILL_BIG) {
         return true;
     }
@@ -1491,9 +1504,6 @@ bool MapController::is_obj_ignored_by_enemies(Uint8 obj_type)
         return true;
     }
     if (obj_type == OBJ_WEAPON_PILL_SMALL) {
-        return true;
-    }
-    if (obj_type == OBJ_LIFE) {
         return true;
     }
     if (obj_type == OBJ_ITEM_FLY) {
@@ -1512,9 +1522,6 @@ bool MapController::is_obj_ignored_by_enemies(Uint8 obj_type)
     if (obj_type == OBJ_PLATFORM_TELEPORTER) {
         return true;
     }
-    if (obj_type == OBJ_SPECIAL_TANK) {
-        return true;
-    }
     if (obj_type == OBJ_FINAL_BOSS_TELEPORTER) {
         return true;
     }
@@ -1522,6 +1529,9 @@ bool MapController::is_obj_ignored_by_enemies(Uint8 obj_type)
         return true;
     }
     if (obj_type == OBJ_CHECKPOINT) {
+        return true;
+    }
+    if (obj_type == OBJ_MAP_DOOR) {
         return true;
     }
     return false;
@@ -1548,6 +1558,7 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
     if (charObj->get_platform() == nullptr) {
         for (std::vector<GameObject>::iterator it=object_list.begin(); it!=object_list.end(); it++) {
             GameObject& temp_obj = (*it);
+            //std::cout << "### obj[" << temp_obj.get_name() << "] - CHECK #0 ###" << std::endl;
 
             if (temp_obj.is_hidden() == true) {
                 //std::cout << "obj[" << temp_obj.get_name() << "] - leave #1" << std::endl;
@@ -1620,9 +1631,10 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
                 temp_obj_y += OBJ_JUMP_Y_ADJUST;
             }
 
-            // to enter platform, player.x+player.h must not be much higher than obj.y
-            if (temp_blocked != 0 && temp_obj.is_platform()) {
+            //std::cout << "### obj[" << temp_obj.get_name() << "] - CHECK #2 - temp_blocked[" << temp_blocked << "], is_platform[" << temp_obj.is_platform() << "] ###" << std::endl;
 
+            // to enter platform, player.x+player.h must not be much higher than obj.y
+            if (temp_blocked != 0 && temp_obj.is_platform() == false) {
 
                 if (temp_obj.get_type() == OBJ_CHECKPOINT) {
                     if (temp_obj.is_started() == false) {
@@ -1630,7 +1642,7 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
                     }
                     SharedData::get_instance()->checkpoint.x = charObj->getPosition().x;
                     SharedData::get_instance()->checkpoint.y = (charObj->getPosition().y+charObj->get_size().height-1);
-                    SharedData::get_instance()->checkpoint.map = gameManager::get_instance()->get_current_map_obj()->get_number();
+                    SharedData::get_instance()->checkpoint.map = SharedData::get_instance()->file_v5_selected_map;
                     SharedData::get_instance()->checkpoint.map_scroll_x = gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
                     return;
                 } else if (temp_obj.get_type() == OBJ_BOSS_DOOR) {
@@ -1643,12 +1655,21 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
                             temp_obj.set_direction(ANIM_DIRECTION_RIGHT);
                         }
                     }
+                } else if (temp_obj.get_type() == OBJ_MAP_DOOR) {
+                    gameManager::get_instance()->check_map_link(charObj->get_last_moved().x, charObj->get_last_moved().y);
+                    if (temp_blocked == BLOCK_XY) {
+                        temp_blocked = BLOCK_Y;
+                    } else {
+                        temp_blocked = BLOCK_UNBLOCKED;
+                    }
                 }
-
             }
 
+            //std::cout << "### obj[" << temp_obj.get_name() << "] - CHECK #3 - temp_blocked[" << temp_blocked << "], ###" << std::endl;
 
             if (temp_blocked == BLOCK_Y || temp_blocked == BLOCK_XY) {
+
+                //std::cout << "### obj[" << temp_obj.get_name() << "] - COLLISION #1" << std::endl;
 
                 bool entered_platform = false;
 
@@ -1675,6 +1696,7 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
                     entered_platform = true;
                 }
 
+                //std::cout << "### obj[" << temp_obj.get_name() << "] - COLLISION #3, entered_platform[" << entered_platform << "]" << std::endl;
 
                 if (entered_platform == true) {
                     if (temp_obj.is_hidden() == false && (temp_obj.get_type() == OBJ_MOVING_PLATFORM_UPDOWN || temp_obj.get_type() == OBJ_MOVING_PLATFORM_LEFTRIGHT || temp_obj.get_type() == OBJ_DISAPPEARING_BLOCK)) {
@@ -1876,9 +1898,9 @@ void MapController::remove_temp_objects()
 
 
 
-bool MapController::get_map_point_wall_lock(int x) const
+bool MapController::get_map_point_wall_lock(int x)
 {
-    return wall_scroll_lock[x/TILESIZE];
+    return isEdgeColumnLocked(0, x/TILESIZE);
 }
 
 void MapController::move_map(const short int move_x, const short int move_y)
@@ -2099,7 +2121,7 @@ classnpc* MapController::spawn_map_npc(short npc_id, st_position npc_pos, short 
 
     //std::cout << "$$$ MAP::SPAWN-NPC, pos[" << npc_pos.x << ", " << npc_pos.y << "], map.scroll.x[" << scroll.x << "]" << std::endl;
 
-    classnpc new_npc(stage_number, number, npc_id, npc_pos, direction, player_friend);
+    classnpc new_npc(SharedData::get_instance()->file_v5_selected_map, npc_id, npc_pos, direction, player_friend);
 
     if (progressive_span == true) {
         new_npc.set_progressive_appear_pos(new_npc.get_size().height);
@@ -2327,7 +2349,7 @@ void MapController::show_objects(int adjust_y, int adjust_x)
     /// @TODO - update timers
     std::vector<GameObject>::iterator object_it;
     for (object_it = object_list.begin(); object_it != object_list.end(); object_it++) {
-        if ((*object_it).get_type() != OBJ_STAGE_BOSS_TELEPORTER && (*object_it).get_type() != OBJ_BOSS_TELEPORTER && (*object_it).get_type() != OBJ_FINAL_BOSS_TELEPORTER) { // teleporters are shown above
+        if ((*object_it).get_type() != OBJ_STAGE_BOSS_TELEPORTER && (*object_it).get_type() != OBJ_BOSS_TELEPORTER && (*object_it).get_type() != OBJ_FINAL_BOSS_TELEPORTER && (*object_it).get_type() != OBJ_MAP_DOOR) { // teleporters are shown above
             (*object_it).show(adjust_y, adjust_x); // TODO: must pass scroll map to objects somwhow...
         }
     }
@@ -2337,7 +2359,7 @@ void MapController::show_above_objects(int adjust_y, int adjust_x)
 {
     std::vector<GameObject>::iterator object_it;
     for (object_it = object_list.begin(); object_it != object_list.end(); object_it++) {
-        if ((*object_it).get_type() == OBJ_STAGE_BOSS_TELEPORTER || (*object_it).get_type() == OBJ_BOSS_TELEPORTER || (*object_it).get_type() == OBJ_FINAL_BOSS_TELEPORTER || (*object_it).get_type() == OBJ_BOSS_DOOR) { // teleporters are shown above
+        if ((*object_it).get_type() == OBJ_STAGE_BOSS_TELEPORTER || (*object_it).get_type() == OBJ_BOSS_TELEPORTER || (*object_it).get_type() == OBJ_FINAL_BOSS_TELEPORTER || (*object_it).get_type() == OBJ_BOSS_DOOR || (*object_it).get_type() == OBJ_MAP_DOOR) { // teleporters are shown above
             (*object_it).show(adjust_y, adjust_x); // TODO: must pass scroll map to objects somwhow...
         }
     }

@@ -349,17 +349,8 @@ bool file_io::read_save(st_save& data_out, short save_n)
     // ------- DEBUG ------- //
 
 
-    if (data_out.items.lifes > 9) {
-        data_out.items.lifes = 3;
-    }
-    if (data_out.items.weapon_tanks > 9) {
-        data_out.items.weapon_tanks = 9;
-    }
-    if (data_out.items.energy_tanks > 9) {
-        data_out.items.energy_tanks = 9;
-    }
-    if (data_out.items.special_tanks > 1) {
-        data_out.items.special_tanks = 1;
+    if (data_out.items.energy_tanks > 99) {
+        data_out.items.energy_tanks = 99;
     }
 
 
@@ -428,7 +419,7 @@ void file_io::generate_files()
 int file_io::get_heart_pieces_number(st_save game_save)
 {
     int res = PLAYER_INITIAL_HP;
-    for (int i=0; i<WEAPON_COUNT; i++) {
+    for (int i=0; i<HEART_PIECES; i++) {
         if (game_save.items.heart_pieces[i] == true) {
             res++;
         }

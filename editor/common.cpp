@@ -14,6 +14,8 @@ extern std::vector<std::string> ANIMATION_TYPE_LIST;
 
 #include "mediator.h"
 
+#include "aux_tools/ability_name.h"
+
 common::common()
 {
 }
@@ -404,6 +406,14 @@ void common::fill_anim_block_combo(QComboBox *combo)
     for (int i=0; i<Mediator::get_instance()->anim_block_list.size(); i++) {
         QString name = QString::number(i);
         combo->addItem(name);
+    }
+}
+
+void common::fill_abilities_combo(QComboBox *combo)
+{
+    combo->clear();
+    for (int i=0; i<PROPERTY_NAME_COUNT; i++) {
+        combo->addItem(QString(AbilityName::get_instance()->get_name_from_number(i).c_str()));
     }
 }
 

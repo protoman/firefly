@@ -69,6 +69,20 @@ void ImageView::draw_weapon_tooltip_icon(short weapon_n, st_position position, b
 
 }
 
+void ImageView::change_render_target(e_RENDER_TARGET target)
+{
+    if (target == RENDER_TARGET_SCREEN) {
+        SDL_SetRenderTarget(gRenderer, nullptr);
+    } else if (target == RENDER_TARGET_TEXTURE) {
+        SDL_SetRenderTarget(gRenderer, texture_render_target);
+    }
+}
+
+SDL_Texture *ImageView::get_texture_renderer()
+{
+    return texture_render_target;
+}
+
 
 void ImageView::copyArea(st_imageData &origin, st_imageData &dest)
 {
@@ -95,7 +109,7 @@ void ImageView::rebuildTexture(st_imageData &origin)
 
 void ImageView::clear_surface(st_imageData &image)
 {
-    SDL_FillRect(image.surface, NULL, SDL_MapRGBA(image.surface->format, 0, 0, 0,SDL_ALPHA_TRANSPARENT));
+    SDL_FillRect(image.surface, nullptr, SDL_MapRGBA(image.surface->format, 0, 0, 0, SDL_ALPHA_TRANSPARENT));
 }
 
 void ImageView::copyArea(st_rectangle rect, st_position dest_pos, st_imageData& origin, st_imageData& dest)
@@ -388,6 +402,8 @@ void ImageView::init()
         }
     }
 
+    texture_render_target = SDL_CreateTexture( gRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, RES_W, AREA_H);
+
 }
 
 ImageView* ImageView::get_instance()
@@ -400,8 +416,9 @@ ImageView* ImageView::get_instance()
 
 void ImageView::copyScreenAreaToImage(int origin_x, int origin_y, int origin_w, int origin_h, int dest_x, int dest_y, st_imageData image)
 {
-    SDL_Surface* gameScreen = SDL_GetWindowSurface(SharedData::get_instance()->window);
-    copySDLPortion(st_rectangle(origin_x, origin_y, origin_w, origin_h), st_rectangle(0, 0, origin_w, origin_h), gameScreen, image.surface);
+    copySDLPortion(st_rectangle(origin_x, origin_y, origin_w, origin_h), st_rectangle(dest_x, dest_y, origin_w, origin_h), SharedData::get_instance()->screenSurface, image.surface);
+    rebuildTexture(image);
+
 }
 
 
@@ -463,7 +480,7 @@ void ImageView::updateScreen()
 st_imageData ImageView::initSurface(st_size size)
 {
     st_imageData res;
-    res.surface = SDL_CreateRGBSurface(SDL_SWSURFACE , size.width, size.height, VIDEO_MODE_COLORS, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+    res.surface = SDL_CreateRGBSurface(SDL_RLEACCEL , size.width, size.height, VIDEO_MODE_COLORS, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
     if (res.surface == nullptr) {
         exit(EXIT_FAILURE);
     }
@@ -491,6 +508,7 @@ void ImageView::set_surface_alpha(int alpha, st_imageData &image)
         std::cout << "[WARNING] GRAPHLIB::set_surface_alpha[&] - invalid surface, ignoring" << std::endl;
         return;
     }
+    //std::cout << "ImageView::set_surface_alpha[" << alpha << "]" << std::endl;
     SDL_SetTextureAlphaMod(image.texture, alpha);
 }
 

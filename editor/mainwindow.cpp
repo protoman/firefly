@@ -135,9 +135,7 @@ void MainWindow::copy_path(QString src, QString dst)
 void MainWindow::reload()
 {
     Mediator::get_instance()->selectedNPC = 0;
-    Mediator::get_instance()->currentMap = 0;
     Mediator::get_instance()->currentGame = 0;
-    Mediator::get_instance()->currentStage = 0;
     Mediator::get_instance()->current_player = 0;
     Mediator::get_instance()->current_weapon = 0;
     projectile_edit_tab->reload();

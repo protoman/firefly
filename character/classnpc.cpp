@@ -37,9 +37,9 @@ classnpc::classnpc() : graphic_filename(), first_run(true), _is_player_friend(fa
 
 
 
-classnpc::classnpc(int stage_id, int map_id, int main_id, int id) : _is_player_friend(false) // map-loaded npc
+classnpc::classnpc(int map_id, int main_id, int id) : _is_player_friend(false) // map-loaded npc
 {
-    build_basic_npc(stage_id, map_id, main_id);
+    build_basic_npc(map_id, main_id);
     facing = SharedData::get_instance()->file_v5_map_npc_map.at(map_id).at(id).direction;
     state.direction = facing;
 
@@ -68,9 +68,9 @@ classnpc::classnpc(int stage_id, int map_id, int main_id, int id) : _is_player_f
     }
 }
 
-classnpc::classnpc(int stage_id, int map_id, int main_id, st_position npc_pos, short int direction, bool player_friend) // spawned npc
+classnpc::classnpc(int map_id, int main_id, st_position npc_pos, short int direction, bool player_friend) // spawned npc
 {
-    build_basic_npc(stage_id, map_id, main_id);
+    build_basic_npc(map_id, main_id);
     _is_player_friend = player_friend;
     facing = direction;
     state.direction = direction;
@@ -118,7 +118,7 @@ classnpc::~classnpc()
 {
 }
 
-void classnpc::build_basic_npc(int stage_id, int map_id, int main_id)
+void classnpc::build_basic_npc(int map_id, int main_id)
 {
 	_number = main_id;
 	// TODO - usar operador igual e também para cópia de toda a classe para ela mesma

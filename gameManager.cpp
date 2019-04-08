@@ -136,24 +136,20 @@ void gameManager::loadGameData()
         }
     }
 
+    SharedData::get_instance()->area_list = fio_cmm.load_from_disk<struct_file_v5_area>(SharedData::get_instance()->FILEPATH + FILE_V5_AREA_LIST);
 
     SharedData::get_instance()->projectile_list_v3 = fio_cmm.load_from_disk<file_projectilev3>(SharedData::get_instance()->FILEPATH+PROJECTILE_FILE_V3);
     if (SharedData::get_instance()->projectile_list_v3.size() == 0) {
         SharedData::get_instance()->projectile_list_v3.push_back(file_projectilev3());
     }
-    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@ projectile_list_v3.size[" << SharedData::get_instance()->projectile_list_v3.size() << "]" << std::endl;
 
     SharedData::get_instance()->slope_list = fio_cmm.load_from_disk<file_v5_slope_tile>(SharedData::get_instance()->FILEPATH+FILE_V5_MAP_SLOPE_LIST);
-    std::cout << "%%%%%%%%% slope_list[" << SharedData::get_instance()->slope_list.size() << "] %%%%%%%%%" << std::endl;
-
 }
 
 void gameManager::loadMapData()
 {
     // FILE V5 //
     SharedData::get_instance()->file_v5_map_header_list = fio_cmm.load_from_disk<file_v5_map_header>(SharedData::get_instance()->FILEPATH+FILE_V5_MAP_HEADER_LIST);
-
-    std::cout << ">>>>>>>>>>>>>>>>>> gameManager::loadMapData file_v5_map_header_list.size[" << SharedData::get_instance()->file_v5_map_header_list.size() << "]" << std::endl;
 
     SharedData::get_instance()->file_v5_map_link_list = fio_cmm.load_from_disk<file_v5_map_link>(SharedData::get_instance()->FILEPATH+FILE_V5_MAP_LINK_LIST);
 
@@ -167,12 +163,349 @@ void gameManager::loadMapData()
         char map_link_name[FS_CHAR_FILENAME_SIZE];
         sprintf(map_link_name, "/data/v5_map_%d_links.dat", i);
         SharedData::get_instance()->file_v5_area_link_map.insert(std::pair<unsigned int, std::vector<struct_file_v5_area_link>>(i, std::vector<struct_file_v5_area_link>()));
-        if (fio.file_exists(map_link_name)) {
-            SharedData::get_instance()->file_v5_area_link_map.at(i) = fio_cmm.load_from_disk<struct_file_v5_area_link>(map_link_name);
+        if (fio.file_exists(SharedData::get_instance()->FILEPATH+map_link_name)) {
+            SharedData::get_instance()->file_v5_area_link_map.at(i) = fio_cmm.load_from_disk<struct_file_v5_area_link>(SharedData::get_instance()->FILEPATH+map_link_name);
+            std::cout << ">>>> gameManager::loadMapData - LOAD-MAP-LINK-FILE[" << map_link_name << "], SIZE[" << SharedData::get_instance()->file_v5_area_link_map.at(i).size() << "]" << std::endl;
+        }
+        // load map objects
+        char map_objects_name[FS_CHAR_FILENAME_SIZE];
+        sprintf(map_objects_name, "/data/v5_map_%d_objects.dat", i);
+        SharedData::get_instance()->file_v5_map_object_map.insert(std::pair<unsigned int, std::vector<file_v5_map_object>>(i, std::vector<file_v5_map_object>()));
+        if (fio.file_exists(SharedData::get_instance()->FILEPATH+map_objects_name)) {
+            SharedData::get_instance()->file_v5_map_object_map.at(i) = fio_cmm.load_from_disk<file_v5_map_object>(SharedData::get_instance()->FILEPATH+map_objects_name);
+            std::cout << ">>>> gameManager::loadMapData - LOAD-MAP-LINK-FILE[" << map_link_name << "], SIZE[" << SharedData::get_instance()->file_v5_map_object_map.at(i).size() << "]" << std::endl;
+        }
+
+    }
+}
+
+int gameManager::mapNumberFromAreaPosition(int area_n, int x, int y)
+{
+    return SharedData::get_instance()->area_list.at(area_n).point[x][y];
+}
+
+bool gameManager::check_map_link(int xinc, int yinc)
+{
+    if (xinc == 0 && yinc == 0) {
+        //std::cout << "check_map_link::LEAVE #1" << std::endl;
+        return false;
+    }
+
+    st_rectangle hitbox = player1.get_hitbox();
+
+    int px = hitbox.x-xinc+hitbox.w/2;
+    if (xinc > 0) {
+        px = hitbox.x+hitbox.w+xinc;
+    }
+    int py = hitbox.y-yinc;
+    if (yinc > 0) {
+        py = hitbox.y+hitbox.h+yinc;
+    }
+    int tile_x = px/TILESIZE;
+    int tile_y = py/TILESIZE;
+    if (tile_x < 0) {
+        tile_x = 0;
+    } else if (tile_x > SharedData::get_instance()->file_v5_map_header_list.at(get_current_area()).tiles_w-1) {
+        tile_x = SharedData::get_instance()->file_v5_map_header_list.at(get_current_area()).tiles_w-1;
+    }
+    if (tile_y < 0) {
+        tile_y = 0;
+    } else if (tile_y > SharedData::get_instance()->file_v5_map_header_list.at(get_current_area()).tiles_h-1) {
+        tile_y = SharedData::get_instance()->file_v5_map_header_list.at(get_current_area()).tiles_h-1;
+    }
+
+    std::cout << "######### gameManager::check_map_link - xinc[" << xinc << "], player.pos.x[" << player1.get_int_position().x << "], px[" << px << "], tile_x[" << tile_x << "], tile_y[" << tile_y << "]" << std::endl;
+    if (xinc > 0) {
+        tile_x++;
+    } else if (xinc < 0) {
+        tile_x--;
+    }
+
+
+    // TODO: isso aqui não é bem verdade, o link pode estar em qualquer parte, tem que calcular
+    // se está na extremidade daquele tela de mapa em específico
+
+
+
+    //std::cout << ">>>>>>> gameManager::check_map_link - area_n[" << area_n << "], link-list-size[" << SharedData::get_instance()->file_v5_area_link_map.at(area_n).size() << "], tile_x[" << tile_x << "], tile_y[" << tile_y << "], xinc[" << xinc << "], yinc[" << yinc << "]" << std::endl;
+
+    for (int i=0; i<SharedData::get_instance()->file_v5_area_link_map.at(get_current_area()).size(); i++) {
+        struct_file_v5_area_link &link_obj = SharedData::get_instance()->file_v5_area_link_map.at(get_current_area()).at(i);
+
+        int map_n1 = mapNumberFromAreaPosition(get_current_area(), link_obj.p1.x, link_obj.p1.y);
+        int map_n2 = mapNumberFromAreaPosition(get_current_area(), link_obj.p2.x, link_obj.p2.y);
+
+        std::cout << "########## link[" << i << "], map_n1[" << (int)map_n1 << "], map_n2[" << (int)map_n2 << "]" << std::endl;
+
+        // the map have a link
+        if (map_n1 == get_current_map() || map_n2 == get_current_map()) {
+            st_rectangle map1_area = st_rectangle((link_obj.p1.x+1)*GAME_AREA_W, link_obj.p1.y*GAME_AREA_H, 1, GAME_AREA_H);
+            st_rectangle map2_area = st_rectangle(link_obj.p2.x*GAME_AREA_W, link_obj.p2.y*GAME_AREA_H, 1, GAME_AREA_H);
+            if (link_obj.p1.x < link_obj.p2.x) {
+                map2_area = st_rectangle(0, link_obj.p2.y*GAME_AREA_H, 1, GAME_AREA_H);
+            } else {
+                map1_area = st_rectangle(0, link_obj.p1.y*GAME_AREA_H, 1, GAME_AREA_H);
+            }
+            if (link_obj.link_type == AREA_EDIT_MODE_VLINK) {
+                map1_area = st_rectangle(link_obj.p1.x*GAME_AREA_W, link_obj.p1.y*GAME_AREA_H, GAME_AREA_W, 1);
+                map2_area = st_rectangle(link_obj.p2.x*GAME_AREA_W, link_obj.p2.y*GAME_AREA_H, GAME_AREA_W, 1);
+            }
+
+            //std::cout << "map2_area - link_obj.p2.x[" << link_obj.p2.x << "], x[" << map2_area.x << "], map2_area.y[" << map2_area.y << "], map2_area.w[" << map2_area.w << "], map2_area.h[" << map2_area.h << "]" << std::endl;
+
+            // check if is inside map-area
+            bool onMap1 = map1_area.contains(tile_x, tile_y);
+            bool onMap2 = map2_area.contains(tile_x, tile_y);
+            if (onMap1 == false && onMap2 == false) {
+                //std::cout << "############# NOT IN LINK[" << i << "] MAP AREA" << std::endl;
+                continue;
+            } else {
+                //std::cout << "############# INSIDE LINK[" << i << "] MAP AREA" << std::endl;
+                if (link_obj.link_type == AREA_EDIT_MODE_HLINK) {
+                    // LEFT-TEST //
+                    std::cout << "CHECK-LINK-LEFT - player.tile_x[" << tile_x << "], map1_area.x[" << map1_area.x << "], map2_area.x[" << map2_area.x << "]" << std::endl;
+                    if (link_obj.p1.x < link_obj.p2.x) {
+                        if (onMap1 == true) {
+                            transition_map(map_n2, link_obj.p2, TRANSITION_LEFT_TO_RIGHT);
+                        } else {
+                            transition_map(map_n1, link_obj.p1, TRANSITION_RIGHT_TO_LEFT);
+                        }
+                        std::cout << "TRANSITION LEFT-RIGHT" << std::endl;
+                    } else {
+                        std::cout << "TRANSITION RIGHT-LEFT" << std::endl;
+                    }
+                    return true;
+                } else if (link_obj.link_type == AREA_EDIT_MODE_VLINK) {
+                }
+            }
+
+
         }
     }
-    // set links on map tiles
+    return false;
+}
 
+void gameManager::transition_map(int new_map_n, st_position link_pos, e_transition_types transition_type)
+{
+    show_at_texture_renderer();
+
+    draw::get_instance()->fade_screen(0, 0, 0, 1000, false);
+    ImageView::get_instance()->clearScreenArea(0, 0, RES_W, AREA_H, 0, 0, 0);
+    SharedData::get_instance()->file_v5_selected_map = new_map_n;
+    mapController.set_scrolling(st_float_position(0, 0));
+    mapController.set_bg_scroll(st_float_position(0, 0));
+    mapController.loadMap();
+
+    int px = player1.get_int_position().x;
+    int py = player1.get_int_position().y;
+    if (transition_type == TRANSITION_LEFT_TO_RIGHT) {
+        player1.set_position(st_position(100, py));
+        SharedData::get_instance()->area_scroll_x += RES_W;
+    } else if (transition_type == TRANSITION_RIGHT_TO_LEFT) {
+        px = SharedData::get_instance()->file_v5_map_header_list.at(new_map_n).tiles_w*TILESIZE - player1.get_size().width - TILESIZE*2;
+        int newScrollX = link_pos.x*GAME_AREA_W*TILESIZE;
+        std::cout << ">>>>> newScrollX[" << newScrollX << "]" << std::endl;
+        mapController.set_scrolling(st_float_position(newScrollX, 0));
+        int newPlayerX = link_pos.x*GAME_AREA_W*TILESIZE + RES_W - TILESIZE*4;
+        player1.set_position(st_position(newPlayerX, py));
+        SharedData::get_instance()->area_scroll_x -= RES_W;
+    } else {
+        // TODO: UNIMPLEMENTED, REMOVE LATER
+        player1.set_position(st_position(TILESIZE*2, 80));
+    }
+
+    show_at_texture_renderer();
+
+    draw::get_instance()->fade_screen(0, 0, 0, 1000, true);
+    // set player position on map
+}
+
+void gameManager::show_at_texture_renderer()
+{
+    ImageView::get_instance()->change_render_target(RENDER_TARGET_TEXTURE);
+    mapController.show();
+    mapController.show_objects();
+    mapController.show_npcs();
+    player1.show();
+    mapController.show_above_objects();
+    mapController.showAbove();
+    show_hud(false);
+    ImageView::get_instance()->change_render_target(RENDER_TARGET_SCREEN);
+
+}
+
+void gameManager::show_hud(bool update_room)
+{
+    int area_room_x = (SharedData::get_instance()->area_scroll_x+player1.get_real_position().x+TILESIZE)/RES_W;
+    int area_room_y = (SharedData::get_instance()->area_scroll_y+player1.get_real_position().y)/AREA_H;
+
+    int tile_x = (mapController.getMapScrolling().x+player1.get_real_position().x+TILESIZE)/TILESIZE;
+    int tile_y = (mapController.getMapScrolling().y)/TILESIZE;
+
+    // adjust tile_x and tile_y for the top/left of the room
+    float rest_x = tile_x % GAME_AREA_W;
+    if (rest_x != 0) {
+        int abs_tile_x = (int)tile_x/GAME_AREA_W;
+        tile_x = abs_tile_x*GAME_AREA_W;
+    }
+    float rest_y = tile_y % GAME_AREA_H;
+    if (rest_y != 0) {
+        int abs_tile_y = (int)tile_y/GAME_AREA_H;
+        int adjusted_tile_y = abs_tile_y*GAME_AREA_H;
+        //std::cout << "tile_y[" << tile_y << "], adjusted_tile_y[" << adjusted_tile_y << "]" << std::endl;
+    }
+
+
+    if (update_room == true && SharedData::get_instance()->area_map[area_room_x][area_room_y].visited == false) {
+        SharedData::get_instance()->area_map[area_room_x][area_room_y].visited = true;
+        // generate map data //
+        build_game_area_map(area_room_x, area_room_y, tile_x,tile_y);
+    }
+
+    //std::cout << "### area_room_x[" << area_room_x << "], area_room_y[" << area_room_y << "], area_scroll_x[" << SharedData::get_instance()->area_scroll_x << "], area_scroll_y[" << SharedData::get_instance()->area_scroll_y << "]" << std::endl;
+
+    draw::get_instance()->show_hud(player1.get_current_hp(), 1, 0, 0, area_room_x, area_room_y);
+
+}
+
+void gameManager::build_game_area_map(int x, int y, int map_tile_x, int map_tile_y)
+{
+    SharedData::get_instance()->area_map[x][y].wall_left = MAP_WALL_TYPE_UNLOCKED;
+    SharedData::get_instance()->area_map[x][y].wall_right = MAP_WALL_TYPE_UNLOCKED;
+    SharedData::get_instance()->area_map[x][y].wall_top = MAP_WALL_TYPE_UNLOCKED;
+    SharedData::get_instance()->area_map[x][y].wall_bottom = MAP_WALL_TYPE_UNLOCKED;
+
+    if (x == 0) {
+        std::cout << "build_game_area_map x[" << x << "], y[" << y << "].lock_left" << std::endl;
+        SharedData::get_instance()->area_map[x][y].wall_left = MAP_WALL_TYPE_LOCKED;
+    } else if (x == GAME_AREA_SIZE-1) {
+        SharedData::get_instance()->area_map[x][y].wall_right = MAP_WALL_TYPE_LOCKED;
+    }
+    if (y == 0) {
+        SharedData::get_instance()->area_map[x][y].wall_top = MAP_WALL_TYPE_LOCKED;
+    } else if (y == GAME_AREA_SIZE-1) {
+        SharedData::get_instance()->area_map[x][y].wall_bottom = MAP_WALL_TYPE_LOCKED;
+    }
+
+    int map_n = SharedData::get_instance()->area_list.at(SharedData::get_instance()->file_v5_selected_area).point[x][y];
+
+    // aqui que acho que preciso mudar algo no editor/file-format
+    // tem que ser possível conseguir uma posição inicial (tiles x, y) no mapa a partir de um ponto da área
+
+    std::cout << "### gameManager::build_game_area_map - map_tile_x[" << map_tile_x << "], map_tile_y[" << map_tile_y << "]" << std::endl;
+
+    // check map tiles //
+    bool found_top_lock = false;
+    bool found_top_open = false;
+
+    bool found_bottom_lock = false;
+    bool found_bottom_open = false;
+
+    for (int i=0; i<GAME_AREA_W; i++) {
+        if (mapController.get_map_point_lock(map_tile_x+i, map_tile_y) == TERRAIN_VSCROLL_LOCK) {
+            std::cout << "TOP-FOUND-DOOR" << std::endl;
+            SharedData::get_instance()->area_map[x][y].wall_top = MAP_WALL_TYPE_DOOR;
+            found_top_lock = false;
+            found_top_open = false;
+            break;
+        } else if (mapController.get_map_point_lock(map_tile_x+i, map_tile_y) != TERRAIN_SOLID) {
+            found_top_open = true;
+        } else {
+            found_top_lock = true;
+        }
+        if (mapController.get_map_point_lock(map_tile_x+i, map_tile_y+GAME_AREA_H-1) == TERRAIN_VSCROLL_LOCK) {
+            std::cout << "BOTTOM-FOUND-DOOR" << std::endl;
+            SharedData::get_instance()->area_map[x][y].wall_bottom = MAP_WALL_TYPE_DOOR;
+            found_bottom_open = false;
+            found_bottom_lock = false;
+            break;
+        } else if (mapController.get_map_point_lock(map_tile_x+i, map_tile_y+GAME_AREA_H-1) != TERRAIN_SOLID) {
+            std::cout << "BOTTOM.OPEN.AT x[" << (map_tile_x+i) << "], y[" << map_tile_y+GAME_AREA_H-1 << "]" << std::endl;
+            found_bottom_open = true;
+        } else {
+            found_bottom_lock = true;
+        }
+    }
+    std::cout << "CHECK-TOP - found_open[" << found_top_open << "], found_lock[" << found_top_lock << "]" << std::endl;
+    if (found_top_open == true && found_top_lock == false) {
+        SharedData::get_instance()->area_map[x][y].wall_top = MAP_WALL_TYPE_UNLOCKED;
+    } else if (found_top_open == false && found_top_lock == true) {
+        SharedData::get_instance()->area_map[x][y].wall_top = MAP_WALL_TYPE_LOCKED;
+    }
+
+
+    std::cout << "CHECK-BOTTOM[" << (map_tile_y+GAME_AREA_H-1) << "] - found_open[" << found_bottom_open << "], found_lock[" << found_bottom_lock << "]" << std::endl;
+    if (found_bottom_open == true && found_bottom_lock == false) {
+        SharedData::get_instance()->area_map[x][y].wall_bottom = MAP_WALL_TYPE_UNLOCKED;
+    } else if (found_bottom_open == false && found_bottom_lock == true) {
+        SharedData::get_instance()->area_map[x][y].wall_bottom = MAP_WALL_TYPE_LOCKED;
+    }
+
+
+    bool found_left_lock = false;
+    bool found_left_open = false;
+
+    bool found_right_lock = false;
+    bool found_right_open = false;
+
+    for (int i=0; i<GAME_AREA_H; i++) {
+        //std::cout << "######### i[" << i << "], map_tile_x[" << map_tile_x << "], map_tile_y[" << map_tile_y << "]" << std::endl;
+        int left_lock = mapController.get_map_point_lock(map_tile_x, map_tile_y+i);
+        if (left_lock == TERRAIN_HSCROLL_LOCK) {
+            std::cout << "LEFT-FOUND-DOOR at x[" << map_tile_x << "], y[" << (map_tile_y+i) << "]" << std::endl;
+            SharedData::get_instance()->area_map[x][y].wall_left = MAP_WALL_TYPE_DOOR;
+            found_left_open = false;
+            found_left_lock = false;
+            break;
+        } else if (left_lock != TERRAIN_SOLID) {
+            std::cout << "LEFT-FOUND-UNLOCKED at x[" << map_tile_x << "], y[" << (map_tile_y+i) << "]" << std::endl;
+            found_left_open = true;
+        } else {
+            found_left_lock = true;
+        }
+
+        //std::cout << "RIGHT, x[" << (map_tile_x+GAME_AREA_W-1) << "]" << std::endl;
+
+        if (mapController.get_map_point_lock(map_tile_x+GAME_AREA_W-1, map_tile_y+i) == TERRAIN_HSCROLL_LOCK) {
+            std::cout << "RIGHT-FOUND-DOOR at y[" << (map_tile_y+i) << "]" << std::endl;
+            SharedData::get_instance()->area_map[x][y].wall_right = MAP_WALL_TYPE_DOOR;
+            found_right_open = false;
+            found_right_lock = false;
+            break;
+        } else if (mapController.get_map_point_lock(map_tile_x+GAME_AREA_W-1, map_tile_y+i) != TERRAIN_SOLID) {
+            found_right_open = true;
+        } else {
+            found_right_lock = true;
+        }
+    }
+
+    std::cout << "CHECK-LEFT[" << map_tile_x << "] - found_open[" << found_left_open << "], found_lock[" << found_left_lock << "]" << std::endl;
+    if (found_left_open == true && found_left_lock == false) {
+        SharedData::get_instance()->area_map[x][y].wall_left = MAP_WALL_TYPE_UNLOCKED;
+    } else if (found_left_open == false && found_left_lock == true) {
+        SharedData::get_instance()->area_map[x][y].wall_left = MAP_WALL_TYPE_LOCKED;
+    }
+
+
+    std::cout << "CHECK-RIGHT - found_open[" << found_right_open << "], found_lock[" << found_right_lock << "]" << std::endl;
+    if (found_right_open == true && found_right_lock == false) {
+        SharedData::get_instance()->area_map[x][y].wall_right = MAP_WALL_TYPE_UNLOCKED;
+    } else if (found_right_open == false && found_right_lock == true) {
+        SharedData::get_instance()->area_map[x][y].wall_right = MAP_WALL_TYPE_LOCKED;
+    }
+
+
+
+    if (y == 0) {
+        SharedData::get_instance()->area_map[x][y].wall_top = MAP_WALL_TYPE_LOCKED;
+    } else if (y == GAME_AREA_SIZE-1) {
+        SharedData::get_instance()->area_map[x][y].wall_bottom = MAP_WALL_TYPE_LOCKED;
+    }
+    if (x == 0) {
+        SharedData::get_instance()->area_map[x][y].wall_left = MAP_WALL_TYPE_LOCKED;
+    } else if (x == GAME_AREA_SIZE-1) {
+        SharedData::get_instance()->area_map[x][y].wall_right = MAP_WALL_TYPE_LOCKED;
+    }
 }
 
 void gameManager::initGame()
@@ -268,7 +601,10 @@ void gameManager::show_game(bool can_characters_move, bool can_scroll_stage)
     */
 
     // draw HUD
-    draw::get_instance()->show_hud(player1.get_current_hp(), 1, 0, 0);
+    show_hud(true);
+
+    player1.moved_dist = st_float_position(0, 0);
+
 
     if (show_fps_enabled == true) {
         fps_manager.fps_count();
@@ -320,7 +656,7 @@ void gameManager::start_stage()
 
 	SoundView::get_instance()->stop_music();
 
-    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->file_v5_map_header_list.at(mapController.get_number()).music_filename);
+    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).music_filename);
 
     mapController.loadMap();
     mapController.set_scroll_to_bottom();
@@ -334,8 +670,7 @@ void gameManager::start_stage()
 
     mapController.show();
     mapController.showAbove();
-    //draw::get_instance()->update_screen();
-    draw::get_instance()->fade_in_screen(0, 0, 0, 1000);
+    draw::get_instance()->fade_screen(0, 0, 0, 1000, true);
 
     game_unpause();
 
@@ -435,7 +770,7 @@ void gameManager::restart_stage()
         SharedData::get_instance()->checkpoint.x = TILESIZE*4;
     }
     // remove any used teleporter
-    draw::get_instance()->fade_out_screen(0, 0, 0, 500);
+    draw::get_instance()->fade_screen(0, 0, 0, 500, true);
 
     player1.set_teleporter(-1);
     _player_teleporter.active = false;
@@ -463,7 +798,7 @@ void gameManager::restart_stage()
     draw::get_instance()->update_screen();
     // if was on stage-boss, mneeds to reload music
     if (SoundView::get_instance()->get_is_playing_boss_music() == true) {
-        SoundView::get_instance()->load_stage_music(SharedData::get_instance()->file_v5_map_header_list.at(mapController.get_number()).music_filename);
+        SoundView::get_instance()->load_stage_music(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).music_filename);
     }
     SoundView::get_instance()->restart_music();
     if (SharedData::get_instance()->checkpoint.y == -1) { // did not reached any checkpoint, use the calculated value from stage start
@@ -502,7 +837,7 @@ bool gameManager::show_game_intro()
     show_beta_version_warning();
 #endif
 
-    mapController.set_number(0);
+    SharedData::get_instance()->file_v5_selected_map = 0;
 
     scenes.main_screen();
 	initGame();
@@ -628,37 +963,27 @@ void gameManager::show_notice()
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
 }
 
-void gameManager::show_in_memorian()
+
+
+
+
+
+
+
+void gameManager::set_current_map(unsigned int temp_map_n)
 {
-    ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
-    draw::get_instance()->update_screen();
-
-    TextView::get_instance()->draw_centered_text(60, "IN MEMORIAN TO MY OLD BROTHER");
-    TextView::get_instance()->draw_centered_text(100, "IVAN FIEDORUK");
-    TextView::get_instance()->draw_centered_text(120, "AUGUST, 27, 1973 - MAY, 16, 2018");
-    TextView::get_instance()->draw_centered_text(160, "CREATOR OF APEBOT");
-    TextView::get_instance()->draw_centered_text(180, "REST IN PEACE");
-    draw::get_instance()->fade_in_screen(0, 0, 0, 2000);
-    draw::get_instance()->update_screen();
-    TimerView::get_instance()->delay(4000);
-    draw::get_instance()->fade_out_screen(0, 0, 0, 2000);
-}
-
-
-
-
-
-
-
-void gameManager::set_current_map(int temp_map_n)
-{
-    mapController.set_number(temp_map_n);
+    SharedData::get_instance()->file_v5_selected_map = temp_map_n;
     mapController.loadMap();
 }
 
-Uint8 gameManager::get_current_map()
+unsigned int gameManager::get_current_map()
 {
-    return mapController.get_number();;
+    return SharedData::get_instance()->file_v5_selected_map;;
+}
+
+int gameManager::get_current_area()
+{
+    return current_area;
 }
 
 
@@ -766,6 +1091,10 @@ void gameManager::remove_players_slide()
 // TODO::IURI - refazer, pois não deve desenhar na tela, e sim ter 2 mapas ao mesmo tempo //
 //TRANSITION_TOP_TO_BOTTOM, TRANSITION_BOTTOM_TO_TOP
 void gameManager::transition_screen(Uint8 type, Uint8 map_n, short int adjust_x, classPlayer *pObj) {
+
+
+    std::cout << "%%%%%%%%%%%%%%%%%%%%%%%%%% transition_screen" << std::endl;
+
     st_imageData temp_screen;
     short i = 0;
     temp_screen = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H*2));
@@ -775,7 +1104,7 @@ void gameManager::transition_screen(Uint8 type, Uint8 map_n, short int adjust_x,
     ImageView::get_instance()->renderTexturePortionAt(0, i*TRANSITION_STEP, RES_W, RES_H, 0, 0, temp_screen.texture);
 
     // if map destiny and map origin are the same, adjust player's X position
-    if (mapController.get_number() == map_n) {
+    if (SharedData::get_instance()->file_v5_selected_map == map_n) {
         //std::cout << "p.x[" << (int)test_player->getPosition().x << "], p.real.x[" << test_player->get_real_position().x << "]" << std::endl;
         pObj->set_position(st_position(pObj->get_real_position().x+adjust_x, pObj->get_real_position().y));
         //adjust_x += TILESIZE;
@@ -813,7 +1142,7 @@ void gameManager::transition_screen(Uint8 type, Uint8 map_n, short int adjust_x,
 
 		// now, show the transition
         short int extra_y = 0;
-        for (i=0; i<(RES_H)/TRANSITION_STEP; i++) {
+        for (i=0; i<RES_H/TRANSITION_STEP; i++) {
             if (type == TRANSITION_TOP_TO_BOTTOM) {
                 ImageView::get_instance()->renderTexturePortionAt(0, i*TRANSITION_STEP, RES_W, RES_H, 0, 0, temp_screen.texture);
             } else if (type == TRANSITION_BOTTOM_TO_TOP) {
@@ -866,7 +1195,7 @@ void gameManager::transition_screen(Uint8 type, Uint8 map_n, short int adjust_x,
 			}
 
             // draw HUD
-            draw::get_instance()->show_hud(player1.get_current_hp(), 1, 0, 0);
+            show_hud(false);
 
 
             draw::get_instance()->update_screen();
@@ -877,7 +1206,7 @@ void gameManager::transition_screen(Uint8 type, Uint8 map_n, short int adjust_x,
 		}
 
         if (type == TRANSITION_TOP_TO_BOTTOM) {
-            mapController.changeScrolling(st_float_position(mapController.getMapScrolling().x, 0));
+            mapController.changeScrolling(st_float_position(mapController.getMapScrolling().x, 0), false);
         }
         if (type == TRANSITION_TOP_TO_BOTTOM) {
             if (pObj->getPosition().y > TILESIZE) {
@@ -925,7 +1254,8 @@ void gameManager::horizontal_screen_move(short direction, bool is_door, short ti
 
 
 
-    int move_limit = (RES_W/abs((float)scroll_move.x)) - TILESIZE/abs((float)scroll_move.x);
+    //int move_limit = (RES_W/abs((float)scroll_move.x)) - TILESIZE/abs((float)scroll_move.x);
+    int move_limit = (RES_W-TILESIZE)/abs(TRANSITION_STEP);
     float player_move_x = (float)(TILESIZE*2.5)/(float)move_limit; // player should move two tilesize, to avoid doors
     if (scroll_move.x < 0) {
         player_move_x = player_move_x * -1;
@@ -933,9 +1263,9 @@ void gameManager::horizontal_screen_move(short direction, bool is_door, short ti
     int static_scroll_x = mapController.getMapScrolling().x;
 
 
-    std::cout << "player_move_x[" << player_move_x << "], move_limit[" << move_limit << "]" << std::endl;
+    //std::cout << "player_move_x[" << player_move_x << "], move_limit[" << move_limit << "]" << std::endl;
     for (int i=0; i<move_limit; i++) {
-        change_map_scroll(scroll_move, false, true);
+        change_map_scroll(scroll_move, false, false);
         mapController.show();
         if (mapController.must_show_static_bg() == false) {
             mapController.show_npcs();
@@ -946,7 +1276,7 @@ void gameManager::horizontal_screen_move(short direction, bool is_door, short ti
         mapController.showAbove();
         mapController.show_above_objects();
         // draw HUD
-        draw::get_instance()->show_hud(player1.get_current_hp(), 1, 0, 0);
+        show_hud(false);
 #if defined(PC)
         TimerView::get_instance()->delay(2);
 #endif
@@ -966,6 +1296,84 @@ void gameManager::horizontal_screen_move(short direction, bool is_door, short ti
     TimerView::get_instance()->delay(6);
     game_unpause();
     add_autoscroll_delay();
+    mapController.show();
+}
+
+void gameManager::vertical_screen_move(short direction, bool is_door, short tileX)
+{
+    std::cout << "gameManager::vertical_screen_move::START" << std::endl;
+    st_float_position scroll_move;
+
+    game_pause();
+
+    if (direction == ANIM_DIRECTION_UP) {
+        scroll_move.y = -TRANSITION_STEP;
+    } else {
+        scroll_move.y = TRANSITION_STEP;
+    }
+
+    if (is_door == true) {
+        remove_all_projectiles();
+        // if there is a subboss alive, near left, you can't open
+        // TODO: check if boss is alive on top
+        if (subboss_alive_on_left(tileX) == true) {
+            std::cout << "[ERROR]: Oh no! Door can't be open because there is an alive sub-boss on its left side." << std::endl;
+            game_unpause();
+            return;
+        }
+        mapController.show();
+    }
+
+
+
+    //int move_limit = (AREA_H/abs((float)scroll_move.y)) - TILESIZE/abs((float)scroll_move.y);
+    int move_limit = AREA_H/abs(TRANSITION_STEP);
+
+    std::cout << "$$$$$$$$$$$$$ move_limit[" << move_limit << "], scroll_move.y[" << scroll_move.y << "]" << std::endl;
+
+    float player_move_y = (float)(TILESIZE*4)/(float)move_limit; // player should move two tilesize, to avoid doors
+    if (scroll_move.y < 0) {
+        player_move_y = player_move_y * -1;
+    }
+    int static_scroll_y = mapController.getMapScrolling().y;
+
+
+    std::cout << ">>>>>> player_move_y[" << player_move_y << "], move_limit[" << move_limit << "]" << std::endl;
+    for (int i=0; i<move_limit; i++) {
+        //std::cout << ">>>> gameManager::vertical_screen_move scroll_move.x[" << scroll_move.x << "], scroll_move.y[" << scroll_move.y << "]" << std::endl;
+
+        change_map_scroll(scroll_move, false, false);
+        mapController.show();
+        if (mapController.must_show_static_bg() == false) {
+            mapController.show_npcs();
+        } else {
+            mapController.show_npcs_to_left(static_scroll_y+RES_W);
+        }
+        player1.show();
+        mapController.showAbove();
+        mapController.show_above_objects();
+        // draw HUD
+        show_hud(false);
+#if defined(PC)
+        TimerView::get_instance()->delay(2);
+#endif
+        draw::get_instance()->update_screen();
+
+        player1.inc_position(0, player_move_y);
+        /*
+        if (i%(TILESIZE/4) == 0) {
+            player1.set_position(st_position(player1.getPosition().x+scroll_move.x, player1.getPosition().y));
+            player1.char_update_real_position();
+        }
+        */
+    }
+    if (is_door == true) {
+        remove_players_slide();
+    }
+    TimerView::get_instance()->delay(6);
+    game_unpause();
+    add_autoscroll_delay();
+    std::cout << "scroll.y[" << mapController.getMapScrolling().y << "]" << std::endl;
     mapController.show();
 }
 
@@ -1081,8 +1489,7 @@ void gameManager::quick_load_game()
         fio.read_save(SharedData::get_instance()->game_save, current_save_slot);
     }
 
-    SharedData::get_instance()->game_save.difficulty = DIFFICULTY_NORMAL;
-    SharedData::get_instance()->game_save.selected_player = PLAYER_2;
+    SharedData::get_instance()->game_save.selected_player = PLAYER_1;
 
     scenes.preloadScenes();
 
@@ -1258,7 +1665,7 @@ void gameManager::set_player_teleporter(short set_teleport_n, st_position set_pl
 	_player_teleporter.active = true;
 	_player_teleporter.finished = false;
     _player_teleporter.old_map_scroll = mapController.getMapScrolling();
-    _player_teleporter.old_map_n = mapController.get_number();
+    _player_teleporter.old_map_n = SharedData::get_instance()->file_v5_selected_map;
 }
 
 bool gameManager::is_player_on_teleporter()
@@ -1357,7 +1764,7 @@ void gameManager::finish_player_teleporter()
     remove_all_projectiles();
     remove_players_slide();
     player1.recharge(ENERGY_TYPE_HP, ENERGY_ITEM_BIG);
-    draw::get_instance()->fade_out_screen(0, 0, 0, 500);
+    draw::get_instance()->fade_screen(0, 0, 0, 500, true);
     TimerView::get_instance()->delay(1000);
 
     std::cout << "################### RESET PLAYER TELEPORTER ###################" << std::endl;
@@ -1365,10 +1772,10 @@ void gameManager::finish_player_teleporter()
     _last_stage_used_teleporters.insert(std::pair<int,bool>(_player_teleporter.teleporter_n, true));
 	// teleport out
 	SoundView::get_instance()->play_sfx(SFX_TELEPORT);
-    draw::get_instance()->fade_out_screen(0, 0, 0, 500);
+    draw::get_instance()->fade_screen(0, 0, 0, 500, true);
     _player_teleporter.old_player_pos.y -= 5;
     player1.set_position(_player_teleporter.old_player_pos);
-    mapController.set_number(_player_teleporter.old_map_n);
+    SharedData::get_instance()->file_v5_selected_map = _player_teleporter.old_map_n;
     if (_last_stage_used_teleporters.size() == 8) {
         // search for the final-boss teleporter capsule and start it
         mapController.activate_final_boss_teleporter();
@@ -1381,7 +1788,7 @@ void gameManager::finish_player_teleporter()
     }
     player1.set_teleporter(-1);
     SoundView::get_instance()->stop_music();
-    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->file_v5_map_header_list.at(mapController.get_number()).music_filename);
+    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).music_filename);
     SoundView::get_instance()->play_music();
 }
 
@@ -1411,9 +1818,10 @@ bool gameManager::subboss_alive_on_left(short tileX)
 
 void gameManager::change_map_scroll(st_float_position pos, bool check_lock, bool ignore_auto_scroll)
 {
+    //std::cout << "change_map_scroll, pos.x[" << pos.x << "], pos.y[" << pos.y << "]" << std::endl;
     // debug for autoscrolling test
 
-    bool map_autoscroll = SharedData::get_instance()->file_v5_map_header_list.at(mapController.get_number()).autoscroll;
+    bool map_autoscroll = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).autoscroll;
     // avoid data error (getting 66 as value from data file)
     if (map_autoscroll > 1) {
         map_autoscroll = false;
@@ -1436,7 +1844,7 @@ void gameManager::init_map_and_player_to_bottom()
     int bottom_tile_y = mapController.get_first_lock_on_bottom(RES_W/4, -1, player1.get_size().width, player1.get_hitbox(ANIM_TYPE_STAND).h);
     int bottom_y = bottom_tile_y*TILESIZE-player1.get_size().height+TILESIZE+1;
     std::cout << "### bottom_y[" << bottom_y << "], bottom_tile.y[" << bottom_tile_y << "], player_h[" << player1.get_hitbox(ANIM_TYPE_STAND).h << "]" << std::endl;
-    player1.set_position(st_position(RES_W/4, bottom_y));
+    player1.set_position(st_position(TILESIZE*MAP_ROOM_W*0.5, bottom_y));
     player1.set_animation_type(ANIM_TYPE_STAND);
 }
 
@@ -1455,7 +1863,7 @@ void gameManager::object_teleport_boss(st_position dest_pos, Uint8 dest_map, Uin
     if (must_return) {
         set_player_teleporter(teleporter_id, st_position(player1.getPosition().x, player1.getPosition().y), true);
     }
-    draw::get_instance()->fade_out_screen(0, 0, 0, 500);
+    draw::get_instance()->fade_screen(0, 0, 0, 500, false);
     draw::get_instance()->update_screen();
     TimerView::get_instance()->delay(500);
 
@@ -1508,9 +1916,7 @@ void gameManager::get_drop_item_ids()
         _drop_item_list[i] = -1;
     }
     for (int i=0; i<GameMediator::get_instance()->object_list.size(); i++) {
-        if (GameMediator::get_instance()->object_list.at(i).type == OBJ_LIFE) {
-            _drop_item_list[DROP_ITEM_1UP] = i;
-        } else if (GameMediator::get_instance()->object_list.at(i).type == OBJ_ENERGY_PILL_SMALL) {
+        if (GameMediator::get_instance()->object_list.at(i).type == OBJ_ENERGY_PILL_SMALL) {
             _drop_item_list[DROP_ITEM_ENERGY_SMALL] = i;
         } else if (GameMediator::get_instance()->object_list.at(i).type == OBJ_ENERGY_PILL_BIG) {
             _drop_item_list[DROP_ITEM_ENERGY_BIG] = i;

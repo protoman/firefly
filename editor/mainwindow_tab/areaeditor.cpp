@@ -123,7 +123,6 @@ void AreaEditor::on_musicComboBox_currentIndexChanged(const QString &arg1)
         return;
     }
     sprintf(SharedData::get_instance()->area_list.at(currentArea).music_filename, "%s", arg1.toStdString().c_str());
-    std::cout << ">>>>>>>>>>>> SET music_filename[" << SharedData::get_instance()->area_list.at(currentArea).music_filename << "]" << std::endl;
 }
 
 
@@ -131,7 +130,9 @@ void AreaEditor::on_generateTilesetPushButton_clicked()
 {
     unsigned int currentArea = ui->areaComboBox->currentIndex();
     unsigned int currentMap = ui->mapComboBox->currentIndex() + (currentArea*GAME_AREA_SIZE);
+
     if (SharedData::get_instance()->area_list.size() <= currentArea) {
+        std::cout << "ERROR: Area [" << currentArea << "] does not exists" << std::endl;
         return;
     }
 
@@ -167,8 +168,17 @@ void AreaEditor::on_generateTilesetPushButton_clicked()
     std::cout << "size_w[" << size_w << "], size_h[" << size_h << "]" << std::endl;
     std::cout << "total_size_w[" << total_size_w << "], total_size_h[" << total_size_h << "]" << std::endl;
 
+    std::cout << "currentMap[" << currentMap << "], map_header.size[" << SharedData::get_instance()->file_v5_map_header_list.size() << "]" << std::endl;
     // already have header and tileset
-    if (SharedData::get_instance()->file_v5_map_header_list.size() > currentMap && SharedData::get_instance()->file_v5_map_tile_map.find(currentMap) != SharedData::get_instance()->file_v5_map_tile_map.end()) {
+
+    if (SharedData::get_instance()->file_v5_map_header_list.size() <= currentMap) {
+        SharedData::get_instance()->file_v5_map_header_list.push_back(file_v5_map_header());
+    }
+
+    if (SharedData::get_instance()->file_v5_map_header_list.size() > currentMap) {
+        if (SharedData::get_instance()->file_v5_map_tile_map.find(currentMap) == SharedData::get_instance()->file_v5_map_tile_map.end()) {
+            SharedData::get_instance()->file_v5_map_tile_map.insert(std::pair<unsigned int, std::vector<file_v5_map_tile>>(currentMap, std::vector<file_v5_map_tile>()));
+        }
         // TODO: if size was not changed, must only set the enabled/disabled tiles
         SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_w = total_size_w;
         SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_h = total_size_h;
@@ -179,29 +189,43 @@ void AreaEditor::on_generateTilesetPushButton_clicked()
         // TODO: set empty areas (also, add support in editor for those)
 
 
-        int map_w = SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_w;
-        int map_h = SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_h;
-
-        for (int i=0; i<map_w; i++) {
-            for (int j=0; j<map_h; j++) {
+        int tile_n = 0;
+        for (int i=0; i<total_size_w; i++) {
+            for (int j=0; j<total_size_h; j++) {
+                //std::cout << "INSERT-TILE n[" << tile_n << "]" << std::endl;
                 SharedData::get_instance()->file_v5_map_tile_map.at(currentMap).push_back(file_v5_map_tile());
+                tile_n++;
             }
         }
-        std::cout << "MAP[" << currentMap << "], tiles[" << SharedData::get_instance()->file_v5_map_tile_map.at(currentMap).size() << "]" << std::endl;
+        std::cout << ">>>> MAP[" << currentMap << "], existing tiles[" << SharedData::get_instance()->file_v5_map_tile_map.at(currentMap).size() << "]" << std::endl;
 
-        for (int i=0; i<map_w; i++) {
-            for (int j=0; j<map_h; j++) {
-                int n = j*map_w + i;
-                if (SharedData::get_instance()->area_list.at(currentArea).point[i/GAME_AREA_W][j/GAME_AREA_H] == -1) {
 
-                    file_v5_map_tile* tileItem = &SharedData::get_instance()->file_v5_map_tile_map.at(currentMap).at(n);
+        for (int i=0; i<GAME_AREA_SIZE; i++) {
+            for (int j=0; j<GAME_AREA_SIZE; j++) {
+                // TODO - make current make different color
+                if (SharedData::get_instance()->area_list.size() > currentArea && SharedData::get_instance()->area_list.at(currentArea).point[i][j] == currentMap) {
+                    std::cout << "#### area.tile[" << i << "][" << j << "]" << std::endl;
+                }
+            }
+        }
 
+        for (int i=0; i<total_size_w; i++) {
+            for (int j=0; j<total_size_h; j++) {
+                int n = j*total_size_w + i;
+                int x = top_leftmost_point.x+(i/GAME_AREA_W);
+                int y = top_leftmost_point.y+(j/GAME_AREA_W);
+
+                std::cout << "%%%% n[" << n << "], i[" << i << "], j[" << j << "], x[" << x << "], y[" << y << "]"  << std::endl;
+
+                file_v5_map_tile* tileItem = &SharedData::get_instance()->file_v5_map_tile_map.at(currentMap).at(n);
+                if (SharedData::get_instance()->area_list.at(currentArea).point[x][y] != currentMap) {
                     //std::cout << "SET-POIINT-EMPTY x[" << i << "], y[" << j << "], n[" << n << "]" << std::endl;
-
                     tileItem->locked = -2;
                     tileItem->tile_underlay.x = -2;
                     tileItem->tile_underlay.y = -2;
                     tileItem->tile_underlay.type = TILE_TYPE_UNUSED;
+                } else {
+                    std::cout << "### SET-POINT-GOOD x[" << i << "], y[" << j << "], n[" << n << "]" << std::endl;
                 }
             }
         }

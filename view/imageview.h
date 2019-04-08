@@ -10,6 +10,12 @@
 #include "data/st_common.h"
 #include "data/shareddata.h"
 
+enum e_RENDER_TARGET {
+    RENDER_TARGET_SCREEN,
+    RENDER_TARGET_TEXTURE,
+    RENDER_TARGET_COUNT
+};
+
 
 struct st_background {
     st_position position;
@@ -176,7 +182,9 @@ public:
     void draw_explosion(st_position pos);
     void draw_weapon_tooltip_icon(short weapon_n, st_position position, bool disabled);
 
-
+    // this allow us to render at a texture, so we can copy the screen
+    void change_render_target(e_RENDER_TARGET target);
+    SDL_Texture* get_texture_renderer();
 
 
 private:
@@ -227,6 +235,7 @@ private:
     unsigned int _explosion_animation_timer;
     int _explosion_animation_pos;
 
+    SDL_Texture* texture_render_target;
 };
 
 #endif // IMAGEVIEW_H

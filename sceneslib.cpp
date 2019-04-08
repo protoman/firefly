@@ -174,8 +174,6 @@ void scenesLib::main_screen()
     draw::get_instance()->update_screen();
 
     if (picked_n == 0) { // NEW GAME //
-        SharedData::get_instance()->game_save.difficulty = select_difficulty();
-        std::cout << "game_save.difficulty[" << (int)SharedData::get_instance()->game_save.difficulty << "]" << std::endl;
         // demo do not have player selection, only rockbot is playable
         SharedData::get_instance()->game_save.selected_player = PLAYER_2;
         gameManager::get_instance()->save_game();
@@ -381,29 +379,13 @@ void scenesLib::draw_save_details(int n, st_save save)
         */
         ImageView::get_instance()->draw_weapon_tooltip_icon(i, pos, false);
     }
-    // lifes
-    st_position pos_lifes(9*18, y_pos);
-    ImageView::get_instance()->draw_weapon_tooltip_icon(11+save.selected_player, pos_lifes, true);
-    char buffer[3];
-    sprintf(buffer, "x%d", save.items.lifes);
-    TextView::get_instance()->renderText(10*18, y_pos+5, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, std::string(buffer));
 
     // e-tank
+    char buffer[3];
     st_position pos_etank(11*18, y_pos);
     ImageView::get_instance()->draw_weapon_tooltip_icon(15, pos_etank, true);
     sprintf(buffer, "x%d", save.items.energy_tanks);
     TextView::get_instance()->renderText(12*18, y_pos+5, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, std::string(buffer));
 
-    // w-tank
-    st_position pos_wtank(13*18, y_pos);
-    ImageView::get_instance()->draw_weapon_tooltip_icon(16, pos_wtank, true);
-    sprintf(buffer, "x%d", save.items.weapon_tanks);
-    TextView::get_instance()->renderText(14*18, y_pos+5, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, std::string(buffer));
-
-    // s-tank
-    st_position pos_stank(15*18, y_pos);
-    ImageView::get_instance()->draw_weapon_tooltip_icon(17, pos_stank, true);
-    sprintf(buffer, "x%d", save.items.special_tanks);
-    TextView::get_instance()->renderText(16*18, y_pos+5, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, std::string(buffer));
 }
 

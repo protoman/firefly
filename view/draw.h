@@ -16,7 +16,7 @@
 #define FLASH_POINTS_N 10
 #define SNOW_PARTICLES_NUMBER 20
 
-
+#define HUD_CENTER_BLINK_TIMER 400
 
 struct st_snow_particle {
     st_float_position position;
@@ -59,7 +59,7 @@ public:
     void remove_object_graphic(int obj_id);
     void show_ingame_warning(std::vector<std::string> message);
     void fade_in_screen(int r, int g, int b, int total_delay);
-    void fade_out_screen(int r, int g, int b, int total_delay);
+    void fade_screen(int r, int g, int b, int total_delay, bool reverse);
     void add_fade_out_effect(int r, int g, int b);
     void remove_fade_out_effect();
     void pixelate_screen();
@@ -69,14 +69,15 @@ public:
     void set_dynamic_bg_alpha(std::string filename, int alpha);
     st_imageData* get_dynamic_background(std::string filename);
     st_imageData* get_dynamic_foreground(std::string filename);
-    void show_hud(int hp, int player_n, int selected_weapon, int selected_weapon_value);
-    void draw_enery_ball(int value, int x_pos, st_imageData &ball_surface);
+    void show_hud(int hp, int player_n, int selected_weapon, int selected_weapon_value, int room_n_x, int room_n_y);
+    void draw_enery_bars(int value, int x_pos, int y_pos, int type);
     void set_boss_hp(int hp);
     void show_boss_intro_bg();
     void draw_explosion(st_position center_point, int radius, int angle_inc);
     void draw_castle_path(bool instant, st_position initial_point, st_position final_point);
     void draw_castle_point(int x, int y);
     void show_interstage_map_bg(st_position pos);
+    void draw_in_game_menu_bg();
 
 private:
     draw();
@@ -162,11 +163,19 @@ private:
 
     st_imageData interstage_map;
 
+    st_imageData hud_image;
+    st_imageData hud_energy_bar;
+
 
     // used to avoid having multiple copies of same background for all 3 maps in same stage
     std::map<std::string, st_imageData> maps_dynamic_background_list;
 
     std::map<e_INPUT_IMAGES, st_imageData> input_images_map;
+    st_imageData in_game_menu_bg;
+
+    st_imageData door_h, door_v;
+    long timer_hud_center = 0;
+    bool timer_hud_center_show = false;
 
 };
 

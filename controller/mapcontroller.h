@@ -85,16 +85,16 @@ public:
     st_float_position getMapScrolling() const;
     st_size get_size();
     st_tile_piece get_map_point_tile1(st_position pos);
-    unsigned int get_number();
-    void set_number(unsigned int n);
-    st_float_position* get_map_scrolling_ref();
-    int get_first_lock_on_left(int x_pos) const;
-    int get_first_lock_on_right(int x_pos) const;
+    short get_map_point_lock(int tile_x, int tile_y);
+
+    int get_first_lock_on_left(int x_pos);
+    int get_first_lock_on_right(int x_pos);
     int get_first_lock_on_bottom(int x_pos, int y_pos);
     int get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h);
 
     int get_first_bottom_lock(int initialY);
     bool isEdgeRowLocked(int incY, bool first);
+    bool isEdgeColumnLocked(int incX, bool first);
 
     void add_bubble_animation(st_position pos);
     classnpc* collision_player_npcs(character*, const short int, const short int);
@@ -122,9 +122,11 @@ public:
 
 
 
-    bool get_map_point_wall_lock(int x) const;
+    bool get_map_point_wall_lock(int x);
 
     void changeScrolling(st_float_position pos, bool check_lock=true);
+
+    void incScrollValue(float xinc, float yinc);
 
     void changeLayerScroll(int x_change, int y_change);
 
@@ -227,7 +229,7 @@ public:
 
     bool subboss_alive_on_left(short tileX);
 
-    void finish_object_teleporter(int number);
+    void finish_object_teleporter(int obj_number);
 
     void activate_final_boss_teleporter();
 
@@ -275,13 +277,10 @@ public:
     std::vector<animation> animation_list;
     // vector teleporters
     // vector objects
-    unsigned int number = 0;
 
 private:
-    int stage_number;
     struct st_float_position scroll;
     st_float_position scrolled;                                             // stores the value the map scrolled in this cycle. used for character movement control (it should move taking the scroll in account)
-    std::vector<bool> wall_scroll_lock;
 
     std::map<unsigned int, st_layer_pos> layerScrollMap;
     st_imageData static_bg;
