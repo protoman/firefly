@@ -35,45 +35,60 @@
       <number>0</number>
      </property>
      <property name="bottomMargin">
-      <number>30</number>
+      <number>0</number>
      </property>
-     <item row="2" column="1">
-      <widget class="QGroupBox" name="groupBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+     <item row="0" column="1">
+      <layout class="QGridLayout" name="gridLayout_6">
+       <property name="leftMargin">
+        <number>5</number>
        </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
+       <property name="topMargin">
+        <number>5</number>
        </property>
+       <property name="rightMargin">
+        <number>5</number>
+       </property>
+       <property name="bottomMargin">
+        <number>5</number>
+       </property>
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_21">
+         <property name="text">
+          <string>Map:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="addMap_pushButton">
+         <property name="text">
+          <string>Add</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="mapSelector_comboBox"/>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="1">
+      <widget class="QFrame" name="frame">
        <property name="maximumSize">
         <size>
-         <width>300</width>
+         <width>350</width>
          <height>16777215</height>
         </size>
        </property>
-       <property name="title">
-        <string/>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_5">
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
          <widget class="QToolBox" name="toolBox">
           <property name="enabled">
            <bool>true</bool>
@@ -94,18 +109,342 @@
            <enum>QFrame::NoFrame</enum>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="tabSpacing">
            <number>6</number>
           </property>
+          <widget class="QWidget" name="page_2">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>330</width>
+             <height>673</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Properties</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout_13">
+              <item row="14" column="2">
+               <widget class="QCheckBox" name="checkBox">
+                <property name="text">
+                 <string>show bg color</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="0">
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>Animation Width/Timer</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="2">
+               <widget class="QComboBox" name="autoScrollBG1_mode">
+                <item>
+                 <property name="text">
+                  <string>None</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Up</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Down</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Left</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Right</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Diagonal TBD</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="10" column="0">
+               <widget class="QLabel" name="label_8">
+                <property name="text">
+                 <string>Alpha:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QPushButton" name="bg_color_pick">
+                <property name="text">
+                 <string>Pick</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QCheckBox" name="mapAutoScroll_checkBox">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QComboBox" name="v5_tileset_comboBox"/>
+              </item>
+              <item row="9" column="0">
+               <widget class="QLabel" name="label_16">
+                <property name="text">
+                 <string>Auto-Scroll:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="2">
+               <widget class="QComboBox" name="bg1_filename"/>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="label_56">
+                <property name="text">
+                 <string>Y Position:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_13">
+                <property name="text">
+                 <string>Layer:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_14">
+                <property name="text">
+                 <string>GFX Effect:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_58">
+                <property name="text">
+                 <string>BG Color:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="2">
+               <widget class="QSpinBox" name="layerAlpha_spinBox">
+                <property name="maximum">
+                 <number>255</number>
+                </property>
+                <property name="value">
+                 <number>255</number>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="2">
+               <widget class="QCheckBox" name="repeatY_checkBox">
+                <property name="text">
+                 <string>BG Repeat-Y</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_18">
+                <property name="text">
+                 <string>GFX Mode:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="label_52">
+                <property name="text">
+                 <string>Image:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="2">
+               <widget class="QComboBox" name="mapGFXMode_comboBox">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>Full</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Background</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Overlay</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="8" column="2">
+               <widget class="QSpinBox" name="bg1_y_pos">
+                <property name="maximum">
+                 <number>999</number>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="label_61">
+                <property name="text">
+                 <string>Speed:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_27">
+                <property name="text">
+                 <string>Tileset:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QComboBox" name="mapGFX_comboBox">
+                <item>
+                 <property name="text">
+                  <string>None</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Rain</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Snow</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Underwater</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Train</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Flash Stopper</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Lighting Bolt</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Shadow Top</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Inferno</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_3">
+                <property name="maximumSize">
+                 <size>
+                  <width>110</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Auto-Scroll:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="14" column="0">
+               <widget class="QCheckBox" name="checkBox_2">
+                <property name="text">
+                 <string>show bg image</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="2">
+               <widget class="QComboBox" name="layerSelector_comboBox"/>
+              </item>
+              <item row="7" column="2">
+               <widget class="QDoubleSpinBox" name="bg1_speed">
+                <property name="minimum">
+                 <double>0.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>4.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="0">
+               <widget class="QCheckBox" name="repeatX_checkBox">
+                <property name="text">
+                 <string>BG Repeat-X</string>
+                </property>
+               </widget>
+              </item>
+              <item row="15" column="0">
+               <spacer name="verticalSpacer_5">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="11" column="2">
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <widget class="QSpinBox" name="bgAnimationWidth_spinBox"/>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="bgAnimationTimer_spinBox"/>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
           <widget class="QWidget" name="page_map">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>294</width>
-             <height>246</height>
+             <width>330</width>
+             <height>677</height>
             </rect>
            </property>
            <attribute name="label">
@@ -219,8 +558,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>294</width>
-             <height>246</height>
+             <width>330</width>
+             <height>677</height>
             </rect>
            </property>
            <attribute name="label">
@@ -347,14 +686,14 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>294</width>
-             <height>246</height>
+             <width>330</width>
+             <height>677</height>
             </rect>
            </property>
            <attribute name="label">
             <string>Enemy Placing</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
+           <layout class="QVBoxLayout" name="verticalLayout_7">
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_4">
               <property name="bottomMargin">
@@ -430,8 +769,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>294</width>
-             <height>246</height>
+             <width>330</width>
+             <height>677</height>
             </rect>
            </property>
            <attribute name="label">
@@ -540,14 +879,14 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>294</width>
-             <height>246</height>
+             <width>330</width>
+             <height>677</height>
             </rect>
            </property>
            <attribute name="label">
             <string>Object Placing</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
+           <layout class="QVBoxLayout" name="verticalLayout_11">
             <item>
              <widget class="QListWidget" name="objectListWidget">
               <property name="sizePolicy">
@@ -593,14 +932,14 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>294</width>
-             <height>246</height>
+             <width>330</width>
+             <height>677</height>
             </rect>
            </property>
            <attribute name="label">
             <string>Animated Tiles</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
+           <layout class="QVBoxLayout" name="verticalLayout_12">
             <item>
              <widget class="QScrollArea" name="scrollArea_3">
               <property name="widgetResizable">
@@ -611,8 +950,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>274</width>
-                 <height>109</height>
+                 <width>310</width>
+                 <height>325</height>
                 </rect>
                </property>
                <widget class="animTilePalette" name="animTilePaletteWidget" native="true">
@@ -669,8 +1008,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>294</width>
-             <height>246</height>
+             <width>330</width>
+             <height>677</height>
             </rect>
            </property>
            <attribute name="label">
@@ -686,334 +1025,6 @@
         </item>
        </layout>
       </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QGroupBox" name="properties_groupBox">
-       <property name="maximumSize">
-        <size>
-         <width>300</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="title">
-        <string>GroupBox</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_5">
-        <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_13">
-          <item row="11" column="2">
-           <widget class="QCheckBox" name="repeatY_checkBox">
-            <property name="text">
-             <string>BG Repeat-Y</string>
-            </property>
-           </widget>
-          </item>
-          <item row="11" column="0">
-           <widget class="QCheckBox" name="repeatX_checkBox">
-            <property name="text">
-             <string>BG Repeat-X</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0">
-           <widget class="QLabel" name="label_52">
-            <property name="text">
-             <string>Image:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="2">
-           <widget class="QComboBox" name="autoScrollBG1_mode">
-            <item>
-             <property name="text">
-              <string>None</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Up</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Down</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Left</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Right</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Diagonal TBD</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QComboBox" name="v5_tileset_comboBox"/>
-          </item>
-          <item row="5" column="2">
-           <widget class="QComboBox" name="layerSelector_comboBox"/>
-          </item>
-          <item row="10" column="0">
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string>Alpha:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="2">
-           <widget class="QDoubleSpinBox" name="bg1_speed">
-            <property name="minimum">
-             <double>0.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>4.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.100000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="2">
-           <widget class="QComboBox" name="mapGFXMode_comboBox">
-            <property name="currentIndex">
-             <number>0</number>
-            </property>
-            <item>
-             <property name="text">
-              <string>Full</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Background</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Overlay</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_58">
-            <property name="text">
-             <string>BG Color:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QComboBox" name="mapGFX_comboBox">
-            <item>
-             <property name="text">
-              <string>None</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Rain</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Snow</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Underwater</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Train</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Flash Stopper</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Lighting Bolt</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Shadow Top</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Inferno</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="7" column="0">
-           <widget class="QLabel" name="label_61">
-            <property name="text">
-             <string>Speed:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="0">
-           <widget class="QLabel" name="label_56">
-            <property name="text">
-             <string>Y Position:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="maximumSize">
-             <size>
-              <width>110</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Auto-Scroll:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="2">
-           <widget class="QComboBox" name="bg1_filename"/>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_14">
-            <property name="text">
-             <string>GFX Effect:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_27">
-            <property name="text">
-             <string>Tileset:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="13" column="2">
-           <widget class="QCheckBox" name="checkBox">
-            <property name="text">
-             <string>show bg color</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QPushButton" name="bg_color_pick">
-            <property name="text">
-             <string>Pick</string>
-            </property>
-           </widget>
-          </item>
-          <item row="10" column="2">
-           <widget class="QSpinBox" name="layerAlpha_spinBox">
-            <property name="maximum">
-             <number>255</number>
-            </property>
-            <property name="value">
-             <number>255</number>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_13">
-            <property name="text">
-             <string>Layer:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QCheckBox" name="mapAutoScroll_checkBox">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="2">
-           <widget class="QSpinBox" name="bg1_y_pos">
-            <property name="maximum">
-             <number>999</number>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="0">
-           <widget class="QLabel" name="label_16">
-            <property name="text">
-             <string>Auto-Scroll:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_18">
-            <property name="text">
-             <string>GFX Mode:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="13" column="0">
-           <widget class="QCheckBox" name="checkBox_2">
-            <property name="text">
-             <string>show bg image</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <layout class="QGridLayout" name="gridLayout_6">
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item row="0" column="1">
-        <widget class="QComboBox" name="mapSelector_comboBox"/>
-       </item>
-       <item row="0" column="3">
-        <widget class="QPushButton" name="showHidePropertiesPushButton">
-         <property name="text">
-          <string>Properties</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_21">
-         <property name="text">
-          <string>Map:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QPushButton" name="addMap_pushButton">
-         <property name="text">
-          <string>Add</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
      </item>
     </layout>
    </item>
@@ -1406,6 +1417,7 @@
   </customwidget>
  </customwidgets>
  <resources>
+  <include location="../resources/icons/icons.qrc"/>
   <include location="../resources/icons/icons.qrc"/>
   <include location="../resources/icons/icons.qrc"/>
  </resources>

@@ -15,6 +15,12 @@
 #include "file/v5/struct_file_area.h"
 #include "file/v5/struct_file_area_link.h"
 #include "file/v5/struct_file_game_area_map.h"
+#include "file/v5/struct_file_area_data.h"
+
+#include "file/v6/file_level_v6.h"
+#include "file/v6/file_area_v6.h"
+#include "file/v6/file_room_v6.h"
+
 
 class SharedData
 {
@@ -77,11 +83,20 @@ public:
 
     std::map<st_position, std::vector<file_v5_map_room>>  file_v5_room_map; // map rooms
 
+    std::vector<struct_file_level_header> level_header_vector;
+    std::vector<std::vector<file_v5_level_screen_data>> level_data_vector;
+
+
     // those are used to get a "global" position, in order to find witch is the room you are in the area
     st_file_game_area_room area_map[GAME_AREA_SIZE][GAME_AREA_SIZE];
     long area_scroll_x = 0;
     long area_scroll_y = 0;
 
+
+
+    // FILE-V6 //
+    std::vector<file_v6_level> v6_level_list;
+    std::vector<file_v6_area> v6_map_list;
 
 };
 

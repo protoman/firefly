@@ -17,11 +17,12 @@
 #include "mainwindow_tab/player_edit.h"
 #include "mainwindow_tab/anim_tiles_edit.h"
 #include "mainwindow_tab/slopeedittab.h"
-#include "mainwindow_tab/areaeditor.h"
+#include "mainwindow_tab/leveleditor.h"
 #include "scenes/sceneeditorwindow.h"
 #include "aboutwindow.h"
 #include "files_editor/fileseditor.h"
 #include "files_editor/stringseditor.h"
+#include "mainwindow_tab/areaedittab.h"
 
 
 namespace Ui
@@ -153,7 +154,8 @@ private:
     AboutWindow* about_window;
     FilesEditor* files_editor_window;
     StringsEditor* strings_editor_window;
-    AreaEditor* area_editor;
+    LevelEditor* level_editor;
+    AreaEditTab* area_edit_tab;
 };
 
 

@@ -36,6 +36,11 @@ public:
     static std::vector<std::string> get_weapon_names_list();
     static st_size calc_image_size(std::string file);
 
+    static void fill_gfx_effect(QComboBox *combo);
+    static void fill_gfx_mode(QComboBox *combo);
+
+    static void fill_layer_scroll_mode(QComboBox *combo);
+
     static void fill_anim_block_combo(QComboBox *combo);
 
     static void fill_abilities_combo(QComboBox *combo);

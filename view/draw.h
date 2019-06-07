@@ -77,7 +77,7 @@ public:
     void draw_castle_path(bool instant, st_position initial_point, st_position final_point);
     void draw_castle_point(int x, int y);
     void show_interstage_map_bg(st_position pos);
-    void draw_in_game_menu_bg();
+    void draw_in_game_menu_bg(int screen);
 
 private:
     draw();
@@ -172,6 +172,8 @@ private:
 
     std::map<e_INPUT_IMAGES, st_imageData> input_images_map;
     st_imageData in_game_menu_bg;
+    st_imageData in_game_menu_bg_map;
+    st_imageData in_game_menu_bg_options;
 
     st_imageData door_h, door_v;
     long timer_hud_center = 0;

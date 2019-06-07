@@ -29,6 +29,10 @@
 #define MAXPATHLEN 1024
 #define FS_FILENAME_SIZE 30
 
+
+#define FILE_V6_LEVEL_LIST "data/v6_level_list.dat"
+#define FILE_V6_MAP_LIST "data/v6_map_list.dat"
+
 #define FS_MAX_PLAYERS 4
 #define PLAYER_INITIAL_HP 100
 #define CHAR_NAME_SIZE 30
@@ -68,7 +72,7 @@
 // FRAMES //
 #define ANIM_TILE_MAX_FRAMES 10
 #define PREVIOUS_FRAMES_MAX 12
-#define WALK_FRAME_DELAY 150
+#define WALK_FRAME_DELAY 110
 #define CHAR_ANIM_DIRECTION_COUNT 2 // characters use only left/right, not like projectiles
 
 
@@ -141,8 +145,8 @@
 #define GAME_AREA_SIZE 30
 #define GAME_AREA_W 20
 #define GAME_AREA_H 10
-#define MAP_ROOM_W 20
-#define MAP_ROOM_H 10
+#define AREA_ROOM_W 20
+#define AREA_ROOM_H 10
 
 // SAVE/ITEMS //
 #define HEART_PIECES 30
@@ -150,6 +154,20 @@
 #define WEAPON_SLOTS 2
 #define ABILITIES_SLOTS 2
 #define ITEM_UPGRADES 200  // items like armor, special weapons, etc
+
+enum e_WALL_DIRECTIONS {
+    WALL_DIRECTION_NORTH,
+    WALL_DIRECTION_SOUTH,
+    WALL_DIRECTION_WEST,
+    WALL_DIRECTION_EAST,
+    WALL_DIRECTION_COUNT
+};
+
+enum e_BG_EXTRA_WIDTH_HANDLER {
+    BG_EXTRA_WIDTH_HANDLER_EXPAND,
+    BG_EXTRA_WIDTH_HANDLER_ANIMATE,
+    BG_EXTRA_WIDTH_HANDLER_COUNT
+};
 
 enum e_PROPERTIES_NAMES {
     PROPERTY_NAME_SLIDE,

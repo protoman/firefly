@@ -17,6 +17,7 @@ private:
 private:
     bool is_paused = false;
     static PauseMenu* _instance;
+    int screen = 0;                             // current screen (change with L/R buttons)
 };
 
 #endif // PAUSEMENU_H

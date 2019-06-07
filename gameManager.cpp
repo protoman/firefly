@@ -85,7 +85,7 @@ void gameManager::initHardwareLayer()
         std::cout << "SDL could not initialize! SDL_Error[" << SDL_GetError() << "]" << std::endl;
         exit(EXIT_FAILURE);
     }
-    SharedData::get_instance()->window = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, RES_W, RES_H, SDL_WINDOW_SHOWN );
+    SharedData::get_instance()->window = SDL_CreateWindow( "Project Firefly BETA v0.0.1", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, RES_W, RES_H, SDL_WINDOW_SHOWN );
     if (SharedData::get_instance()->window == nullptr) {
         std::cout << "Window could not be created! SDL_Error[" << SDL_GetError() << "]" << std::endl;
         exit(EXIT_FAILURE);
@@ -1844,7 +1844,7 @@ void gameManager::init_map_and_player_to_bottom()
     int bottom_tile_y = mapController.get_first_lock_on_bottom(RES_W/4, -1, player1.get_size().width, player1.get_hitbox(ANIM_TYPE_STAND).h);
     int bottom_y = bottom_tile_y*TILESIZE-player1.get_size().height+TILESIZE+1;
     std::cout << "### bottom_y[" << bottom_y << "], bottom_tile.y[" << bottom_tile_y << "], player_h[" << player1.get_hitbox(ANIM_TYPE_STAND).h << "]" << std::endl;
-    player1.set_position(st_position(TILESIZE*MAP_ROOM_W*0.5, bottom_y));
+    player1.set_position(st_position(TILESIZE*AREA_ROOM_W*0.5, bottom_y));
     player1.set_animation_type(ANIM_TYPE_STAND);
 }
 

@@ -146,6 +146,13 @@ void draw::preload()
     filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/in_game_menu.png";
     in_game_menu_bg = ImageView::get_instance()->imageFromFile(filename);
 
+    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/in_game_menu_map.png";
+    in_game_menu_bg_map = ImageView::get_instance()->imageFromFile(filename);
+
+    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/in_game_menu_options.png";
+    in_game_menu_bg_options = ImageView::get_instance()->imageFromFile(filename);
+
+
     filename = SharedData::get_instance()->FILEPATH + "images/hud/door_h.png";
     door_h = ImageView::get_instance()->imageFromFile(filename);
 
@@ -889,10 +896,16 @@ void draw::show_interstage_map_bg(st_position pos)
     TimerView::get_instance()->delay(5000);
 }
 
-void draw::draw_in_game_menu_bg()
+void draw::draw_in_game_menu_bg(int screen)
 {
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, AREA_H, 0, 0, 20);
-    ImageView::get_instance()->renderImageAt(0, 0, in_game_menu_bg);
+    if (screen == 0) {
+        ImageView::get_instance()->renderImageAt(0, 0, in_game_menu_bg);
+    } else if (screen == 1) {
+        ImageView::get_instance()->renderImageAt(0, 0, in_game_menu_bg_map);
+    } else {
+        ImageView::get_instance()->renderImageAt(0, 0, in_game_menu_bg_options);
+    }
 }
 
 void draw::draw_explosion(st_position center_point, int radius, int angle_inc)

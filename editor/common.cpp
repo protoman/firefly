@@ -400,6 +400,39 @@ st_size common::calc_image_size(std::string file)
     return st_size(image.width(), image.height());
 }
 
+void common::fill_gfx_effect(QComboBox *combo)
+{
+    combo->clear();
+    combo->addItem("None");
+    combo->addItem("Rain");
+    combo->addItem("Snow");
+    combo->addItem("Underwater");
+    combo->addItem("Train");
+    combo->addItem("Flash Stopper");
+    combo->addItem("Lighting Bolt");
+    combo->addItem("Shadow Top");
+    combo->addItem("Inferno");
+}
+
+void common::fill_gfx_mode(QComboBox *combo)
+{
+    combo->clear();
+    combo->addItem("Full");
+    combo->addItem("Background");
+    combo->addItem("Overlay");
+}
+
+void common::fill_layer_scroll_mode(QComboBox *combo)
+{
+    combo->clear();
+    combo->addItem("None");
+    combo->addItem("Up");
+    combo->addItem("Down");
+    combo->addItem("Left");
+    combo->addItem("Right");
+    combo->addItem("Diagonal [TBD]");
+}
+
 void common::fill_anim_block_combo(QComboBox *combo)
 {
     combo->clear();

@@ -503,15 +503,25 @@ void EditorArea::paintEvent(QPaintEvent *)
 
 
     //std::cout << "=============" << std::endl;
-
-
     if (Mediator::get_instance()->show_grid) {
         // DRAW GRID //
         QPen pen(QColor(120, 120, 120), 1, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
         QPen pen_red(QColor(180, 50, 50), 2, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
         painter.setPen(pen);
         int currentMap = SharedData::get_instance()->file_v5_selected_map;
-        for (unsigned int i=1; i<SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_w; i++) {
+
+        int limit_h = SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_h+1;
+        int limit_w = SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_w;
+        if (limit_w < 0 || limit_w > 1000) {
+            std::cout << "IGNORE BAD MAP-DATA w[" << limit_w << "]" << std::endl;
+            return;
+        }
+        if (limit_h < 0 || limit_h > 1000) {
+            std::cout << "IGNORE BAD MAP-DATA h[" << limit_h << "]" << std::endl;
+            return;
+        }
+
+        for (unsigned int i=1; i<limit_w; i++) {
             pos = i*TILESIZE*Mediator::get_instance()->zoom-1;
             //QLineF line(0, 800, 16, 800);
             // linhas horizontais
@@ -524,7 +534,9 @@ void EditorArea::paintEvent(QPaintEvent *)
             painter.drawLine(line);
         }
         painter.setPen(pen);
-        for (unsigned int i=1; i<SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_h+1; i++) {
+
+        std::cout << ">>>>>>>>>>>> limit_h[" << limit_h << "]" << std::endl;
+        for (unsigned int i=1; i<limit_h; i++) {
             pos = i*TILESIZE*Mediator::get_instance()->zoom-1;
             //QLineF line(0, 800, 16, 800);
             // linhas verticais

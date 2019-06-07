@@ -132,6 +132,9 @@ void MapController::addLayer(unsigned int n, bool isFg)
     std::string filename = SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).backgrounds[n].filename;
     // only add if not existing in map
     if (mapBackgroundMap.find(n) == mapBackgroundMap.end()) {
+        if (filename.length() < 5 || filename.find(".png") == std::string::npos) {
+            return;
+        }
         mapBackgroundMap.insert(std::pair<unsigned int, st_background>(n, st_background()));
         mapBackgroundMap.at(n).imageData = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->FILEPATH+std::string("/images/map_backgrounds/")+filename);
 

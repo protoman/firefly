@@ -1621,14 +1621,14 @@ bool character::slide(st_float_position mapScrolling)
 
     //std::cout << "CHAR::SLIDE - ability.slide[" << SharedData::get_instance()->game_save.abilities[PROPERTY_NAME_SLIDE] << "]" << std::endl;
     if (SharedData::get_instance()->game_save.abilities[PROPERTY_NAME_SLIDE] == false) {
-        std::cout << "SLIDE::OUT #5" << std::endl;
+        //std::cout << "SLIDE::OUT #5" << std::endl;
         return false;
     }
 
 
     // no need to slide
     if (state.animation_type != ANIM_TYPE_SLIDE && moveCommands.dash != 1) {
-        std::cout << "SLIDE::OUT #6" << std::endl;
+        //std::cout << "SLIDE::OUT #6" << std::endl;
         return false;
     }
 

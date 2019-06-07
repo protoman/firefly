@@ -35,8 +35,6 @@ void map_tab::reload()
     ui->editArea->update_files();
 
     properties_hidden = true;
-    propertiesH = ui->properties_groupBox->maximumHeight();
-    ui->properties_groupBox->setMaximumHeight(30);
 
     fill_data();
 }
@@ -460,6 +458,7 @@ void map_tab::on_mapSelector_comboBox_currentIndexChanged(int index)
     if (_data_loading == true) { return; }
     SharedData::get_instance()->file_v5_selected_map = index;
     _data_loading = true;
+    fill_data();
     ui->editArea->repaint();
     _data_loading = false;
 }
@@ -509,6 +508,8 @@ void map_tab::set_layer_data()
     ui->repeatX_checkBox->setChecked(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].repeatX);
     ui->repeatY_checkBox->setChecked(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].repeatY);
     ui->layerAlpha_spinBox->setValue(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].alpha);
+    ui->bgAnimationWidth_spinBox->setValue(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].animation_width);
+    ui->bgAnimationTimer_spinBox->setValue(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].animation_timer);
 }
 
 void map_tab::on_bg1_filename_currentIndexChanged(const QString &arg1)
@@ -563,16 +564,16 @@ void map_tab::on_layerAlpha_spinBox_valueChanged(int arg1)
 
 }
 
-
-
-void map_tab::on_showHidePropertiesPushButton_clicked()
+void map_tab::on_bgAnimationWidth_spinBox_valueChanged(int arg1)
 {
-    properties_hidden = !properties_hidden;
-    if (properties_hidden == true) {
-        propertiesH = ui->properties_groupBox->maximumHeight();
-        ui->properties_groupBox->setMaximumHeight(30);
-    } else {
-        ui->properties_groupBox->setMaximumHeight(propertiesH);
-    }
+    if (_data_loading == true) { return; }
+    file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
+    map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].animation_width = arg1;
+}
 
+void map_tab::on_bgAnimationTimer_spinBox_valueChanged(int arg1)
+{
+    if (_data_loading == true) { return; }
+    file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
+    map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].animation_timer = arg1;
 }

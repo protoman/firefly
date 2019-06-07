@@ -14,7 +14,7 @@ enum e_MAP_WALL_TYPES {
 struct st_file_game_area_room {
 
     int link[4];                // each link is a direction to the another linked room
-    int item_number;       // if room contains an item
+    int item_number;            // if room contains a special item
     int map_n;
     bool visited;               // indicates if player already visited the room
     Uint8 wall_left;

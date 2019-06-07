@@ -56,10 +56,12 @@ win32 {
 TARGET = ../build/editor
 TEMPLATE = app
 SOURCES += main.cpp \
-    ../aux_tools/property_name.cpp \
+    ../aux_tools/ability_name.cpp \
     mainwindow.cpp \
     editorarea.cpp \
     editortilepallete.cpp \
+    mainwindow_tab/areaedittab.cpp \
+    mainwindow_tab/leveleditor.cpp \
     mediator.cpp \
     addwizard.cpp \
     loadgamepicker.cpp \
@@ -116,15 +118,17 @@ SOURCES += main.cpp \
     ../file/file_io.cpp \
     ../data/shareddata.cpp \
     mainwindow_tab/slopeedittab.cpp \
+    widgets/areaeditpreviewwidget.cpp \
     widgets/slopepreviewwidget.cpp \
     widgets/slopepickerwidget.cpp \
-    mainwindow_tab/areaeditor.cpp \
     widgets/areaseditorarea.cpp
 
 HEADERS += mainwindow.h \
-    ../aux_tools/property_name.h \
+    ../aux_tools/ability_name.h \
     editorarea.h \
     editortilepallete.h \
+    mainwindow_tab/areaedittab.h \
+    mainwindow_tab/leveleditor.h \
     mediator.h \
     addwizard.h \
     addwizard.h \
@@ -205,9 +209,9 @@ HEADERS += mainwindow.h \
     ../data/shareddata.h \
     ../file/file_io.h \
     mainwindow_tab/slopeedittab.h \
+    widgets/areaeditpreviewwidget.h \
     widgets/slopepreviewwidget.h \
     widgets/slopepickerwidget.h \
-    mainwindow_tab/areaeditor.h \
     widgets/areaseditorarea.h
 
 FORMS += mainwindow.ui \
@@ -215,6 +219,8 @@ FORMS += mainwindow.ui \
     loadgamepicker.ui \
     dialognpcedit.ui \
     dialogobjectedit.ui \
+    mainwindow_tab/areaedittab.ui \
+    mainwindow_tab/leveleditor.ui \
     mainwindow_tab/npc_edit.ui \
     mainwindow_tab/object_tab.ui \
     mainwindow_tab/weapon_edit.ui \
@@ -243,8 +249,7 @@ FORMS += mainwindow.ui \
     mainwindow_tab/anim/animpackimport.ui \
     dialog_pick_color.ui \
     files_editor/gametextcreditstab.ui \
-    mainwindow_tab/slopeedittab.ui \
-    mainwindow_tab/areaeditor.ui
+    mainwindow_tab/slopeedittab.ui
 
 RESOURCES += resources/icons/icons.qrc
 INCLUDEPATH += ../common

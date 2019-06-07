@@ -59,19 +59,20 @@ void areasEditorArea::paintEvent(QPaintEvent *event)
     QLineF line;
 
     // draw map points
-    for (int i=0; i<GAME_AREA_SIZE; i++) {
-        for (int j=0; j<GAME_AREA_SIZE; j++) {
+    for (int i=0; i<FILE_AREA_W; i++) {
+        for (int j=0; j<FILE_AREA_H; j++) {
             // TODO - make current make different color
-            if (SharedData::get_instance()->area_list.size() > currentArea && SharedData::get_instance()->area_list.at(currentArea).point[i][j] != -1) {
-                //std::cout << "x[" << i << "], y[" << j << "], map[" << SharedData::get_instance()->area_list.at(currentArea).point[i][j] << "]" << std::endl;
-                if (SharedData::get_instance()->area_list.at(currentArea).point[i][j] == currentMap) {
+            //std::cout << "area[" << i << "][" << j << "]: [" << SharedData::get_instance()->v6_level_list.at(currentArea).rooms[i][j].area_n << "]" << std::endl;
+            if (SharedData::get_instance()->v6_level_list.size() > currentArea && SharedData::get_instance()->v6_level_list.at(currentArea).rooms[i][j].area_n != -1) {
+                file_v6_level level = SharedData::get_instance()->v6_level_list.at(currentArea);
+                file_v6_room room = level.rooms[i][j];
+                if (SharedData::get_instance()->v6_level_list.at(currentArea).rooms[i][j].area_n == currentMap) {
                     painter.setBrush(QColor(0, 0, 255, 180));
                     painter.setPen(QColor(0, 0, 180, 255));
                 } else {
                     painter.setBrush(QColor(99, 173, 230, 180));
                     painter.setPen(QColor(99, 117, 230, 255));
                 }
-                //std::cout << "found map[" << SharedData::get_instance()->area_list.at(currentArea).point[i][j] << "], at[" << i << "][" << j << "]" << std::endl;
                 painter.drawRect(i*TILE_SHOW_SIZE, j*TILE_SHOW_SIZE, TILE_SHOW_SIZE, TILE_SHOW_SIZE);
             }
         }
@@ -86,6 +87,7 @@ void areasEditorArea::paintEvent(QPaintEvent *event)
     }
 
     // draw links
+    /*
     if (SharedData::get_instance()->file_v5_area_link_map.find(currentArea) != SharedData::get_instance()->file_v5_area_link_map.end()) {
         std::cout << "MAP-LINKS #1"<< std::endl;
         for (int i=0; i<SharedData::get_instance()->file_v5_area_link_map.at(currentArea).size(); i++) {
@@ -126,16 +128,17 @@ void areasEditorArea::paintEvent(QPaintEvent *event)
     } else {
         std::cout << "MAP-LINKS #3"<< std::endl;
     }
+    */
 
 
     painter.setPen(pen);
-    for (int i=0; i<=GAME_AREA_SIZE; i++) {
-        line = QLineF(0, i*TILE_SHOW_SIZE, GAME_AREA_SIZE*TILE_SHOW_SIZE, i*TILE_SHOW_SIZE);
+    for (int i=0; i<=FILE_AREA_H; i++) {
+        line = QLineF(0, i*TILE_SHOW_SIZE, FILE_AREA_W*TILE_SHOW_SIZE, i*TILE_SHOW_SIZE);
         painter.drawLine(line);
     }
 
-    for (int i=0; i<=GAME_AREA_SIZE; i++) {
-        line = QLineF(i*TILE_SHOW_SIZE, 0, i*TILE_SHOW_SIZE, GAME_AREA_SIZE*TILE_SHOW_SIZE);
+    for (int i=0; i<=FILE_AREA_W; i++) {
+        line = QLineF(i*TILE_SHOW_SIZE, 0, i*TILE_SHOW_SIZE, FILE_AREA_H*TILE_SHOW_SIZE);
         painter.drawLine(line);
     }
 
@@ -149,16 +152,15 @@ void areasEditorArea::mousePressEvent(QMouseEvent *event)
     std::cout << "SET MAP AT [" << editor_selectedTileX << "][" << editor_selectedTileY << "]" << std::endl;
 
     if (edit_mode == AREA_EDIT_MODE_NORMAL) {
-        if (SharedData::get_instance()->area_list.at(currentArea).point[editor_selectedTileX][editor_selectedTileY] == -1) {
-            SharedData::get_instance()->area_list.at(currentArea).point[editor_selectedTileX][editor_selectedTileY] = currentMap;
-        } else if (SharedData::get_instance()->area_list.at(currentArea).point[editor_selectedTileX][editor_selectedTileY] == currentMap) {
-            SharedData::get_instance()->area_list.at(currentArea).point[editor_selectedTileX][editor_selectedTileY] = -1;
-        }
-        if (SharedData::get_instance()->area_list.at(currentArea).map[currentMap] == -1) {
-            SharedData::get_instance()->area_list.at(currentArea).map[currentMap] = currentMap;
+        if (SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY].area_n == -1) {
+            SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY].area_n = currentMap;
+        } else if (SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY].area_n == currentMap) {
+            SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY].area_n = -1;
         }
         repaint();
     } else if (edit_mode == AREA_EDIT_MODE_VLINK || edit_mode == AREA_EDIT_MODE_HLINK) {
+        /// TODO ///
+        /*
         // TODO: check if point has a link, so delete it
         if (SharedData::get_instance()->file_v5_area_link_map.find(currentArea) != SharedData::get_instance()->file_v5_area_link_map.end()) {
             for (int i=0; i<SharedData::get_instance()->file_v5_area_link_map.at(currentArea).size(); i++) {
@@ -198,5 +200,6 @@ void areasEditorArea::mousePressEvent(QMouseEvent *event)
                 repaint();
             }
         }
+        */
     }
 }

@@ -253,7 +253,36 @@ void Mediator::load_game() {
     }
     */
 
+    // AREA, MAPS and ROOMS //
+    for (int i=0; i<9999; i++) {
+        QString filename_level_header = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_level_") + QString::number(i) + QString("_header.dat");
+        QString filename_level_data = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_level_") + QString::number(i) + QString("_data.dat");
 
+        if (fio.file_exists(filename_level_header.toStdString()) == false) {
+            break;
+        }
+
+        // header
+        struct_file_level_header level_header = fio_cmm.load_single_object_from_disk<struct_file_level_header>(filename_level_header.toStdString());
+        SharedData::get_instance()->level_header_vector.push_back(level_header);
+        // data
+        std::vector<file_v5_level_screen_data> level_data = fio_cmm.load_from_disk<file_v5_level_screen_data>(filename_level_data.toStdString());
+        SharedData::get_instance()->level_data_vector.push_back(level_data);
+    }
+
+
+    // FILE-V6 //
+    SharedData::get_instance()->v6_level_list = fio_cmm.load_from_disk<file_v6_level>(SharedData::get_instance()->FILEPATH + FILE_V6_LEVEL_LIST);
+    SharedData::get_instance()->v6_map_list = fio_cmm.load_from_disk<file_v6_area>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST);
+
+
+    if (SharedData::get_instance()->v6_level_list.size() == 0) {
+        SharedData::get_instance()->v6_level_list.push_back(file_v6_level());
+        sprintf(SharedData::get_instance()->v6_level_list.at(0).level_name, "LEVEL 1");
+    }
+    if (SharedData::get_instance()->v6_map_list.size() == 0) {
+        SharedData::get_instance()->v6_map_list.push_back(file_v6_area());
+    }
 }
 
 
@@ -332,6 +361,37 @@ void Mediator::save_game()
         }
     }
     fio_cmm.save_data_to_disk<file_v5_map_room_data>(SharedData::get_instance()->FILEPATH + FILE_V5_ROOM_LIST, serialized_room_data);
+
+    // TEMP - convert old format to new one //
+    SharedData::get_instance()->level_header_vector.clear();
+    SharedData::get_instance()->level_data_vector.clear();
+    for (int i=0; i<SharedData::get_instance()->area_list.size(); i++) {
+        struct_file_level_header level_header;
+        sprintf(level_header.name, "%s", SharedData::get_instance()->area_list.at(i).name);
+        SharedData::get_instance()->level_header_vector.push_back(level_header);
+
+        std::vector<file_v5_level_screen_data> level_data;
+        for (int j=0; j<GAME_AREA_SIZE*GAME_AREA_SIZE; j++) {
+            level_data.push_back(file_v5_level_screen_data());
+        }
+        SharedData::get_instance()->level_data_vector.push_back(level_data);
+    }
+
+    // AREA, MAPS and ROOMS //
+    for (int i=0; i<SharedData::get_instance()->level_header_vector.size(); i++) {
+        QString filename_level_header = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_level_") + QString::number(i) + QString("_header.dat");
+        QString filename_level_data = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_level_") + QString::number(i) + QString("_data.dat");
+
+        fio_cmm.save_single_object_to_disk<struct_file_level_header>(filename_level_header.toStdString(), SharedData::get_instance()->level_header_vector.at(i));
+
+        std::vector<file_v5_level_screen_data> level_data = SharedData::get_instance()->level_data_vector.at(i);
+        fio_cmm.save_data_to_disk<file_v5_level_screen_data>(filename_level_data.toStdString(), level_data);
+    }
+
+
+    // FILE-V6 //
+    fio_cmm.save_data_to_disk<file_v6_level>(SharedData::get_instance()->FILEPATH + FILE_V6_LEVEL_LIST, SharedData::get_instance()->v6_level_list);
+    fio_cmm.save_data_to_disk<file_v6_area>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST, SharedData::get_instance()->v6_map_list);
 
 }
 

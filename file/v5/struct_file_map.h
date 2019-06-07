@@ -54,6 +54,8 @@ struct file_v5_map_background {
     bool repeatX;                            // if true, will repear on X axis to fill the screen
     bool repeatY;                            // if true, will repear on X axis to fill the screen
     int alpha;
+    int animation_width;                     // tells what is the image width we need to use as frame-size
+    int animation_timer;                     // defines the time between animation frames
 
     file_v5_map_background()
     {
@@ -65,6 +67,8 @@ struct file_v5_map_background {
         repeatX = true;
         repeatY = false;
         alpha = SDL_ALPHA_OPAQUE;
+        animation_width = 0;
+        animation_timer = 0;
     }
 };
 
@@ -92,7 +96,7 @@ struct file_v5_map_header {
 };
 
 struct file_v5_map_room {
-    file_v5_map_tile tiles[MAP_ROOM_W][MAP_ROOM_H];
+    file_v5_map_tile tiles[AREA_ROOM_W][AREA_ROOM_H];
     int area_x = -1;
     int area_y = -1;
 };

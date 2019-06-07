@@ -76,8 +76,9 @@ private slots:
 
     void on_editModeSlope_Button_clicked();
 
+    void on_bgAnimationWidth_spinBox_valueChanged(int arg1);
 
-    void on_showHidePropertiesPushButton_clicked();
+    void on_bgAnimationTimer_spinBox_valueChanged(int arg1);
 
 private:
     void fill_data();

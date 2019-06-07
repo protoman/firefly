@@ -10,6 +10,10 @@
 #include "file/v5/struct_file_area.h"
 #include "scenes/scenesmediator.h"
 
+#include "file/v6/file_level_v6.h"
+#include "file/v6/file_area_v6.h"
+#include "file/v6/file_room_v6.h"
+
 
 struct st_player_graphics_data {
 	st_size frame_size;

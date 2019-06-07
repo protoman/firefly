@@ -32,7 +32,7 @@ classPlayer::classPlayer(int playerNumber) : teleporter_n(-1), selected_weapon(-
 
     _number = playerNumber;
     position.y = 0;
-    position.x = TILESIZE*MAP_ROOM_W*1.5;
+    position.x = TILESIZE*AREA_ROOM_W*1.5;
     hit_duration = 2000;
     hitPoints.total = PLAYER_INITIAL_HP;
 	hitPoints.current = hitPoints.total;
@@ -443,6 +443,8 @@ void classPlayer::initFrames()
     addSpriteFrame(ANIM_TYPE_WALK, 8, playerSpriteSurface, WALK_FRAME_DELAY);
     addSpriteFrame(ANIM_TYPE_WALK, 9, playerSpriteSurface, WALK_FRAME_DELAY);
     addSpriteFrame(ANIM_TYPE_WALK, 8, playerSpriteSurface, WALK_FRAME_DELAY);
+    addSpriteFrame(ANIM_TYPE_WALK, 7, playerSpriteSurface, WALK_FRAME_DELAY);
+    addSpriteFrame(ANIM_TYPE_WALK, 6, playerSpriteSurface, WALK_FRAME_DELAY);
     addSpriteFrame(ANIM_TYPE_WALK, 7, playerSpriteSurface, WALK_FRAME_DELAY);
 
 	// JUMP
