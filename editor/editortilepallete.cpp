@@ -19,15 +19,17 @@ void EditorTilePallete::paintEvent(QPaintEvent *) {
 
    QString filename;
    if (Mediator::get_instance()->getPallete().length() < 1) {
+        std::cout << "EditorTilePallete::paintEvent - USING DEFAULT TILESET" << std::endl;
         filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/tilesets/") + QString("default.png");
    } else {
+       std::cout << "EditorTilePallete::paintEvent - USING SET TILESET[" << std::endl;
         filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/tilesets/") + QString(Mediator::get_instance()->getPallete().c_str());
    }
 
    QPainter painter(this);
    image = new QPixmap(filename);
    if (image->isNull()) {
-      printf("DEBUG.Tile - Could not load image file '%s'\n", qPrintable(filename));
+      std::cout << "EditorTilePallete::paintEvent - DEBUG.Tile - Could not load image file[" << qPrintable(filename) << "]" << std::endl;;
    }
    QRectF target(QPoint(0, 0), QSize(image->size().width()*ADJUSTED_SIZE, image->size().height()*ADJUSTED_SIZE));
    QRectF source(QPoint(0, 0), image->size());
@@ -41,7 +43,7 @@ void EditorTilePallete::paintEvent(QPaintEvent *) {
 }
 
 void EditorTilePallete::changeTileSet(const QString &tileset) {
-   printf("mudando paleta para %s\n", qPrintable(tileset));
+   printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%% mudando paleta para %s\n", qPrintable(tileset));
    signalPalleteChanged();
    repaint();
 }

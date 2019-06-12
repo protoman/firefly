@@ -21,7 +21,7 @@ public:
     void update_edit_area();
 
 public slots:
-    void on_color_selected1(QColor);
+
 
 private slots:
     void on_comboBox_currentIndexChanged(int index);
@@ -29,9 +29,6 @@ private slots:
     void on_npc_listWidget_currentRowChanged(int currentRow);
     void on_npc_direction_combo_currentIndexChanged(int index);
     void on_objectListWidget_currentRowChanged(int currentRow);
-    void on_bg_color_pick_clicked();
-    void on_checkBox_toggled(bool checked);
-    void on_checkBox_2_toggled(bool checked);
     void on_object_direction_combo_currentIndexChanged(int index);
     void on_editTile_button_clicked();
     void on_editObject_button_clicked();
@@ -54,31 +51,8 @@ private slots:
 
     void on_mapSelector_comboBox_currentIndexChanged(int index);
 
-    void on_v5_tileset_comboBox_currentIndexChanged(const QString &arg1);
-
-    void on_layerSelector_comboBox_currentIndexChanged(int index);
-
-    void set_layer_data();
-
-    void on_bg1_filename_currentIndexChanged(const QString &arg1);
-
-    void on_bg1_speed_valueChanged(double arg1);
-
-    void on_bg1_y_pos_valueChanged(int arg1);
-
-    void on_autoScrollBG1_mode_currentIndexChanged(int index);
-
-    void on_repeatX_checkBox_toggled(bool checked);
-
-    void on_repeatY_checkBox_toggled(bool checked);
-
-    void on_layerAlpha_spinBox_valueChanged(int arg1);
-
     void on_editModeSlope_Button_clicked();
 
-    void on_bgAnimationWidth_spinBox_valueChanged(int arg1);
-
-    void on_bgAnimationTimer_spinBox_valueChanged(int arg1);
 
 private:
     void fill_data();

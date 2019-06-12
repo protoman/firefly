@@ -13,7 +13,7 @@ void MapController::loadMap()
 {
     // TODO::IURO - reset objects, npcs, etc //
 
-    mapBackgroundMap.clear();
+    imageLayerMap.clear();
     layerScrollMap.clear();
 
     unsigned int mapNumber = SharedData::get_instance()->file_v5_selected_map;
@@ -23,32 +23,59 @@ void MapController::loadMap()
     }
 
 
-
-    //std::map<int, std::vector<file_v5_map_tile>>  file_v5_map_tile_map; // map tiles
-    //std::map<int, std::vector<file_v5_map_object>>  file_v5_map_object_map; // map objects
-    //std::map<int, std::vector<file_v5_map_npc>>  file_v5_map_npc_map; // map enemies
-
-    file_v5_map_header &mapData = SharedData::get_instance()->file_v5_map_header_list.at(mapNumber);
-    std::vector<file_v5_map_tile> &mapTiles = SharedData::get_instance()->file_v5_map_tile_map.at(mapNumber);
-
-    /*
-    _npc_list.clear();
-    */
-
-
-    _level3_tiles.clear();
-
-    for (int i=0; i<mapData.tiles_w; i++) {
-        for (int j=0; j<mapData.tiles_h; j++) {
-            unsigned int n = j*mapData.tiles_w + i;
-            if (mapTiles.at(n).tile_overlay.x != -1 && mapTiles.at(n).tile_overlay.y != -1) {
-                //std::cout << "tile_lvl3[" << lvl3_x << "][" << lvl3_y << "]" << std::endl;
-                struct st_level3_tile temp_tile(st_position(mapTiles.at(n).tile_overlay.x, mapTiles.at(n).tile_overlay.y), st_position(i, j));
-                _level3_tiles.push_back(temp_tile);
+    // determine rooms of the area //
+    SharedData::get_instance()->leftmost_room = FILE_AREA_W;
+    SharedData::get_instance()->rightmost_room = 0;
+    SharedData::get_instance()->topmost_room = FILE_AREA_H;
+    SharedData::get_instance()->bottommost_room = 0;
+    SharedData::get_instance()->area_room_list.clear();
+    for (int i=0; i<FILE_AREA_W; i++) {
+        for (int j=0; j<FILE_AREA_H; j++) {
+            //std::cout << "room[" << i << "][" << j << "].area_n[" << SharedData::get_instance()->v6_current_level_data.rooms[i][j].area_n << "]" << std::endl;
+            if (SharedData::get_instance()->v6_current_level_data.rooms[i][j].area_n == SharedData::get_instance()->v6_selected_area) {
+                SharedData::get_instance()->area_room_list.push_back(st_position(i, j));
+                if (i < SharedData::get_instance()->leftmost_room) {
+                    SharedData::get_instance()->leftmost_room = i;
+                }
+                if (i > SharedData::get_instance()->rightmost_room) {
+                    SharedData::get_instance()->rightmost_room = i;
+                }
+                if (j > SharedData::get_instance()->bottommost_room) {
+                    SharedData::get_instance()->bottommost_room = j;
+                }
+                if (j < SharedData::get_instance()->topmost_room) {
+                    SharedData::get_instance()->topmost_room = j;
+                }
             }
         }
     }
 
+    map_tiles_w = (SharedData::get_instance()->rightmost_room-SharedData::get_instance()->leftmost_room+1)*AREA_ROOM_W;
+    map_tiles_h = (SharedData::get_instance()->bottommost_room-SharedData::get_instance()->topmost_room+1)*AREA_ROOM_H;
+
+    std::cout << "MapController::loadMap - v6_selected_area[" << SharedData::get_instance()->v6_selected_area << "], rightmost_room[" << SharedData::get_instance()->rightmost_room << "], leftmost_room[" << SharedData::get_instance()->leftmost_room << "], bottommost_room[" << SharedData::get_instance()->bottommost_room << "], topmost_room[" << SharedData::get_instance()->topmost_room << "], map_tiles_w[" << map_tiles_w << "], map_tiles_h[" << map_tiles_h << "]" << std::endl;
+
+    area_tile_map.clear();
+    _level3_tiles.clear();
+    for (int i=SharedData::get_instance()->leftmost_room; i<=SharedData::get_instance()->rightmost_room; i++) {
+        for (int j=SharedData::get_instance()->topmost_room; j<=SharedData::get_instance()->bottommost_room; j++) {
+            if (SharedData::get_instance()->v6_current_level_data.rooms[i][j].area_n == SharedData::get_instance()->v6_selected_area) {
+                for (int m=0; m<AREA_ROOM_W; m++) {
+                    for (int n=0; n<AREA_ROOM_H; n++) {
+                        int tile_x = m + i*AREA_ROOM_W;
+                        int tile_y = n + j*AREA_ROOM_H;
+                        area_tile_map.insert(std::pair<st_position, file_v6_room_tile>(st_position(tile_x, tile_y), SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n]));
+                        int overlay_x = SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n].tile_overlay.x;
+                        int overlay_y = SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n].tile_overlay.y;
+                        if (overlay_x != -1 && overlay_y != -1) {
+                            struct st_level3_tile temp_tile(st_position(overlay_x, overlay_y), st_position(tile_x, tile_y));
+                            _level3_tiles.push_back(temp_tile);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 
     //load_map_npcs();
@@ -57,6 +84,7 @@ void MapController::loadMap()
     _show_map_pos_x = -1;
     _show_map_pos_y = -1;
     create_dynamic_background_surfaces();
+    init_animated_tiles();
     map_screen = ImageView::get_instance()->initSurface(st_size(RES_W+TILESIZE*2, AREA_H+TILESIZE*2));
 
     preload_slope_images();
@@ -128,22 +156,23 @@ void MapController::show()
 
 void MapController::addLayer(unsigned int n, bool isFg)
 {
-    unsigned int mapNumber = SharedData::get_instance()->file_v5_selected_map;
-    std::string filename = SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).backgrounds[n].filename;
+    file_v6_area_layer layer = SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).layers[n];
+    std::string filename = layer.filename;
     // only add if not existing in map
-    if (mapBackgroundMap.find(n) == mapBackgroundMap.end()) {
+    if (imageLayerMap.find(n) == imageLayerMap.end()) {
         if (filename.length() < 5 || filename.find(".png") == std::string::npos) {
             return;
         }
-        mapBackgroundMap.insert(std::pair<unsigned int, st_background>(n, st_background()));
-        mapBackgroundMap.at(n).imageData = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->FILEPATH+std::string("/images/map_backgrounds/")+filename);
+        //std::cout << ">>>>>>>>>>>>>>>>>>>>>>> MapController::addLayer[" << n << "][" << filename << "]" << std::endl;
+        imageLayerMap.insert(std::pair<unsigned int, st_background>(n, st_background()));
+        imageLayerMap.at(n).imageData = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->FILEPATH+std::string("/images/map_backgrounds/")+filename);
 
 
-        if (SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).backgrounds[n].alpha != 255) {
-            ImageView::get_instance()->set_surface_alpha(SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).backgrounds[n].alpha, mapBackgroundMap.at(n).imageData);
-            SDL_SetTextureBlendMode(mapBackgroundMap.at(n).imageData.texture, SDL_BLENDMODE_BLEND);
+        if (layer.alpha != 255) {
+            ImageView::get_instance()->set_surface_alpha(layer.alpha, imageLayerMap.at(n).imageData);
+            SDL_SetTextureBlendMode(imageLayerMap.at(n).imageData.texture, SDL_BLENDMODE_BLEND);
         } else {
-            SDL_SetTextureBlendMode(mapBackgroundMap.at(n).imageData.texture,
+            SDL_SetTextureBlendMode(imageLayerMap.at(n).imageData.texture,
             SDL_ComposeCustomBlendMode(
             SDL_BLENDFACTOR_ONE,
             SDL_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
@@ -153,11 +182,11 @@ void MapController::addLayer(unsigned int n, bool isFg)
             SDL_BLENDOPERATION_ADD));
         }
 
-        mapBackgroundMap.at(n).position.y = SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).backgrounds[n].adjust_y;
+        imageLayerMap.at(n).position.y = layer.adjust_y;
 
         layerScrollMap.insert(std::pair<unsigned int, st_layer_pos>(n, st_layer_pos(isFg)));
         if (n == 3) {
-            ImageView::get_instance()->set_surface_alpha(150, mapBackgroundMap.at(n).imageData);
+            ImageView::get_instance()->set_surface_alpha(150, imageLayerMap.at(n).imageData);
         }
     }
 }
@@ -165,7 +194,7 @@ void MapController::addLayer(unsigned int n, bool isFg)
 
 void MapController::clearLayers()
 {
-    mapBackgroundMap.clear();
+    imageLayerMap.clear();
 }
 
 
@@ -226,11 +255,11 @@ void MapController::draw_map_tiles()
 
     int tile_end_x = tile_x_ini+(RES_W/TILESIZE)+3;
     int tile_end_y = tile_y_ini+(AREA_H/TILESIZE)+2;
-    if (tile_end_x > SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
-        tile_end_x = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w;
+    if (tile_end_x > map_tiles_w) {
+        tile_end_x = map_tiles_w;
     }
-    if (tile_end_y > SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h) {
-        tile_end_y = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h;
+    if (tile_end_y > map_tiles_h) {
+        tile_end_y = map_tiles_h;
     }
     //std::cout << "MapController::draw_map_tiles - tile_y_ini[" << tile_y_ini << "], tile_end_y[" << tile_end_y << "]" << std::endl;
     //std::cout << "MapController::draw_map_tiles - RES_W/TILESIZE[" << RES_W/TILESIZE << ", start[" << tile_x_ini << "], end[" << tile_end << "]" << std::endl;
@@ -274,6 +303,9 @@ void MapController::draw_map_tiles()
 
 void MapController::draw_animated_tiles()
 {
+
+    std::cout << "MapController::draw_animated_tiles anim_tile_list.size[" << anim_tile_list.size() << "]" << std::endl;
+
     //scroll.x - dest.x
     for (int i=0; i<anim_tile_list.size(); i++) {
         //std::cout << "draw-anim-tile[" << i << "][" << anim_tile_list.at(i).anim_tile_id << "], x[" << anim_tile_list.at(i).dest_x << "], y[" << anim_tile_list.at(i).dest_y << "]" << std::endl;
@@ -294,10 +326,49 @@ void MapController::init_animated_tiles()
     // draw the tiles of the screen region
     struct st_position pos_origin;
     struct st_position pos_destiny;
-    for (int i=0; i<SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w; i++) {
+    // @TODO v6 //
+
+    for (int map_x=SharedData::get_instance()->leftmost_room; map_x<=SharedData::get_instance()->rightmost_room; map_x++) {
+        std::cout << "@#### MapController::init_animated_tiles - map_x[" << map_x << "]" << std::endl;
+        for (int map_y=SharedData::get_instance()->topmost_room; map_y<=SharedData::get_instance()->bottommost_room; map_y++) {
+            std::cout << "@#### MapController::init_animated_tiles - map_y[" << map_y << "]" << std::endl;
+            for (int i=0; i<AREA_ROOM_W; i++) {
+                for (int j=0; j<AREA_ROOM_H; j++) {
+                    file_v6_tile_piece underlay_tile = SharedData::get_instance()->v6_current_level_data.rooms[map_x][map_y].tiles[i][j].tile_underlay;
+                    // @TODO: overlay //
+                    //file_v6_tile_piece overlay_tile = SharedData::get_instance()->v6_current_level_data.rooms[map_x][map_y].tiles[i][j].tile_overlay;
+                    if (underlay_tile.type == TILE_TYPE_ANIM &&  SharedData::get_instance()->v6_current_level_data.rooms[map_x][map_y].area_n == SharedData::get_instance()->v6_selected_area) {
+
+
+                        pos_origin.x = underlay_tile.x;
+                        pos_origin.y = underlay_tile.y;
+
+                        std::cout << "FOUND-ANIM-TYPE - underlay_tile[" << underlay_tile.x << "][" << underlay_tile.y << "]" << std::endl;
+
+
+                        int anim_tile_id = pos_origin.x;
+                        pos_destiny.y = j*TILESIZE + map_y*AREA_ROOM_H;
+                        pos_destiny.x = i*TILESIZE + map_x*AREA_ROOM_W;
+                        std::cout << "MAP::showMap::place_anim_tile - pos_destiny[" << pos_destiny.x << "][" << pos_destiny.x << "]" << std::endl;
+                        anim_tile_list.push_back(anim_tile_desc(anim_tile_id, pos_destiny));
+
+
+                    }
+
+                }
+            }
+        }
+    }
+
+
+    /*
+    for (int i=0; i<map_tiles_w; i++) {
         pos_destiny.x = i*TILESIZE;
-        for (int j=0; j<SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h; j++) {
-            int n = j*SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w + i;
+        for (int j=0; j<map_tiles_h; j++) {
+
+
+
+            int n = j*map_tiles_w + i;
             pos_origin.x = SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay.x;
             pos_origin.y = SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay.y;
 
@@ -309,6 +380,7 @@ void MapController::init_animated_tiles()
             }
         }
     }
+    */
 }
 
 
@@ -325,7 +397,7 @@ void MapController::showAbove(int scroll_y, int temp_scroll_x, bool show_fg)
     short start_point = scroll_x/TILESIZE;
     if (start_point > 0) { start_point--; }
     short end_point = (scroll_x+RES_W)/TILESIZE;
-    if (end_point < SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w-1) { end_point++; }
+    if (end_point < map_tiles_w-1) { end_point++; }
     //std::cout << "showAbove - start_point: " << start_point << ", end_point: " << end_point << std::endl;
 
 
@@ -386,39 +458,43 @@ void MapController::showAbove(int scroll_y, int temp_scroll_x, bool show_fg)
 int MapController::getMapPointLock(st_position pos) const
 {
     //std::cout << ">>>>> MapController::getMapPointLock x[" << pos.x << "], y[" << pos.y << "]" << std::endl;
-    if (pos.x < 0 || pos.y < 0 || pos.y >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h || pos.x >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
+    if (pos.x < 0 || pos.y < 0 || pos.y >= map_tiles_h || pos.x >= map_tiles_w) {
         //std::cout << ">>>>> MapController::getMapPointLock OUT OF MAP" << std::endl;
         return TERRAIN_UNBLOCKED;
     }
-    int n = pos.y*SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w + pos.x;
-    return SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).locked;
+    if (area_tile_map.find(pos) == area_tile_map.end()) {
+        return -2;
+    }
+
+    return area_tile_map.at(pos).locked;
 }
 
-st_tile_piece MapController::get_map_point_tile1(st_position pos)
+file_v6_tile_piece MapController::get_map_point_tile1(st_position pos)
 {
-    if (pos.x < 0 || pos.y < 0 || pos.y > RES_H/TILESIZE || pos.x >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
-        st_tile_piece res;
-        res.x = -1;
-        res.y = -1;
+    file_v6_tile_piece res;
+    res.x = -1;
+    res.y = -1;
+    if (pos.x < 0 || pos.y < 0 || pos.y > map_tiles_h || pos.x >= map_tiles_w) {
         return res;
     }
-    int n = pos.y*SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w + pos.x;
-    return SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay;
+    if (area_tile_map.find(pos) == area_tile_map.end()) {
+        return res;
+    }
+    return area_tile_map.at(pos).tile_underlay;
 }
 
 short MapController::get_map_point_lock(int tile_x, int tile_y)
 {
-    if (tile_x < 0 || tile_y < 0 || tile_y > SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h || tile_x >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
+    if (tile_x < 0 || tile_y < 0 || tile_y > map_tiles_h || tile_x >= map_tiles_w) {
         std::cout << "INVALID TILE #1 x[" << tile_x << "], tile_y[" << tile_y << "]" << std::endl;
         return -2;
     }
-    int n = tile_y*SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w + tile_x;
-    //std::cout << "SEARCH TILE x[" << tile_x << "], tile_y[" << tile_y << "], n[" << n << "]" << std::endl;
-    if (n >= SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).size()) {
-        std::cout << "INVALID TILE #2 x[" << tile_x << "], tile_y[" << tile_y << "], n[" << n << "], list.size[" << SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).size() << "]" << std::endl;
+
+    if (area_tile_map.find(st_position(tile_x, tile_y)) == area_tile_map.end()) {
         return -2;
     }
-    return SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).locked;
+
+    return area_tile_map.at(st_position(tile_x, tile_y)).locked;
 }
 
 
@@ -432,13 +508,15 @@ bool MapController::is_point_solid(st_position pos) const
     return true;
 }
 
-file_v5_map_tile MapController::getTileFromPosition(int x, int y)
+file_v6_room_tile MapController::getTileFromPosition(int x, int y)
 {
-    if (x < 0 || y < 0 || y >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h || x >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
-        return file_v5_map_tile();
+    if (x < 0 || y < 0 || y >= map_tiles_h || x >= map_tiles_w) {
+        return file_v6_room_tile();
     }
-    int n = y*SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w + x;
-    return SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n);
+    if (area_tile_map.find(st_position(x, y)) == area_tile_map.end()) {
+        return file_v6_room_tile();
+    }
+    return area_tile_map.at(st_position(x, y));
 }
 
 file_v5_map_header& MapController::getMapHeader()
@@ -451,24 +529,24 @@ int MapController::get_first_bottom_lock(int initialY)
     bool isLockedY = true;
     int initX = scroll.x/TILESIZE;
     int endX = initX + RES_W/TILESIZE;
-    int lockedRow = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h/TILESIZE;
+    int lockedRow = map_tiles_h/TILESIZE;
 
 
     int initY = (initialY)/TILESIZE;
-    int endY = initY + SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h;
+    int endY = initY + map_tiles_h;
 
-    if (endX >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
-        endX = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w-1;
+    if (endX >= map_tiles_w) {
+        endX = map_tiles_w-1;
     }
-    if (endY >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h) {
-        endY = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h-1;
+    if (endY >= map_tiles_h) {
+        endY = map_tiles_h-1;
     }
 
     //std::cout << "########## MapController::get_first_bottom_lock - initX[" << initX << "], endX[" << endX << "], initY[" << initY << "], endY[" << endY << "]" << std::endl;
-    for (int y=initY; y<=endY; y++) {
+    for (int y=SharedData::get_instance()->topmost_room*AREA_ROOM_H; y<=SharedData::get_instance()->bottommost_room*AREA_ROOM_H; y++) {
         isLockedY = true;
-        for (int x=initX; x<endX; x++) {
-            file_v5_map_tile tile = getTileFromPosition(x, y);
+        for (int x=SharedData::get_instance()->leftmost_room*AREA_ROOM_W; x<SharedData::get_instance()->rightmost_room*AREA_ROOM_W; x++) {
+            file_v6_room_tile tile = getTileFromPosition(x, y);
             //std::cout << "x[" << x << "], y[" << y << "], locked[" << tile.locked << "]" << std::endl;
             if (tile.locked == TERRAIN_UNBLOCKED || tile.locked == TERRAIN_WATER) {
                 isLockedY = false;
@@ -498,12 +576,12 @@ bool MapController::isEdgeRowLocked(int incY, bool first)
     }
     int initX = scroll.x/TILESIZE;
     int endX = initX + RES_W/TILESIZE;
-    if (endX >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
-        endX = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w-1;
+    if (endX >= map_tiles_w) {
+        endX = map_tiles_w-1;
     }
     bool isLockedY = true;
     for (int x=initX; x<endX; x++) {
-        file_v5_map_tile tile = getTileFromPosition(x, y);
+        file_v6_room_tile tile = getTileFromPosition(x, y);
         //std::cout << "x[" << x << "], y[" << y << "], locked[" << tile.locked << "]" << std::endl;
         if (tile.locked == TERRAIN_UNBLOCKED || tile.locked == TERRAIN_WATER) {
             isLockedY = false;
@@ -518,7 +596,7 @@ bool MapController::isEdgeRowLocked(int incY, bool first)
 
 bool MapController::isEdgeColumnLocked(int incX, bool first)
 {
-    //std::cout << "## MapController::isEdgeColumnLocked::START - incX[" << incX << "], first[" << first << "]" << std::endl;
+    std::cout << "## MapController::isEdgeColumnLocked::START - incX[" << incX << "], first[" << first << "]" << std::endl;
 
 
     int tileX = (scroll.x + incX + RES_W)/TILESIZE - 1;
@@ -526,30 +604,31 @@ bool MapController::isEdgeColumnLocked(int incX, bool first)
         tileX = (scroll.x + incX)/TILESIZE + 1;
     }
 
-    if (tileX < 0 || tileX > SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w) {
+    if (tileX < 0 || tileX > SharedData::get_instance()->rightmost_room*AREA_ROOM_W) {
         //std::cout << "## MapController::isEdgeColumnLocked - TRUE #1" << std::endl;
         return true;
     }
     int inity = scroll.y/TILESIZE;
     int endY = inity + AREA_H/TILESIZE;
-    if (endY >= SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h) {
-        endY = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h-1;
+    if (endY >= map_tiles_w) {
+        endY = map_tiles_w-1;
     }
     bool isLockedX = true;
 
-    //std::cout << "inity[" << inity << "], endY[" << endY << "]" << std::endl;
+    std::cout << "## MapController::isEdgeColumnLocked - scroll.y[" << scroll.y << "], inity[" << inity << "], endY[" << endY << "]" << std::endl;
 
     for (int y=inity; y<endY; y++) {
-        file_v5_map_tile tile = getTileFromPosition(tileX, y);
+        std::cout << "## MapController::isEdgeColumnLocked - x[" << tileX << "], y[" << y << "]" << std::endl;
+        file_v6_room_tile tile = getTileFromPosition(tileX, y);
         if (tile.locked == TERRAIN_UNBLOCKED || tile.locked == TERRAIN_WATER) {
-            //std::cout << "ONLOCKED - x[" << tileX << "], y[" << y << "], locked[" << tile.locked << "]" << std::endl;
+            std::cout << "## MapController::isEdgeColumnLocked - ONLOCKED - x[" << tileX << "], y[" << y << "], locked[" << tile.locked << "]" << std::endl;
             isLockedX = false;
             break;
         }
     }
 
 
-    //std::cout << "########### MapController::isEdgeColumnLocked - isLockedX[" << isLockedX << "], first[" << first << "], incY[" << incX << "], scroll.x[" << scroll.x << "], x[" << tileX << "]" << std::endl;
+    std::cout << "########### MapController::isEdgeColumnLocked - isLockedX[" << isLockedX << "], first[" << first << "], incY[" << incX << "], scroll.x[" << scroll.x << "], x[" << tileX << "]" << std::endl;
     return isLockedX;
 }
 
@@ -648,13 +727,9 @@ void MapController::incScrollValue(float xinc, float yinc)
 
 
 
-
-
-
-
 void MapController::changeLayerScroll(int x_change, int y_change)
 {
-    for (std::map<unsigned int, st_background>::iterator it = mapBackgroundMap.begin(); it != mapBackgroundMap.end(); ++it) {
+    for (std::map<unsigned int, st_background>::iterator it = imageLayerMap.begin(); it != imageLayerMap.end(); ++it) {
         unsigned int bg_n = it->first;
         float layer_speed = (float)getMapHeader().backgrounds[bg_n].speed/10;
 
@@ -701,7 +776,7 @@ st_float_position MapController::getMapScrolling() const
 
 st_size MapController::get_size()
 {
-    return st_size(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w, SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h);
+    return st_size(map_tiles_w, map_tiles_h);
 }
 
 
@@ -759,18 +834,22 @@ void MapController::drawLayers(bool isFg)
 {
     // only draw solid background color, if map-heigth is less than RES_H
     //std::cout << "number[" << SharedData::get_instance()->file_v5_selected_map << "], bg1_surface.height[" << bg1_surface.height << "], bg1.y[" << GameMediator::get_instance()->map_data[SharedData::get_instance()->file_v5_selected_map].backgrounds[0].adjust_y << "]" << std::endl;
-    file_v5_map_header& header_map_ref = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
+    file_v6_area& map_data_ref = SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area);
 
     if (isFg == false) {
-        ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, header_map_ref.background_color.r, header_map_ref.background_color.g, header_map_ref.background_color.b);
+        ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, map_data_ref.background_color.r, map_data_ref.background_color.g, map_data_ref.background_color.b);
     }
 
     for (std::map<unsigned int, st_layer_pos>::iterator it = layerScrollMap.begin(); it != layerScrollMap.end(); ++it) {
-        if (it->second.is_fg != isFg) {
+        unsigned int bg_n = it->first;
+        if (isFg == false && bg_n >= LAYERS_BG_COUNT) {
+            //std::cout << "bg_n[" << bg_n << "] is FG" << std::endl;
+            continue;
+        } else if (isFg == true && bg_n < LAYERS_BG_COUNT) {
+            //std::cout << "bg_n[" << bg_n << "] is BG" << std::endl;
             continue;
         }
-        unsigned int bg_n = it->first;
-        file_v5_map_background& bg_ref = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).backgrounds[bg_n];
+        file_v6_area_layer& bg_ref = map_data_ref.layers[bg_n];
 
         //std::cout << ">>>>>>>>>>>>>>>>>>> bg_n[" << bg_n << "], filename[" << bg_ref.filename << "]" << std::endl;
 
@@ -848,7 +927,7 @@ void MapController::adjust_dynamic_background_position(unsigned int bg_n)
     st_imageData* surface_bg = get_dynamic_bg(bg_n);
 
     //int bg_limit = get_dynamic_bg()->width-RES_W;
-    int bg_limit = mapBackgroundMap.at(bg_n).imageData.surface->w;
+    int bg_limit = imageLayerMap.at(bg_n).imageData.surface->w;
 
     // esq -> direita: #1 bg_limt[640], scroll.x[-640.799]
 
@@ -920,7 +999,7 @@ void MapController::preload_slope_images()
         }
         slope_image_map.insert(std::pair<int, st_imageData>(i, st_imageData()));
         slope_image_map.at(i) = ImageView::get_instance()->imageFromFile(full_filename);
-        std::cout << ">>>>>>>>> ADDED SLOPE[" << i << "]" << std::endl;
+        //std::cout << ">>>>>>>>> ADDED SLOPE[" << i << "]" << std::endl;
     }
 }
 
@@ -1086,7 +1165,7 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
         right_tiles_to_test = 1;
     }
 
-    int initial_y = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h-1;
+    int initial_y = map_tiles_h-1;
     if (y_pos >= 0) {
         initial_y = y_pos/TILESIZE;
     }
@@ -1185,7 +1264,7 @@ void MapController::drop_item(classnpc* npc_ref)
 
 void MapController::set_bg_scroll(int scrollx)
 {
-    for (std::map<unsigned int, st_background>::iterator it = mapBackgroundMap.begin(); it != mapBackgroundMap.end(); ++it) {
+    for (std::map<unsigned int, st_background>::iterator it = imageLayerMap.begin(); it != imageLayerMap.end(); ++it) {
         unsigned int bg_n = it->first;
         layerScrollMap.at(bg_n).pos.x = scrollx;
     }
@@ -1318,13 +1397,12 @@ void MapController::activate_final_boss_teleporter()
 // @TODO::IURI - those methods need to receive the map_n parameter //
 Uint8 MapController::get_map_gfx()
 {
-    //return GameMediator::get_instance()->map_data[SharedData::get_instance()->file_v5_selected_map].backgrounds[0].gfx;
-    return 0;
+    return SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).gfx_effect;
 }
 
 Uint8 MapController::get_map_gfx_mode()
 {
-    //return GameMediator::get_instance()->map_data[SharedData::get_instance()->file_v5_selected_map].backgrounds[1].auto_scroll;
+    SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).gfx_mode;
     return 0;
 }
 
@@ -1410,22 +1488,19 @@ void MapController::create_dynamic_background_surfaces()
     file_v5_map_header &mapData = SharedData::get_instance()->file_v5_map_header_list.at(mapNumber);
 
 
-    for (unsigned int i=0; i<BACKGROUND_LAYERS_MAX; i++) {
-        std::string bg_filename = std::string(mapData.backgrounds[i].filename);
-        if (bg_filename.length() > 0) {
-            //std::cout << ">>>>>>>>>> MapController::create_dynamic_background_surfaces[" << i << "]], filename[" << bg_filename << "]" << std::endl;
-            if (i < BACKGROUND_LAYERS_BG_COUNT) {
-                addLayer(i, false);
-            } else {
-                addLayer(i, true);
-            }
+    for (unsigned int i=0; i<LAYERS_COUNT; i++) {
+        //std::cout << ">>>>>>>>>> MapController::create_dynamic_background_surfaces[" << i << "]], filename[" << bg_filename << "]" << std::endl;
+        if (i < LAYERS_BG_COUNT) {
+            addLayer(i, false);
+        } else {
+            addLayer(i, true);
         }
     }
 }
 
 st_imageData* MapController::get_dynamic_bg(int n)
 {
-    return &mapBackgroundMap.at(n).imageData;
+    return &imageLayerMap.at(n).imageData;
 }
 
 

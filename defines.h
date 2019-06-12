@@ -29,6 +29,9 @@
 #define MAXPATHLEN 1024
 #define FS_FILENAME_SIZE 30
 
+#define LAYERS_COUNT 10
+#define LAYERS_BG_COUNT 5
+#define LAYERS_FG_COUNT 5
 
 #define FILE_V6_LEVEL_LIST "data/v6_level_list.dat"
 #define FILE_V6_MAP_LIST "data/v6_map_list.dat"

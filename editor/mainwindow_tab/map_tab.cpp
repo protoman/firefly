@@ -35,6 +35,8 @@ void map_tab::reload()
     ui->editArea->update_files();
 
     properties_hidden = true;
+    ui->editArea->update_map_data();
+    Mediator::get_instance()->setPallete(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).tileset_filename);
 
     fill_data();
 }
@@ -51,19 +53,6 @@ void map_tab::update_edit_area()
     ui->editArea->repaint();
 }
 
-void map_tab::on_color_selected1(QColor color)
-{
-    unsigned int mapNumber = SharedData::get_instance()->file_v5_selected_map;
-
-    std::cout << "mapNumber[" << mapNumber << "], header_list.size[" << SharedData::get_instance()->file_v5_map_header_list.size() << "]" << std::endl;
-
-    SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).background_color.r = color.red();
-    SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).background_color.g = color.green();
-    SharedData::get_instance()->file_v5_map_header_list.at(mapNumber).background_color.b = color.blue();
-    update_edit_area();
-}
-
-
 void map_tab::fill_data()
 {
     if (SharedData::get_instance()->FILEPATH.length() == 0) {
@@ -76,40 +65,14 @@ void map_tab::fill_data()
     ui->object_direction_combo->setCurrentIndex(Mediator::get_instance()->object_direction);
 
     fill_map_selector();
-    common::fill_files_combo("images/tilesets", ui->v5_tileset_comboBox);
 
 
-    if (SharedData::get_instance()->file_v5_map_header_list.size() > 0) {
-        QString tilesetFilename(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tileset_filename);
-        std::cout << "################### tilesetFilename[" << tilesetFilename.toStdString() << "]" << std::endl;
-        if (tilesetFilename.length() > 0) {
-            ui->v5_tileset_comboBox->setCurrentIndex(ui->v5_tileset_comboBox->findText(tilesetFilename));
-            Mediator::get_instance()->setPallete(tilesetFilename.toStdString());
-            ui->editArea->update_files();
-            ui->editArea->repaint();
-        } else {
-            ui->v5_tileset_comboBox->setCurrentIndex(-1);
-            Mediator::get_instance()->setPallete("default.png");
-            ui->editArea->update_files();
-            ui->editArea->repaint();
-        }
-    }
-    for (int i=0; i<BACKGROUND_LAYERS_MAX; i++) {
-        QString itemName = QString("[") + QString::number(i) + QString("] - ");
-        if (i<=9) {
-            itemName += QString("BACKGROUND #") + QString::number(i+1);
-        } else {
-            itemName += QString("FOREGROUND #") + QString::number(i-9);
-        }
-        ui->layerSelector_comboBox->addItem(itemName);
-    }
 
     std::cout << "################# SharedData::get_instance()->file_v5_map_header_list.size[" << SharedData::get_instance()->file_v5_map_header_list.size() << "]" << std::endl;
 
     file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
     QString bg1_filename(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].filename);
-    common::fill_files_combo("images/map_backgrounds", ui->bg1_filename);
-    ui->bg1_filename->setCurrentIndex(ui->bg1_filename->findText(bg1_filename));
+
 
     _data_loading = false;
 }
@@ -147,27 +110,7 @@ void map_tab::on_objectListWidget_currentRowChanged(int currentRow)
     Mediator::get_instance()->selectedNPC = currentRow;
 }
 
-void map_tab::on_bg_color_pick_clicked()
-{
-    QColorDialog *colorDialog = new QColorDialog(this);
-    QObject::connect(colorDialog, SIGNAL(colorSelected(QColor)), this, SLOT(on_color_selected1(QColor)));
-    colorDialog->show();
-}
 
-
-void map_tab::on_checkBox_toggled(bool checked)
-{
-    if (_data_loading == true) { return; }
-    Mediator::get_instance()->show_background_color = checked;
-    update_edit_area();
-}
-
-void map_tab::on_checkBox_2_toggled(bool checked)
-{
-    if (_data_loading == true) { return; }
-    Mediator::get_instance()->show_bg1 = checked;
-    update_edit_area();
-}
 
 void map_tab::on_object_direction_combo_currentIndexChanged(int index)
 {
@@ -457,123 +400,17 @@ void map_tab::on_mapSelector_comboBox_currentIndexChanged(int index)
 {
     if (_data_loading == true) { return; }
     SharedData::get_instance()->file_v5_selected_map = index;
+    SharedData::get_instance()->v6_selected_area = index;
     _data_loading = true;
     fill_data();
+    ui->editArea->update_map_data();
+    Mediator::get_instance()->setPallete(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).tileset_filename);
     ui->editArea->repaint();
     _data_loading = false;
 }
 
 
-void map_tab::on_v5_tileset_comboBox_currentIndexChanged(const QString &arg1)
-{
-    if (_data_loading == true) { return; }
-    if (arg1.length() == 0) { // reset to default
-        SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tileset_filename[0] = '\0';
-        Mediator::get_instance()->setPallete(std::string("default.png"));
-    } else {
-        sprintf(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tileset_filename, "%s", arg1.toStdString().c_str());
-        Mediator::get_instance()->setPallete(arg1.toStdString());
-    }
-    ui->pallete->repaint();
-    update_edit_area();
-}
 
-void map_tab::on_layerSelector_comboBox_currentIndexChanged(int index)
-{
-    if (_data_loading == true) { return; }
-    SharedData::get_instance()->file_v5_selected_layer = index;
 
-    _data_loading = true;
-    set_layer_data();
-    _data_loading = false;
-}
 
-void map_tab::set_layer_data()
-{
-    std::cout << ">>>>>>>>>>>>>>>>> file_v5_selected_layer[" << SharedData::get_instance()->file_v5_selected_layer << "]" << std::endl;
 
-    if (SharedData::get_instance()->file_v5_map_header_list.size() == 0) {
-        std::cout << "map_tab::set_layer_data - LEAVE #1" << std::endl;
-        return;
-    }
-    std::cout << "map_tab::set_layer_data - SET" << std::endl;
-    file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
-    ui->bg1_filename->setCurrentIndex(ui->bg1_filename->findText(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].filename));
-    ui->bg1_y_pos->setValue(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].adjust_y);
-    float bg1_speed = (float)map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].speed/10;
-    ui->bg1_speed->setValue(bg1_speed);
-
-    ui->autoScrollBG1_mode->setCurrentIndex(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].auto_scroll);
-
-    ui->repeatX_checkBox->setChecked(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].repeatX);
-    ui->repeatY_checkBox->setChecked(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].repeatY);
-    ui->layerAlpha_spinBox->setValue(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].alpha);
-    ui->bgAnimationWidth_spinBox->setValue(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].animation_width);
-    ui->bgAnimationTimer_spinBox->setValue(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].animation_timer);
-}
-
-void map_tab::on_bg1_filename_currentIndexChanged(const QString &arg1)
-{
-    if (_data_loading == true) { return; }
-    file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
-    sprintf(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].filename, "%s", arg1.toStdString().c_str());
-    ui->editArea->repaint();
-}
-
-void map_tab::on_bg1_speed_valueChanged(double arg1)
-{
-    if (_data_loading == true) { return; }
-    file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
-    map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].speed = arg1*10;
-}
-
-void map_tab::on_bg1_y_pos_valueChanged(int arg1)
-{
-    if (_data_loading == true) { return; }
-    file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
-    map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].adjust_y = arg1;
-    ui->editArea->repaint();
-}
-
-void map_tab::on_autoScrollBG1_mode_currentIndexChanged(int index)
-{
-    if (_data_loading == true) { return; }
-    file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
-    map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].auto_scroll = index;
-}
-
-void map_tab::on_repeatX_checkBox_toggled(bool checked)
-{
-    if (_data_loading == true) { return; }
-    file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
-    map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].repeatX = checked;
-}
-
-void map_tab::on_repeatY_checkBox_toggled(bool checked)
-{
-    if (_data_loading == true) { return; }
-    file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
-    map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].repeatY = checked;
-}
-
-void map_tab::on_layerAlpha_spinBox_valueChanged(int arg1)
-{
-    if (_data_loading == true) { return; }
-    file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
-    map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].alpha = arg1;
-
-}
-
-void map_tab::on_bgAnimationWidth_spinBox_valueChanged(int arg1)
-{
-    if (_data_loading == true) { return; }
-    file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
-    map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].animation_width = arg1;
-}
-
-void map_tab::on_bgAnimationTimer_spinBox_valueChanged(int arg1)
-{
-    if (_data_loading == true) { return; }
-    file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
-    map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].animation_timer = arg1;
-}

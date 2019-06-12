@@ -48,50 +48,78 @@ void EditorArea::changeTile() {
 
 void EditorArea::update_files()
 {
+    if (SharedData::get_instance()->v6_area_list.size() <= SharedData::get_instance()->v6_selected_area) {
+        return;
+    }
+
+
     std::string filename_str = SharedData::get_instance()->FILEPATH + "images/tilesets/blocks/easymode.png";
     easy_mode_tile = QPixmap(QString(filename_str.c_str()));
 
     filename_str = SharedData::get_instance()->FILEPATH + "images/tilesets/blocks/hardmode.png";
     hard_mode_tile = QPixmap(QString(filename_str.c_str()));
 
-    filename_str = SharedData::get_instance()->FILEPATH + std::string("/images/tilesets/") + Mediator::get_instance()->getPallete();
-    if (filename_str.length() <= 0) {
-        return;
-    }
-    //std::cout << "EditorArea::paintEvent - filename: " << filename.toStdString() << std::endl;
-    tileset_image = QPixmap(filename_str.c_str());
-    if (tileset_image.isNull() != false) {
-        tileset_bitmap.clear();
+    filename_str = SharedData::get_instance()->FILEPATH + std::string("/images/tilesets/") + SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).tileset_filename;
+    if (filename_str.length() == 0) {
+        tileset_image = QPixmap();
+    } else {
+        tileset_image = QPixmap(filename_str.c_str());
     }
 
-    /*
-    std::string bg1_filename = FILEPATH +"/images/map_backgrounds/"+ Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][SharedData::get_instance()->file_v5_selected_map].backgrounds[0].filename;
-    if (bg1_filename.length() > 0) {
-        if (bg1_filename.find(".png") != std::string::npos) {
-            bg1_image = QPixmap(bg1_filename.c_str());
+    for (int i=0; i<LAYERS_COUNT; i++) {
+        std::string layer_filename = std::string(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).layers[i].filename);
+        if (layer_filename.length() == 0) {
+            layer_pixmap_list[i] = QPixmap();
         } else {
-            bg1_image = QPixmap();
+            std::string filename_str = SharedData::get_instance()->FILEPATH + std::string("/images/map_backgrounds/") + SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).layers[i].filename;
+            filename_str = StringUtils::clean_filename(filename_str);
+            //std::cout << ">>>>>>>> update_files.filename-bg[" << i << "]: [" << filename_str << "]" << std::endl;
+            layer_pixmap_list[i] = QPixmap(filename_str.c_str());
         }
-    } else {
-        std::cout << "RESET BG1" << std::endl;
-        bg1_image = QPixmap();
     }
-
-    std::string fg_filename = FILEPATH +"/images/map_backgrounds/"+ Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][SharedData::get_instance()->file_v5_selected_map].backgrounds[1].filename;
-    if (fg_filename.length() > 0) {
-        if (fg_filename.find(".png") != std::string::npos) {
-            fg_layer__image = QPixmap(fg_filename.c_str());
-        } else {
-            fg_layer__image = QPixmap();
-        }
-    } else {
-        std::cout << "RESET BG1" << std::endl;
-        fg_layer__image = QPixmap();
-    }
-    fg_opacity = (float)Mediator::get_instance()->maps_data_v2[Mediator::get_instance()->currentStage][SharedData::get_instance()->file_v5_selected_map].backgrounds[1].gfx/100;
-    */
 
     preload_slope_images();
+
+}
+
+void EditorArea::update_map_data()
+{
+    if (SharedData::get_instance()->v6_level_list.size() <= SharedData::get_instance()->v6_selected_level) {
+        return;
+    }
+    if (SharedData::get_instance()->v6_area_list.size() <= SharedData::get_instance()->v6_selected_area) {
+        return;
+    }
+    file_v6_level level_data = SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level);
+    // build a list of rooms this area contains //
+    // also, find the top, down, left and rightmost points on the area, so we can build a matrix with the tiles //
+    std::vector<st_position> area_room_list;
+    leftmost_room = FILE_AREA_W;
+    rightmost_room = 0;
+    topmost_room = FILE_AREA_H;
+    bottommost_room = 0;
+    for (int i=0; i<FILE_AREA_W; i++) {
+        for (int j=0; j<FILE_AREA_H; j++) {
+            if (level_data.rooms[i][j].area_n == SharedData::get_instance()->v6_selected_area) {
+                area_room_list.push_back(st_position(i, j));
+                if (i < leftmost_room) {
+                    leftmost_room = i;
+                }
+                if (i > rightmost_room) {
+                    rightmost_room = i;
+                }
+                if (j > bottommost_room) {
+                    bottommost_room = j;
+                }
+                if (j < topmost_room) {
+                    topmost_room = j;
+                }
+            }
+        }
+    }
+
+    std::cout << "EditorArea::update_map_data - leftmost_room[" << leftmost_room << "], rightmost_room[" << rightmost_room << "], topmost_room[" << topmost_room << "], bottommost_room[" << bottommost_room << "]" << std::endl;
+
 
 }
 
@@ -126,143 +154,140 @@ void EditorArea::draw_slope_tile(int x, int y, int dest_x, int dest_y, QPainter 
 
 void EditorArea::drawTileset(QPainter *painter)
 {
-    // regular tiles
-    if (SharedData::get_instance()->file_v5_map_tile_map.find(SharedData::get_instance()->file_v5_selected_map) != SharedData::get_instance()->file_v5_map_tile_map.end()) {
-        int map_w = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w;
-        int map_h = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h;
-        for (int i=0; i<map_w; i++) {
-            for (int j=0; j<map_h; j++) {
-                int n = j*map_w + i;
+    for (int i=leftmost_room; i<=rightmost_room; i++) {
+        for (int j=topmost_room; j<=bottommost_room; j++) {
+            if (SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[i][j].area_n == SharedData::get_instance()->v6_selected_area) {
+                file_v6_room room_data = SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[i][j];
+                for (int k=0; k<AREA_ROOM_W; k++) {
+                    for (int m=0; m<AREA_ROOM_H; m++) {
+                        file_v6_room_tile tileItem = room_data.tiles[k][m];
+                        if (tileItem.tile_underlay.x >= 0 && tileItem.tile_underlay.y >= 0) {
+                            if (tileItem.tile_underlay.x >= 0 && tileItem.tile_underlay.y >= 0) {
 
-                if (SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).size() > 0) {
-                    file_v5_map_tile tileItem = SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n);
+                                int dest_x = (k+i*AREA_ROOM_W)*TILESIZE*Mediator::get_instance()->zoom;
+                                int dest_y = (m+j*AREA_ROOM_H)*TILESIZE*Mediator::get_instance()->zoom;
 
-                    //std::cout << "TILE AT [" << i << "][" << j << "], type[" << tileItem.tile_underlay.type << "]" << std::endl;
+                                QRectF target(QPoint(dest_x, dest_y), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
+                                QRectF source(QPoint((tileItem.tile_underlay.x*TILESIZE), (tileItem.tile_underlay.y*TILESIZE)), QSize(TILESIZE, TILESIZE));
+                                // used images depends upon tile type
 
-                    if (tileItem.tile_underlay.x >= 0 && tileItem.tile_underlay.y >= 0) {
-                        QRectF target(QPoint(i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
-                        QRectF source(QPoint((tileItem.tile_underlay.x*TILESIZE), (tileItem.tile_underlay.y*TILESIZE)), QSize(TILESIZE, TILESIZE));
-                        // used images depends upon tile type
+                                //std::cout << "TILE IN MAP[" << i << "][" << j << "], AT [" << k << "][" << m << "], type[" << tileItem.tile_underlay.type << "]" << std::endl;
 
-                        //std::cout << "TILE AT [" << i << "][" << j << "], type[" << tileItem.tile_underlay.type << "]" << std::endl;
+                                if (tileItem.tile_underlay.type == TILE_TYPE_SOLID) {
+                                    //std::cout << "FOUND SOLID_TILE AT [" << k << "][" << m << "]" << std::endl;
+                                    painter->drawPixmap(target, tileset_image, source);
+                                } else if (tileItem.tile_underlay.type == TILE_TYPE_SLOPE) {
+                                    /// @TODO ///
+                                    std::cout << "FOUND SLOPE_TILE AT [" << k << "][" << m << "], with x[" << tileItem.tile_underlay.x << "], y[" << tileItem.tile_underlay.y << "]" << std::endl;
+                                    draw_slope_tile(tileItem.tile_underlay.x, tileItem.tile_underlay.y, dest_x, dest_y, painter);
+                                } else if (tileItem.tile_underlay.type == TILE_TYPE_ANIM) {
+                                    int anim_tile_id = tileItem.tile_underlay.x;
+                                    std::cout << "FOUND ANIM_TILE AT [" << k << "][" << m << "], with ID [" << anim_tile_id << "]" << std::endl;
+                                    if (Mediator::get_instance()->anim_block_list.size() > 0 && anim_tile_id < Mediator::get_instance()->anim_block_list.size()) {
+                                        file_anim_block anim_tile = Mediator::get_instance()->anim_block_list.at(anim_tile_id);
+                                        QString anim_tile_filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/tilesets/anim/") + QString(anim_tile.filename);
+                                        QPixmap anim_image(anim_tile_filename);
+                                        if (anim_image.isNull() == false) {
+                                            QRectF target(QPoint(dest_x, dest_y), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
+                                            QRectF source(QPoint(0, 0), QSize(TILESIZE, TILESIZE));
+                                            painter->drawPixmap(target, anim_image, source);
 
-                        if (tileItem.tile_underlay.type == TILE_TYPE_SOLID) {
-                            //std::cout << "FOUND SOLID_TILE AT [" << i << "][" << j << "]" << std::endl;
-                            painter->drawPixmap(target, tileset_image, source);
-                        } else if (tileItem.tile_underlay.type == TILE_TYPE_SLOPE) {
-                            /// @TODO ///
-                            //std::cout << "FOUND SLOPE_TILE AT [" << i << "][" << j << "], with x[" << tileItem.tile_underlay.x << "], y[" << tileItem.tile_underlay.y << "]" << std::endl;
-                            draw_slope_tile(tileItem.tile_underlay.x, tileItem.tile_underlay.y, i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom, painter);
-
-
-                        } else if (tileItem.tile_underlay.type == TILE_TYPE_ANIM) {
-                            int anim_tile_id = tileItem.tile_underlay.x;
-                            //std::cout << "FOUND ANIM_TILE AT [" << i << "][" << j << "], with ID [" << anim_tile_id << "]" << std::endl;
-                            if (Mediator::get_instance()->anim_block_list.size() > 0 && anim_tile_id < Mediator::get_instance()->anim_block_list.size()) {
-                                file_anim_block anim_tile = Mediator::get_instance()->anim_block_list.at(anim_tile_id);
-                                QString anim_tile_filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/tilesets/anim/") + QString(anim_tile.filename);
-                                QPixmap anim_image(anim_tile_filename);
-                                if (anim_image.isNull() == false) {
-                                    QRectF target(QPoint(i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
-                                    QRectF source(QPoint(0, 0), QSize(TILESIZE, TILESIZE));
-                                    painter->drawPixmap(target, anim_image, source);
-
-                                    // @TODO (move to a function) - draw an green border border to indicate anim tile
-                                    QPen pen(QColor(0, 200, 0), 1, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
-                                    painter->setPen(pen);
-                                    if (Mediator::get_instance()->show_grid) {
-                                        int anim_tile_x = i * TILESIZE * Mediator::get_instance()->zoom; // minus tilesize is because width starts in 1, not zero
-                                        int anim_tile_y = j * TILESIZE *Mediator::get_instance()->zoom;
-                                        painter->drawLine(anim_tile_x, anim_tile_y, anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y);
-                                        painter->drawLine(anim_tile_x, anim_tile_y, anim_tile_x, anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom));
-                                        painter->drawLine(anim_tile_x, anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom));
-                                        painter->drawLine(anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y, anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom));
+                                            // @TODO (move to a function) - draw an green border border to indicate anim tile
+                                            QPen pen(QColor(0, 200, 0), 1, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
+                                            painter->setPen(pen);
+                                            if (Mediator::get_instance()->show_grid) {
+                                                int anim_tile_x = i * TILESIZE * Mediator::get_instance()->zoom; // minus tilesize is because width starts in 1, not zero
+                                                int anim_tile_y = j * TILESIZE *Mediator::get_instance()->zoom;
+                                                painter->drawLine(anim_tile_x, anim_tile_y, anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y);
+                                                painter->drawLine(anim_tile_x, anim_tile_y, anim_tile_x, anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom));
+                                                painter->drawLine(anim_tile_x, anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom));
+                                                painter->drawLine(anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y, anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom));
+                                            }
+                                        } else {
+                                            std::cout << ">>>>>>>> anim-file '" << anim_tile_filename.toStdString() << "' not found." << std::endl;
+                                        }
+                                    } else {
+                                        std::cout << "Invalid anim-tile-id: " << anim_tile_id << std::endl;
                                     }
-                                } else {
-                                    std::cout << ">>>>>>>> anim-file '" << anim_tile_filename.toStdString() << "' not found." << std::endl;
                                 }
-                            } else {
-                                std::cout << "Invalid anim-tile-id: " << anim_tile_id << std::endl;
                             }
-
-
-
+                        } else if (tileItem.tile_underlay.x == -2 && tileItem.tile_underlay.y == -2) {
+                            std::cout << "UNUSED TILE x[" << k << "], y[" << m << "]" << std::endl;
+                            painter->setBrush(QColor(240, 240, 240, 255));
+                            painter->drawRect(i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
                         }
-
-                    } else if (tileItem.tile_underlay.x == -2 && tileItem.tile_underlay.y == -2) {
-                        //std::cout << "UNUSED TILE x[" << i << "], y[" << j << "], n[" << n << "]" << std::endl;
-                        painter->setBrush(QColor(240, 240, 240, 255));
-                        painter->drawRect(i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
                     }
                 }
             }
         }
-    } else {
-        std::cout << "EditorArea::drawTileset #99" << std::endl;
     }
-
 }
 
 void EditorArea::drawLockTileset(QPainter *painter)
 {
-    // regular tiles
-    if (SharedData::get_instance()->file_v5_map_tile_map.find(SharedData::get_instance()->file_v5_selected_map) != SharedData::get_instance()->file_v5_map_tile_map.end()) {
-        //SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).size()
-        int map_w = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w;
-        int map_h = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h;
-        for (int i=0; i<map_w; i++) {
-            for (int j=0; j<map_h; j++) {
-                int n = j*map_w + i;
-                if (SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).size() > 0) {
-                    file_v5_map_tile tileItem = SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n);
 
-                    painter->setBrush(Qt::NoBrush);
-                    painter->setPen(QColor(255, 0, 0, 255));
-                    painter->drawRect(i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
-                    // terrain type icon
-                    QString terrainIcon;
-                    QResource::registerResource("resources/icons/icons.qrc");
-                    if (tileItem.locked == TERRAIN_SOLID) {
-                        terrainIcon = QString::fromUtf8(":/toolbar_icons/Lock"); // solid
-                    } else if (tileItem.locked == TERRAIN_STAIR) {
-                        terrainIcon = QString(":/toolbar_icons/stairs.png"); // stairs
-                    } else if (tileItem.locked == TERRAIN_SPIKE) {
-                        terrainIcon = QString(":/toolbar_icons/edit-delete.png"); // spikes
-                    } else if (tileItem.locked == TERRAIN_WATER) {
-                        terrainIcon = QString(":/toolbar_icons/flag-blue.png"); // water
-                    } else if (tileItem.locked == TERRAIN_ICE) {
-                        terrainIcon = QString(":/toolbar_icons/flag-green.png"); // ice
-                    } else if (tileItem.locked == TERRAIN_MOVE_LEFT) {
-                        terrainIcon = QString(":/toolbar_icons/arrow-left.png"); // move left
-                    } else if (tileItem.locked == TERRAIN_MOVE_RIGHT) {
-                        terrainIcon = QString(":/toolbar_icons/arrow-right.png");
-                    } else if (tileItem.locked == TERRAIN_SAND) {
-                        terrainIcon = QString(":/toolbar_icons/arrow-down.png");
-                    } else if (tileItem.locked == TERRAIN_HSCROLL_LOCK) {
-                        terrainIcon = QString(":/toolbar_icons/system-switch-user.png");
-                    } else if (tileItem.locked == TERRAIN_VSCROLL_LOCK) {
-                        terrainIcon = QString(":/toolbar_icons/v_scroll_lock.png");
-                    } else if (tileItem.locked == TERRAIN_SLOPE) {
-                        terrainIcon = QString(":/toolbar_icons/draw-triangle.png"); // diagonal left
-                    } else if (tileItem.locked == -2) {
-                        terrainIcon = QString(":/toolbar_icons/dialog-cancel.png"); // diagonal left
-                    }
-                    if (terrainIcon.length() > 0) {
-                        QPixmap terrainImage(terrainIcon);
-                        if (terrainImage.isNull()) {
-                            printf("ERROR: EditorArea::paintEvent - terrainType - Could not load image file '%s'\n", qPrintable(terrainIcon));
-                        } else {
-                            terrainIcon.resize(TILESIZE);
-                            painter->setOpacity(0.7);
-                            QRectF target(QPoint(i*TILESIZE*Mediator::get_instance()->zoom, j*TILESIZE*Mediator::get_instance()->zoom), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
-                            QRectF source(QPoint(0, 0), QSize(terrainImage.width (), terrainImage.height ()));
-                            painter->drawPixmap(target, terrainImage, source);
+    for (int i=leftmost_room; i<=rightmost_room; i++) {
+        for (int j=topmost_room; j<=bottommost_room; j++) {
+            if (SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[i][j].area_n == SharedData::get_instance()->v6_selected_area) {
+                file_v6_room room_data = SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[i][j];
+                for (int k=0; k<AREA_ROOM_W; k++) {
+                    for (int m=0; m<AREA_ROOM_H; m++) {
+                        file_v6_room_tile tileItem = room_data.tiles[k][m];
+                        if (tileItem.locked != TERRAIN_UNBLOCKED) {
+
+                            int dest_x = (k+i*AREA_ROOM_W)*TILESIZE*Mediator::get_instance()->zoom;
+                            int dest_y = (m+j*AREA_ROOM_H)*TILESIZE*Mediator::get_instance()->zoom;
+
+                            // used images depends upon tile type
+
+                            std::cout << "LOCK IN MAP[" << i << "][" << j << "], AT [" << k << "][" << m << "], type[" << tileItem.tile_underlay.type << "]" << std::endl;
+
+                            painter->setBrush(Qt::NoBrush);
+                            painter->setPen(QColor(255, 0, 0, 255));
+                            painter->drawRect(dest_x, dest_y, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
+                            // terrain type icon
+                            QString terrainIcon;
+                            QResource::registerResource("resources/icons/icons.qrc");
+                            if (tileItem.locked == TERRAIN_SOLID) {
+                                terrainIcon = QString::fromUtf8(":/toolbar_icons/Lock"); // solid
+                            } else if (tileItem.locked == TERRAIN_STAIR) {
+                                terrainIcon = QString(":/toolbar_icons/stairs.png"); // stairs
+                            } else if (tileItem.locked == TERRAIN_SPIKE) {
+                                terrainIcon = QString(":/toolbar_icons/edit-delete.png"); // spikes
+                            } else if (tileItem.locked == TERRAIN_WATER) {
+                                terrainIcon = QString(":/toolbar_icons/flag-blue.png"); // water
+                            } else if (tileItem.locked == TERRAIN_ICE) {
+                                terrainIcon = QString(":/toolbar_icons/flag-green.png"); // ice
+                            } else if (tileItem.locked == TERRAIN_MOVE_LEFT) {
+                                terrainIcon = QString(":/toolbar_icons/arrow-left.png"); // move left
+                            } else if (tileItem.locked == TERRAIN_MOVE_RIGHT) {
+                                terrainIcon = QString(":/toolbar_icons/arrow-right.png");
+                            } else if (tileItem.locked == TERRAIN_SAND) {
+                                terrainIcon = QString(":/toolbar_icons/arrow-down.png");
+                            } else if (tileItem.locked == TERRAIN_HSCROLL_LOCK) {
+                                terrainIcon = QString(":/toolbar_icons/system-switch-user.png");
+                            } else if (tileItem.locked == TERRAIN_VSCROLL_LOCK) {
+                                terrainIcon = QString(":/toolbar_icons/v_scroll_lock.png");
+                            } else if (tileItem.locked == TERRAIN_SLOPE) {
+                                terrainIcon = QString(":/toolbar_icons/draw-triangle.png"); // diagonal left
+                            } else if (tileItem.locked == -2) {
+                                terrainIcon = QString(":/toolbar_icons/dialog-cancel.png"); // diagonal left
+                            }
+                            if (terrainIcon.length() > 0) {
+                                QPixmap terrainImage(terrainIcon);
+                                if (terrainImage.isNull()) {
+                                    printf("ERROR: EditorArea::paintEvent - terrainType - Could not load image file '%s'\n", qPrintable(terrainIcon));
+                                } else {
+                                    terrainIcon.resize(TILESIZE);
+                                    //painter->setOpacity(0.7);
+                                    QRectF target(QPoint(dest_x, dest_y), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
+                                    QRectF source(QPoint(0, 0), QSize(terrainImage.width(), terrainImage.height ()));
+                                    painter->drawPixmap(target, terrainImage, source);
+                                }
+                            }
+                            painter->setOpacity(1.0);
                         }
                     }
-                    painter->setOpacity(1.0);
-
-
-
                 }
             }
         }
@@ -327,12 +352,7 @@ void EditorArea::drawMapEnemies(QPainter *painter)
                 }
 
                 // TODO //
-                /*
-                if (Mediator::get_instance()->stage_data.stages[Mediator::get_instance()->currentStage].boss.id_npc == npc_id) {
-                    // translucid green rectangle
-                    painter->setBrush(QColor(0, 255, 0, 180));
-                    painter->drawRect(target);
-                } else if (Mediator::get_instance()->enemy_list.at(npc_id).is_boss) {
+                if (Mediator::get_instance()->enemy_list.at(npc_id).is_boss) {
                     // translucid orange rectangle
                     painter->setBrush(QColor(255, 128, 35, 200));
                     painter->drawRect(target);
@@ -347,7 +367,6 @@ void EditorArea::drawMapEnemies(QPainter *painter)
                     painter->setPen(QColor(255, 215, 0, 255));
                     painter->drawRect(target);
                 }
-                */
 
 
                 int direction = map_npc.direction;
@@ -465,34 +484,43 @@ void EditorArea::paintEvent(QPaintEvent *)
     QLineF line;
     QString filename;
 
-    unsigned int mapNumber = SharedData::get_instance()->file_v5_selected_map;
-    if (SharedData::get_instance()->file_v5_map_header_list.size() > mapNumber) {
 
-        file_v5_map_header& header = SharedData::get_instance()->file_v5_map_header_list.at(mapNumber);
 
-        // @ TODO //
-        // draw background-color
-        if (Mediator::get_instance()->show_background_color == true) {
-            painter.fillRect(QRectF(0.0, 0.0, header.tiles_w*TILESIZE*Mediator::get_instance()->zoom, header.tiles_h*TILESIZE*Mediator::get_instance()->zoom), QColor(header.background_color.r, header.background_color.g, header.background_color.b, 255));
-        }
-        // draw backgrounds
-        if (Mediator::get_instance()->show_bg1 == true) {
-            for (unsigned int i=0; i<BACKGROUND_LAYERS_MAX; i++) {
-                std::string bg1_filename(SharedData::get_instance()->FILEPATH + std::string("/images/map_backgrounds/") + header.backgrounds[i].filename);
-                if (bg1_filename.length() > 0) {
-                    bg1_image = QPixmap(bg1_filename.c_str());
-                    if (!bg1_image.isNull()) {
-                        int max_repeat = ((header.tiles_w*TILESIZE)/bg1_image.width())*Mediator::get_instance()->zoom+1;
-                        for (int k=0; k<max_repeat; k++) {
-                            QRectF pos_source(QPoint(0, 0), QSize(bg1_image.width(), bg1_image.height()));
-                            QRectF pos_dest(QPoint(k*bg1_image.width()*Mediator::get_instance()->zoom, header.backgrounds[i].adjust_y*Mediator::get_instance()->zoom), QSize(bg1_image.width()*Mediator::get_instance()->zoom, bg1_image.height()*Mediator::get_instance()->zoom));
-                            painter.drawPixmap(pos_dest, bg1_image, pos_source);
+    if (Mediator::get_instance()->show_background_color == true) {
+        st_color bg_color = SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).background_color;
+        QColor qbg_color = QColor(bg_color.r, bg_color.g, bg_color.b, 255);
+        painter.fillRect(QRectF(0.0, 0.0, RES_W*Mediator::get_instance()->zoom, AREA_H*Mediator::get_instance()->zoom), qbg_color);
+    }
+    // draw backgrounds
+    if (Mediator::get_instance()->show_bg1 == true) {
+
+        for (int room_x=leftmost_room; room_x<=rightmost_room; room_x++) {
+            for (int room_y=topmost_room; room_y<=bottommost_room; room_y++) {
+                if (SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[room_x][room_y].area_n == SharedData::get_instance()->v6_selected_area) {
+                    for (int i=0; i<LAYERS_COUNT; i++) {
+                        if (!layer_pixmap_list[i].isNull()) {
+                            int k = room_x-leftmost_room;
+                            int l = room_y-topmost_room;
+                            int bg_pos_y = AREA_H*l+ SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).layers[i].adjust_y;
+                            /// @TODO: repeat backgrounds in X and Y axis, if set in mode and smaller than RES_W and AREA_H //
+
+                            int origin_h = layer_pixmap_list[i].height();
+                            if ((layer_pixmap_list[i].height() + bg_pos_y) > AREA_H) {
+                                origin_h -= AREA_H - (layer_pixmap_list[i].height() + bg_pos_y);
+                            }
+
+                            QRectF pos_source(QPoint(0, 0), QSize(layer_pixmap_list[i].width(), origin_h));
+                            QRectF pos_dest(QPoint(k*RES_W*Mediator::get_instance()->zoom, bg_pos_y*Mediator::get_instance()->zoom), QSize(layer_pixmap_list[i].width()*Mediator::get_instance()->zoom, origin_h*Mediator::get_instance()->zoom));
+                            //std::cout << "BG[" << i << "].total_h[" << (pos_dest.y() + pos_dest.height()) << "]" << std::endl;
+                            painter.drawPixmap(pos_dest, layer_pixmap_list[i], pos_source);
                         }
                     }
                 }
             }
         }
+
     }
+
 
 
     drawTileset(&painter);
@@ -526,7 +554,7 @@ void EditorArea::paintEvent(QPaintEvent *)
             //QLineF line(0, 800, 16, 800);
             // linhas horizontais
             line = QLineF(pos, 0, pos, SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h*TILESIZE*Mediator::get_instance()->zoom-1);
-            if (i % 20 == 0) {
+            if (i % AREA_ROOM_W == 0) {
                 painter.setPen(pen_red);
             } else {
                 painter.setPen(pen);
@@ -535,11 +563,16 @@ void EditorArea::paintEvent(QPaintEvent *)
         }
         painter.setPen(pen);
 
-        std::cout << ">>>>>>>>>>>> limit_h[" << limit_h << "]" << std::endl;
+        //std::cout << ">>>>>>>>>>>> limit_h[" << limit_h << "]" << std::endl;
         for (unsigned int i=1; i<limit_h; i++) {
             pos = i*TILESIZE*Mediator::get_instance()->zoom-1;
             //QLineF line(0, 800, 16, 800);
             // linhas verticais
+            if (i % AREA_ROOM_H == 0) {
+                painter.setPen(pen_red);
+            } else {
+                painter.setPen(pen);
+            }
             line = QLineF(0, pos, SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_w*TILESIZE*Mediator::get_instance()->zoom-1, pos);
             painter.drawLine(line);
         }
@@ -731,6 +764,22 @@ void EditorArea::wheelEvent(QWheelEvent *event)
     event->accept();
 }
 
+int EditorArea::find_npc_in_position(int x, int y)
+{
+    int currentMap = SharedData::get_instance()->file_v5_selected_map;
+    if (SharedData::get_instance()->file_v5_map_npc_map.find(currentMap) == SharedData::get_instance()->file_v5_map_npc_map.end()) {
+        return -1;
+    }
+
+    // search if there is an existing NPC in ths position, and if yes, remove it
+    for (int i=0; i<SharedData::get_instance()->file_v5_map_npc_map.at(currentMap).size(); i++) {
+        if (SharedData::get_instance()->file_v5_map_npc_map.at(currentMap).at(i).id_npc != -1 && SharedData::get_instance()->file_v5_map_npc_map.at(currentMap).at(i).start_point.x == x && SharedData::get_instance()->file_v5_map_npc_map.at(currentMap).at(i).start_point.y == y) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 
 
 void EditorArea::mousePressEvent(QMouseEvent *event) {
@@ -739,8 +788,8 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
 		return;
 	}
 
-    std::cout << "EDITORAREA::mousePressEvent - EXECUTE, mode[" << Mediator::get_instance()->editTool << "]" << std::endl;
-    std::cout << "SET-SLOPE-MODE [" << Mediator::get_instance()->editMode << "]" << std::endl;
+    //std::cout << "EDITORAREA::mousePressEvent - EXECUTE, mode[" << Mediator::get_instance()->editTool << "]" << std::endl;
+    //std::cout << "SET-SLOPE-MODE [" << Mediator::get_instance()->editMode << "]" << std::endl;
 
     QPoint pnt = event->pos();
     editor_selectedTileX = pnt.x()/(TILESIZE*Mediator::get_instance()->zoom);
@@ -748,33 +797,26 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
 
 
     if (Mediator::get_instance()->editMode == EDITMODE_NORMAL || Mediator::get_instance()->editMode == EDITMODE_ANIM_TILE || Mediator::get_instance()->editMode == EDITMODE_SLOPE) {
-        // V5-FILE //
-        if (SharedData::get_instance()->file_v5_map_tile_map.find(SharedData::get_instance()->file_v5_selected_map) != SharedData::get_instance()->file_v5_map_tile_map.end()) {
 
-            int map_w = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w;
-            int map_h = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h;
 
-            if (editor_selectedTileX > map_w || editor_selectedTileY > map_h) {
-                return;
-            }
+        // FILE-V6 //
 
-            int n = editor_selectedTileY*map_w + editor_selectedTileX;
-            std::cout << "mousePressEvent.DEBUG#1 - map_w[" << map_w << "], map_h[" << map_h << "], n[" << n << "]" << std::endl;
+        int room_x = editor_selectedTileX/AREA_ROOM_W;
+        int room_y = editor_selectedTileY/AREA_ROOM_H;
 
-            // out of map area
-            if (n >= SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).size()) {
-                return;
-            }
+        //std::cout << "EDITORAREA::mousePressEvent - DEBUG #1 x[" << editor_selectedTileX << "] y[" << editor_selectedTileY << "], room_x[" << room_x << "], room_y[" << room_y << "]" << std::endl;
 
-            // unused tile
-            if (SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay.x == -2 && SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay.y == -2) {
-                std::cout << ">>>>>>>>>>> UNUSED TILE <<<<<<<<<<<<<" << std::endl;
-                return;
-            }
+
+        if (SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[room_x][room_y].area_n == SharedData::get_instance()->v6_selected_area) {
+            //std::cout << "EDITORAREA::mousePressEvent - DEBUG #2" << std::endl;
+
+            int tile_x = editor_selectedTileX - (room_x*AREA_ROOM_W);
+            int tile_y = editor_selectedTileY - (room_y*AREA_ROOM_H);
 
             if (Mediator::get_instance()->editTool == EDITMODE_NORMAL || Mediator::get_instance()->editTool == EDITMODE_ERASER || Mediator::get_instance()->editMode == EDITMODE_ANIM_TILE || Mediator::get_instance()->editMode == EDITMODE_SLOPE) {
-                std::cout << "mousePressEvent.DEBUG#2" << std::endl;
-                int valueType = TILE_TYPE_SOLID;
+
+                std::cout << "mousePressEvent.DEBUG#2 - x[" << editor_selectedTileX << "], y[" << editor_selectedTileY << "]" << std::endl;
+                e_TILE_TYPE valueType = TILE_TYPE_SOLID;
                 int valueX = Mediator::get_instance()->getPalleteX();
                 int valueY = Mediator::get_instance()->getPalleteY();
 
@@ -791,39 +833,23 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
                     valueY = -1;
                 }
 
-                if (SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).size() > 0) {
 
-                    if (Mediator::get_instance()->layerLevel == 1) {
-                        std::cout << "############ set tile[" << n << "], at[" << editor_selectedTileX << "][" << editor_selectedTileY << "] with [" << valueX << "][" << valueY << "][" << valueType << "]" << std::endl;
-                        SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay.x = valueX;
-                        SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay.y = valueY;
-                        SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay.type = valueType;
-                    } else if (Mediator::get_instance()->layerLevel == 3) {
-                        SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_overlay.x = valueX;
-                        SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_overlay.y = valueY;
-                        SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_overlay.type = valueType;
-                    }
-                    if (Mediator::get_instance()->layerLevel == 1 && Mediator::get_instance()->editMode == EDITMODE_SLOPE) {
-                        SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).locked = TERRAIN_SLOPE;
-                        std::cout << "PLACE-SLOPE #2" << std::endl;
-                    }
-                }
+
+                SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[room_x][room_y].tiles[tile_x][tile_y].tile_underlay.type = valueType;
+                SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[room_x][room_y].tiles[tile_x][tile_y].tile_underlay.x = valueX;
+                SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[room_x][room_y].tiles[tile_x][tile_y].tile_underlay.y = valueY;
+
+                std::cout << "SET LEVEL[" << SharedData::get_instance()->v6_selected_level << "].AREA[" << SharedData::get_instance()->v6_selected_area << "].ROOM[" << room_x << "][" << room_y << "].TILE[" << tile_x << "][" << tile_y << "] to [" << valueType << "][" << valueX << "][" << valueY << "]" << std::endl;
             } else if (Mediator::get_instance()->editTool == EDITMODE_LOCK) {
-                if (SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).locked == Mediator::get_instance()->terrainType) {
-                    SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).locked = TERRAIN_UNBLOCKED;
+                if (SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[room_x][room_y].tiles[tile_x][tile_y].locked == Mediator::get_instance()->terrainType) {
+                    SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[room_x][room_y].tiles[tile_x][tile_y].locked = TERRAIN_UNBLOCKED;
                 } else {
-                    SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).locked = Mediator::get_instance()->terrainType;
+                    SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[room_x][room_y].tiles[tile_x][tile_y].locked = Mediator::get_instance()->terrainType;
                 }
-            } else {
-                std::cout << "mousePressEvent.DEBUG -- ELSE#1" << std::endl;
+                std::cout << "EDITORAREA::mousePressEvent - DEBUG #3 [EDITMODE_LOCK] x[" << editor_selectedTileX << "] y[" << editor_selectedTileY << "], room_x[" << room_x << "], room_y[" << room_y << "] SET TO [" << SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[room_x][room_y].tiles[tile_x][tile_y].locked << "]" << std::endl;
+
             }
-        } else {
-            std::cout << "mousePressEvent.DEBUG -- ELSE#2" << std::endl;
         }
-
-
-
-
     } else if (Mediator::get_instance()->editMode == EDITMODE_LINK) {
         if (Mediator::get_instance()->editTool == EDITMODE_LINK && tempX == -1) {
                     // checks if a link in this position already exits to remove it
@@ -881,7 +907,17 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
 
 
     } else if (Mediator::get_instance()->editMode == EDITMODE_SET_BOSS) {
+        int found_npc = find_npc_in_position(editor_selectedTileX, editor_selectedTileY);
+        if (found_npc != -1) {
+            int npc_id = SharedData::get_instance()->file_v5_map_npc_map.at(SharedData::get_instance()->file_v5_selected_map).at(found_npc).id_npc;
+            Mediator::get_instance()->enemy_list.at(npc_id).is_boss = true;
+        }
     } else if (Mediator::get_instance()->editMode == EDITMODE_SET_SUBBOSS) {
+        int found_npc = find_npc_in_position(editor_selectedTileX, editor_selectedTileY);
+        if (found_npc != -1) {
+            int npc_id = SharedData::get_instance()->file_v5_map_npc_map.at(SharedData::get_instance()->file_v5_selected_map).at(found_npc).id_npc;
+            Mediator::get_instance()->enemy_list.at(npc_id).is_sub_boss = true;
+        }
     } else if (Mediator::get_instance()->editMode == EDITMODE_NPC) {
 		printf(">> EditorArea::mousePressEvent - EDITMODE_NPC\n");
 

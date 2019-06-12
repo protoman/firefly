@@ -77,5 +77,8 @@ GameMediator::GameMediator()
             player_list_v3_1.push_back(file_player_v3_1_1(i));
         }
     }
+
+    SharedData::get_instance()->v6_area_list = fio_cmm.load_from_disk<file_v6_area>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST);
 }
+
 

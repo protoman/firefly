@@ -84,7 +84,7 @@ public:
     int getMapPointLock(st_position pos) const;
     st_float_position getMapScrolling() const;
     st_size get_size();
-    st_tile_piece get_map_point_tile1(st_position pos);
+    file_v6_tile_piece get_map_point_tile1(st_position pos);
     short get_map_point_lock(int tile_x, int tile_y);
 
     int get_first_lock_on_left(int x_pos);
@@ -116,7 +116,7 @@ public:
     bool is_point_solid(st_position pos) const;
 
 
-    file_v5_map_tile getTileFromPosition(int x, int y);
+    file_v6_room_tile getTileFromPosition(int x, int y);
 
     file_v5_map_header &getMapHeader();
 
@@ -266,7 +266,7 @@ private:
 
 
 private:
-    std::map<unsigned int, st_background> mapBackgroundMap;
+    std::map<unsigned int, st_background> imageLayerMap;
 
 public:
     std::vector<classnpc> _npc_list;                                        // vector npcs
@@ -299,6 +299,10 @@ private:
 
     std::map<int, st_imageData> slope_image_map;
 
+    // FIL-V6 //
+    std::map<st_position, file_v6_room_tile> area_tile_map;
+    int map_tiles_w = 0;
+    int map_tiles_h = 0;
 };
 
 #endif // MAPCONTROLLER_H

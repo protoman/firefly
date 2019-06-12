@@ -1,254 +1,90 @@
-#include "areaeditor.h"
-#include "ui_areaeditor.h"
+#include "leveleditor.h"
+#include "ui_leveleditor.h"
 
 #include "mediator.h"
 #include "common.h"
 
-AreaEditor::AreaEditor(QWidget *parent) :
+LevelEditor::LevelEditor(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::AreaEditor)
 {
     ui->setupUi(this);
 }
 
-AreaEditor::~AreaEditor()
+LevelEditor::~LevelEditor()
 {
     delete ui;
 }
 
-void AreaEditor::reload()
+void LevelEditor::reload()
 {
     data_loading = true;
-    //common::fill_files_combo("/music/", ui->musicComboBox);
-    data_loading = false;
-    if (SharedData::get_instance()->area_list.size() == 0) {
-        ui->addMapPushButton->setEnabled(false);
-        ui->mapComboBox->setEnabled(false);
-        ui->areaNameLineEdit->setEnabled(false);
-    } else {
-        ui->addMapPushButton->setEnabled(true);
-        ui->mapComboBox->setEnabled(true);
-        ui->areaNameLineEdit->setEnabled(true);
-    }
     ui->areaComboBox->clear();
-    for (int i=0; i<SharedData::get_instance()->area_list.size(); i++) {
-        ui->areaComboBox->addItem(QString("[") + QString::number(i) + "] - " + QString(SharedData::get_instance()->area_list.at(i).name));
+    for (int i=0; i<SharedData::get_instance()->v6_level_list.size(); i++) {
+        ui->areaComboBox->addItem(QString("[") + QString::number(i) + "] - " + QString(SharedData::get_instance()->v6_level_list.at(i).level_name));
     }
-    int currentArea = ui->areaComboBox->currentIndex();
-    if (SharedData::get_instance()->area_list.size() > currentArea) {
-        //ui->graphic_combo->setCurrentIndex(ui->graphic_combo->findText(QString(Mediator::get_instance()->anim_block_list.at(index).filename)));
-        unsigned int new_index = ui->musicComboBox->findText(QString(SharedData::get_instance()->area_list.at(currentArea).music_filename));
-        std::cout << ">>>>>>>>>>>> LOAD music_filename, new_index[" << new_index << ", [" << SharedData::get_instance()->area_list.at(currentArea).music_filename << "]" << std::endl;
-        ui->musicComboBox->setCurrentIndex(new_index);
-    }
-    reload_map_combo();
-}
-
-void AreaEditor::reload_map_combo()
-{
-    std::cout << "reload_map_combo" << std::endl;
     ui->mapComboBox->clear();
-    int currentArea = ui->areaComboBox->currentIndex();
-    if (SharedData::get_instance()->area_list.size() <= currentArea) {
-        std::cout << "reload_map_combo - no areas" << std::endl;
-        return;
+    for (int i=0; i<SharedData::get_instance()->v6_area_list.size(); i++) {
+        ui->mapComboBox->addItem(QString("[") + QString::number(i) + "] - " + QString(SharedData::get_instance()->v6_area_list.at(i).map_name));
     }
-    for (int i=0; i<GAME_AREA_SIZE; i++) {
-        if (SharedData::get_instance()->area_list.at(currentArea).map[i] != -1) {
-            std::cout << "found map at[" << i << "]" << std::endl;
-            ui->mapComboBox->addItem(QString("[") + QString::number(i) + "]");
-        }
-    }
+    data_loading = false;
 }
 
 
 
-void AreaEditor::on_addAreaPushButton_clicked()
+void LevelEditor::on_addAreaPushButton_clicked()
 {
     if (data_loading) { return; }
-    SharedData::get_instance()->area_list.push_back(struct_file_v5_area());
-    sprintf(SharedData::get_instance()->area_list.at(SharedData::get_instance()->area_list.size()-1).name, "%s", "NEW-AREA");
+    SharedData::get_instance()->v6_level_list.push_back(file_v6_level());
+    unsigned int new_n = SharedData::get_instance()->v6_level_list.size();
+    sprintf(SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_level_list.size()-1).level_name, "LEVEL %d", new_n);
     data_loading = true;
     reload();
     data_loading = false;
 }
 
-void AreaEditor::on_addMapPushButton_clicked()
-{
-    std::cout << "on_addMapPushButton_clicked" << std::endl;
-    unsigned int currentArea = ui->areaComboBox->currentIndex();
-    for (int i=0; i<GAME_AREA_SIZE; i++) {
-        if (SharedData::get_instance()->area_list.at(currentArea).map[i] == -1) {
-            std::cout << "ADDED MAP AT[" << i << "]" << std::endl;
-            SharedData::get_instance()->area_list.at(currentArea).map[i] = i;
-            break;
-        }
-    }
-    data_loading = true;
-    reload_map_combo();
-    data_loading = false;
-}
-
-void AreaEditor::on_areaNameLineEdit_textChanged(const QString &arg1)
+void LevelEditor::on_areaNameLineEdit_textChanged(const QString &arg1)
 {
     if (data_loading) { return; }
-    unsigned int currentArea = ui->areaComboBox->currentIndex();
+    // record current combo selection to restore later //
+    unsigned int currentLevel = ui->areaComboBox->currentIndex();
     unsigned int currentMap = ui->mapComboBox->currentIndex();
-    sprintf(SharedData::get_instance()->area_list.at(SharedData::get_instance()->area_list.size()-1).name, "%s", arg1.toStdString().c_str());
+    sprintf(SharedData::get_instance()->v6_level_list.at(currentLevel).level_name, "%s", arg1.toStdString().c_str());
     data_loading = true;
     reload();
-    ui->areaComboBox->setCurrentIndex(currentArea);
+    // restore combo selection //
+    ui->areaComboBox->setCurrentIndex(currentLevel);
     ui->mapComboBox->setCurrentIndex(currentMap);
     data_loading = false;
 }
 
-void AreaEditor::on_areaComboBox_currentIndexChanged(int index)
+void LevelEditor::on_areaComboBox_currentIndexChanged(int index)
 {
     data_loading = true;
     unsigned int currentArea = ui->areaComboBox->currentIndex();
-    if (SharedData::get_instance()->area_list.size() <= currentArea) {
+    if (SharedData::get_instance()->v6_level_list.size() <= currentArea) {
         return;
     }
-    ui->areaNameLineEdit->setText(SharedData::get_instance()->area_list.at(currentArea).name);
-    reload_map_combo();
+    ui->areaNameLineEdit->setText(SharedData::get_instance()->v6_level_list.at(currentArea).level_name);
     data_loading = false;
 }
 
 
-void AreaEditor::on_musicComboBox_currentIndexChanged(const QString &arg1)
-{
-    if (data_loading) { return; }
-    unsigned int currentArea = ui->areaComboBox->currentIndex();
-    if (SharedData::get_instance()->area_list.size() <= currentArea) {
-        return;
-    }
-    sprintf(SharedData::get_instance()->area_list.at(currentArea).music_filename, "%s", arg1.toStdString().c_str());
-}
 
 
-void AreaEditor::on_generateTilesetPushButton_clicked()
-{
-    unsigned int currentArea = ui->areaComboBox->currentIndex();
-    unsigned int currentMap = ui->mapComboBox->currentIndex() + (currentArea*GAME_AREA_SIZE);
-
-    if (SharedData::get_instance()->area_list.size() <= currentArea) {
-        std::cout << "ERROR: Area [" << currentArea << "] does not exists" << std::endl;
-        return;
-    }
-
-    std::cout << "AreaEditor::on_generateTilesetPushButton_clicke - currentArea[" << currentArea << "], currentMap[" << currentMap << "]" << std::endl;
-
-
-    st_position top_leftmost_point = st_position(GAME_AREA_SIZE, GAME_AREA_SIZE);
-    st_position bottom_rightmost_point = st_position(0, 0);
-    // find left top-leftmost and bottom rightmost points
-    for (int i=0; i<GAME_AREA_SIZE; i++) {
-        for (int j=0; j<GAME_AREA_SIZE; j++) {
-            if (SharedData::get_instance()->area_list.at(currentArea).point[i][j] == currentMap) {
-                if (top_leftmost_point.x >= i && top_leftmost_point.y >= j) {
-                    top_leftmost_point.x = i;
-                    top_leftmost_point.y = j;
-                }
-                if (bottom_rightmost_point.x <= i && bottom_rightmost_point.y <= j) {
-                    bottom_rightmost_point.x = i;
-                    bottom_rightmost_point.y = j;
-                }
-            }
-        }
-    }
-    std::cout << "top_leftmost_point.x[" << top_leftmost_point.x << "], y[" << top_leftmost_point.y << "]" << std::endl;
-    std::cout << "bottom_rightmost_point.x[" << bottom_rightmost_point.x << "], y[" << bottom_rightmost_point.y << "]" << std::endl;
-
-    // +1 because count starts in zero
-    unsigned int size_w = bottom_rightmost_point.x - top_leftmost_point.x + 1;
-    unsigned int size_h = bottom_rightmost_point.y - top_leftmost_point.y + 1;
-
-    int total_size_w = size_w*GAME_AREA_W;
-    int total_size_h = size_h*GAME_AREA_H;
-    std::cout << "size_w[" << size_w << "], size_h[" << size_h << "]" << std::endl;
-    std::cout << "total_size_w[" << total_size_w << "], total_size_h[" << total_size_h << "]" << std::endl;
-
-    std::cout << "currentMap[" << currentMap << "], map_header.size[" << SharedData::get_instance()->file_v5_map_header_list.size() << "]" << std::endl;
-    // already have header and tileset
-
-    if (SharedData::get_instance()->file_v5_map_header_list.size() <= currentMap) {
-        SharedData::get_instance()->file_v5_map_header_list.push_back(file_v5_map_header());
-    }
-
-    if (SharedData::get_instance()->file_v5_map_header_list.size() > currentMap) {
-        if (SharedData::get_instance()->file_v5_map_tile_map.find(currentMap) == SharedData::get_instance()->file_v5_map_tile_map.end()) {
-            SharedData::get_instance()->file_v5_map_tile_map.insert(std::pair<unsigned int, std::vector<file_v5_map_tile>>(currentMap, std::vector<file_v5_map_tile>()));
-        }
-        // TODO: if size was not changed, must only set the enabled/disabled tiles
-        SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_w = total_size_w;
-        SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_h = total_size_h;
-        SharedData::get_instance()->file_v5_map_tile_map.at(currentMap).clear();
-
-
-        std::cout << ">>>>>>>>>>>> currentMap[" << currentMap << "]" << std::endl;
-        // TODO: set empty areas (also, add support in editor for those)
-
-
-        int tile_n = 0;
-        for (int i=0; i<total_size_w; i++) {
-            for (int j=0; j<total_size_h; j++) {
-                //std::cout << "INSERT-TILE n[" << tile_n << "]" << std::endl;
-                SharedData::get_instance()->file_v5_map_tile_map.at(currentMap).push_back(file_v5_map_tile());
-                tile_n++;
-            }
-        }
-        std::cout << ">>>> MAP[" << currentMap << "], existing tiles[" << SharedData::get_instance()->file_v5_map_tile_map.at(currentMap).size() << "]" << std::endl;
-
-
-        for (int i=0; i<GAME_AREA_SIZE; i++) {
-            for (int j=0; j<GAME_AREA_SIZE; j++) {
-                // TODO - make current make different color
-                if (SharedData::get_instance()->area_list.size() > currentArea && SharedData::get_instance()->area_list.at(currentArea).point[i][j] == currentMap) {
-                    std::cout << "#### area.tile[" << i << "][" << j << "]" << std::endl;
-                }
-            }
-        }
-
-        for (int i=0; i<total_size_w; i++) {
-            for (int j=0; j<total_size_h; j++) {
-                int n = j*total_size_w + i;
-                int x = top_leftmost_point.x+(i/GAME_AREA_W);
-                int y = top_leftmost_point.y+(j/GAME_AREA_W);
-
-                std::cout << "%%%% n[" << n << "], i[" << i << "], j[" << j << "], x[" << x << "], y[" << y << "]"  << std::endl;
-
-                file_v5_map_tile* tileItem = &SharedData::get_instance()->file_v5_map_tile_map.at(currentMap).at(n);
-                if (SharedData::get_instance()->area_list.at(currentArea).point[x][y] != currentMap) {
-                    //std::cout << "SET-POIINT-EMPTY x[" << i << "], y[" << j << "], n[" << n << "]" << std::endl;
-                    tileItem->locked = -2;
-                    tileItem->tile_underlay.x = -2;
-                    tileItem->tile_underlay.y = -2;
-                    tileItem->tile_underlay.type = TILE_TYPE_UNUSED;
-                } else {
-                    std::cout << "### SET-POINT-GOOD x[" << i << "], y[" << j << "], n[" << n << "]" << std::endl;
-                }
-            }
-        }
-
-    }
-
-    //GAME_AREA_W
-
-}
-
-void AreaEditor::on_mapComboBox_currentIndexChanged(int index)
+void LevelEditor::on_mapComboBox_currentIndexChanged(int index)
 {
     if (data_loading) { return; }
     ui->areaPreviewWidget->setCurrentMap(index);
     ui->areaPreviewWidget->repaint();
 }
 
-void AreaEditor::on_addVerticalLinkPushButton_clicked()
+void LevelEditor::on_addVerticalLinkPushButton_clicked()
 {
     ui->areaPreviewWidget->set_edit_mode(AREA_EDIT_MODE_VLINK);
 }
 
-void AreaEditor::on_addHorizontalLinkPushButton_clicked()
+void LevelEditor::on_addHorizontalLinkPushButton_clicked()
 {
     ui->areaPreviewWidget->set_edit_mode(AREA_EDIT_MODE_HLINK);
 }

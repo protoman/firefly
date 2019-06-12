@@ -10,6 +10,7 @@
 #include "file/format.h"
 #include "file/fio_common.h"
 #include "file/fio_strings.h"
+#include "file/v6/file_level_v6.h"
 
 class GameMediator
 {
@@ -41,6 +42,7 @@ private:
     fio_common fio_cmm;
 
     std::vector<file_npc_v3_1_2> enemy_list;
+
 
 
 };

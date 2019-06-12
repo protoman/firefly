@@ -12,6 +12,8 @@
 #include <dirent.h>
 #include <stdio.h>
 
+#include "file/v6/file_level_v6.h"
+
 
 
 // ************************************************************************************************************* //
@@ -44,7 +46,6 @@ public:
 
 
     std::string get_sufix();
-
 
 private:
     std::string sufix;

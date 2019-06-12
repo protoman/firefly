@@ -22,6 +22,10 @@ public:
 
     template <class T> void save_struct_data(std::string file, T data);
     template <class T> T load_struct_data(std::string file);
+
+
+    template <class T> T load_single_object_from_list(std::string file, int seek_n);
+
 };
 
 template <class T> void fio_common::save_struct_data(std::string filename, T data) {
@@ -149,6 +153,35 @@ template <class T> void fio_common::save_single_object_to_disk(std::string filen
     fwrite(&data_in, block_size, 1, fp);
     fclose(fp);
 }
+
+template <class T> T fio_common::load_single_object_from_list(std::string filename, int seek_n)
+{
+    T res;
+    FILE *fp = fopen(filename.c_str(), "rb");
+    if (!fp) {
+        std::cout << ">>file_io::load_from_disk - file '" << filename << "' not found." << std::endl;
+        exit(-1);
+    }
+
+    T out;
+    int res_seek = fseek(fp, seek_n*sizeof(T), SEEK_SET);
+    if (res_seek != 0) {
+        std::cout << "fio_common::load_single_object_from_list - ERROR: Could not seek to position [" << seek_n << "]" << std::endl;
+        exit(-1);
+    }
+    int res_read = fread(&out, sizeof(T), 1, fp);
+
+    if (res_read == -1) {
+        std::cout << ">>file_io::load_single_object_from_list - Error reading data from file '" << filename << "'." << std::endl;
+        exit(-1);
+    } else if (res_read == 1) {
+        res = out;
+    }
+
+    fclose(fp);
+    return res;
+}
+
 
 #endif // FIO_COMMON_H
 

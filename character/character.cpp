@@ -691,13 +691,13 @@ bool character::isOnSlope(int xinc)
     for (int i=6; i>-4; i-=3) {
         int map_pos_y = (position.y + frameSize.height - i)/TILESIZE;
         st_rectangle hitbox = get_hitbox(state.animation_type);
-        file_v5_map_tile tile_left = gameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc)/TILESIZE, map_pos_y);
+        file_v6_room_tile tile_left = gameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc)/TILESIZE, map_pos_y);
         if (tile_left.tile_underlay.type == TILE_TYPE_SLOPE) {
             adjust_slope_y(xinc, 0, st_position((hitbox.x+xinc)/TILESIZE, map_pos_y));
             was_on_slope = true;
             return true;
         }
-        file_v5_map_tile tile_center = gameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc+hitbox.w/2)/TILESIZE, map_pos_y);
+        file_v6_room_tile tile_center = gameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc+hitbox.w/2)/TILESIZE, map_pos_y);
         if (tile_center.tile_underlay.type == TILE_TYPE_SLOPE) {
             adjust_slope_y(xinc, 0, st_position((hitbox.x+xinc+hitbox.w/2)/TILESIZE, map_pos_y));
             was_on_slope = true;
@@ -706,7 +706,7 @@ bool character::isOnSlope(int xinc)
 
         //std::cout << "CHAR::isOnSlope::RIGHT.TEST - tile.x[" << (hitbox.x+xinc+hitbox.w)/TILESIZE << "], tile.y[" << map_pos_y << "]" << std::endl;
 
-        file_v5_map_tile tile_right = gameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc+hitbox.w)/TILESIZE, map_pos_y);
+        file_v6_room_tile tile_right = gameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc+hitbox.w)/TILESIZE, map_pos_y);
         if (tile_right.tile_underlay.type == TILE_TYPE_SLOPE) {
             adjust_slope_y(xinc, 0, st_position((hitbox.x+xinc+hitbox.w)/TILESIZE, map_pos_y));
             //std::cout << "CHAR::isOnSlope::RIGHT.TEST - TRUE" << std::endl;
@@ -1967,7 +1967,7 @@ int character::adjust_slope_y(int incx, int incy, st_position map_pos)
 
     int map_pos_x = (position.x + frameSize.width/2)/TILESIZE;
 
-    file_v5_map_tile tile = gameManager::get_instance()->get_current_map_obj()->getTileFromPosition(map_pos_x, map_pos.y);
+    file_v6_room_tile tile = gameManager::get_instance()->get_current_map_obj()->getTileFromPosition(map_pos_x, map_pos.y);
 
     if (tile.tile_underlay.x == -1 || tile.tile_underlay.y == -1) {
         return BLOCK_UNBLOCKED;

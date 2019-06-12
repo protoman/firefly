@@ -7,28 +7,21 @@ namespace Ui {
 class AreaEditor;
 }
 
-class AreaEditor : public QWidget
+class LevelEditor : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit AreaEditor(QWidget *parent = nullptr);
-    ~AreaEditor();
+    explicit LevelEditor(QWidget *parent = nullptr);
+    ~LevelEditor();
     void reload();
-    void reload_map_combo();
 
 private slots:
     void on_addAreaPushButton_clicked();
 
-    void on_addMapPushButton_clicked();
-
     void on_areaNameLineEdit_textChanged(const QString &arg1);
 
     void on_areaComboBox_currentIndexChanged(int index);
-
-    void on_generateTilesetPushButton_clicked();
-
-    void on_musicComboBox_currentIndexChanged(const QString &arg1);
 
     void on_mapComboBox_currentIndexChanged(int index);
 

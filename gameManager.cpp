@@ -118,6 +118,9 @@ void gameManager::preloadGameData()
 void gameManager::loadGameData()
 {
     fio.read_game(SharedData::get_instance()->game_data);
+
+    SharedData::get_instance()->v6_current_level_data = fio_cmm.load_single_object_from_list<file_v6_level>(SharedData::get_instance()->FILEPATH + "/" + FILE_V6_LEVEL_LIST, SharedData::get_instance()->v6_selected_level);
+
     SharedData::get_instance()->enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>("game_enemy_list_3_1_2.dat");
     if (SharedData::get_instance()->enemy_list.size() == 0) {
         SharedData::get_instance()->enemy_list.push_back(file_npc_v3_1_2());
@@ -154,10 +157,6 @@ void gameManager::loadMapData()
     SharedData::get_instance()->file_v5_map_link_list = fio_cmm.load_from_disk<file_v5_map_link>(SharedData::get_instance()->FILEPATH+FILE_V5_MAP_LINK_LIST);
 
     for (int i=0; i<SharedData::get_instance()->file_v5_map_header_list.size(); i++) {
-        SharedData::get_instance()->file_v5_map_tile_map.insert(std::pair<int, std::vector<file_v5_map_tile>>(i, std::vector<file_v5_map_tile>()));
-        char mapName[FS_CHAR_FILENAME_SIZE];
-        sprintf(mapName, "/data/v5_map_%d_tiles.dat", i);
-        SharedData::get_instance()->file_v5_map_tile_map.at(i) = fio_cmm.load_from_disk<file_v5_map_tile>(SharedData::get_instance()->FILEPATH+std::string(mapName));
 
         // load map links
         char map_link_name[FS_CHAR_FILENAME_SIZE];
@@ -177,6 +176,7 @@ void gameManager::loadMapData()
         }
 
     }
+    mapController.loadMap();
 }
 
 int gameManager::mapNumberFromAreaPosition(int area_n, int x, int y)
@@ -458,7 +458,7 @@ void gameManager::build_game_area_map(int x, int y, int map_tile_x, int map_tile
             found_left_lock = false;
             break;
         } else if (left_lock != TERRAIN_SOLID) {
-            std::cout << "LEFT-FOUND-UNLOCKED at x[" << map_tile_x << "], y[" << (map_tile_y+i) << "]" << std::endl;
+            //std::cout << "LEFT-FOUND-UNLOCKED at x[" << map_tile_x << "], y[" << (map_tile_y+i) << "]" << std::endl;
             found_left_open = true;
         } else {
             found_left_lock = true;

@@ -9,6 +9,8 @@
 #include <QBitmap>
 #include <QInputEvent>
 
+#include "aux_tools/stringutils.h"
+
 #include "mediator.h"
 
 #ifndef EDITORTILEPALLETE
@@ -52,7 +54,8 @@ public:
   // variables
   QWidget *myParent;
 
-  void update_files();
+  void update_files();                          // rebuild image files when needed
+  void update_map_data();                       // rebuild map data/tiles when needed
 
 private:
   void preload_slope_images();
@@ -75,6 +78,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent * event);
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
+
+    int find_npc_in_position(int x, int y);
 
     void drawTileset(QPainter *painter);
     void drawLockTileset(QPainter *painter);
@@ -107,6 +112,12 @@ protected:
     float fg_opacity;
 
     std::map<int, QPixmap> slope_image_list;
+
+    QPixmap layer_pixmap_list[LAYERS_COUNT];
+    int leftmost_room = FILE_AREA_W;
+    int rightmost_room = 0;
+    int topmost_room = FILE_AREA_H;
+    int bottommost_room = 0;
 
 
 //signals:

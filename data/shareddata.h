@@ -72,7 +72,6 @@ public:
     // MAPS DATA //
     std::vector<file_v5_map_header> file_v5_map_header_list;
     std::vector<file_v5_map_link> file_v5_map_link_list;
-    std::map<unsigned int, std::vector<file_v5_map_tile>>  file_v5_map_tile_map; // map tiles
     std::map<unsigned int, std::vector<file_v5_map_object>>  file_v5_map_object_map; // map objects
     std::map<unsigned int, std::vector<file_v5_map_npc>>  file_v5_map_npc_map; // map enemies
     std::map<unsigned int, std::vector<struct_file_v5_area_link>> file_v5_area_link_map;
@@ -96,7 +95,16 @@ public:
 
     // FILE-V6 //
     std::vector<file_v6_level> v6_level_list;
-    std::vector<file_v6_area> v6_map_list;
+    std::vector<file_v6_area> v6_area_list;
+    int v6_selected_area = 0;
+    int v6_selected_level = 0;
+    file_v6_level v6_current_level_data;
+
+    int leftmost_room = FILE_AREA_W;
+    int rightmost_room = 0;
+    int topmost_room = FILE_AREA_H;
+    int bottommost_room = 0;
+    std::vector<st_position> area_room_list;
 
 };
 
