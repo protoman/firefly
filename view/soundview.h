@@ -48,7 +48,7 @@ public:
 private:
     SoundView();
     SoundView(SoundView const&){};             // copy constructor is private
-    SoundView& operator=(SoundView const&){};  // assignment operator is private
+    SoundView& operator=(SoundView const&){ return *this; };  // assignment operator is private
     static SoundView* _instance;
 
 

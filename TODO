@@ -1,19 +1,11 @@
 FILE-FORMAT:
-    - refazer sistema de salas
-    - cada "tela" da área é separada individualmente
+    OK - refazer sistema de salas
+    OK - cada "tela" da área é separada individualmente
     - é possível definir na tela se ela tem paredes em N, S, W, E (já seta os tiles para blocked, não deixa mudar)
-    - ao carregar o mapa no jogo, elas são unidas em uma só sala
+    OK - ao carregar o mapa no jogo, elas são unidas em uma só sala
+    - só permitir salas contnuas no editor de área
+    - cria rlinks entre áreas
 
-
-
-LEVEL: Só tem nome
-LINK-LEVEL: lista de ligações entre níveis
-AREA: grupo contínuo de salas com mesmas propriedades (tileset, música, backgrounds, etc)
-    SALA: elemento básico, contém tileset
-
-
-
-- EDITOR: refazer gerador de áreas, deve fazer cada uma das salas
 
 - GAME-DESIGN:
     # criar primeiro mapa
@@ -42,17 +34,9 @@ AREA: grupo contínuo de salas com mesmas propriedades (tileset, música, backgr
     # ao carregar mapa no jogo, cria os links automaticamente
     # simplificar transição
 
-- corrigir pulo em slope
-
-- corrigir slide/dash
-
 - corrigir hitbox: deve ser baseada no frameSize e porcentagens
 
-- link entre áreas deve ser automágico - 4 áreas por linha, liga com as dos lados e cima/baixo se houver (>0)
-
 - criar/implementar area-teleporter
-
-- FILE: adicionar parâmetro de SFX em cada layer (uso futuro, distorção, nove, chuva, etc)
 
 - melhorar performance editor preview-areas
     # carregar imagem na função que muda filename

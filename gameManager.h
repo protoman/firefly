@@ -47,6 +47,7 @@ public:
     void update_stage_scrolling();
     void show_game(bool can_characters_move, bool can_scroll_stage);
     Uint8 getMapPointLock(struct st_position);
+    st_size get_map_size();
     st_float_position checkScrolling();
 
     void horizontal_screen_move(short direction, bool is_door, short tileX);
@@ -89,6 +90,7 @@ public:
     std::string get_selected_game();
     MapController *get_current_map_obj();
     bool is_player_on_teleporter();
+    void show_ability_item_dialog(int ability_n);
 
     short get_current_save_slot();
     void set_current_save_slot(short n);
@@ -110,7 +112,7 @@ private:
     gameManager();
     ~gameManager();
     gameManager(gameManager const&) : _show_boss_hp(false), player1(0) {};             // copy constructor is private
-    gameManager& operator=(gameManager const&){};  // assignment operator is private
+    gameManager& operator=(gameManager const&){ return *this; };  // assignment operator is private
 
     void exit_game();
     void start_stage();
@@ -137,7 +139,7 @@ private:
     bool subboss_alive_on_left(short tileX);
 
     void show_mem_debug(int n);
-    void change_map_scroll(st_float_position pos, bool check_lock, bool ignore_auto_scroll);
+    void change_map_scroll(st_float_position pos, bool check_lock);
 
     void init_map_and_player_to_bottom();
 
@@ -180,6 +182,7 @@ private:
     std::vector<st_position> map_interstage_points;
     long autoscroll_timer = 0;
     int current_area = 0;
+
 
 #ifdef PSP
     psp_ram _ram_counter;

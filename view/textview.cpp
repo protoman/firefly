@@ -25,8 +25,8 @@ void TextView::init()
     }
 
     // load font
-    font = TTF_OpenFont( "./fonts/sofia_regular.ttf", 28 );
-    outline_font = TTF_OpenFont( "./fonts/sofia_regular.ttf", 28 );
+    font = TTF_OpenFont("./fonts/bpmonobold.ttf", FONT_SIZE);
+    outline_font = TTF_OpenFont("./fonts/bpmonobold.ttf", FONT_SIZE);
 }
 
 void TextView::renderText(int x, int y, st_color color, bool centered, std::string text)
@@ -44,6 +44,11 @@ void TextView::renderText(int x, int y, st_color color, bool centered, std::stri
 
     if (outline_font) {
         SDL_Color black = {0, 0, 0};
+        if (font_color.r < 80 && font_color.g < 80 && font_color.b < 80) { // dark fonts needs white outline
+            black.r = 255;
+            black.g = 255;
+            black.b = 255;
+        }
         SDL_Surface* text_outlineSF = TTF_RenderUTF8_Blended(outline_font, text.c_str(), black);
 
 
@@ -81,9 +86,14 @@ void TextView::renderText(int x, int y, std::string text)
     renderText(x, y, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, text);
 }
 
-void TextView::draw_centered_text(int y, std::string text)
+void TextView::renderCenteredText(int y, std::string text)
 {
     renderText(0, y, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), true, text);
+}
+
+void TextView::renderCenteredText(int y, st_color color, std::string text)
+{
+    renderText(0, y, st_color(color.r, color.g, color.b), true, text);
 }
 
 

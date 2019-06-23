@@ -267,7 +267,8 @@ void character::charMove() {
         if (state.animation_type == ANIM_TYPE_JUMP) {
             temp_move_speed = temp_move_speed*JUMP_X_SPEED_MULTIPLIER;
         }
-        //std::cout << "### MOVE::RIGHT#1 temp_move_speed[" << temp_move_speed << "], ###" << std::endl;
+
+        std::cout << "### MOVE::RIGHT#1 temp_move_speed[" << temp_move_speed << "] ###" << std::endl;
         for (float i=temp_move_speed; i>=0.1; i--) {
             if (state.animation_type == ANIM_TYPE_HIT) {
                 hit_moved_back_n += temp_move_speed;
@@ -278,7 +279,7 @@ void character::charMove() {
                 mapLock = map_col.block;
                 //std::cout << "### MOVE::RIGHT#2 - is_on_slope[" << is_on_slope << "] ###" << std::endl;
                 if (is_on_slope == true || mapLock == BLOCK_UNBLOCKED || mapLock == BLOCK_WATER || mapLock == BLOCK_Y) {
-                    //std::cout << "CHAR::MOVE-RIGHT #3 mapLock[" << mapLock << "], pos.x[" << position.x << "]" << std::endl;
+                    std::cout << "CHAR::MOVE-RIGHT #3 mapLock[" << mapLock << "], pos.x[" << position.x << "]" << std::endl;
 
                     if (is_on_slope == true || mapLock == TERRAIN_UNBLOCKED || mapLock == BLOCK_Y) {
                         position.x += i - gameManager::get_instance()->get_current_map_obj()->get_last_scrolled().x;
@@ -305,6 +306,8 @@ void character::charMove() {
                     }
                     moved = true;
                     break;
+                } else {
+                    std::cout << "CHAR::CHARMOVE - MOVE-RIGHT - BLOCKED[" << mapLock << "]" << std::endl;
                 }
             }
 		}
@@ -715,7 +718,7 @@ bool character::isOnSlope(int xinc)
         }
     }
 
-    if (was_on_slope == true) {
+    if (was_on_slope == true && _obj_jump.is_started() == false) {
         position.y -= TILESIZE-3;
         fall_to_ground();
     }
@@ -1639,17 +1642,16 @@ bool character::slide(st_float_position mapScrolling)
         return false;
     }
 
-
     bool did_hit_ground = hit_ground();
+
     int adjust = -1;
     st_map_collision map_col = map_collision(0, adjust, gameManager::get_instance()->get_current_map_obj()->getMapScrolling(), ANIM_TYPE_SLIDE); // slide_adjust is used because of adjustments in slide collision
     int map_lock =  map_col.block;
 
-
     st_map_collision map_col_above = map_collision(0, adjust-20, gameManager::get_instance()->get_current_map_obj()->getMapScrolling(), ANIM_TYPE_SLIDE); // slide_adjust is used because of adjustments in slide collision
     int map_lock_above =  map_col_above.block;
 
-    std::cout << "SLIDE - map_lock[" << map_lock << "], map_lock_above[" << map_lock_above << "]" << std::endl;
+    //std::cout << "SLIDE - map_lock[" << map_lock << "], map_lock_above[" << map_lock_above << "]" << std::endl;
 
     // releasing down (or dash button) interrupts the slide
     if (moveCommands.dash != 1 && state.animation_type == ANIM_TYPE_SLIDE && (map_lock == BLOCK_UNBLOCKED || map_lock == BLOCK_WATER) && (map_lock_above == BLOCK_UNBLOCKED || map_lock_above == BLOCK_WATER)) {
@@ -1664,7 +1666,7 @@ bool character::slide(st_float_position mapScrolling)
     }
 
 
-    if (state.slide_distance > TILESIZE*5 && (map_lock == BLOCK_UNBLOCKED || map_lock == BLOCK_WATER) && (map_lock_above == BLOCK_UNBLOCKED || map_lock_above == BLOCK_WATER)) {
+    if (state.slide_distance > TILESIZE*SLIDE_TILES_MAX_DISTANCE && (map_lock == BLOCK_UNBLOCKED || map_lock == BLOCK_WATER) && (map_lock_above == BLOCK_UNBLOCKED || map_lock_above == BLOCK_WATER)) {
         if (did_hit_ground == true) {
             if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #Y.3" << std::endl;
             set_animation_type(ANIM_TYPE_STAND);
@@ -1731,7 +1733,7 @@ bool character::slide(st_float_position mapScrolling)
     }
 
     // end of map
-    if (state.direction == ANIM_DIRECTION_RIGHT && position.x + frameSize.width > SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w * TILESIZE) {
+    if (state.direction == ANIM_DIRECTION_RIGHT && position.x + frameSize.width > gameManager::get_instance()->get_map_size().width * TILESIZE) {
         state.slide_distance = 0;
         if (is_player()) std::cout << "CHAR::SLIDE LEAVE #1.6" << std::endl;
         return false;
@@ -1746,14 +1748,19 @@ bool character::slide(st_float_position mapScrolling)
     float max_speed = move_speed * 2.5;
     for (float i=max_speed; i>0.0; i--) {
 
+
         int temp_i;
         if (state.direction == ANIM_DIRECTION_LEFT) {
             temp_i = -i;
         } else {
             temp_i = i;
         }
-        st_map_collision map_col = map_collision(temp_i, -3, mapScrolling);;
+        st_map_collision map_col = map_collision(temp_i, -3, mapScrolling);
         mapLockAfter = map_col.block;
+
+        std::cout << "SLIDE - DEBUG i[" << i << "], map_col.terrain_type[" << map_col.terrain_type << "], map_col.block[" << map_col.block << "]" << std::endl;
+
+        bool is_on_slope = isOnSlope(temp_i);
 
         if (mapLockAfter == BLOCK_UNBLOCKED) {
             res_move_x = temp_i;
@@ -1761,18 +1768,26 @@ bool character::slide(st_float_position mapScrolling)
         } else if (mapLockAfter == BLOCK_WATER) {
             res_move_x = temp_i*0.8;
             break;
+        } else if (is_on_slope == true) {
+            std::cout << "SLIDE - DEBUG i[" << i << "] - SLOPE" << std::endl;
+            mapLockAfter = BLOCK_UNBLOCKED;
+            res_move_x = temp_i;
+            break;
         }
     }
 
 
     if (res_move_x != 0 && (mapLockAfter == BLOCK_UNBLOCKED || mapLockAfter == BLOCK_WATER)) {
+        std::cout << "SLIDE - EXECUTE SLIPE" << std::endl;
         position.x += res_move_x;
         moved_dist.x += res_move_x;
         state.slide_distance += abs((float)res_move_x);
     } else {
-        std::cout << "SLIDE::BLOCKED" << std::endl;
+        std::cout << "SLIDE::BLOCKED - res_move_x[" << res_move_x << "], mapLockAfter[" << mapLockAfter << "]" << std::endl;
         if (is_player()) std::cout << "CHAR::RESET_TO_JUMP #A.4" << std::endl;
-        set_animation_type(ANIM_TYPE_JUMP);
+        if (state.animation_type == ANIM_TYPE_SLIDE) {
+            set_animation_type(ANIM_TYPE_JUMP);
+        }
         state.slide_distance = 0;
         return false;
     }
@@ -2126,7 +2141,7 @@ st_map_collision character::map_collision(const float incx, const short incy, st
         // deal with teleporter object that have special block-area and effect (9)teleporting)
         if (state.animation_type != ANIM_TYPE_TELEPORT && res_collision_object._object != nullptr) {
 
-            //std::cout << "CHAR::PLAYER::check-obj-collision #1, block["  << res_collision_object._block << "], type[" << res_collision_object._object->get_type() << "]" << std::endl;
+            std::cout << "CHAR::PLAYER::check-obj-collision #1, block["  << res_collision_object._block << "], type[" << res_collision_object._object->get_type() << "]" << std::endl;
 
             if (res_collision_object._object->get_type() == OBJ_BOSS_TELEPORTER || (res_collision_object._object->get_type() == OBJ_FINAL_BOSS_TELEPORTER && res_collision_object._object->is_started() == true)) {
                 if (is_on_teleporter_capsulse(res_collision_object._object) == true) {
@@ -2134,7 +2149,7 @@ st_map_collision character::map_collision(const float incx, const short incy, st
                     gameManager::get_instance()->object_teleport_boss(res_collision_object._object->get_boss_teleporter_dest(), res_collision_object._object->get_boss_teleport_map_dest(), res_collision_object._object->get_obj_map_id(), true);
                 }
             } else if (res_collision_object._object->get_type() == OBJ_STAGE_BOSS_TELEPORTER) {
-                //std::cout << "character::map_collision - OBJ_STAGE_BOSS_TELEPORTER" << std::endl;
+                std::cout << "character::map_collision - OBJ_STAGE_BOSS_TELEPORTER" << std::endl;
                 if (is_on_teleporter_capsulse(res_collision_object._object) == true) {
                     state.direction = ANIM_DIRECTION_RIGHT;
                     gameManager::get_instance()->object_teleport_boss(res_collision_object._object->get_boss_teleporter_dest(), res_collision_object._object->get_boss_teleport_map_dest(), res_collision_object._object->get_obj_map_id(), false);
@@ -2189,6 +2204,8 @@ st_map_collision character::map_collision(const float incx, const short incy, st
         }
 	}
 
+    if (incx > 0) std::cout << ">>>>>>> #1 - map_block[" << map_block << "]" << std::endl;
+
 
 
     // no need to test map collision if object collision is already X+Y
@@ -2203,27 +2220,32 @@ st_map_collision character::map_collision(const float incx, const short incy, st
         return st_map_collision(BLOCK_UNBLOCKED, TERRAIN_UNBLOCKED);
     }
 
-    if (_always_move_ahead == false && ((incx < 0 && position.x+incx) < 0 || (incx > 0 && position.x+incx > SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w*TILESIZE))) {
+    if (_always_move_ahead == false && ((incx < 0 && position.x+incx) < 0 || (incx > 0 && position.x+incx > gameManager::get_instance()->get_map_size().width*TILESIZE))) {
         if (map_block == BLOCK_UNBLOCKED) {
             map_block = BLOCK_X;
         } else {
             map_block = BLOCK_XY;
         }
+        if (incx > 0) std::cout << ">>>>>>> #3 - map_block[" << map_block << "]" << std::endl;
     }
-    if ((incy < 0 && ((position.y+incy+frameSize.height < 0) || (incx > 0 && position.y+incx+TILESIZE > SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w*TILESIZE)))) {
+    if ((incy < 0 && ((position.y+incy+frameSize.height < 0) || (incx > 0 && position.y+incx+TILESIZE > gameManager::get_instance()->get_map_size().height*TILESIZE)))) {
         if (map_block == BLOCK_UNBLOCKED) {
                 map_block = BLOCK_Y;
         } else {
                 map_block = BLOCK_XY;
         }
+        if (incx > 0) std::cout << ">>>>>>> #4 - map_block[" << map_block << "]" << std::endl;
     }
 
     // if we are out of map, return always true
     if (_always_move_ahead == true) {
-        if ((incx < 0 && (position.x+incx < 0)) || (incx > 0 && position.x+incx > SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w*TILESIZE)) {
+        if ((incx < 0 && (position.x+incx < 0)) || (incx > 0 && position.x+incx > gameManager::get_instance()->get_map_size().width*TILESIZE)) {
             return st_map_collision(BLOCK_UNBLOCKED, TERRAIN_UNBLOCKED);
         }
     }
+
+    if (incx > 0) std::cout << ">>>>>>> #9 - map_block[" << map_block << "]" << std::endl;
+
 
     /// @TODO - use collision rect for the current frame. Until there, use 3 points check
     int py_top, py_middle, py_bottom;
@@ -2273,8 +2295,11 @@ st_map_collision character::map_collision(const float incx, const short incy, st
             } else {
                 map_point.y = map_y_points[i];
             }
+            //std::cout << "map_point.x[" << map_point.y << "], map_point.y[" << map_point.y << "]" << std::endl;
             new_map_lock = gameManager::get_instance()->getMapPointLock(map_point);
+
             check_map_collision_point(map_block, new_map_lock, 0, map_point);
+
 
             // SLOPE //
             if (map_block != BLOCK_UNBLOCKED && new_map_lock == TERRAIN_SLOPE) {
@@ -2294,15 +2319,9 @@ st_map_collision character::map_collision(const float incx, const short incy, st
     } else if (incy > 0) {
             map_point.y = py_bottom/TILESIZE;
     }
-/*
-#ifdef ANDROID
-        if (is_player() == false) {
-            __android_log_print(ANDROID_LOG_INFO, "###ROCKDROID2###", "CHAR::MAP_COLLISION[%s], map_point.y[%d]", name.c_str(), map_point.y);
-        }
-#endif
 
-    if (is_player() == false) std::cout << "CHAR::MAP_COLLISION[" << name << "], map_point.y: " << map_point.y << std::endl;
-*/
+    //if (is_player() == false) std::cout << "CHAR::MAP_COLLISION[" << name << "], map_point.y: " << map_point.y << std::endl;
+
     if (incy != 0) {
         for (int i=0; i<3; i++) {
             map_point.x = map_x_points[i];

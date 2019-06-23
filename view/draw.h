@@ -78,11 +78,13 @@ public:
     void draw_castle_point(int x, int y);
     void show_interstage_map_bg(st_position pos);
     void draw_in_game_menu_bg(int screen);
+    void draw_in_game_menu_animation();
+    void draw_in_game_menu_map();
 
 private:
     draw();
     draw(draw const&){};             // copy constructor is private
-    draw& operator=(draw const&){};  // assignment operator is private
+    draw& operator=(draw const&){ return *this; };  // assignment operator is private
 
     void draw_credit_line(st_imageData& surface, Uint8 initial_line, std::vector<std::string> credit_text);
     void show_rain();
@@ -172,12 +174,12 @@ private:
 
     std::map<e_INPUT_IMAGES, st_imageData> input_images_map;
     st_imageData in_game_menu_bg;
-    st_imageData in_game_menu_bg_map;
-    st_imageData in_game_menu_bg_options;
+    st_imageData in_game_menu_bg_clean;
 
     st_imageData door_h, door_v;
     long timer_hud_center = 0;
     bool timer_hud_center_show = false;
+    st_position in_game_menu_map_pos;
 
 };
 

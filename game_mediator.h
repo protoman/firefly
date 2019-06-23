@@ -26,7 +26,7 @@ public:
 private:
     GameMediator();
     GameMediator(GameMediator const&){};             // copy constructor is private
-    GameMediator& operator=(GameMediator const&){};  // assignment operator is private
+    GameMediator& operator=(GameMediator const&){ return *this; };  // assignment operator is private
 
 public:
     std::vector<file_object> object_list;

@@ -17,13 +17,14 @@ public:
     void init();
     void renderText(int x, int y, st_color color, bool centered, std::string text);
     void renderText(int x, int y, std::string text);
-    void draw_centered_text(int y, std::string text);
+    void renderCenteredText(int y, std::string text);
+    void renderCenteredText(int y, st_color color, std::string text);
 
 
 private:
     TextView();
     TextView(TextView const&){};             // copy constructor is private
-    TextView& operator=(TextView const&){};  // assignment operator is private
+    TextView& operator=(TextView const&){ return *this; };  // assignment operator is private
 
 
 private:

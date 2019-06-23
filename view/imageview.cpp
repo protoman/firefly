@@ -204,7 +204,7 @@ void ImageView::place_face(std::string face_file, st_position pos)
 
 st_position ImageView::get_dialog_pos() const
 {
-    return _config_menu_pos;
+    return _dialog_pos;
 }
 
 st_position ImageView::get_config_menu_pos() const

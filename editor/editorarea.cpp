@@ -45,6 +45,11 @@ void EditorArea::changeTile() {
     repaint();
 }
 
+void EditorArea::update_area_data()
+{
+    update_map_data();
+}
+
 
 void EditorArea::update_files()
 {
@@ -90,6 +95,8 @@ void EditorArea::update_map_data()
     if (SharedData::get_instance()->v6_area_list.size() <= SharedData::get_instance()->v6_selected_area) {
         return;
     }
+    std::cout << "########### EditorArea::update_map_data - level[" << SharedData::get_instance()->v6_selected_level << "], area[" << SharedData::get_instance()->v6_selected_area << "]" << std::endl;
+
     file_v6_level level_data = SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level);
     // build a list of rooms this area contains //
     // also, find the top, down, left and rightmost points on the area, so we can build a matrix with the tiles //
@@ -118,9 +125,18 @@ void EditorArea::update_map_data()
         }
     }
 
-    std::cout << "EditorArea::update_map_data - leftmost_room[" << leftmost_room << "], rightmost_room[" << rightmost_room << "], topmost_room[" << topmost_room << "], bottommost_room[" << bottommost_room << "]" << std::endl;
+    std::cout << "########### EditorArea::update_map_data - leftmost_room[" << leftmost_room << "], rightmost_room[" << rightmost_room << "], topmost_room[" << topmost_room << "], bottommost_room[" << bottommost_room << "]" << std::endl;
+    update_editarea_size();
 
+}
 
+void EditorArea::update_editarea_size()
+{
+    total_editarea_w = abs(leftmost_room-rightmost_room)+1;
+    total_editarea_h = abs(topmost_room-bottommost_room)+1;
+    QSize resizeMe(total_editarea_w*AREA_ROOM_W*TILESIZE*Mediator::get_instance()->zoom, total_editarea_h*AREA_ROOM_H*TILESIZE*Mediator::get_instance()->zoom);
+    this->resize(resizeMe);
+    myParent->adjustSize();
 }
 
 void EditorArea::preload_slope_images()
@@ -158,57 +174,59 @@ void EditorArea::drawTileset(QPainter *painter)
         for (int j=topmost_room; j<=bottommost_room; j++) {
             if (SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[i][j].area_n == SharedData::get_instance()->v6_selected_area) {
                 file_v6_room room_data = SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[i][j];
+                std::cout << "###################### EditorArea::drawTileset - room[" << i << "][" << j << "]" << std::endl;
                 for (int k=0; k<AREA_ROOM_W; k++) {
                     for (int m=0; m<AREA_ROOM_H; m++) {
                         file_v6_room_tile tileItem = room_data.tiles[k][m];
                         if (tileItem.tile_underlay.x >= 0 && tileItem.tile_underlay.y >= 0) {
-                            if (tileItem.tile_underlay.x >= 0 && tileItem.tile_underlay.y >= 0) {
 
-                                int dest_x = (k+i*AREA_ROOM_W)*TILESIZE*Mediator::get_instance()->zoom;
-                                int dest_y = (m+j*AREA_ROOM_H)*TILESIZE*Mediator::get_instance()->zoom;
+                            int virtual_room_x = i-leftmost_room;
+                            int virtual_room_y = j-topmost_room;
 
-                                QRectF target(QPoint(dest_x, dest_y), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
-                                QRectF source(QPoint((tileItem.tile_underlay.x*TILESIZE), (tileItem.tile_underlay.y*TILESIZE)), QSize(TILESIZE, TILESIZE));
-                                // used images depends upon tile type
+                            int dest_x = (k+virtual_room_x*AREA_ROOM_W)*TILESIZE*Mediator::get_instance()->zoom;
+                            int dest_y = (m+virtual_room_y*AREA_ROOM_H)*TILESIZE*Mediator::get_instance()->zoom;
 
-                                //std::cout << "TILE IN MAP[" << i << "][" << j << "], AT [" << k << "][" << m << "], type[" << tileItem.tile_underlay.type << "]" << std::endl;
+                            QRectF target(QPoint(dest_x, dest_y), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
+                            QRectF source(QPoint((tileItem.tile_underlay.x*TILESIZE), (tileItem.tile_underlay.y*TILESIZE)), QSize(TILESIZE, TILESIZE));
+                            // used images depends upon tile type
 
-                                if (tileItem.tile_underlay.type == TILE_TYPE_SOLID) {
-                                    //std::cout << "FOUND SOLID_TILE AT [" << k << "][" << m << "]" << std::endl;
-                                    painter->drawPixmap(target, tileset_image, source);
-                                } else if (tileItem.tile_underlay.type == TILE_TYPE_SLOPE) {
-                                    /// @TODO ///
-                                    std::cout << "FOUND SLOPE_TILE AT [" << k << "][" << m << "], with x[" << tileItem.tile_underlay.x << "], y[" << tileItem.tile_underlay.y << "]" << std::endl;
-                                    draw_slope_tile(tileItem.tile_underlay.x, tileItem.tile_underlay.y, dest_x, dest_y, painter);
-                                } else if (tileItem.tile_underlay.type == TILE_TYPE_ANIM) {
-                                    int anim_tile_id = tileItem.tile_underlay.x;
-                                    std::cout << "FOUND ANIM_TILE AT [" << k << "][" << m << "], with ID [" << anim_tile_id << "]" << std::endl;
-                                    if (Mediator::get_instance()->anim_block_list.size() > 0 && anim_tile_id < Mediator::get_instance()->anim_block_list.size()) {
-                                        file_anim_block anim_tile = Mediator::get_instance()->anim_block_list.at(anim_tile_id);
-                                        QString anim_tile_filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/tilesets/anim/") + QString(anim_tile.filename);
-                                        QPixmap anim_image(anim_tile_filename);
-                                        if (anim_image.isNull() == false) {
-                                            QRectF target(QPoint(dest_x, dest_y), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
-                                            QRectF source(QPoint(0, 0), QSize(TILESIZE, TILESIZE));
-                                            painter->drawPixmap(target, anim_image, source);
+                            std::cout << "TILE IN MAP[" << i << "][" << j << "], AT [" << k << "][" << m << "], type[" << tileItem.tile_underlay.type << "], dest[" << dest_x << "][" << dest_y << "]" << std::endl;
 
-                                            // @TODO (move to a function) - draw an green border border to indicate anim tile
-                                            QPen pen(QColor(0, 200, 0), 1, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
-                                            painter->setPen(pen);
-                                            if (Mediator::get_instance()->show_grid) {
-                                                int anim_tile_x = i * TILESIZE * Mediator::get_instance()->zoom; // minus tilesize is because width starts in 1, not zero
-                                                int anim_tile_y = j * TILESIZE *Mediator::get_instance()->zoom;
-                                                painter->drawLine(anim_tile_x, anim_tile_y, anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y);
-                                                painter->drawLine(anim_tile_x, anim_tile_y, anim_tile_x, anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom));
-                                                painter->drawLine(anim_tile_x, anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom));
-                                                painter->drawLine(anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y, anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom));
-                                            }
-                                        } else {
-                                            std::cout << ">>>>>>>> anim-file '" << anim_tile_filename.toStdString() << "' not found." << std::endl;
+                            if (tileItem.tile_underlay.type == TILE_TYPE_SOLID) {
+                                std::cout << "FOUND SOLID_TILE AT [" << k << "][" << m << "]" << std::endl;
+                                painter->drawPixmap(target, tileset_image, source);
+                            } else if (tileItem.tile_underlay.type == TILE_TYPE_SLOPE) {
+                                /// @TODO ///
+                                std::cout << "FOUND SLOPE_TILE AT [" << k << "][" << m << "], with x[" << tileItem.tile_underlay.x << "], y[" << tileItem.tile_underlay.y << "]" << std::endl;
+                                draw_slope_tile(tileItem.tile_underlay.x, tileItem.tile_underlay.y, dest_x, dest_y, painter);
+                            } else if (tileItem.tile_underlay.type == TILE_TYPE_ANIM) {
+                                int anim_tile_id = tileItem.tile_underlay.x;
+                                std::cout << "FOUND ANIM_TILE AT [" << k << "][" << m << "], with ID [" << anim_tile_id << "]" << std::endl;
+                                if (Mediator::get_instance()->anim_block_list.size() > 0 && anim_tile_id < Mediator::get_instance()->anim_block_list.size()) {
+                                    file_anim_block anim_tile = Mediator::get_instance()->anim_block_list.at(anim_tile_id);
+                                    QString anim_tile_filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/tilesets/anim/") + QString(anim_tile.filename);
+                                    QPixmap anim_image(anim_tile_filename);
+                                    if (anim_image.isNull() == false) {
+                                        QRectF target(QPoint(dest_x, dest_y), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
+                                        QRectF source(QPoint(0, 0), QSize(TILESIZE, TILESIZE));
+                                        painter->drawPixmap(target, anim_image, source);
+
+                                        // @TODO (move to a function) - draw an green border border to indicate anim tile
+                                        QPen pen(QColor(0, 200, 0), 1, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
+                                        painter->setPen(pen);
+                                        if (Mediator::get_instance()->show_grid) {
+                                            int anim_tile_x = i * TILESIZE * Mediator::get_instance()->zoom; // minus tilesize is because width starts in 1, not zero
+                                            int anim_tile_y = j * TILESIZE *Mediator::get_instance()->zoom;
+                                            painter->drawLine(anim_tile_x, anim_tile_y, anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y);
+                                            painter->drawLine(anim_tile_x, anim_tile_y, anim_tile_x, anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom));
+                                            painter->drawLine(anim_tile_x, anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom));
+                                            painter->drawLine(anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y, anim_tile_x+(TILESIZE*Mediator::get_instance()->zoom), anim_tile_y+(TILESIZE*Mediator::get_instance()->zoom));
                                         }
                                     } else {
-                                        std::cout << "Invalid anim-tile-id: " << anim_tile_id << std::endl;
+                                        std::cout << ">>>>>>>> anim-file '" << anim_tile_filename.toStdString() << "' not found." << std::endl;
                                     }
+                                } else {
+                                    std::cout << "Invalid anim-tile-id: " << anim_tile_id << std::endl;
                                 }
                             }
                         } else if (tileItem.tile_underlay.x == -2 && tileItem.tile_underlay.y == -2) {
@@ -235,8 +253,11 @@ void EditorArea::drawLockTileset(QPainter *painter)
                         file_v6_room_tile tileItem = room_data.tiles[k][m];
                         if (tileItem.locked != TERRAIN_UNBLOCKED) {
 
-                            int dest_x = (k+i*AREA_ROOM_W)*TILESIZE*Mediator::get_instance()->zoom;
-                            int dest_y = (m+j*AREA_ROOM_H)*TILESIZE*Mediator::get_instance()->zoom;
+                            int virtual_room_x = i-leftmost_room;
+                            int virtual_room_y = j-topmost_room;
+
+                            int dest_x = (k+virtual_room_x*AREA_ROOM_W)*TILESIZE*Mediator::get_instance()->zoom;
+                            int dest_y = (m+virtual_room_y*AREA_ROOM_H)*TILESIZE*Mediator::get_instance()->zoom;
 
                             // used images depends upon tile type
 
@@ -494,8 +515,10 @@ void EditorArea::paintEvent(QPaintEvent *)
     // draw backgrounds
     if (Mediator::get_instance()->show_bg1 == true) {
 
-        for (int room_x=leftmost_room; room_x<=rightmost_room; room_x++) {
-            for (int room_y=topmost_room; room_y<=bottommost_room; room_y++) {
+        //std::cout << "############# EditorArea::paintEvent - LOOP" << std::endl;
+        for (int room_y=topmost_room; room_y<=bottommost_room; room_y++) {
+            for (int room_x=leftmost_room; room_x<=rightmost_room; room_x++) {
+                //std::cout << "############# EditorArea::paintEvent - level[" << SharedData::get_instance()->v6_selected_level << "], room[" << room_x << "][" << room_y << "].area_n[" << SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[room_x][room_y].area_n << "], current_area_n[" << SharedData::get_instance()->v6_selected_area << "]" << std::endl;
                 if (SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[room_x][room_y].area_n == SharedData::get_instance()->v6_selected_area) {
                     for (int i=0; i<LAYERS_COUNT; i++) {
                         if (!layer_pixmap_list[i].isNull()) {
@@ -535,11 +558,12 @@ void EditorArea::paintEvent(QPaintEvent *)
         // DRAW GRID //
         QPen pen(QColor(120, 120, 120), 1, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
         QPen pen_red(QColor(180, 50, 50), 2, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
-        painter.setPen(pen);
-        int currentMap = SharedData::get_instance()->file_v5_selected_map;
 
-        int limit_h = SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_h+1;
-        int limit_w = SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_w;
+        painter.setPen(pen);
+
+        int limit_h = total_editarea_h*AREA_ROOM_H;
+        int limit_w = total_editarea_w*AREA_ROOM_W;
+        //std::cout << "SHOW_GRID - limit_w[" << limit_w << "], limit_h[" << limit_h << "]" << std::endl;
         if (limit_w < 0 || limit_w > 1000) {
             std::cout << "IGNORE BAD MAP-DATA w[" << limit_w << "]" << std::endl;
             return;
@@ -551,9 +575,8 @@ void EditorArea::paintEvent(QPaintEvent *)
 
         for (unsigned int i=1; i<limit_w; i++) {
             pos = i*TILESIZE*Mediator::get_instance()->zoom-1;
-            //QLineF line(0, 800, 16, 800);
-            // linhas horizontais
-            line = QLineF(pos, 0, pos, SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h*TILESIZE*Mediator::get_instance()->zoom-1);
+            // linhas VERTICAIS
+            line = QLineF(pos, 0, pos, limit_w*AREA_ROOM_W*TILESIZE*Mediator::get_instance()->zoom-1);
             if (i % AREA_ROOM_W == 0) {
                 painter.setPen(pen_red);
             } else {
@@ -566,14 +589,13 @@ void EditorArea::paintEvent(QPaintEvent *)
         //std::cout << ">>>>>>>>>>>> limit_h[" << limit_h << "]" << std::endl;
         for (unsigned int i=1; i<limit_h; i++) {
             pos = i*TILESIZE*Mediator::get_instance()->zoom-1;
-            //QLineF line(0, 800, 16, 800);
-            // linhas verticais
+            // linhas HORIZONTAIS
             if (i % AREA_ROOM_H == 0) {
                 painter.setPen(pen_red);
             } else {
                 painter.setPen(pen);
             }
-            line = QLineF(0, pos, SharedData::get_instance()->file_v5_map_header_list.at(currentMap).tiles_w*TILESIZE*Mediator::get_instance()->zoom-1, pos);
+            line = QLineF(0, pos, limit_h*AREA_ROOM_H*TILESIZE*Mediator::get_instance()->zoom-1, pos);
             painter.drawLine(line);
         }
     }
@@ -710,10 +732,12 @@ void EditorArea::paintEvent(QPaintEvent *)
         painter.drawRect(selection_start_x*TILESIZE*Mediator::get_instance()->zoom, selection_start_y*TILESIZE*Mediator::get_instance()->zoom, abs(selection_current_x-selection_start_x)*TILESIZE*Mediator::get_instance()->zoom, abs(selection_current_y-selection_start_y)*TILESIZE*Mediator::get_instance()->zoom);
     }
 
+    /// @TODO: clear non-area parts ///
 
-    QSize resizeMe(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w*TILESIZE*Mediator::get_instance()->zoom, SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_w*TILESIZE*Mediator::get_instance()->zoom);
-    this->resize(resizeMe);
-    myParent->adjustSize();
+
+    //QSize resizeMe(abs(leftmost_room-rightmost_room)*AREA_ROOM_W*TILESIZE*Mediator::get_instance()->zoom, abs(topmost_room-bottommost_room)*AREA_ROOM_H*TILESIZE*Mediator::get_instance()->zoom);
+    //this->resize(resizeMe);
+    //myParent->adjustSize();
 
 }
 
@@ -725,7 +749,7 @@ void EditorArea::mouseMoveEvent(QMouseEvent *event) {
         int pointX = pnt.x()/(TILESIZE*Mediator::get_instance()->zoom);
         int pointY = pnt.y()/(TILESIZE*Mediator::get_instance()->zoom);
         if (editor_selectedTileX != pointX || editor_selectedTileY != pointY) {
-            std::cout << ">>>>>>>>> EditorArea::mouseMoveEvent::CLICK, editor.x[" << editor_selectedTileX << "], editor.y[" << editor_selectedTileY << "], pointX[" << pointX << "], pointY[" << pointY << "]" << std::endl;
+            //std::cout << ">>>>>>>>> EditorArea::mouseMoveEvent::CLICK, editor.x[" << editor_selectedTileX << "], editor.y[" << editor_selectedTileY << "], pointX[" << pointX << "], pointY[" << pointY << "]" << std::endl;
             mousePressEvent(event);
         }
     } else {
@@ -761,6 +785,7 @@ void EditorArea::wheelEvent(QWheelEvent *event)
         std::cout << "### DEC-SET ZOOM TO[" << Mediator::get_instance()->zoom << "]" << std::endl;
         repaint();
     }
+    update_editarea_size();
     event->accept();
 }
 
@@ -801,17 +826,17 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
 
         // FILE-V6 //
 
-        int room_x = editor_selectedTileX/AREA_ROOM_W;
-        int room_y = editor_selectedTileY/AREA_ROOM_H;
+        int room_x = leftmost_room+editor_selectedTileX/AREA_ROOM_W;
+        int room_y = topmost_room+editor_selectedTileY/AREA_ROOM_H;
 
-        //std::cout << "EDITORAREA::mousePressEvent - DEBUG #1 x[" << editor_selectedTileX << "] y[" << editor_selectedTileY << "], room_x[" << room_x << "], room_y[" << room_y << "]" << std::endl;
+        std::cout << "EDITORAREA::mousePressEvent - DEBUG #1 x[" << editor_selectedTileX << "] y[" << editor_selectedTileY << "], room_x[" << room_x << "], room_y[" << room_y << "]" << std::endl;
 
 
         if (SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[room_x][room_y].area_n == SharedData::get_instance()->v6_selected_area) {
             //std::cout << "EDITORAREA::mousePressEvent - DEBUG #2" << std::endl;
 
-            int tile_x = editor_selectedTileX - (room_x*AREA_ROOM_W);
-            int tile_y = editor_selectedTileY - (room_y*AREA_ROOM_H);
+            int tile_x = (leftmost_room*AREA_ROOM_W)+editor_selectedTileX - (room_x*AREA_ROOM_W);
+            int tile_y = (topmost_room*AREA_ROOM_H)+editor_selectedTileY - (room_y*AREA_ROOM_H);
 
             if (Mediator::get_instance()->editTool == EDITMODE_NORMAL || Mediator::get_instance()->editTool == EDITMODE_ERASER || Mediator::get_instance()->editMode == EDITMODE_ANIM_TILE || Mediator::get_instance()->editMode == EDITMODE_SLOPE) {
 

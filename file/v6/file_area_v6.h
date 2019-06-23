@@ -20,6 +20,7 @@ struct file_v6_area_layer {
     int alpha;
     int animation_width;                     // tells what is the image width we need to use as frame-size
     int animation_timer;                     // defines the time between animation frames
+    int gfx;
     char filename[FS_CHAR_FILENAME_SIZE];
 
     file_v6_area_layer()
@@ -34,6 +35,7 @@ struct file_v6_area_layer {
         alpha = SDL_ALPHA_OPAQUE;
         animation_width = 0;
         animation_timer = 0;
+        gfx = 0;
     }
 };
 

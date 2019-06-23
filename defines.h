@@ -34,6 +34,7 @@
 #define LAYERS_FG_COUNT 5
 
 #define FILE_V6_LEVEL_LIST "data/v6_level_list.dat"
+#define FILE_V6_VISITED_LEVEL_LIST "data/v6_visited_level_list.dat"
 #define FILE_V6_MAP_LIST "data/v6_map_list.dat"
 
 #define FS_MAX_PLAYERS 4
@@ -59,7 +60,9 @@
 
 #define EDITOR_ANIM_PALETE_MAX_COL 8
 
-#define FONT_SIZE 28
+#define FONT_SIZE 32
+#define FONT_ACTUAL_SIZE_W 19
+#define FONT_ACTUAL_SIZE_H 22
 #define FONT_SIZE_SMALL 18
 
 #define GRAVITY_MAX_SPEED 16
@@ -157,6 +160,8 @@
 #define WEAPON_SLOTS 2
 #define ABILITIES_SLOTS 2
 #define ITEM_UPGRADES 200  // items like armor, special weapons, etc
+
+#define SLIDE_TILES_MAX_DISTANCE 10
 
 enum e_WALL_DIRECTIONS {
     WALL_DIRECTION_NORTH,

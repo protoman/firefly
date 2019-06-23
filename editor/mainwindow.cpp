@@ -63,6 +63,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //areaEditScrollArea
     area_edit_tab = new AreaEditTab;
     ui->areaEditScrollArea->setWidget(area_edit_tab);
+
+    std::cout << "CONNECT::BEFORE" << std::endl;
+    QObject::connect(level_editor, SIGNAL(on_area_changed()), map_edit_tab, SLOT(update_area_data()));
+    std::cout << "CONNECT::AFTER" << std::endl;
 }
 
 MainWindow::~MainWindow()
@@ -500,4 +504,9 @@ void MainWindow::on_actionGRID_toggled(bool arg1)
 {
     Mediator::get_instance()->show_grid = !Mediator::get_instance()->show_grid;
     map_edit_tab->update_edit_area();
+}
+
+void MainWindow::on_areaEditTabWidget_currentChanged(int index)
+{
+    map_edit_tab->reload();
 }

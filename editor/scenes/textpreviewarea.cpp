@@ -13,7 +13,7 @@
 TextPreviewArea::TextPreviewArea(QWidget *parent) : QWidget(parent)
 {
     selected_n = 0;
-    const QString font_filename = QString(SharedData::get_instance()->GAMEPATH.c_str()) + QString("/fonts/sofia_regular.ttf");
+    const QString font_filename = QString(SharedData::get_instance()->GAMEPATH.c_str()) + QString("/fonts/bpmonobold.ttf");
     int id = QFontDatabase::addApplicationFont(font_filename);
     QString font_family = QFontDatabase::applicationFontFamilies(id).at(0);
     monospace = QFont(font_family);

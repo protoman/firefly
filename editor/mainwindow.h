@@ -136,6 +136,8 @@ private slots:
 
     void on_actionGRID_toggled(bool arg1);
 
+    void on_areaEditTabWidget_currentChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     npc_edit *npc_edit_tab;

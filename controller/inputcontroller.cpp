@@ -408,6 +408,7 @@ int InputController::clean_and_wait_scape_time(int wait_period)
 {
     clean();
     wait_scape_time(wait_period);
+    return 0;
 }
 
 void InputController::wait_keypress()

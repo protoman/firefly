@@ -151,12 +151,21 @@ void areasEditorArea::mousePressEvent(QMouseEvent *event)
     editor_selectedTileY = pnt.y()/TILE_SHOW_SIZE;
     std::cout << "SET MAP AT [" << editor_selectedTileX << "][" << editor_selectedTileY << "]" << std::endl;
 
+    // can't change area-zero minimal parts //
+    if (currentArea == 0 && editor_selectedTileY == 0 && editor_selectedTileX >= 10 && editor_selectedTileX < 20) {
+        return;
+    }
+
     if (edit_mode == AREA_EDIT_MODE_NORMAL) {
         if (SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY].area_n == -1) {
-            SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY].area_n = currentMap;
+            // add only if first piece or have another piece in the neighboor horizontal or vertical axis
+            if (is_first_area_pieces() || have_adjacent_same_area_piece()) {
+                SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY].area_n = currentMap;
+            }
         } else if (SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY].area_n == currentMap) {
             SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY].area_n = -1;
         }
+        emit on_area_changed();
         repaint();
     } else if (edit_mode == AREA_EDIT_MODE_VLINK || edit_mode == AREA_EDIT_MODE_HLINK) {
         /// TODO ///
@@ -202,4 +211,35 @@ void areasEditorArea::mousePressEvent(QMouseEvent *event)
         }
         */
     }
+}
+
+bool areasEditorArea::is_first_area_pieces()
+{
+    for (int x=0; x<FILE_AREA_W; x++) {
+        for (int y=0; y<FILE_AREA_H; y++) {
+            if (SharedData::get_instance()->v6_level_list.at(currentArea).rooms[x][y].area_n == currentMap) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool areasEditorArea::have_adjacent_same_area_piece()
+{
+    if (editor_selectedTileX > 0 && SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX-1][editor_selectedTileY].area_n == currentMap) {
+        return true;
+    }
+    if (editor_selectedTileX < FILE_AREA_W-2 && SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX+1][editor_selectedTileY].area_n == currentMap) {
+        return true;
+    }
+
+    if (editor_selectedTileY > 0 && SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY-1].area_n == currentMap) {
+        return true;
+    }
+    if (editor_selectedTileY < FILE_AREA_H-2 && SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY+1].area_n == currentMap) {
+        return true;
+    }
+
+    return false;
 }

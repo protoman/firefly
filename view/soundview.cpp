@@ -359,6 +359,7 @@ void SoundView::load_stage_music(std::string filename) {
         __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT2###", "### SOUNDLIB::load_stage_music[%s] ###", filename.c_str());
 #endif
     Mix_HaltMusic();
+    unload_music();
     if (filename.length() > 0) {
         load_music(filename);
     } else {

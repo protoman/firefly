@@ -68,6 +68,7 @@ struct st_spriteFrame {
             frameSurface = other.frameSurface;
         }
         delay = other.delay;
+        return *this;
     }
 
     void setDelay(int newDelay)
@@ -117,6 +118,7 @@ struct st_char_sprite_data {
         }
         printf(">> DEBUG.st_char_sprite_data.ASSIGN.END <<\n");
         fflush(stdout);
+        return *this;
     }
 };
 
@@ -190,7 +192,7 @@ public:
 private:
     ImageView();
     ImageView(ImageView const&){};             // copy constructor is private
-    ImageView& operator=(ImageView const&){};  // assignment operator is private
+    ImageView& operator=(ImageView const&){ return *this; };  // assignment operator is private
 
     // from graphlib
     void copySDLPortion(st_rectangle original_rect, st_rectangle destiny_rect, SDL_Surface *surfaceOrigin, SDL_Surface *surfaceDestiny);

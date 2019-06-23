@@ -17,7 +17,7 @@ public:
 private:
     TimerView();
     TimerView(TimerView const&){};             // copy constructor is private
-    TimerView& operator=(TimerView const&){};  // assignment operator is private
+    TimerView& operator=(TimerView const&){ return *this; };  // assignment operator is private
 
 
 public:

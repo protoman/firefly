@@ -56,6 +56,7 @@ public:
 
   void update_files();                          // rebuild image files when needed
   void update_map_data();                       // rebuild map data/tiles when needed
+  void update_editarea_size();
 
 private:
   void preload_slope_images();
@@ -69,6 +70,8 @@ private:
   int link_map_origin;
   int link_size;
   e_LINK_DIRECTION link_direction;
+  int total_editarea_w = 0;
+  int total_editarea_h = 0;
 
 
 protected:
@@ -125,5 +128,6 @@ protected:
 
 public slots:
    void changeTile();
+   void update_area_data();
 
 };

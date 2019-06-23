@@ -281,6 +281,11 @@ void Mediator::load_game() {
     if (SharedData::get_instance()->v6_area_list.size() == 0) {
         SharedData::get_instance()->v6_area_list.push_back(file_v6_area());
     }
+
+    // FORCE AREA-0 ROOMS //
+    for (int i=10; i<20; i++) {
+        SharedData::get_instance()->v6_level_list.at(0).rooms[i][0].area_n = 0;
+    }
 }
 
 

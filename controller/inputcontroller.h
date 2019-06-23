@@ -58,7 +58,7 @@ public:
 private:
     InputController();
     InputController(InputController const&){};             // copy constructor is private
-    InputController& operator=(InputController const&){};  // assignment operator is private
+    InputController& operator=(InputController const&){ return *this; };  // assignment operator is private
 
 
 public:

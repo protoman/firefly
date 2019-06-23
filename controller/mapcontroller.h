@@ -78,6 +78,7 @@ public:
     MapController();
     void loadMap();
     void show();
+    void updated_visited_room();
 
 
     int collision_rect_player_obj(st_rectangle player_rect, GameObject* temp_obj, const short int x_inc, const short int y_inc, const short obj_xinc, const short obj_yinc);
@@ -117,10 +118,6 @@ public:
 
 
     file_v6_room_tile getTileFromPosition(int x, int y);
-
-    file_v5_map_header &getMapHeader();
-
-
 
     bool get_map_point_wall_lock(int x);
 

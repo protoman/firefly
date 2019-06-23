@@ -6,12 +6,12 @@ class PauseMenu
 {
 public:
     static PauseMenu* get_instance();
-    bool execute();
+    bool execute_pause_menu();
 
 private:
     PauseMenu();
     PauseMenu(PauseMenu const&){};             // copy constructor is private
-    PauseMenu& operator=(PauseMenu const&){};  // assignment operator is private
+    PauseMenu& operator=(PauseMenu const&){ return *this; };  // assignment operator is private
 
 
 private:

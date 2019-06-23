@@ -119,6 +119,15 @@ void gameManager::loadGameData()
 {
     fio.read_game(SharedData::get_instance()->game_data);
 
+    // VISITED LEVEL LIST DATA //
+    SharedData::get_instance()->level_count = fio_cmm.get_list_size<file_v6_level>(SharedData::get_instance()->FILEPATH + "/" + FILE_V6_LEVEL_LIST);
+    SharedData::get_instance()->visited_level_list = fio_cmm.load_from_disk<file_v6_level_visited>(SharedData::get_instance()->FILEPATH + "/" + FILE_V6_VISITED_LEVEL_LIST);
+    if (SharedData::get_instance()->visited_level_list.size() == 0 && SharedData::get_instance()->level_count > 0) {
+        for (int i=0; i<SharedData::get_instance()->level_count; i++) {
+            SharedData::get_instance()->visited_level_list.push_back(file_v6_level_visited());
+        }
+    }
+    // CURRENT LEVEL DATA //
     SharedData::get_instance()->v6_current_level_data = fio_cmm.load_single_object_from_list<file_v6_level>(SharedData::get_instance()->FILEPATH + "/" + FILE_V6_LEVEL_LIST, SharedData::get_instance()->v6_selected_level);
 
     SharedData::get_instance()->enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>("game_enemy_list_3_1_2.dat");
@@ -376,7 +385,7 @@ void gameManager::build_game_area_map(int x, int y, int map_tile_x, int map_tile
     SharedData::get_instance()->area_map[x][y].wall_bottom = MAP_WALL_TYPE_UNLOCKED;
 
     if (x == 0) {
-        std::cout << "build_game_area_map x[" << x << "], y[" << y << "].lock_left" << std::endl;
+        //std::cout << "build_game_area_map x[" << x << "], y[" << y << "].lock_left" << std::endl;
         SharedData::get_instance()->area_map[x][y].wall_left = MAP_WALL_TYPE_LOCKED;
     } else if (x == GAME_AREA_SIZE-1) {
         SharedData::get_instance()->area_map[x][y].wall_right = MAP_WALL_TYPE_LOCKED;
@@ -392,7 +401,7 @@ void gameManager::build_game_area_map(int x, int y, int map_tile_x, int map_tile
     // aqui que acho que preciso mudar algo no editor/file-format
     // tem que ser possível conseguir uma posição inicial (tiles x, y) no mapa a partir de um ponto da área
 
-    std::cout << "### gameManager::build_game_area_map - map_tile_x[" << map_tile_x << "], map_tile_y[" << map_tile_y << "]" << std::endl;
+    //std::cout << "### gameManager::build_game_area_map - map_tile_x[" << map_tile_x << "], map_tile_y[" << map_tile_y << "]" << std::endl;
 
     // check map tiles //
     bool found_top_lock = false;
@@ -414,19 +423,19 @@ void gameManager::build_game_area_map(int x, int y, int map_tile_x, int map_tile
             found_top_lock = true;
         }
         if (mapController.get_map_point_lock(map_tile_x+i, map_tile_y+GAME_AREA_H-1) == TERRAIN_VSCROLL_LOCK) {
-            std::cout << "BOTTOM-FOUND-DOOR" << std::endl;
+            //std::cout << "BOTTOM-FOUND-DOOR" << std::endl;
             SharedData::get_instance()->area_map[x][y].wall_bottom = MAP_WALL_TYPE_DOOR;
             found_bottom_open = false;
             found_bottom_lock = false;
             break;
         } else if (mapController.get_map_point_lock(map_tile_x+i, map_tile_y+GAME_AREA_H-1) != TERRAIN_SOLID) {
-            std::cout << "BOTTOM.OPEN.AT x[" << (map_tile_x+i) << "], y[" << map_tile_y+GAME_AREA_H-1 << "]" << std::endl;
+            //std::cout << "BOTTOM.OPEN.AT x[" << (map_tile_x+i) << "], y[" << map_tile_y+GAME_AREA_H-1 << "]" << std::endl;
             found_bottom_open = true;
         } else {
             found_bottom_lock = true;
         }
     }
-    std::cout << "CHECK-TOP - found_open[" << found_top_open << "], found_lock[" << found_top_lock << "]" << std::endl;
+    //std::cout << "CHECK-TOP - found_open[" << found_top_open << "], found_lock[" << found_top_lock << "]" << std::endl;
     if (found_top_open == true && found_top_lock == false) {
         SharedData::get_instance()->area_map[x][y].wall_top = MAP_WALL_TYPE_UNLOCKED;
     } else if (found_top_open == false && found_top_lock == true) {
@@ -434,7 +443,7 @@ void gameManager::build_game_area_map(int x, int y, int map_tile_x, int map_tile
     }
 
 
-    std::cout << "CHECK-BOTTOM[" << (map_tile_y+GAME_AREA_H-1) << "] - found_open[" << found_bottom_open << "], found_lock[" << found_bottom_lock << "]" << std::endl;
+    //std::cout << "CHECK-BOTTOM[" << (map_tile_y+GAME_AREA_H-1) << "] - found_open[" << found_bottom_open << "], found_lock[" << found_bottom_lock << "]" << std::endl;
     if (found_bottom_open == true && found_bottom_lock == false) {
         SharedData::get_instance()->area_map[x][y].wall_bottom = MAP_WALL_TYPE_UNLOCKED;
     } else if (found_bottom_open == false && found_bottom_lock == true) {
@@ -452,7 +461,7 @@ void gameManager::build_game_area_map(int x, int y, int map_tile_x, int map_tile
         //std::cout << "######### i[" << i << "], map_tile_x[" << map_tile_x << "], map_tile_y[" << map_tile_y << "]" << std::endl;
         int left_lock = mapController.get_map_point_lock(map_tile_x, map_tile_y+i);
         if (left_lock == TERRAIN_HSCROLL_LOCK) {
-            std::cout << "LEFT-FOUND-DOOR at x[" << map_tile_x << "], y[" << (map_tile_y+i) << "]" << std::endl;
+            //std::cout << "LEFT-FOUND-DOOR at x[" << map_tile_x << "], y[" << (map_tile_y+i) << "]" << std::endl;
             SharedData::get_instance()->area_map[x][y].wall_left = MAP_WALL_TYPE_DOOR;
             found_left_open = false;
             found_left_lock = false;
@@ -467,7 +476,7 @@ void gameManager::build_game_area_map(int x, int y, int map_tile_x, int map_tile
         //std::cout << "RIGHT, x[" << (map_tile_x+GAME_AREA_W-1) << "]" << std::endl;
 
         if (mapController.get_map_point_lock(map_tile_x+GAME_AREA_W-1, map_tile_y+i) == TERRAIN_HSCROLL_LOCK) {
-            std::cout << "RIGHT-FOUND-DOOR at y[" << (map_tile_y+i) << "]" << std::endl;
+            //std::cout << "RIGHT-FOUND-DOOR at y[" << (map_tile_y+i) << "]" << std::endl;
             SharedData::get_instance()->area_map[x][y].wall_right = MAP_WALL_TYPE_DOOR;
             found_right_open = false;
             found_right_lock = false;
@@ -479,7 +488,7 @@ void gameManager::build_game_area_map(int x, int y, int map_tile_x, int map_tile
         }
     }
 
-    std::cout << "CHECK-LEFT[" << map_tile_x << "] - found_open[" << found_left_open << "], found_lock[" << found_left_lock << "]" << std::endl;
+    //std::cout << "CHECK-LEFT[" << map_tile_x << "] - found_open[" << found_left_open << "], found_lock[" << found_left_lock << "]" << std::endl;
     if (found_left_open == true && found_left_lock == false) {
         SharedData::get_instance()->area_map[x][y].wall_left = MAP_WALL_TYPE_UNLOCKED;
     } else if (found_left_open == false && found_left_lock == true) {
@@ -487,7 +496,7 @@ void gameManager::build_game_area_map(int x, int y, int map_tile_x, int map_tile
     }
 
 
-    std::cout << "CHECK-RIGHT - found_open[" << found_right_open << "], found_lock[" << found_right_lock << "]" << std::endl;
+    //std::cout << "CHECK-RIGHT - found_open[" << found_right_open << "], found_lock[" << found_right_lock << "]" << std::endl;
     if (found_right_open == true && found_right_lock == false) {
         SharedData::get_instance()->area_map[x][y].wall_right = MAP_WALL_TYPE_UNLOCKED;
     } else if (found_right_open == false && found_right_lock == true) {
@@ -536,7 +545,7 @@ void gameManager::show_game(bool can_characters_move, bool can_scroll_stage)
     }
 
     // TODO::IURI //
-    if (PauseMenu::get_instance()->execute()) { // game is paused
+    if (PauseMenu::get_instance()->execute_pause_menu()) { // game is paused
         return;
     }
 
@@ -587,7 +596,6 @@ void gameManager::show_game(bool can_characters_move, bool can_scroll_stage)
         mapController.showAbove();
     } else {
         ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
-
     }
 
 
@@ -613,12 +621,18 @@ void gameManager::show_game(bool can_characters_move, bool can_scroll_stage)
 
 }
 
+
 // ********************************************************************************************** //
 //                                                                                                //
 // ********************************************************************************************** //
 Uint8 gameManager::getMapPointLock(struct st_position pos)
 {
     return mapController.getMapPointLock(pos);
+}
+
+st_size gameManager::get_map_size()
+{
+    return mapController.get_size();
 }
 
 // ********************************************************************************************** //
@@ -656,7 +670,7 @@ void gameManager::start_stage()
 
 	SoundView::get_instance()->stop_music();
 
-    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).music_filename);
+    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).music_filename);
 
     mapController.loadMap();
     mapController.set_scroll_to_bottom();
@@ -798,7 +812,7 @@ void gameManager::restart_stage()
     draw::get_instance()->update_screen();
     // if was on stage-boss, mneeds to reload music
     if (SoundView::get_instance()->get_is_playing_boss_music() == true) {
-        SoundView::get_instance()->load_stage_music(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).music_filename);
+        SoundView::get_instance()->load_stage_music(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).music_filename);
     }
     SoundView::get_instance()->restart_music();
     if (SharedData::get_instance()->checkpoint.y == -1) { // did not reached any checkpoint, use the calculated value from stage start
@@ -856,17 +870,17 @@ void gameManager::show_beta_version_warning()
     TimerView::get_instance()->delay(100);
 
     TextView::get_instance()->renderText(0, 30, st_color(255, 130, 0), true, "-- BETA VERSION WARNING --");
-    TextView::get_instance()->draw_centered_text(60, "THIS IS A TEST VERSION OF ROCKDROID,");
-    TextView::get_instance()->draw_centered_text(75, "IT DOES CONTAIN ERRORS AND IS NOT");
-    TextView::get_instance()->draw_centered_text(90, "COMPLETE MISSING SOME FEATURES.");
+    TextView::get_instance()->renderCenteredText(60, "THIS IS A TEST VERSION OF ROCKDROID,");
+    TextView::get_instance()->renderCenteredText(75, "IT DOES CONTAIN ERRORS AND IS NOT");
+    TextView::get_instance()->renderCenteredText(90, "COMPLETE MISSING SOME FEATURES.");
 
-    TextView::get_instance()->draw_centered_text(120, "SOFTWARE IS PROVIDED \"AS IS\"");
-    TextView::get_instance()->draw_centered_text(135, "WITHOUT WARRANTY OF ANY KIND,");
-    TextView::get_instance()->draw_centered_text(150, "EXPRESS OR IMPLIED FROM AUTHOR.");
+    TextView::get_instance()->renderCenteredText(120, "SOFTWARE IS PROVIDED \"AS IS\"");
+    TextView::get_instance()->renderCenteredText(135, "WITHOUT WARRANTY OF ANY KIND,");
+    TextView::get_instance()->renderCenteredText(150, "EXPRESS OR IMPLIED FROM AUTHOR.");
 
-    TextView::get_instance()->draw_centered_text(170, "REPORT ANY FOUND ISSUES TO");
-    TextView::get_instance()->draw_centered_text(185, "bugs@upperland.net");
-    TextView::get_instance()->draw_centered_text(210, "PRESS A BUTTON OR KEY TO CONTINUE.");
+    TextView::get_instance()->renderCenteredText(170, "REPORT ANY FOUND ISSUES TO");
+    TextView::get_instance()->renderCenteredText(185, "bugs@upperland.net");
+    TextView::get_instance()->renderCenteredText(210, "PRESS A BUTTON OR KEY TO CONTINUE.");
     draw::get_instance()->update_screen();
     InputController::get_instance()->wait_keypress();
 }
@@ -879,19 +893,19 @@ void gameManager::show_free_version_warning()
     TimerView::get_instance()->delay(100);
 
     TextView::get_instance()->renderText(0, 10, st_color(255, 130, 0), true, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning_title, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(30, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning1, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(45, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning2, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(60, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning3, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(75, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning4, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(90, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning5, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(105, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning6, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(130, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning7, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(145, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning8, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(160, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning9, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(175, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning10, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(30, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning1, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(45, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning2, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(60, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning3, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(75, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning4, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(90, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning5, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(105, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning6, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(130, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning7, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(145, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning8, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(160, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning9, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(175, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning10, SharedData::get_instance()->game_config.selected_language));
 
-    TextView::get_instance()->draw_centered_text(205, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning11, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(220, strings_map::get_instance()->get_ingame_string(string_press_key_or_button, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(205, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning11, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(220, strings_map::get_instance()->get_ingame_string(string_press_key_or_button, SharedData::get_instance()->game_config.selected_language));
     draw::get_instance()->update_screen();
     InputController::get_instance()->wait_keypress();
 }
@@ -913,7 +927,7 @@ void gameManager::show_notice()
 
     //std::cout << ">> logo_pos.x: " << logo_pos.x << ", logo_pos.y: " << logo_pos.y << std::endl;
     ImageView::get_instance()->renderTexturePortionAt(0, 0, upperland_surface.surface->w/6, upperland_surface.surface->h, logo_pos.x, logo_pos.y, upperland_surface.texture);
-    TextView::get_instance()->draw_centered_text(220, "HTTP://ROCKBOT.UPPERLAND.NET");
+    TextView::get_instance()->renderCenteredText(220, "HTTP://ROCKBOT.UPPERLAND.NET");
     draw::get_instance()->update_screen();
     InputController::get_instance()->clean_and_wait_scape_time(400);
     for (int i=1; i<6; i++) {
@@ -932,13 +946,13 @@ void gameManager::show_notice()
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
 
     TextView::get_instance()->renderText(0, 10, st_color(199, 215, 255), true, strings_map::get_instance()->get_ingame_string(string_intro_engine1, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(30, strings_map::get_instance()->get_ingame_string(string_intro_engine2, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(50, strings_map::get_instance()->get_ingame_string(string_intro_engine3, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(70, strings_map::get_instance()->get_ingame_string(string_intro_engine4, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(90, strings_map::get_instance()->get_ingame_string(string_intro_engine5, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(110, strings_map::get_instance()->get_ingame_string(string_intro_engine6, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(130, strings_map::get_instance()->get_ingame_string(string_intro_engine7, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(150, strings_map::get_instance()->get_ingame_string(string_intro_engine8, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(30, strings_map::get_instance()->get_ingame_string(string_intro_engine2, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(50, strings_map::get_instance()->get_ingame_string(string_intro_engine3, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(70, strings_map::get_instance()->get_ingame_string(string_intro_engine4, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(90, strings_map::get_instance()->get_ingame_string(string_intro_engine5, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(110, strings_map::get_instance()->get_ingame_string(string_intro_engine6, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(130, strings_map::get_instance()->get_ingame_string(string_intro_engine7, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(150, strings_map::get_instance()->get_ingame_string(string_intro_engine8, SharedData::get_instance()->game_config.selected_language));
 
     draw::get_instance()->update_screen();
 
@@ -947,16 +961,16 @@ void gameManager::show_notice()
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
 
     TextView::get_instance()->renderText(0, 10, st_color(199, 215, 255), true, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning_title, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(30, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning1, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(50, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning2, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(70, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning3, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(90, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning4, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(110, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning5, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(130, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning6, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(150, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning7, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(170, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning8, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(200, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning9, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(220, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning10, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(30, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning1, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(50, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning2, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(70, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning3, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(90, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning4, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(110, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning5, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(130, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning6, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(150, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning7, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(170, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning8, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(200, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning9, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(220, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning10, SharedData::get_instance()->game_config.selected_language));
 
     draw::get_instance()->update_screen();
     TimerView::get_instance()->delay(10000);
@@ -1265,7 +1279,7 @@ void gameManager::horizontal_screen_move(short direction, bool is_door, short ti
 
     //std::cout << "player_move_x[" << player_move_x << "], move_limit[" << move_limit << "]" << std::endl;
     for (int i=0; i<move_limit; i++) {
-        change_map_scroll(scroll_move, false, false);
+        change_map_scroll(scroll_move, false);
         mapController.show();
         if (mapController.must_show_static_bg() == false) {
             mapController.show_npcs();
@@ -1342,7 +1356,7 @@ void gameManager::vertical_screen_move(short direction, bool is_door, short tile
     for (int i=0; i<move_limit; i++) {
         //std::cout << ">>>> gameManager::vertical_screen_move scroll_move.x[" << scroll_move.x << "], scroll_move.y[" << scroll_move.y << "]" << std::endl;
 
-        change_map_scroll(scroll_move, false, false);
+        change_map_scroll(scroll_move, false);
         mapController.show();
         if (mapController.must_show_static_bg() == false) {
             mapController.show_npcs();
@@ -1674,6 +1688,31 @@ bool gameManager::is_player_on_teleporter()
     return _player_teleporter.active;
 }
 
+void gameManager::show_ability_item_dialog(int ability_n)
+{
+    std::vector<std::string> msgs;
+    // @TODO: i18n //
+    msgs.push_back("You have acquired an item that gives you");
+    msgs.push_back("the following ability:");
+    msgs.push_back("Sliding");
+    mapController.show_objects();
+    mapController.show_npcs();
+    player1.show();
+    mapController.show_above_objects();
+    mapController.showAbove();
+
+    show_hud(true);
+    draw::get_instance()->show_ingame_warning(msgs);
+
+    SoundView::get_instance()->stop_music();
+    SoundView::get_instance()->load_music("got_ability.mod");
+    SoundView::get_instance()->play_music_once();
+    TimerView::get_instance()->delay(7000);
+    SoundView::get_instance()->stop_music();
+    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).music_filename);
+    SoundView::get_instance()->play_music();
+}
+
 
 short gameManager::get_current_save_slot()
 {
@@ -1788,7 +1827,7 @@ void gameManager::finish_player_teleporter()
     }
     player1.set_teleporter(-1);
     SoundView::get_instance()->stop_music();
-    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).music_filename);
+    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).music_filename);
     SoundView::get_instance()->play_music();
 }
 
@@ -1816,35 +1855,24 @@ bool gameManager::subboss_alive_on_left(short tileX)
     return mapController.subboss_alive_on_left(tileX);
 }
 
-void gameManager::change_map_scroll(st_float_position pos, bool check_lock, bool ignore_auto_scroll)
+void gameManager::change_map_scroll(st_float_position pos, bool check_lock)
 {
-    //std::cout << "change_map_scroll, pos.x[" << pos.x << "], pos.y[" << pos.y << "]" << std::endl;
-    // debug for autoscrolling test
-
-    bool map_autoscroll = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).autoscroll;
-    // avoid data error (getting 66 as value from data file)
-    if (map_autoscroll > 1) {
-        map_autoscroll = false;
-    }
-    if (ignore_auto_scroll == false && map_autoscroll == true) {
-        if (TimerView::get_instance()->is_paused() == false && autoscroll_timer < TimerView::get_instance()->getTimer()) {
-            autoscroll_timer = TimerView::get_instance()->getTimer()+20;
-            pos.x = 1.5;
-        } else {
-            pos.x = 0;
-        }
-    }
     mapController.changeScrolling(pos, check_lock);
 }
 
 void gameManager::init_map_and_player_to_bottom()
 {
     std::cout << "### gameManager::initGame::set_scroll_to_bottom::CALL ###" << std::endl;
+    int player_initial_x = abs(SharedData::get_instance()->leftmost_room-SharedData::get_instance()->rightmost_room)/2 * GAME_AREA_W * TILESIZE;
+    mapController.set_scrolling(st_float_position(player_initial_x-RES_W/2, 0));
     mapController.set_scroll_to_bottom();
     int bottom_tile_y = mapController.get_first_lock_on_bottom(RES_W/4, -1, player1.get_size().width, player1.get_hitbox(ANIM_TYPE_STAND).h);
     int bottom_y = bottom_tile_y*TILESIZE-player1.get_size().height+TILESIZE+1;
     std::cout << "### bottom_y[" << bottom_y << "], bottom_tile.y[" << bottom_tile_y << "], player_h[" << player1.get_hitbox(ANIM_TYPE_STAND).h << "]" << std::endl;
-    player1.set_position(st_position(TILESIZE*AREA_ROOM_W*0.5, bottom_y));
+
+
+    std::cout << "@@@@@@@@@@@@@@@@@@@ player_initial_x[" << player_initial_x << "]" << std::endl;
+    player1.set_position(st_position(player_initial_x, bottom_y));
     player1.set_animation_type(ANIM_TYPE_STAND);
 }
 
@@ -1908,6 +1936,10 @@ void gameManager::show_savegame_error()
     msgs.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_savegameerror2, SharedData::get_instance()->game_config.selected_language));
     msgs.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_savegameerror3, SharedData::get_instance()->game_config.selected_language));
     draw::get_instance()->show_ingame_warning(msgs);
+
+    InputController::get_instance()->clean();
+    InputController::get_instance()->wait_keypress();
+
 }
 
 void gameManager::get_drop_item_ids()

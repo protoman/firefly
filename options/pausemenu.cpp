@@ -22,12 +22,16 @@ PauseMenu *PauseMenu::get_instance()
     return _instance;
 }
 
-bool PauseMenu::execute()
+bool PauseMenu::execute_pause_menu()
 {
     if (InputController::get_instance()->p1_input[BTN_START] == 1) {
         is_paused = !is_paused;
+        if (is_paused) { // entered pause mode, show animation //
+            draw::get_instance()->draw_in_game_menu_animation();
+        }
         screen = 0;
-        TimerView::get_instance()->delay(200);
+        InputController::get_instance()->clean();
+        TimerView::get_instance()->delay(10);
     }
     if (is_paused == true) {
         if (InputController::get_instance()->p1_input[BTN_L] == 1) {

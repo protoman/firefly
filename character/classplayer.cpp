@@ -122,6 +122,7 @@ bool classPlayer::get_item(object_collision &obj_info)
                 exit(-1);
             }
             SharedData::get_instance()->game_save.abilities[given_ability] = true;
+            gameManager::get_instance()->show_ability_item_dialog(given_ability);
             res = true;
             break;
         }

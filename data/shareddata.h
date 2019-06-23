@@ -30,7 +30,7 @@ public:
 private:
     SharedData();
     SharedData(SharedData const&){};             // copy constructor is private
-    SharedData& operator=(SharedData const&){};  // assignment operator is private
+    SharedData& operator=(SharedData const&){ return *this; };  // assignment operator is private
 
 
 private:
@@ -105,6 +105,10 @@ public:
     int topmost_room = FILE_AREA_H;
     int bottommost_room = 0;
     std::vector<st_position> area_room_list;
+    std::vector<file_v6_level_visited> visited_level_list;
+    st_position current_room_pos;
+
+    int level_count = 0;
 
 };
 

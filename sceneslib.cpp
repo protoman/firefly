@@ -69,7 +69,7 @@ void scenesLib::draw_main()
     TextView::get_instance()->renderText(8, 8, VERSION_NUMBER);
 
     TextView::get_instance()->renderText(40, (RES_H-35), strings_map::get_instance()->get_ingame_string(strings_ingame_copyrightline, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->draw_centered_text(220, "http://rockbot.upperland.net");
+    TextView::get_instance()->renderCenteredText(220, "http://rockbot.upperland.net");
 
 }
 

@@ -379,6 +379,7 @@ struct st_imageData {
             SDL_BlitSurface(original.surface, &srcRect, surface, nullptr);
             texture = SDL_CreateTextureFromSurface(gRenderer, surface);
         }
+        return *this;
     }
 
     void freeGraphic()

@@ -26,6 +26,8 @@ public:
 
     template <class T> T load_single_object_from_list(std::string file, int seek_n);
 
+    template <class T> int get_list_size(std::string filename);
+
 };
 
 template <class T> void fio_common::save_struct_data(std::string filename, T data) {
@@ -83,6 +85,25 @@ template <class T> void fio_common::save_data_to_disk(std::string filename, std:
     fclose(fp);
 }
 
+template <class T> int fio_common::get_list_size(std::string filename)
+{
+    FILE *fp = fopen(filename.c_str(), "rb");
+    if (!fp) {
+        std::cout << ">>file_io::load_from_disk - file '" << filename << "' not found." << std::endl;
+        return 0;
+    }
+    int n = 0;
+    while (!feof(fp) && !ferror(fp)) {
+        T out;
+        int res_read = fread(&out, sizeof(T), 1, fp);
+        if (res_read == -1) {
+            break;
+        }
+        n++;
+    }
+    fclose(fp);
+    return n;
+}
 
 template <class T> std::vector<T> fio_common::load_from_disk(std::string filename)
 {
@@ -113,6 +134,8 @@ template <class T> std::vector<T> fio_common::load_from_disk(std::string filenam
     fclose(fp);
     return res;
 }
+
+
 
 template <class T> T fio_common::load_single_object_from_disk(std::string filename)
 {

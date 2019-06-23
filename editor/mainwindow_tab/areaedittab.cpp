@@ -89,7 +89,7 @@ void AreaEditTab::set_data()
     int currentLayer = ui->layerSelectorComboBox->currentIndex();
     ui->layerImageComboBox->setCurrentIndex(ui->layerImageComboBox->findText(SharedData::get_instance()->v6_area_list.at(currentMap).layers[currentLayer].filename));
     ui->layerSpeedDoubleSpinBox->setValue((float)SharedData::get_instance()->v6_area_list.at(currentMap).layers[currentLayer].speed/(float)10);
-    std::cout << ">>>>>>>>>>>>>>>>> speed on area[" << currentMap << "], layer[" << currentLayer << "] set to [" << (float)SharedData::get_instance()->v6_area_list.at(currentMap).layers[currentLayer].speed/(float)10 << "]" << std::endl;
+    //std::cout << ">>>>>>>>>>>>>>>>> speed on area[" << currentMap << "], layer[" << currentLayer << "] set to [" << (float)SharedData::get_instance()->v6_area_list.at(currentMap).layers[currentLayer].speed/(float)10 << "]" << std::endl;
     ui->layerVerticalPositionSpinBox->setValue(SharedData::get_instance()->v6_area_list.at(currentMap).layers[currentLayer].adjust_y);
     ui->layerAutoscrollComboBox->setCurrentIndex(SharedData::get_instance()->v6_area_list.at(currentMap).layers[currentLayer].auto_scroll);
     ui->layerAlphaSpinBox->setValue(SharedData::get_instance()->v6_area_list.at(currentMap).layers[currentLayer].alpha);
@@ -172,7 +172,7 @@ void AreaEditTab::on_layerSpeedDoubleSpinBox_valueChanged(double arg1)
 {
     if (checkLoadingAndValid()) { return; }
     SharedData::get_instance()->v6_area_list.at(ui->currentAreaComboBox->currentIndex()).layers[ui->layerSelectorComboBox->currentIndex()].speed = arg1*10;
-    std::cout << ">>>>>>>>>>>>>>>>> speed on area[" << ui->currentAreaComboBox->currentIndex() << "], layer[" << ui->layerSelectorComboBox->currentIndex() << "] set to [" << SharedData::get_instance()->v6_area_list.at(ui->currentAreaComboBox->currentIndex()).layers[ui->layerSelectorComboBox->currentIndex()].speed << "]" << std::endl;
+    //std::cout << ">>>>>>>>>>>>>>>>> speed on area[" << ui->currentAreaComboBox->currentIndex() << "], layer[" << ui->layerSelectorComboBox->currentIndex() << "] set to [" << SharedData::get_instance()->v6_area_list.at(ui->currentAreaComboBox->currentIndex()).layers[ui->layerSelectorComboBox->currentIndex()].speed << "]" << std::endl;
 }
 
 void AreaEditTab::on_layerVerticalPositionSpinBox_valueChanged(int arg1)

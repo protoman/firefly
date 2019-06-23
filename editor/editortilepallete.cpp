@@ -19,10 +19,10 @@ void EditorTilePallete::paintEvent(QPaintEvent *) {
 
    QString filename;
    if (Mediator::get_instance()->getPallete().length() < 1) {
-        std::cout << "EditorTilePallete::paintEvent - USING DEFAULT TILESET" << std::endl;
+        //std::cout << "EditorTilePallete::paintEvent - USING DEFAULT TILESET" << std::endl;
         filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/tilesets/") + QString("default.png");
    } else {
-       std::cout << "EditorTilePallete::paintEvent - USING SET TILESET[" << std::endl;
+       //std::cout << "EditorTilePallete::paintEvent - USING SET TILESET[" << std::endl;
         filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/images/tilesets/") + QString(Mediator::get_instance()->getPallete().c_str());
    }
 

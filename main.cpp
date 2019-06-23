@@ -51,7 +51,7 @@ int main()
     gameManager::get_instance()->preloadGameData();
     gameManager::get_instance()->initGame();
 
-    for (int i=0; i<100000; i++) {
+    while (true) {
         gameManager::get_instance()->show_game(true, true);
         SDL_RenderPresent(gRenderer);
         SDL_Delay(10);

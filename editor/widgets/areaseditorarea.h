@@ -23,7 +23,12 @@ protected:
     //void mouseReleaseEvent(QMouseEvent * event);
     //void mouseMoveEvent(QMouseEvent *event);
 
+private:
+    bool is_first_area_pieces();
+    bool have_adjacent_same_area_piece();
+
 signals:
+    void on_area_changed();
 
 private:
     unsigned int currentArea = 0;
@@ -38,6 +43,7 @@ private:
     QPixmap arrow_down;
 
 public slots:
+
 };
 
 #endif // AREASEDITORAREA_H

@@ -143,15 +143,11 @@ void draw::preload()
     filename = SharedData::get_instance()->FILEPATH + "images/energy_bars.png";
     hud_energy_bar = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/in_game_menu.png";
+    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/ingame_menu_001.png";
     in_game_menu_bg = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/in_game_menu_map.png";
-    in_game_menu_bg_map = ImageView::get_instance()->imageFromFile(filename);
-
-    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/in_game_menu_options.png";
-    in_game_menu_bg_options = ImageView::get_instance()->imageFromFile(filename);
-
+    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/ingame_menu_001_clean.png";
+    in_game_menu_bg_clean = ImageView::get_instance()->imageFromFile(filename);
 
     filename = SharedData::get_instance()->FILEPATH + "images/hud/door_h.png";
     door_h = ImageView::get_instance()->imageFromFile(filename);
@@ -439,6 +435,7 @@ int draw::show_credits(bool can_leave)
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(100);
     InputController::get_instance()->wait_keypress();
+    return 0;
 }
 
 void draw::show_unlocked_charsMsg()
@@ -667,11 +664,10 @@ void draw::show_ingame_warning(std::vector<std::string> message)
     ImageView::get_instance()->show_dialog(0);
     st_position dialog_pos = ImageView::get_instance()->get_dialog_pos();
     for (unsigned int i=0; i<message.size(); i++) {
-        TextView::get_instance()->renderText(dialog_pos.x+20, dialog_pos.y+16+(12*i), st_color(250, 250, 250), false, message[i]);
+        TextView::get_instance()->renderText(dialog_pos.x+30, dialog_pos.y+56+((FONT_SIZE*1.5)*i), st_color(250, 250, 250), false, message[i]);
     }
-    ImageView::get_instance()->show_dialog_button(0);
-    InputController::get_instance()->clean();
-    InputController::get_instance()->wait_keypress();
+    //ImageView::get_instance()->show_dialog_button(0);
+    update_screen();
 }
 
 
@@ -898,13 +894,88 @@ void draw::show_interstage_map_bg(st_position pos)
 
 void draw::draw_in_game_menu_bg(int screen)
 {
-    ImageView::get_instance()->clearScreenArea(0, 0, RES_W, AREA_H, 0, 0, 20);
+    //ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 20);
+
+    std::string text_next_page = "R-[AREA-MAP]";
+    std::string current_page_text = "[CHARACTER]";
+
     if (screen == 0) {
-        ImageView::get_instance()->renderImageAt(0, 0, in_game_menu_bg);
-    } else if (screen == 1) {
-        ImageView::get_instance()->renderImageAt(0, 0, in_game_menu_bg_map);
-    } else {
-        ImageView::get_instance()->renderImageAt(0, 0, in_game_menu_bg_options);
+        ImageView::get_instance()->renderImageAt(10, 10, in_game_menu_bg);
+    } else if (screen == 1) { // MAP
+        ImageView::get_instance()->renderImageAt(10, 10, in_game_menu_bg_clean);
+        current_page_text = "[AREA-MAP]";
+        text_next_page = "R-[GAME-OPTIONS]";
+    } else { // OPTIONS
+        ImageView::get_instance()->renderImageAt(10, 10, in_game_menu_bg_clean);
+        current_page_text = "[GAME-OPTIONS]";
+        text_next_page = "R-[CHARACTER]";
+    }
+    int text_w = FONT_ACTUAL_SIZE_W*text_next_page.size();
+    //std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>> text_w[" << text_w << "]" << std::endl;
+    TextView::get_instance()->renderCenteredText(66, st_color(0, 0, 0), current_page_text);
+    TextView::get_instance()->renderText(RES_W-94-text_w, 622, st_color(0, 0, 0), false, text_next_page);
+
+    if (screen == 1) { // MAP
+        draw_in_game_menu_map();
+    }
+}
+
+void draw::draw_in_game_menu_animation()
+{
+    // @TODO: set map scroll to current room //
+    in_game_menu_map_pos = st_position(0, 0);
+    ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 20);
+    ImageView::get_instance()->updateScreen();
+    TimerView::get_instance()->delay(100);
+    // menu 001 animation //
+
+    for (int i=0; i<424; i+=16) {
+        SDL_RenderClear(gRenderer);
+        ImageView::get_instance()->renderTexturePortionAt(0, 0, in_game_menu_bg.surface->w, 137+i, 10, 10, in_game_menu_bg.texture);
+        ImageView::get_instance()->renderTexturePortionAt(0, 548, in_game_menu_bg.surface->w, 152, 10, 137+i, in_game_menu_bg.texture);
+        ImageView::get_instance()->updateScreen();
+        TimerView::get_instance()->delay(1);
+    }
+    int final_pos = 420;
+    SDL_RenderClear(gRenderer);
+    ImageView::get_instance()->renderTexturePortionAt(0, 0, in_game_menu_bg.surface->w, 137+final_pos, 10, 10, in_game_menu_bg.texture);
+    ImageView::get_instance()->renderTexturePortionAt(0, 548, in_game_menu_bg.surface->w, 152, 10, 138+final_pos, in_game_menu_bg.texture);
+    ImageView::get_instance()->updateScreen();
+}
+
+void draw::draw_in_game_menu_map()
+{
+    std::cout << "DRAW::draw_in_game_menu_map - visited_level_list.size[" << SharedData::get_instance()->visited_level_list.size() << "]" << std::endl;
+    int MAP_ROOM_SIZE_W = 24;
+    int MAP_ROOM_SIZE_H = 16;
+    int adjust_x = 280;
+    int adjust_y = 190;
+    for (int i=0; i<SharedData::get_instance()->visited_level_list.size(); i++) {
+        // @TODO: support for multiple areas //
+        if (i != 0) {
+            break;
+        }
+        // show visited tiles
+        for (int x=0; x<FILE_AREA_W; x++) {
+            for (int y=0; y<FILE_AREA_H; y++) {
+                if (SharedData::get_instance()->visited_level_list.at(i).visited[x][y] == true) {
+                    if (i == SharedData::get_instance()->v6_selected_area && x == SharedData::get_instance()->current_room_pos.x && y == SharedData::get_instance()->current_room_pos.y) {
+                        ImageView::get_instance()->clearScreenArea(x*MAP_ROOM_SIZE_W+adjust_x, y*MAP_ROOM_SIZE_H+adjust_y, MAP_ROOM_SIZE_W, MAP_ROOM_SIZE_H, 0, 150, 255);
+                    } else {
+                        ImageView::get_instance()->clearScreenArea(x*MAP_ROOM_SIZE_W+adjust_x, y*MAP_ROOM_SIZE_H+adjust_y, MAP_ROOM_SIZE_W, MAP_ROOM_SIZE_H, 0, 0, 180);
+                    }
+                } else {
+                    ImageView::get_instance()->clearScreenArea(x*MAP_ROOM_SIZE_W+adjust_x, y*MAP_ROOM_SIZE_H+adjust_y, MAP_ROOM_SIZE_W, MAP_ROOM_SIZE_H, 0, 0, 0);
+                }
+            }
+        }
+        // draw grid
+        for (int x=1; x<FILE_AREA_W; x++) {
+            ImageView::get_instance()->clearScreenArea(x*MAP_ROOM_SIZE_W+adjust_x, adjust_y, 1, FILE_AREA_H*MAP_ROOM_SIZE_H, 255, 255, 255);
+        }
+        for (int y=1; y<FILE_AREA_H; y++) {
+            ImageView::get_instance()->clearScreenArea(adjust_x, y*MAP_ROOM_SIZE_H+adjust_y, FILE_AREA_W*MAP_ROOM_SIZE_W, 1, 255, 255, 255);
+        }
     }
 }
 
