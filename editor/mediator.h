@@ -119,7 +119,6 @@ public:
 
     std::vector<file_npc_v3_1_2> enemy_list;
 
-    std::vector<file_object> object_list;
     std::vector<file_artificial_inteligence> ai_list;
     //std::vector<file_artificial_inteligence_v3> ai_list;
 

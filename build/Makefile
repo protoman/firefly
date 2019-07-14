@@ -50,7 +50,11 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = ../aux_tools/ability_name.cpp \
+SOURCES       = ../GameManager.cpp \
+		../aux_tools/ability_name.cpp \
+		../aux_tools/jsoncpp.cpp \
+		../character/GameEnemy.cpp \
+		../character/gamenpc.cpp \
 		../main.cpp \
 		../view/textview.cpp \
 		../view/imageview.cpp \
@@ -74,7 +78,6 @@ SOURCES       = ../aux_tools/ability_name.cpp \
 		../character/artificial_inteligence.cpp \
 		../character/character.cpp \
 		../character/character_animation.cpp \
-		../character/classnpc.cpp \
 		../character/classplayer.cpp \
 		../view/draw.cpp \
 		../view/gfx_sin_wave.cpp \
@@ -87,11 +90,14 @@ SOURCES       = ../aux_tools/ability_name.cpp \
 		../class_config.cpp \
 		../options/key_map.cpp \
 		../ports/android/android_game_services.cpp \
-		../gameManager.cpp \
 		../objects/GameObject.cpp \
 		../scenes/dialogs.cpp \
 		../options/pausemenu.cpp 
-OBJECTS       = ability_name.o \
+OBJECTS       = GameManager.o \
+		ability_name.o \
+		jsoncpp.o \
+		GameEnemy.o \
+		gamenpc.o \
 		main.o \
 		textview.o \
 		imageview.o \
@@ -115,7 +121,6 @@ OBJECTS       = ability_name.o \
 		artificial_inteligence.o \
 		character.o \
 		character_animation.o \
-		classnpc.o \
 		classplayer.o \
 		draw.o \
 		gfx_sin_wave.o \
@@ -128,7 +133,6 @@ OBJECTS       = ability_name.o \
 		class_config.o \
 		key_map.o \
 		android_game_services.o \
-		gameManager.o \
 		GameObject.o \
 		dialogs.o \
 		pausemenu.o
@@ -315,12 +319,18 @@ DIST          = ../TODO \
 		../../../../Programas/Qt/5.11.0/gcc_64/mkspecs/features/exceptions.prf \
 		../../../../Programas/Qt/5.11.0/gcc_64/mkspecs/features/yacc.prf \
 		../../../../Programas/Qt/5.11.0/gcc_64/mkspecs/features/lex.prf \
-		../../FireFlyGame.pro aux_tools/ability_name.h \
+		../../FireFlyGame.pro GameManager.h \
+		aux_tools/ability_name.h \
+		aux_tools/json/json-forwards.h \
+		aux_tools/json/json.h \
+		character/GameEnemy.h \
+		character/gamenpc.h \
 		file/v4/file_save_v4.h \
 		file/v5/struct_file_area_data.h \
 		file/v5/struct_file_game_area_map.h \
 		file/v6/file_area_v6.h \
 		file/v6/file_level_v6.h \
+		file/v6/file_object_v6.h \
 		file/v6/file_room_v6.h \
 		view/textview.h \
 		view/imageview.h \
@@ -350,7 +360,6 @@ DIST          = ../TODO \
 		character/artificial_inteligence.h \
 		character/character.h \
 		character/character_animation.h \
-		character/classnpc.h \
 		character/classplayer.h \
 		view/draw.h \
 		view/gfx_sin_wave.h \
@@ -368,13 +377,16 @@ DIST          = ../TODO \
 		class_config.h \
 		options/key_map.h \
 		ports/android/android_game_services.h \
-		gameManager.h \
 		objects/GameObject.h \
 		scenes/dialogs.h \
 		options/pausemenu.h \
 		file/v5/struct_file_map.h \
 		file/v5/struct_file_area.h \
-		file/v5/struct_file_area_link.h ../aux_tools/ability_name.cpp \
+		file/v5/struct_file_area_link.h ../GameManager.cpp \
+		../aux_tools/ability_name.cpp \
+		../aux_tools/jsoncpp.cpp \
+		../character/GameEnemy.cpp \
+		../character/gamenpc.cpp \
 		../main.cpp \
 		../view/textview.cpp \
 		../view/imageview.cpp \
@@ -398,7 +410,6 @@ DIST          = ../TODO \
 		../character/artificial_inteligence.cpp \
 		../character/character.cpp \
 		../character/character_animation.cpp \
-		../character/classnpc.cpp \
 		../character/classplayer.cpp \
 		../view/draw.cpp \
 		../view/gfx_sin_wave.cpp \
@@ -411,7 +422,6 @@ DIST          = ../TODO \
 		../class_config.cpp \
 		../options/key_map.cpp \
 		../ports/android/android_game_services.cpp \
-		../gameManager.cpp \
 		../objects/GameObject.cpp \
 		../scenes/dialogs.cpp \
 		../options/pausemenu.cpp
@@ -836,9 +846,154 @@ compiler_clean:
 
 ####### Compile
 
+GameManager.o: ../GameManager.cpp ../GameManager.h \
+		../character/classplayer.h \
+		../character/character.h \
+		../data/st_common.h \
+		../defines.h \
+		../file/format/st_characterState.h \
+		../file/format/st_teleporter.h \
+		../file/format/st_projectile.h \
+		../file/format/st_platform.h \
+		../projectilelib.h \
+		../aux_tools/trajectory_parabola.h \
+		../character/movement/jump.h \
+		../character/movement/inertia.h \
+		../character/character_animation.h \
+		../file/v4/file_game_v4.h \
+		../file/v4/file_save_v4.h \
+		../file/v4/file_config_v4.h \
+		../file/v4/file_scene_v4.h \
+		../file/format/st_hitPoints.h \
+		../character/GameEnemy.h \
+		../file/format.h \
+		../file/v4/file_anim_block.h \
+		../character/artificial_inteligence.h \
+		../file/file_io.h \
+		../file/v6/file_level_v6.h \
+		../file/v6/file_room_v6.h \
+		../sceneslib.h \
+		../scenes/game_menu.h \
+		../strings_map.h \
+		../file/fio_strings.h \
+		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
+		../game_mediator.h \
+		../file/fio_common.h \
+		../aux_tools/exception_manager.h \
+		../view/option_picker.h \
+		../options/key_map.h \
+		../objects/GameObject.h \
+		../controller/mapcontroller.h \
+		../data/shareddata.h \
+		../file/v5/struct_file_map.h \
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
+		../file/v5/struct_file_game_area_map.h \
+		../file/v5/struct_file_area_data.h \
+		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
+		../view/imageview.h \
+		../view/animation.h \
+		../view/timerview.h \
+		../view/draw.h \
+		../view/soundview.h \
+		../controller/inputcontroller.h \
+		../class_config.h \
+		../scenes/dialogs.h \
+		../aux_tools/fps_control.h \
+		../view/textview.h \
+		../options/pausemenu.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GameManager.o ../GameManager.cpp
+
 ability_name.o: ../aux_tools/ability_name.cpp ../aux_tools/ability_name.h \
 		../defines.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ability_name.o ../aux_tools/ability_name.cpp
+
+jsoncpp.o: ../aux_tools/jsoncpp.cpp ../aux_tools/json/json.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o jsoncpp.o ../aux_tools/jsoncpp.cpp
+
+GameEnemy.o: ../character/GameEnemy.cpp ../character/GameEnemy.h \
+		../character/character.h \
+		../data/st_common.h \
+		../defines.h \
+		../file/format/st_characterState.h \
+		../file/format/st_teleporter.h \
+		../file/format/st_projectile.h \
+		../file/format/st_platform.h \
+		../projectilelib.h \
+		../aux_tools/trajectory_parabola.h \
+		../character/movement/jump.h \
+		../character/movement/inertia.h \
+		../character/character_animation.h \
+		../file/v4/file_game_v4.h \
+		../file/v4/file_save_v4.h \
+		../file/v4/file_config_v4.h \
+		../file/v4/file_scene_v4.h \
+		../file/format/st_hitPoints.h \
+		../file/format.h \
+		../file/v4/file_anim_block.h \
+		../character/artificial_inteligence.h \
+		../character/classplayer.h \
+		../file/file_io.h \
+		../file/v6/file_level_v6.h \
+		../file/v6/file_room_v6.h \
+		../game_mediator.h \
+		../file/fio_common.h \
+		../aux_tools/exception_manager.h \
+		../file/fio_strings.h \
+		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
+		../GameManager.h \
+		../sceneslib.h \
+		../scenes/game_menu.h \
+		../strings_map.h \
+		../view/option_picker.h \
+		../options/key_map.h \
+		../objects/GameObject.h \
+		../controller/mapcontroller.h \
+		../data/shareddata.h \
+		../file/v5/struct_file_map.h \
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
+		../file/v5/struct_file_game_area_map.h \
+		../file/v5/struct_file_area_data.h \
+		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
+		../view/imageview.h \
+		../view/animation.h \
+		../view/timerview.h \
+		../view/draw.h \
+		../view/soundview.h \
+		../controller/inputcontroller.h \
+		../class_config.h \
+		../scenes/dialogs.h \
+		../aux_tools/fps_control.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GameEnemy.o ../character/GameEnemy.cpp
+
+gamenpc.o: ../character/gamenpc.cpp ../character/gamenpc.h \
+		../character/GameEnemy.h \
+		../character/character.h \
+		../data/st_common.h \
+		../defines.h \
+		../file/format/st_characterState.h \
+		../file/format/st_teleporter.h \
+		../file/format/st_projectile.h \
+		../file/format/st_platform.h \
+		../projectilelib.h \
+		../aux_tools/trajectory_parabola.h \
+		../character/movement/jump.h \
+		../character/movement/inertia.h \
+		../character/character_animation.h \
+		../file/v4/file_game_v4.h \
+		../file/v4/file_save_v4.h \
+		../file/v4/file_config_v4.h \
+		../file/v4/file_scene_v4.h \
+		../file/format/st_hitPoints.h \
+		../file/format.h \
+		../file/v4/file_anim_block.h \
+		../character/artificial_inteligence.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gamenpc.o ../character/gamenpc.cpp
 
 main.o: ../main.cpp ../data/shareddata.h \
 		../file/v4/file_config_v4.h \
@@ -856,7 +1011,8 @@ main.o: ../main.cpp ../data/shareddata.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
-		../gameManager.h \
+		../file/v6/file_object_v6.h \
+		../GameManager.h \
 		../character/classplayer.h \
 		../character/character.h \
 		../file/format/st_characterState.h \
@@ -869,7 +1025,7 @@ main.o: ../main.cpp ../data/shareddata.h \
 		../character/movement/inertia.h \
 		../character/character_animation.h \
 		../file/format/st_hitPoints.h \
-		../character/classnpc.h \
+		../character/GameEnemy.h \
 		../file/format.h \
 		../character/artificial_inteligence.h \
 		../file/file_io.h \
@@ -878,6 +1034,7 @@ main.o: ../main.cpp ../data/shareddata.h \
 		../strings_map.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
 		../game_mediator.h \
 		../file/fio_common.h \
 		../aux_tools/exception_manager.h \
@@ -912,7 +1069,8 @@ textview.o: ../view/textview.cpp ../view/textview.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
-		../file/v6/file_area_v6.h
+		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o textview.o ../view/textview.cpp
 
 imageview.o: ../view/imageview.cpp ../view/imageview.h \
@@ -932,6 +1090,7 @@ imageview.o: ../view/imageview.cpp ../view/imageview.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/timerview.h \
 		../view/textview.h \
 		../game_mediator.h \
@@ -939,7 +1098,8 @@ imageview.o: ../view/imageview.cpp ../view/imageview.h \
 		../file/fio_common.h \
 		../aux_tools/exception_manager.h \
 		../file/fio_strings.h \
-		../file/v4/file_strings.h
+		../file/v4/file_strings.h \
+		../aux_tools/json/json.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o imageview.o ../view/imageview.cpp
 
 shareddata.o: ../data/shareddata.cpp ../data/shareddata.h \
@@ -957,7 +1117,8 @@ shareddata.o: ../data/shareddata.cpp ../data/shareddata.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
-		../file/v6/file_area_v6.h
+		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o shareddata.o ../data/shareddata.cpp
 
 soundview.o: ../view/soundview.cpp ../view/soundview.h \
@@ -976,7 +1137,8 @@ soundview.o: ../view/soundview.cpp ../view/soundview.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
-		../file/v6/file_area_v6.h
+		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o soundview.o ../view/soundview.cpp
 
 inputcontroller.o: ../controller/inputcontroller.cpp ../controller/inputcontroller.h \
@@ -996,6 +1158,7 @@ inputcontroller.o: ../controller/inputcontroller.cpp ../controller/inputcontroll
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/timerview.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o inputcontroller.o ../controller/inputcontroller.cpp
 
@@ -1006,7 +1169,10 @@ exception_manager.o: ../aux_tools/exception_manager.cpp ../aux_tools/exception_m
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o exception_manager.o ../aux_tools/exception_manager.cpp
 
 fps_control.o: ../aux_tools/fps_control.cpp ../aux_tools/fps_control.h \
-		../view/timerview.h
+		../view/timerview.h \
+		../view/textview.h \
+		../defines.h \
+		../data/st_common.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fps_control.o ../aux_tools/fps_control.cpp
 
 stringutils.o: ../aux_tools/stringutils.cpp ../aux_tools/stringutils.h
@@ -1041,7 +1207,8 @@ file_io.o: ../file/file_io.cpp ../file/file_io.h \
 		../file/v5/struct_file_area_link.h \
 		../file/v5/struct_file_game_area_map.h \
 		../file/v5/struct_file_area_data.h \
-		../file/v6/file_area_v6.h
+		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o file_io.o ../file/file_io.cpp
 
 fio_scenes.o: ../file/fio_scenes.cpp ../file/fio_scenes.h \
@@ -1061,6 +1228,7 @@ fio_scenes.o: ../file/fio_scenes.cpp ../file/fio_scenes.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../aux_tools/exception_manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fio_scenes.o ../file/fio_scenes.cpp
 
@@ -1068,6 +1236,7 @@ fio_strings.o: ../file/fio_strings.cpp ../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../defines.h \
 		../data/st_common.h \
+		../aux_tools/json/json.h \
 		../aux_tools/stringutils.h \
 		../file/fio_common.h \
 		../aux_tools/exception_manager.h \
@@ -1084,7 +1253,8 @@ fio_strings.o: ../file/fio_strings.cpp ../file/fio_strings.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
-		../file/v6/file_area_v6.h
+		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fio_strings.o ../file/fio_strings.cpp
 
 mapcontroller.o: ../controller/mapcontroller.cpp ../view/animation.h \
@@ -1106,8 +1276,9 @@ mapcontroller.o: ../controller/mapcontroller.cpp ../view/animation.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/imageview.h \
-		../character/classnpc.h \
+		../character/GameEnemy.h \
 		../character/character.h \
 		../file/format/st_characterState.h \
 		../file/format/st_teleporter.h \
@@ -1130,8 +1301,9 @@ mapcontroller.o: ../controller/mapcontroller.cpp ../view/animation.h \
 		../aux_tools/exception_manager.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
 		../file/file_io.h \
-		../gameManager.h \
+		../GameManager.h \
 		../character/classplayer.h \
 		../sceneslib.h \
 		../scenes/game_menu.h \
@@ -1181,7 +1353,7 @@ artificial_inteligence.o: ../character/artificial_inteligence.cpp ../character/a
 		../file/v4/file_scene_v4.h \
 		../file/format/st_hitPoints.h \
 		../character/classplayer.h \
-		../character/classnpc.h \
+		../character/GameEnemy.h \
 		../file/format.h \
 		../file/v4/file_anim_block.h \
 		../file/file_io.h \
@@ -1192,6 +1364,7 @@ artificial_inteligence.o: ../character/artificial_inteligence.cpp ../character/a
 		../aux_tools/exception_manager.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
@@ -1199,11 +1372,12 @@ artificial_inteligence.o: ../character/artificial_inteligence.cpp ../character/a
 		../file/v5/struct_file_game_area_map.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/animation.h \
 		../view/timerview.h \
 		../view/imageview.h \
 		../view/soundview.h \
-		../gameManager.h \
+		../GameManager.h \
 		../sceneslib.h \
 		../scenes/game_menu.h \
 		../strings_map.h \
@@ -1235,9 +1409,9 @@ character.o: ../character/character.cpp ../character/character.h \
 		../file/v4/file_config_v4.h \
 		../file/v4/file_scene_v4.h \
 		../file/format/st_hitPoints.h \
-		../gameManager.h \
+		../GameManager.h \
 		../character/classplayer.h \
-		../character/classnpc.h \
+		../character/GameEnemy.h \
 		../file/format.h \
 		../file/v4/file_anim_block.h \
 		../character/artificial_inteligence.h \
@@ -1249,6 +1423,7 @@ character.o: ../character/character.cpp ../character/character.h \
 		../strings_map.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
 		../game_mediator.h \
 		../file/fio_common.h \
 		../aux_tools/exception_manager.h \
@@ -1263,6 +1438,7 @@ character.o: ../character/character.cpp ../character/character.h \
 		../file/v5/struct_file_game_area_map.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/imageview.h \
 		../view/animation.h \
 		../view/timerview.h \
@@ -1288,6 +1464,7 @@ character_animation.o: ../character/character_animation.cpp ../character/charact
 		../aux_tools/exception_manager.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
 		../view/imageview.h \
@@ -1298,64 +1475,9 @@ character_animation.o: ../character/character_animation.cpp ../character/charact
 		../file/v5/struct_file_game_area_map.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/timerview.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o character_animation.o ../character/character_animation.cpp
-
-classnpc.o: ../character/classnpc.cpp ../character/classnpc.h \
-		../character/character.h \
-		../data/st_common.h \
-		../defines.h \
-		../file/format/st_characterState.h \
-		../file/format/st_teleporter.h \
-		../file/format/st_projectile.h \
-		../file/format/st_platform.h \
-		../projectilelib.h \
-		../aux_tools/trajectory_parabola.h \
-		../character/movement/jump.h \
-		../character/movement/inertia.h \
-		../character/character_animation.h \
-		../file/v4/file_game_v4.h \
-		../file/v4/file_save_v4.h \
-		../file/v4/file_config_v4.h \
-		../file/v4/file_scene_v4.h \
-		../file/format/st_hitPoints.h \
-		../file/format.h \
-		../file/v4/file_anim_block.h \
-		../character/artificial_inteligence.h \
-		../character/classplayer.h \
-		../file/file_io.h \
-		../file/v6/file_level_v6.h \
-		../file/v6/file_room_v6.h \
-		../game_mediator.h \
-		../file/fio_common.h \
-		../aux_tools/exception_manager.h \
-		../file/fio_strings.h \
-		../file/v4/file_strings.h \
-		../gameManager.h \
-		../sceneslib.h \
-		../scenes/game_menu.h \
-		../strings_map.h \
-		../view/option_picker.h \
-		../options/key_map.h \
-		../objects/GameObject.h \
-		../controller/mapcontroller.h \
-		../data/shareddata.h \
-		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h \
-		../file/v5/struct_file_area_link.h \
-		../file/v5/struct_file_game_area_map.h \
-		../file/v5/struct_file_area_data.h \
-		../file/v6/file_area_v6.h \
-		../view/imageview.h \
-		../view/animation.h \
-		../view/timerview.h \
-		../view/draw.h \
-		../view/soundview.h \
-		../controller/inputcontroller.h \
-		../class_config.h \
-		../scenes/dialogs.h \
-		../aux_tools/fps_control.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o classnpc.o ../character/classnpc.cpp
 
 classplayer.o: ../character/classplayer.cpp ../character/classplayer.h \
 		../character/character.h \
@@ -1375,7 +1497,7 @@ classplayer.o: ../character/classplayer.cpp ../character/classplayer.h \
 		../file/v4/file_config_v4.h \
 		../file/v4/file_scene_v4.h \
 		../file/format/st_hitPoints.h \
-		../character/classnpc.h \
+		../character/GameEnemy.h \
 		../file/format.h \
 		../file/v4/file_anim_block.h \
 		../character/artificial_inteligence.h \
@@ -1390,6 +1512,7 @@ classplayer.o: ../character/classplayer.cpp ../character/classplayer.h \
 		../file/v5/struct_file_game_area_map.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/soundview.h \
 		../controller/mapcontroller.h \
 		../objects/GameObject.h \
@@ -1402,7 +1525,8 @@ classplayer.o: ../character/classplayer.cpp ../character/classplayer.h \
 		../aux_tools/exception_manager.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
-		../gameManager.h \
+		../aux_tools/json/json.h \
+		../GameManager.h \
 		../sceneslib.h \
 		../scenes/game_menu.h \
 		../strings_map.h \
@@ -1431,6 +1555,7 @@ draw.o: ../view/draw.cpp ../view/draw.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/soundview.h \
 		../view/timerview.h \
 		../controller/inputcontroller.h \
@@ -1440,8 +1565,9 @@ draw.o: ../view/draw.cpp ../view/draw.h \
 		../aux_tools/exception_manager.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
 		../file/file_io.h \
-		../gameManager.h \
+		../GameManager.h \
 		../character/classplayer.h \
 		../character/character.h \
 		../file/format/st_characterState.h \
@@ -1454,7 +1580,7 @@ draw.o: ../view/draw.cpp ../view/draw.h \
 		../character/movement/inertia.h \
 		../character/character_animation.h \
 		../file/format/st_hitPoints.h \
-		../character/classnpc.h \
+		../character/GameEnemy.h \
 		../character/artificial_inteligence.h \
 		../sceneslib.h \
 		../scenes/game_menu.h \
@@ -1488,6 +1614,7 @@ gfx_sin_wave.o: ../view/gfx_sin_wave.cpp ../data/st_common.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/timerview.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gfx_sin_wave.o ../view/gfx_sin_wave.cpp
 
@@ -1506,6 +1633,7 @@ option_picker.o: ../view/option_picker.cpp ../view/option_picker.h \
 		../strings_map.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
 		../data/shareddata.h \
 		../file/v5/struct_file_map.h \
 		../file/v5/struct_file_area.h \
@@ -1513,6 +1641,7 @@ option_picker.o: ../view/option_picker.cpp ../view/option_picker.h \
 		../file/v5/struct_file_game_area_map.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../controller/inputcontroller.h \
 		../view/timerview.h \
 		../view/imageview.h \
@@ -1549,11 +1678,12 @@ projectilelib.o: ../projectilelib.cpp ../projectilelib.h \
 		../aux_tools/exception_manager.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
-		../gameManager.h \
+		../GameManager.h \
 		../character/classplayer.h \
-		../character/classnpc.h \
+		../character/GameEnemy.h \
 		../character/artificial_inteligence.h \
 		../file/file_io.h \
 		../sceneslib.h \
@@ -1570,6 +1700,7 @@ projectilelib.o: ../projectilelib.cpp ../projectilelib.h \
 		../file/v5/struct_file_game_area_map.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/imageview.h \
 		../view/animation.h \
 		../view/timerview.h \
@@ -1588,6 +1719,7 @@ sceneslib.o: ../sceneslib.cpp ../sceneslib.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../data/st_common.h \
+		../aux_tools/json/json.h \
 		../game_mediator.h \
 		../file/format.h \
 		../file/v4/file_game_v4.h \
@@ -1610,6 +1742,7 @@ sceneslib.o: ../sceneslib.cpp ../sceneslib.h \
 		../file/v5/struct_file_game_area_map.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/animation.h \
 		../view/timerview.h \
 		../view/draw.h \
@@ -1619,7 +1752,7 @@ sceneslib.o: ../sceneslib.cpp ../sceneslib.h \
 		../view/gfx_sin_wave.h \
 		../view/textview.h \
 		../file/version.h \
-		../gameManager.h \
+		../GameManager.h \
 		../character/classplayer.h \
 		../character/character.h \
 		../file/format/st_characterState.h \
@@ -1632,7 +1765,7 @@ sceneslib.o: ../sceneslib.cpp ../sceneslib.h \
 		../character/movement/inertia.h \
 		../character/character_animation.h \
 		../file/format/st_hitPoints.h \
-		../character/classnpc.h \
+		../character/GameEnemy.h \
 		../character/artificial_inteligence.h \
 		../objects/GameObject.h \
 		../controller/mapcontroller.h \
@@ -1646,7 +1779,8 @@ strings_map.o: ../strings_map.cpp ../strings_map.h \
 		../defines.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
-		../data/st_common.h
+		../data/st_common.h \
+		../aux_tools/json/json.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o strings_map.o ../strings_map.cpp
 
 game_mediator.o: ../game_mediator.cpp ../game_mediator.h \
@@ -1662,6 +1796,7 @@ game_mediator.o: ../game_mediator.cpp ../game_mediator.h \
 		../aux_tools/exception_manager.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
 		../view/soundview.h \
@@ -1671,7 +1806,8 @@ game_mediator.o: ../game_mediator.cpp ../game_mediator.h \
 		../file/v5/struct_file_area_link.h \
 		../file/v5/struct_file_game_area_map.h \
 		../file/v5/struct_file_area_data.h \
-		../file/v6/file_area_v6.h
+		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o game_mediator.o ../game_mediator.cpp
 
 game_menu.o: ../scenes/game_menu.cpp ../scenes/game_menu.h \
@@ -1680,6 +1816,7 @@ game_menu.o: ../scenes/game_menu.cpp ../scenes/game_menu.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../data/st_common.h \
+		../aux_tools/json/json.h \
 		../game_mediator.h \
 		../file/format.h \
 		../file/v4/file_game_v4.h \
@@ -1703,13 +1840,14 @@ game_menu.o: ../scenes/game_menu.cpp ../scenes/game_menu.h \
 		../file/v5/struct_file_game_area_map.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/timerview.h \
 		../view/imageview.h \
 		../view/draw.h \
 		../view/soundview.h \
 		../view/textview.h \
 		../scenes/dialogs.h \
-		../gameManager.h \
+		../GameManager.h \
 		../character/classplayer.h \
 		../character/character.h \
 		../file/format/st_characterState.h \
@@ -1722,7 +1860,7 @@ game_menu.o: ../scenes/game_menu.cpp ../scenes/game_menu.h \
 		../character/movement/inertia.h \
 		../character/character_animation.h \
 		../file/format/st_hitPoints.h \
-		../character/classnpc.h \
+		../character/GameEnemy.h \
 		../character/artificial_inteligence.h \
 		../sceneslib.h \
 		../objects/GameObject.h \
@@ -1751,7 +1889,7 @@ class_config.o: ../class_config.cpp ../class_config.h \
 		../file/v4/file_config_v4.h \
 		../file/v4/file_scene_v4.h \
 		../file/format/st_hitPoints.h \
-		../character/classnpc.h \
+		../character/GameEnemy.h \
 		../file/format.h \
 		../file/v4/file_anim_block.h \
 		../character/artificial_inteligence.h \
@@ -1765,6 +1903,7 @@ class_config.o: ../class_config.cpp ../class_config.h \
 		../file/v5/struct_file_game_area_map.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../controller/inputcontroller.h \
 		../view/timerview.h \
 		../view/imageview.h \
@@ -1791,6 +1930,7 @@ key_map.o: ../options/key_map.cpp ../options/key_map.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/timerview.h \
 		../view/option_picker.h \
 		../file/file_io.h \
@@ -1803,6 +1943,7 @@ key_map.o: ../options/key_map.cpp ../options/key_map.h \
 		../aux_tools/exception_manager.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
 		../strings_map.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o key_map.o ../options/key_map.cpp
 
@@ -1819,64 +1960,6 @@ android_game_services.o: ../ports/android/android_game_services.cpp ../ports/and
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o android_game_services.o ../ports/android/android_game_services.cpp
-
-gameManager.o: ../gameManager.cpp ../gameManager.h \
-		../character/classplayer.h \
-		../character/character.h \
-		../data/st_common.h \
-		../defines.h \
-		../file/format/st_characterState.h \
-		../file/format/st_teleporter.h \
-		../file/format/st_projectile.h \
-		../file/format/st_platform.h \
-		../projectilelib.h \
-		../aux_tools/trajectory_parabola.h \
-		../character/movement/jump.h \
-		../character/movement/inertia.h \
-		../character/character_animation.h \
-		../file/v4/file_game_v4.h \
-		../file/v4/file_save_v4.h \
-		../file/v4/file_config_v4.h \
-		../file/v4/file_scene_v4.h \
-		../file/format/st_hitPoints.h \
-		../character/classnpc.h \
-		../file/format.h \
-		../file/v4/file_anim_block.h \
-		../character/artificial_inteligence.h \
-		../file/file_io.h \
-		../file/v6/file_level_v6.h \
-		../file/v6/file_room_v6.h \
-		../sceneslib.h \
-		../scenes/game_menu.h \
-		../strings_map.h \
-		../file/fio_strings.h \
-		../file/v4/file_strings.h \
-		../game_mediator.h \
-		../file/fio_common.h \
-		../aux_tools/exception_manager.h \
-		../view/option_picker.h \
-		../options/key_map.h \
-		../objects/GameObject.h \
-		../controller/mapcontroller.h \
-		../data/shareddata.h \
-		../file/v5/struct_file_map.h \
-		../file/v5/struct_file_area.h \
-		../file/v5/struct_file_area_link.h \
-		../file/v5/struct_file_game_area_map.h \
-		../file/v5/struct_file_area_data.h \
-		../file/v6/file_area_v6.h \
-		../view/imageview.h \
-		../view/animation.h \
-		../view/timerview.h \
-		../view/draw.h \
-		../view/soundview.h \
-		../controller/inputcontroller.h \
-		../class_config.h \
-		../scenes/dialogs.h \
-		../aux_tools/fps_control.h \
-		../view/textview.h \
-		../options/pausemenu.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gameManager.o ../gameManager.cpp
 
 GameObject.o: ../objects/GameObject.cpp ../objects/GameObject.h \
 		../data/st_common.h \
@@ -1896,8 +1979,9 @@ GameObject.o: ../objects/GameObject.cpp ../objects/GameObject.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/imageview.h \
-		../character/classnpc.h \
+		../character/GameEnemy.h \
 		../character/character.h \
 		../file/format/st_characterState.h \
 		../file/format/st_teleporter.h \
@@ -1921,8 +2005,9 @@ GameObject.o: ../objects/GameObject.cpp ../objects/GameObject.h \
 		../aux_tools/exception_manager.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
 		../file/file_io.h \
-		../gameManager.h \
+		../GameManager.h \
 		../character/classplayer.h \
 		../sceneslib.h \
 		../scenes/game_menu.h \
@@ -1953,6 +2038,7 @@ dialogs.o: ../scenes/dialogs.cpp ../scenes/dialogs.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/timerview.h \
 		../view/option_picker.h \
 		../file/file_io.h \
@@ -1961,7 +2047,8 @@ dialogs.o: ../scenes/dialogs.cpp ../scenes/dialogs.h \
 		../strings_map.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
-		../gameManager.h \
+		../aux_tools/json/json.h \
+		../GameManager.h \
 		../character/classplayer.h \
 		../character/character.h \
 		../file/format/st_characterState.h \
@@ -1974,7 +2061,7 @@ dialogs.o: ../scenes/dialogs.cpp ../scenes/dialogs.h \
 		../character/movement/inertia.h \
 		../character/character_animation.h \
 		../file/format/st_hitPoints.h \
-		../character/classnpc.h \
+		../character/GameEnemy.h \
 		../character/artificial_inteligence.h \
 		../sceneslib.h \
 		../scenes/game_menu.h \
@@ -2009,6 +2096,7 @@ pausemenu.o: ../options/pausemenu.cpp ../options/pausemenu.h \
 		../file/v6/file_level_v6.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
 		../view/timerview.h \
 		../view/imageview.h \
 		../view/draw.h \
@@ -2019,6 +2107,7 @@ pausemenu.o: ../options/pausemenu.cpp ../options/pausemenu.h \
 		../aux_tools/exception_manager.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
 		../file/file_io.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o pausemenu.o ../options/pausemenu.cpp
 

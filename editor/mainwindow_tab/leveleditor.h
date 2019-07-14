@@ -30,10 +30,7 @@ private slots:
     void on_addHorizontalLinkPushButton_clicked();
 
 signals:
-    void on_area_changed();
 
-public slots:
-    void area_changed();
 
 private:
     Ui::AreaEditor *ui;

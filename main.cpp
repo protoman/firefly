@@ -12,7 +12,7 @@
 #endif
 
 #include "data/shareddata.h"
-#include "gameManager.h"
+#include "GameManager.h"
 
 
 SDL_Renderer* gRenderer;
@@ -46,14 +46,13 @@ void get_filepath()
 int main()
 {
     get_filepath();
-    gameManager::get_instance()->initHardwareLayer();
+    GameManager::get_instance()->initHardwareLayer();
 
-    gameManager::get_instance()->preloadGameData();
-    gameManager::get_instance()->initGame();
+    GameManager::get_instance()->preloadGameData();
+    GameManager::get_instance()->initGame();
 
     while (true) {
-        gameManager::get_instance()->show_game(true, true);
-        SDL_RenderPresent(gRenderer);
+        GameManager::get_instance()->show_game(true, true);
         SDL_Delay(10);
     }
 

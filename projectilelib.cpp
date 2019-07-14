@@ -5,7 +5,7 @@
 #include "character/character.h"
 #include "collision_detection.h"
 #include "game_mediator.h"
-#include "gameManager.h"
+#include "GameManager.h"
 
 #include "view/draw.h"
 #include "view/imageview.h"
@@ -101,7 +101,7 @@ projectile::projectile(Uint8 id, Uint8 set_direction, st_position set_position, 
         _effect_n = 0;
         position0.x = position.x;
         position0.y = position.y;
-        int first_bottom_lock = gameManager::get_instance()->get_current_map_obj()->get_first_lock_on_bottom(position.x + get_size().width/2, -1);
+        int first_bottom_lock = GameManager::get_instance()->get_current_map_obj()->get_first_lock_on_bottom(position.x + get_size().width/2, -1);
         position.y = 0;
         std::cout << "Y: " << position.y << std::endl;
         _size.height = first_bottom_lock*TILESIZE + TILESIZE;
@@ -116,7 +116,7 @@ projectile::projectile(Uint8 id, Uint8 set_direction, st_position set_position, 
         _gravity = -0.2;
         _dist_y = 0;
     } else if (_move_type == TRAJECTORY_INVERSE_LINEAR) {
-        int map_scroll_x = gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
+        int map_scroll_x = GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
         int abs_pos_x = position.x - map_scroll_x;
         std::cout << ">>>> abs_pos_x[" << abs_pos_x << "], pos.x[" << position.x << "], map.scroll.x[" << map_scroll_x << "]" << std::endl;
 
@@ -233,7 +233,7 @@ void projectile::position_to_ground()
 {
     // change y until the projectile reachs ground
     while ((position.y + get_surface()->surface->h/2) < RES_H) {
-        int lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(position.x/TILESIZE, (position.y + get_surface()->surface->h/2)/TILESIZE)); //map->map_tiles.tiles[position.x/TILESIZE][position.y/TILESIZE].locked;
+        int lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(position.x/TILESIZE, (position.y + get_surface()->surface->h/2)/TILESIZE)); //map->map_tiles.tiles[position.x/TILESIZE][position.y/TILESIZE].locked;
         if (lock != TERRAIN_UNBLOCKED && lock != TERRAIN_WATER) {
             return;
         }
@@ -671,7 +671,7 @@ st_size projectile::move() {
         if (_effect_n == 0) {
             position.y += get_speed();
             // check if hit ground
-            int point_lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(position.x/TILESIZE, position.y/TILESIZE));
+            int point_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(position.x/TILESIZE, position.y/TILESIZE));
             if (point_lock != TERRAIN_WATER && point_lock != TERRAIN_UNBLOCKED) { // hit ground, lets change to explosion
                 //std::cout << "BOMB - TRANSFORM into explosion" << std::endl;
                 /// morph into a bigger explosion
@@ -833,9 +833,9 @@ st_size projectile::move() {
         if (status_timer < TimerView::get_instance()->getTimer()) {
             // make the projectile owner to add new one into its list
             st_position new_proj_pos;
-            new_proj_pos.x = RES_W/BOMB_RAIN_N * status  + gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
+            new_proj_pos.x = RES_W/BOMB_RAIN_N * status  + GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
             if (direction == ANIM_DIRECTION_LEFT) {
-                new_proj_pos.x = RES_W - (RES_W/BOMB_RAIN_N * status) + gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
+                new_proj_pos.x = RES_W - (RES_W/BOMB_RAIN_N * status) + GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
             }
             std::cout << "TRAJECTORY_BOMB_RAIN::ADD - new_proj_pos.x[" << new_proj_pos.x << "]" << std::endl;
             // adds same type to get properties and graphics, but chances trajectory for a different type
@@ -866,8 +866,8 @@ st_size projectile::move() {
         is_finished = true;
 	}
 
-    realPosition.x = position.x - gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
-    realPosition.y = position.y - gameManager::get_instance()->get_current_map_obj()->getMapScrolling().y;
+    realPosition.x = position.x - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
+    realPosition.y = position.y - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().y;
 
     //std::cout << "PROJECTILE::MOVE - y[" << position.y << "], map.scroll.y[" << gameManager::get_instance()->get_current_map_obj()->getMapScrolling().y << "]" << std::endl;
 
@@ -1057,7 +1057,7 @@ bool projectile::check_map_collision(st_position pos_inc) const
 		p_x = position.x + get_size().width + pos_inc.x;
 	}
     for (int i=0; i<3; i++) {
-        int lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(p_x/TILESIZE, p_y[i]/TILESIZE));// map->map_tiles.tiles[p_x/TILESIZE][p_y[i]/TILESIZE].locked;
+        int lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(p_x/TILESIZE, p_y[i]/TILESIZE));// map->map_tiles.tiles[p_x/TILESIZE][p_y[i]/TILESIZE].locked;
         //std::cout << ">> projectile::check_map_collision - point (" << p_x << ", " << p_y[i] << ") lock: " << lock << std::endl;
         if (lock != TERRAIN_UNBLOCKED && lock != TERRAIN_WATER) {
 			return true;

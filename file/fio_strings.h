@@ -8,6 +8,7 @@
 #include <map>
 
 #include "file/v4/file_strings.h"
+#include "aux_tools/json/json.h"
 
 
 // namespace
@@ -21,6 +22,10 @@ public:
     std::vector<std::string> load_game_strings(int language, bool convert_symbols);
     std::vector<std::string> load_game_strings_from_file(std::string filename, int language, bool convert_symbols);
     void save_game_strings(std::vector<std::string> list, std::string filename);
+
+    // === DIALOGS === //
+    void save_game_dialogs(std::vector<std::vector<std::string>>);
+    std::vector<std::vector<std::string>> load_game_dialogs();
 
     // === COMMON STRINGS === //
     std::string get_common_strings_filename(int language);

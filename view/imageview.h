@@ -145,9 +145,15 @@ public:
     void renderTexturePortionAt(int origin_x, int origin_y, int origin_w, int origin_h, int dest_x, int dest_y, SDL_Texture* texture);
     void renderImageAt(int dest_x, int dest_y, st_imageData& image);
     void clearScreenArea(short int x, short int y, short int w, short int h, short int r, short int g, short int b);
-    void updateScreen();
+    void updateRender();
+
     st_imageData initSurface(struct st_size size);
-    void clear_surface_area(short int x, short int y, short int w, short int h, short int r, short int g, short int b, struct st_imageData& image) const;
+    void init_target_image(st_imageData& image, int w, int h);
+
+    void clear_surface_area(short int x, short int y, short int w, short int h, short int r, short int g, short int b, struct st_imageData& image);
+
+    void clear_texture_area(short int x, short int y, short int w, short int h, Uint8 r, Uint8 g, Uint8 b, Uint8 alpha, struct st_imageData& image);
+
     void set_surface_alpha(int alpha, st_imageData &image);
     void update_anim_tiles_timers();
     void place_anim_tile(int anim_tile_id, struct st_position pos_destiny);
@@ -163,11 +169,8 @@ public:
     void set_spriteframe_surface(st_spriteFrame *frame_dest, st_imageData& originSurface);
     void drawCursor(st_position pos);
     void eraseCursor(st_position pos);
-    void show_dialog(Uint8 position);
-    void show_dialog_button(Uint8 position);
     void place_face(std::string face_file, st_position pos);
-    st_position get_dialog_pos() const;
-    st_position get_config_menu_pos() const;
+    st_position get_config_menu_pos();
     st_size get_config_menu_size();
     void show_btn_a(st_position btn_pos);
     void show_config_bg();
@@ -187,6 +190,10 @@ public:
     // this allow us to render at a texture, so we can copy the screen
     void change_render_target(e_RENDER_TARGET target);
     SDL_Texture* get_texture_renderer();
+
+    void set_fullscreen(bool mode);
+
+    void blend_images(st_imageData& source, st_imageData& dest, int x, int y);
 
 
 private:
@@ -220,7 +227,6 @@ private:
     // IMAGES //
     st_imageData ingame_menu;
     st_imageData config_menu;
-    st_imageData dialog_surface;
     st_imageData _btn_a_surface;
     st_imageData _easymode_block;
     st_imageData _hardmode_block;
@@ -232,7 +238,6 @@ private:
     st_imageData small_explosion;
 
 
-    st_position _dialog_pos;
     st_position _config_menu_pos;
     unsigned int _explosion_animation_timer;
     int _explosion_animation_pos;

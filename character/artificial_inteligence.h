@@ -109,6 +109,10 @@ public:
 
     bool is_teleporting();
 
+    bool get_is_npc();
+
+    int get_dialog_id();
+
 
 protected:
     /**
@@ -264,6 +268,7 @@ protected:
     int find_wall(float initial_x, int direction);
 
     int get_ai_type();
+
 
     bool always_move_ahead() const; // indicates if this NPC will always go on in AI
 

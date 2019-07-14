@@ -20,7 +20,7 @@
 
 #include "data/shareddata.h"
 
-#include "gameManager.h"
+#include "GameManager.h"
 
 
 #ifdef ANDROID
@@ -128,8 +128,8 @@ void scenesLib::main_screen()
             short selected_save = select_save(true);
             if (selected_save != -1) {
                 repeat_menu = false;
-                gameManager::get_instance()->set_current_map(0);
-                gameManager::get_instance()->set_current_save_slot(selected_save);
+                GameManager::get_instance()->set_current_map(0);
+                GameManager::get_instance()->set_current_save_slot(selected_save);
                 SharedData::get_instance()->game_save.reset();
             } else {
                 InputController::get_instance()->clean_all();
@@ -139,9 +139,9 @@ void scenesLib::main_screen()
         } else if (picked_n == 1) { // LOAD GAME //
             short selected_save = select_save(false);
             if (selected_save != -1) {
-                gameManager::get_instance()->set_current_save_slot(selected_save);
+                GameManager::get_instance()->set_current_save_slot(selected_save);
                 if (have_save == true) {
-                    fio.read_save(SharedData::get_instance()->game_save, gameManager::get_instance()->get_current_save_slot());
+                    fio.read_save(SharedData::get_instance()->game_save, GameManager::get_instance()->get_current_save_slot());
                     repeat_menu = false;
                 }
             } else {
@@ -176,7 +176,7 @@ void scenesLib::main_screen()
     if (picked_n == 0) { // NEW GAME //
         // demo do not have player selection, only rockbot is playable
         SharedData::get_instance()->game_save.selected_player = PLAYER_2;
-        gameManager::get_instance()->save_game();
+        GameManager::get_instance()->save_game();
     }
 }
 
@@ -325,7 +325,7 @@ short scenesLib::select_save(bool is_new_game)
             }
         }
 
-        ImageView::get_instance()->updateScreen();
+        ImageView::get_instance()->updateRender();
         InputController::get_instance()->read_input();
         if (InputController::get_instance()->p1_input[BTN_JUMP] == 1 || InputController::get_instance()->p1_input[BTN_START] == 1) {
             if (is_new_game == false && save_slot_exists[selected] == false) {

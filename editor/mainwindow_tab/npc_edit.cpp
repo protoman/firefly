@@ -91,6 +91,9 @@ void npc_edit::fill_data()
 
         ui->projectileOriginX_spinBox->setValue(Mediator::get_instance()->enemy_list.at(0).attack_arm_pos.x);
         ui->projectileOriginY_spinBox->setValue(Mediator::get_instance()->enemy_list.at(0).attack_arm_pos.y);
+
+        ui->isNPC_checkBox->setChecked(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc);
+        ui->npcDialogId_comboBox->setCurrentIndex(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_dialog_id);
     }
 
 }
@@ -740,4 +743,15 @@ void npc_edit::on_backgroundFileComboBox_currentIndexChanged(const QString &arg1
     ui->npc_edit_tab_previewarea->set_bg_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+arg1.toStdString());
     add_frame_one();
     ui->npc_edit_tab_previewarea->repaint();
+}
+
+void npc_edit::on_isNPC_checkBox_toggled(bool checked)
+{
+    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+        return;
+    }
+    if (Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc == true && checked == false) {
+        Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_dialog_id = -1;
+    }
+    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc = checked;
 }

@@ -1,6 +1,6 @@
 #include "view/animation.h"
 #include "mapcontroller.h"
-#include "gameManager.h"
+#include "GameManager.h"
 #include "objects/GameObject.h"
 #include "collision_detection.h"
 
@@ -15,10 +15,14 @@ void MapController::loadMap()
 
     imageLayerMap.clear();
     layerScrollMap.clear();
+    object_list.clear();
+    SharedData::get_instance()->current_area_link_list.clear();
+    map_was_reloaded = true;
+    reset_scrolled();
 
-    unsigned int mapNumber = SharedData::get_instance()->file_v5_selected_map;
-    if (SharedData::get_instance()->file_v5_map_header_list.size() <= mapNumber) {
-        std::cout << "ERROR::map::loadMap - Invalid map number[" << mapNumber << "] for list.size[" << SharedData::get_instance()->file_v5_map_header_list.size() << "]" << std::endl;
+    unsigned int mapNumber = SharedData::get_instance()->v6_selected_area;
+    if (SharedData::get_instance()->v6_area_list.size() <= mapNumber) {
+        std::cout << "ERROR::map::loadMap - Invalid map number[" << mapNumber << "] for list.size[" << SharedData::get_instance()->v6_area_list.size() << "]" << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -69,10 +73,6 @@ void MapController::loadMap()
                         int tile_y = n + j_count*AREA_ROOM_H;
                         area_tile_map.insert(std::pair<st_position, file_v6_room_tile>(st_position(tile_x, tile_y), SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n]));
 
-                        if (tile_y == 9) {
-                            std::cout << "@@@@@@@@@@ tile[" << tile_x << "][" << tile_y << "], underlay[" << SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n].tile_underlay.x << "][" << SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n].tile_underlay.y << "], locked[" << SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n].locked << "]" << std::endl;
-                        }
-
                         int overlay_x = SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n].tile_overlay.x;
                         int overlay_y = SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n].tile_overlay.y;
                         if (overlay_x != -1 && overlay_y != -1) {
@@ -87,8 +87,22 @@ void MapController::loadMap()
         i_count++;
     }
 
+    // load mpa-links for this area //
+    //std::map<unsigned int, std::vector<struct_file_v5_area_link>> file_v5_area_link_map;
+    //SharedData::get_instance()->current_area_link_list
+    for (auto const& item : SharedData::get_instance()->file_v5_area_link_map) {
+        for (int i=0; i<item.second.size(); i++) {
+            int p_area_n1 = get_level_from_room(item.second.at(i).p1.x, item.second.at(i).p1.y);
+            int p_area_n2 = get_level_from_room(item.second.at(i).p2.x, item.second.at(i).p2.y);
+            if (p_area_n1 == mapNumber || p_area_n2 == mapNumber) {
+                SharedData::get_instance()->current_area_link_list.push_back(item.second.at(i));
+            }
+        }
+    }
 
-    //load_map_npcs();
+
+
+    load_map_npcs();
     load_map_objects();
 
     _show_map_pos_x = -1;
@@ -100,6 +114,7 @@ void MapController::loadMap()
     preload_slope_images();
 
     draw_map_tiles();
+    GameManager::get_instance()->start_stage_music();
 }
 
 
@@ -175,6 +190,11 @@ void MapController::updated_visited_room()
     if (SharedData::get_instance()->visited_level_list.at(SharedData::get_instance()->v6_selected_level).visited[SharedData::get_instance()->current_room_pos.x][SharedData::get_instance()->current_room_pos.y] == false) {
         SharedData::get_instance()->visited_level_list.at(SharedData::get_instance()->v6_selected_level).visited[SharedData::get_instance()->current_room_pos.x][SharedData::get_instance()->current_room_pos.y] = true;
     }
+}
+
+int MapController::get_level_from_room(int x, int y)
+{
+    return SharedData::get_instance()->v6_current_level_data.rooms[x][y].area_n;
 }
 
 void MapController::addLayer(unsigned int n, bool isFg)
@@ -393,8 +413,8 @@ void MapController::init_animated_tiles()
 
 
             int n = j*map_tiles_w + i;
-            pos_origin.x = SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay.x;
-            pos_origin.y = SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->file_v5_selected_map).at(n).tile_underlay.y;
+            pos_origin.x = SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->v6_selected_area).at(n).tile_underlay.x;
+            pos_origin.y = SharedData::get_instance()->file_v5_map_tile_map.at(SharedData::get_instance()->v6_selected_area).at(n).tile_underlay.y;
 
             if (pos_origin.x < -1 && pos_origin.y == 0) {
                 int anim_tile_id = (pos_origin.x * -1) - 2;
@@ -534,11 +554,13 @@ bool MapController::is_point_solid(st_position pos) const
 
 file_v6_room_tile MapController::getTileFromPosition(int x, int y)
 {
+    file_v6_room_tile locked;
+    locked.locked = -2;
     if (x < 0 || y < 0 || y >= map_tiles_h || x >= map_tiles_w) {
-        return file_v6_room_tile();
+        return locked;
     }
     if (area_tile_map.find(st_position(x, y)) == area_tile_map.end()) {
-        return file_v6_room_tile();
+        return locked;
     }
     return area_tile_map.at(st_position(x, y));
 }
@@ -591,17 +613,20 @@ bool MapController::isEdgeRowLocked(int incY, bool first)
     }
 
     if (y < 0) {
+        //std::cout << "MapController::isEdgeRowLocked - OUT OF SCREEN" << std::endl;
         return true;
     }
     int initX = scroll.x/TILESIZE;
     int endX = initX + RES_W/TILESIZE;
+
+    //std::cout << "########### MapController::isEdgeRowLocked - calc_endX[" << endX << "], map_tiles_w[" << map_tiles_w << "]" << std::endl;
     if (endX >= map_tiles_w) {
         endX = map_tiles_w-1;
     }
     bool isLockedY = true;
-    for (int x=initX; x<endX; x++) {
+    for (int x=initX; x<=endX; x++) {
         file_v6_room_tile tile = getTileFromPosition(x, y);
-        //std::cout << "x[" << x << "], y[" << y << "], locked[" << tile.locked << "]" << std::endl;
+        //std::cout << "MapController::isEdgeRowLocked - x[" << x << "], y[" << y << "], locked[" << tile.locked << "]" << std::endl;
         if (tile.locked == TERRAIN_UNBLOCKED || tile.locked == TERRAIN_WATER) {
             isLockedY = false;
             break;
@@ -609,7 +634,7 @@ bool MapController::isEdgeRowLocked(int incY, bool first)
     }
 
 
-    //std::cout << "########### MapController::isLastRowLocked - first[" << first << "], incY[" << incY << "], scroll.y[" << scroll.y << "], y[" << y << "]" << std::endl;
+    //std::cout << "########### MapController::isEdgeRowLocked - first[" << first << "], incY[" << incY << "], scroll.y[" << scroll.y << "], y[" << y << "]" << std::endl;
     return isLockedY;
 }
 
@@ -634,11 +659,11 @@ bool MapController::isEdgeColumnLocked(int incX, bool first)
     }
     bool isLockedX = true;
 
-    //std::cout << "## MapController::isEdgeColumnLocked - scroll.y[" << scroll.y << "], inity[" << inity << "], endY[" << endY << "]" << std::endl;
+    //std::cout << "## MapController::isEdgeColumnLocked - scroll.x[" << scroll.x << "], tileX[" << tileX << "], scroll.y[" << scroll.y << "], inity[" << inity << "], endY[" << endY << "]" << std::endl;
 
     for (int y=inity; y<endY; y++) {
-        //std::cout << "## MapController::isEdgeColumnLocked - x[" << tileX << "], y[" << y << "]" << std::endl;
         file_v6_room_tile tile = getTileFromPosition(tileX, y);
+        //std::cout << "## MapController::isEdgeColumnLocked - incX[" << incX << "], x[" << tileX << "], y[" << y << "], tile.locked[" << tile.locked << "]" << std::endl;
         if (tile.locked == TERRAIN_UNBLOCKED || tile.locked == TERRAIN_WATER) {
             //std::cout << "## MapController::isEdgeColumnLocked - ONLOCKED - x[" << tileX << "], y[" << y << "], locked[" << tile.locked << "]" << std::endl;
             isLockedX = false;
@@ -697,25 +722,15 @@ void MapController::changeScrolling(st_float_position pos, bool check_lock)
     if (pos.y != 0) {
         //std::cout << "$$$$$$$$$$$$$$$ pos.y[" << pos.y << "]" << std::endl;
         if (pos.y > 0) {
-            /*
-            int maxScrollY = get_first_bottom_lock(scroll.y+pos.y);
-            std::cout << "############### - maxScrollY[" << maxScrollY << "], scroll.y[" << scroll.y << "]" << std::endl;
-
-            if (maxScrollY*TILESIZE > scroll.y+AREA_H) {
-                scroll.y = maxScrollY*TILESIZE - AREA_H;
-                //std::cout << "scroll.y[" << scroll.y+AREA_H << "], map_h[" << gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE << "]" << std::endl;
-                if (scroll.y+AREA_H > gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE) {
-                    scroll.y = gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE-AREA_H;
-                }
-            }
-            */
             bool locked = isEdgeRowLocked(pos.y, false);
+            //std::cout << "MapController::changeScrolling #1 - check_lock[" << check_lock << "], locked[" << locked << "], pos.y[" << pos.y << "]" << std::endl;
             if (check_lock == false || locked == false) {
                 incScrollValue(0, pos.y);
             }
         } else {
             //std::cout << "%%%%%%%%%%%%%% CHECK-TOP" << std::endl;
             bool locked = isEdgeRowLocked(pos.y, true);
+            //std::cout << "MapController::changeScrolling #2 - check_lock[" << check_lock << "], locked[" << locked << "], pos.y[" << pos.y << "]" << std::endl;
             if (check_lock == false || locked == false) {
                 incScrollValue(0, pos.y);
             }
@@ -771,7 +786,7 @@ void MapController::set_scrolling(st_float_position pos)
     scrolled = pos;
     scroll.x = pos.x;
     scroll.y = pos.y;
-    //std::cout << "------- MapController::set_scrolling - map: " << SharedData::get_instance()->file_v5_selected_map << ", pos.x: " << pos.x << "-------" << std::endl;
+    //std::cout << "------- MapController::set_scrolling - map: " << SharedData::get_instance()->v6_selected_area << ", pos.x: " << pos.x << "-------" << std::endl;
 }
 
 void MapController::reset_scrolling()
@@ -814,16 +829,20 @@ void MapController::load_map_npcs()
     }
 
 
-    for (int i=0; i<SharedData::get_instance()->file_v5_map_npc_map.at(SharedData::get_instance()->file_v5_selected_map).size(); i++) {
-        file_v5_map_npc& npc_ref = SharedData::get_instance()->file_v5_map_npc_map.at(SharedData::get_instance()->file_v5_selected_map).at(i);
+    std::cout << ">>>>>>>>>>> MapController::load_map_npcs - file_v5_map_npc_map[" << SharedData::get_instance()->v6_selected_area << "] size[" << SharedData::get_instance()->file_v5_map_npc_map.at(SharedData::get_instance()->v6_selected_area).size() << "]" << std::endl;
 
-        int npc_ic = npc_ref.id_npc;
+    for (int i=0; i<SharedData::get_instance()->file_v5_map_npc_map.at(SharedData::get_instance()->v6_selected_area).size(); i++) {
+        file_v5_map_npc& npc_ref = SharedData::get_instance()->file_v5_map_npc_map.at(SharedData::get_instance()->v6_selected_area).at(i);
 
-        if (npc_ic != -1) {
-            classnpc new_npc = classnpc(SharedData::get_instance()->file_v5_selected_map, npc_ic, i);
+        int npc_id = npc_ref.id_npc;
+
+        std::cout << ">>>>>>>>>>> MapController::load_map_npcs - add NPC[" << npc_id << "]" << std::endl;
+
+        if (npc_id != -1) {
+            GameEnemy new_npc = GameEnemy(SharedData::get_instance()->v6_selected_area, npc_id, i);
 
 
-            if (GameMediator::get_instance()->get_enemy(npc_ic)->is_boss == true) {
+            if (GameMediator::get_instance()->get_enemy(npc_id)->is_boss == true) {
                 new_npc.set_is_boss(true);
             // TODO - move boss flag to map //
             //} else if (stage_data.boss.id_npc == npc_ic) {
@@ -834,7 +853,7 @@ void MapController::load_map_npcs()
             }
             new_npc.init_animation();
 
-            std::string static_bg(GameMediator::get_instance()->get_enemy(npc_ic)->bg_graphic_filename);
+            std::string static_bg(GameMediator::get_instance()->get_enemy(npc_id)->bg_graphic_filename);
             if (new_npc.is_static() && static_bg.length() > 0) {
                 set_map_enemy_static_background(SharedData::get_instance()->FILEPATH + std::string("images/sprites/enemies/backgrounds/") + static_bg, new_npc.get_bg_position());
             }
@@ -852,7 +871,7 @@ void MapController::load_map_npcs()
 void MapController::drawLayers(bool isFg)
 {
     // only draw solid background color, if map-heigth is less than RES_H
-    //std::cout << "number[" << SharedData::get_instance()->file_v5_selected_map << "], bg1_surface.height[" << bg1_surface.height << "], bg1.y[" << GameMediator::get_instance()->map_data[SharedData::get_instance()->file_v5_selected_map].backgrounds[0].adjust_y << "]" << std::endl;
+    //std::cout << "number[" << SharedData::get_instance()->v6_selected_area << "], bg1_surface.height[" << bg1_surface.height << "], bg1.y[" << GameMediator::get_instance()->map_data[SharedData::get_instance()->v6_selected_area].backgrounds[0].adjust_y << "]" << std::endl;
     file_v6_area& map_data_ref = SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area);
 
     if (isFg == false) {
@@ -993,6 +1012,11 @@ bool MapController::must_show_static_bg()
     return false;
 }
 
+void MapController::reset_map_loaded()
+{
+    map_was_reloaded = false;
+}
+
 
 void MapController::set_map_enemy_static_background(std::string filename, st_position pos)
 {
@@ -1058,7 +1082,7 @@ st_position MapController::get_first_lock_in_direction(st_position pos, st_size 
         res.y = pos.y;
         res.x = pos.x - max_dist.width;
         for (int pos_i=pos.x; pos_i>(pos.x-max_dist.width); pos_i--) {
-            int map_lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(pos_i/TILESIZE, pos.y/TILESIZE));
+            int map_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(pos_i/TILESIZE, pos.y/TILESIZE));
             //std::cout << "TELEPORT::LEFT x[" << pos_i << ", map_x[" << (pos_i/TILESIZE) << "], map_lock[" << map_lock << "]" << std::endl;
             if (map_lock != TERRAIN_UNBLOCKED && map_lock != TERRAIN_WATER) {
                 std::cout << "LEFT - pos_i[" << pos_i << "]" << std::endl;
@@ -1072,7 +1096,7 @@ st_position MapController::get_first_lock_in_direction(st_position pos, st_size 
         res.y = pos.y;
         res.x = pos.x + max_dist.width;
         for (int pos_i=pos.x; pos_i<(pos.x+max_dist.width); pos_i++) {
-            int map_lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(pos_i/TILESIZE, pos.y/TILESIZE));
+            int map_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(pos_i/TILESIZE, pos.y/TILESIZE));
             //std::cout << "TELEPORT::RIGHT #1 x[" << pos_i << ", map_x[" << (pos_i/TILESIZE) << "], map_lock[" << map_lock << "]" << std::endl;
             if (map_lock != TERRAIN_UNBLOCKED && map_lock != TERRAIN_WATER) {
                 std::cout << "TELEPORT::RIGHT #2 - pos_i[" << pos_i << "]" << std::endl;
@@ -1086,7 +1110,7 @@ st_position MapController::get_first_lock_in_direction(st_position pos, st_size 
         res.y = pos.y - max_dist.height;
         res.x = pos.x;
         for (int pos_i=pos.y; pos_i>(pos.y-max_dist.height); pos_i--) {
-            int map_lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(pos.x/TILESIZE, pos_i/TILESIZE));
+            int map_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(pos.x/TILESIZE, pos_i/TILESIZE));
             //std::cout << "TELEPORT::LEFT x[" << pos_i << ", map_x[" << (pos_i/TILESIZE) << "], map_lock[" << map_lock << "]" << std::endl;
             if (map_lock != TERRAIN_UNBLOCKED && map_lock != TERRAIN_WATER) {
                 std::cout << "UP - pos_i[" << pos_i << "]" << std::endl;
@@ -1101,7 +1125,7 @@ st_position MapController::get_first_lock_in_direction(st_position pos, st_size 
         res.y = pos.y + max_dist.height;
         res.x = pos.x;
         for (int pos_i=pos.y; pos_i<(pos.y+max_dist.height); pos_i++) {
-            int map_lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(pos.x/TILESIZE, pos_i/TILESIZE));
+            int map_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(pos.x/TILESIZE, pos_i/TILESIZE));
             //std::cout << "TELEPORT::RIGHT #1 x[" << pos_i << ", map_x[" << (pos_i/TILESIZE) << "], map_lock[" << map_lock << "]" << std::endl;
             if (map_lock != TERRAIN_UNBLOCKED && map_lock != TERRAIN_WATER) {
                 std::cout << "TELEPORT::DOWN #2 - pos_i[" << pos_i << "]" << std::endl;
@@ -1221,7 +1245,7 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
     return 0;
 }
 
-void MapController::drop_item(classnpc* npc_ref)
+void MapController::drop_item(GameEnemy* npc_ref)
 {
     st_float_position position = st_float_position(npc_ref->getPosition().x + npc_ref->get_size().width/2, npc_ref->getPosition().y + npc_ref->get_size().height/2);
     // dying out of screen should not drop item
@@ -1262,7 +1286,7 @@ void MapController::drop_item(classnpc* npc_ref)
     obj_pos.y = static_cast<short>(position.y/TILESIZE);
     obj_pos.x = static_cast<short>((position.x - TILESIZE)/TILESIZE);
 
-    short obj_type_n = gameManager::get_instance()->get_drop_item_id(obj_type);
+    short obj_type_n = GameManager::get_instance()->get_drop_item_id(obj_type);
     if (obj_type_n == -1) {
         std::cout << ">>>>>>>>> obj_type_n(" << obj_type_n << ") invalid for obj_type(" << obj_type << ")" << std::endl;
         return;
@@ -1312,7 +1336,7 @@ void MapController::reset_map_timers()
 void MapController::reset_enemies_timers()
 {
     //std::cout << ">>>>>> MAP::reset_enemies_timers - _npc_list.size: " << _npc_list.size() << std::endl;
-    std::vector<classnpc>::iterator enemy_it;
+    std::vector<GameEnemy>::iterator enemy_it;
     for (enemy_it = _npc_list.begin(); enemy_it != _npc_list.end(); enemy_it++) {
         (*enemy_it).reset_timers(); // TODO: must pass scroll map to npcs somwhow...
     }
@@ -1375,9 +1399,9 @@ bool MapController::have_player_object()
 
 bool MapController::subboss_alive_on_left(short tileX)
 {
-    std::vector<classnpc>::iterator npc_it;
+    std::vector<GameEnemy>::iterator npc_it;
     for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
-        classnpc* npc_ref = &(*npc_it);
+        GameEnemy* npc_ref = &(*npc_it);
         if ((npc_ref->is_boss() == true || npc_ref->is_subboss() == true) && npc_ref->is_dead() == false) {
             std::cout << "Opa, achou um boss/sub-boss!" << std::endl;
             int dist_door_npc = tileX*TILESIZE - npc_ref->getPosition().x;
@@ -1406,7 +1430,7 @@ void MapController::activate_final_boss_teleporter()
 {
     for (std::vector<GameObject>::iterator it=object_list.begin(); it!=object_list.end(); it++) {
         GameObject& temp_obj = (*it);
-        std::cout << "number: " << SharedData::get_instance()->file_v5_selected_map << ", obj.id: " << temp_obj.get_obj_map_id() << ", type: " << temp_obj.get_type() << ", OBJ_FINAL_BOSS_TELEPORTER: " << OBJ_FINAL_BOSS_TELEPORTER << std::endl;
+        std::cout << "number: " << SharedData::get_instance()->v6_selected_area << ", obj.id: " << temp_obj.get_obj_map_id() << ", type: " << temp_obj.get_type() << ", OBJ_FINAL_BOSS_TELEPORTER: " << OBJ_FINAL_BOSS_TELEPORTER << std::endl;
         if (temp_obj.get_type() == OBJ_FINAL_BOSS_TELEPORTER) {
             temp_obj.start();
         }
@@ -1438,7 +1462,7 @@ void MapController::set_bg_scroll(st_float_position pos)
 
 st_rectangle MapController::get_player_hitbox()
 {
-    return _player_ref->get_hitbox();
+    return GameManager::get_instance()->get_player()->get_hitbox();
 }
 
 
@@ -1462,7 +1486,7 @@ void MapController::load_map_objects() {
 
     object_list.clear();
 
-    unsigned int mapNumber = SharedData::get_instance()->file_v5_selected_map;
+    unsigned int mapNumber = SharedData::get_instance()->v6_selected_area;
     for (int i=0; i<SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).size(); i++) {
         if (SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).id_object != -1) {
             GameObject temp_obj(SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).id_object, this, SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).start_point, SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).teleporter_data.link_dest, SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).teleporter_data.map_dest);
@@ -1499,9 +1523,9 @@ bool MapController::value_in_range(int value, int min, int max) const
 
 void MapController::create_dynamic_background_surfaces()
 {
-    unsigned int mapNumber = SharedData::get_instance()->file_v5_selected_map;
-    if (SharedData::get_instance()->file_v5_map_header_list.size() <= mapNumber) {
-        std::cout << "ERROR::map::loadMap - Invalid map number[" << mapNumber << "] for list.size[" << SharedData::get_instance()->file_v5_map_header_list.size() << "]" << std::endl;
+    unsigned int mapNumber = SharedData::get_instance()->v6_selected_area;
+    if (SharedData::get_instance()->v6_area_list.size() <= mapNumber) {
+        std::cout << "ERROR::map::loadMap - Invalid map number[" << mapNumber << "] for list.size[" << SharedData::get_instance()->v6_area_list.size() << "]" << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -1627,7 +1651,13 @@ bool MapController::is_obj_ignored_by_enemies(Uint8 obj_type)
     if (obj_type == OBJ_CHECKPOINT) {
         return true;
     }
-    if (obj_type == OBJ_MAP_DOOR) {
+    if (obj_type == OBJ_DOOR_AREA_LINK) {
+        return true;
+    }
+    if (obj_type == OBJ_DOOR_KEY) {
+        return true;
+    }
+    if (obj_type == OBJ_DOOR_LOCKED) {
         return true;
     }
     return false;
@@ -1653,6 +1683,12 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
     /// @TODO: isso aqui deveria mesmo estar aqui?
     if (charObj->get_platform() == nullptr) {
         for (std::vector<GameObject>::iterator it=object_list.begin(); it!=object_list.end(); it++) {
+
+            // check if list was changed to avoid crash //
+            if (map_was_reloaded == true) {
+                break;
+            }
+
             GameObject& temp_obj = (*it);
             //std::cout << "### obj[" << temp_obj.get_name() << "] - CHECK #0 ###" << std::endl;
 
@@ -1719,7 +1755,8 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
             int temp_blocked = 0;
             //std::cout << "collision_rect_player_obj::CALL #2" << std::endl;
             temp_blocked = collision_rect_player_obj(char_rect, &temp_obj, x_inc, y_inc, 0, 0);
-            //std::cout << "### obj[" << temp_obj.get_name() << "] - CHECK::temp_blocked[" << temp_blocked << "] ###" << std::endl;
+
+            //std::cout << "### obj[" << temp_obj.get_name() << "] - CHECK #A::temp_blocked[" << temp_blocked << "] ###" << std::endl;
 
 
             int temp_obj_y = temp_obj.get_position().y;
@@ -1732,14 +1769,16 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
             // to enter platform, player.x+player.h must not be much higher than obj.y
             if (temp_blocked != 0 && temp_obj.is_platform() == false) {
 
+                //std::cout << "COLLISION WITH OBJECT, Type[" << temp_obj.get_type() << "]" << std::endl;
+
                 if (temp_obj.get_type() == OBJ_CHECKPOINT) {
                     if (temp_obj.is_started() == false) {
                         temp_obj.start();
                     }
                     SharedData::get_instance()->checkpoint.x = charObj->getPosition().x;
                     SharedData::get_instance()->checkpoint.y = (charObj->getPosition().y+charObj->get_size().height-1);
-                    SharedData::get_instance()->checkpoint.map = SharedData::get_instance()->file_v5_selected_map;
-                    SharedData::get_instance()->checkpoint.map_scroll_x = gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
+                    SharedData::get_instance()->checkpoint.map = SharedData::get_instance()->v6_selected_area;
+                    SharedData::get_instance()->checkpoint.map_scroll_x = GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
                     return;
                 } else if (temp_obj.get_type() == OBJ_BOSS_DOOR) {
                     if (temp_obj.is_started() == false && subboss_alive_on_left(temp_obj.get_position().x/TILESIZE) == false) {
@@ -1751,13 +1790,32 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
                             temp_obj.set_direction(ANIM_DIRECTION_RIGHT);
                         }
                     }
-                } else if (temp_obj.get_type() == OBJ_MAP_DOOR) {
-                    gameManager::get_instance()->check_map_link(charObj->get_last_moved().x, charObj->get_last_moved().y);
+                } else if (temp_obj.get_type() == OBJ_DOOR_AREA_LINK) {
+                    std::cout << ">>>>>>>>>>> OBJ_DOOR_AREA_LINK" << std::endl;
+                    //gameManager::get_instance()->check_map_link(charObj->get_last_moved().x, charObj->get_last_moved().y);
+                    GameManager::get_instance()->check_map_link(x_inc, y_inc);
+                    if (map_was_reloaded == true) {
+                        return;
+                    }
                     if (temp_blocked == BLOCK_XY) {
                         temp_blocked = BLOCK_Y;
                     } else {
                         temp_blocked = BLOCK_UNBLOCKED;
                     }
+                } else if (charObj->is_player() == true && temp_obj.get_type() == OBJ_DOOR_LOCKED) {
+                    // player has key, start the door (animate/open)
+                    if (SharedData::get_instance()->game_save.keys[temp_obj.get_key_n()] == true) {
+                        if (temp_obj.is_started() == false) {
+                            temp_obj.start();
+                        }
+                        // if opening animation is finished, can cross it
+                        if (temp_obj.get_state() == 1) {
+                            temp_blocked = BLOCK_UNBLOCKED;
+                        }
+
+                    }
+                    //std::cout << "%%%%%%%%%%%%%%%%%%%%%%%%% OBJ_DOOR_LOCKED" << std::endl;
+                    // @TODO //
                 }
             }
 
@@ -1961,9 +2019,9 @@ object_collision MapController::get_obj_collision()
 
 void MapController::clean_map_npcs_projectiles()
 {
-    std::vector<classnpc>::iterator npc_it;
+    std::vector<GameEnemy>::iterator npc_it;
     for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
-        classnpc* npc_ref = &(*npc_it);
+        GameEnemy* npc_ref = &(*npc_it);
         npc_ref->clean_projectiles();
     }
 }
@@ -2008,7 +2066,7 @@ void MapController::move_map(const short int move_x, const short int move_y)
 // ********************************************************************************************** //
 //                                                                                                //
 // ********************************************************************************************** //
-classnpc* MapController::collision_player_npcs(character* playerObj, const short int x_inc, const short int y_inc)
+GameEnemy* MapController::collision_player_npcs(character* playerObj, const short int x_inc, const short int y_inc)
 {
     struct st_rectangle p_rect, npc_rect;
 
@@ -2016,9 +2074,9 @@ classnpc* MapController::collision_player_npcs(character* playerObj, const short
 
     //std::cout << "collision_player_npcs - p1.x: " << p1.x << ", p1.y: " << p1.y << std::endl;
 
-    std::vector<classnpc>::iterator npc_it;
+    std::vector<GameEnemy>::iterator npc_it;
     for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
-        classnpc* npc_ref = &(*npc_it);
+        GameEnemy* npc_ref = &(*npc_it);
         if (npc_ref->is_player_friend() == true) {
             //std::cout << "collision_player_npcs - FRIEND" << std::endl;
             continue;
@@ -2045,6 +2103,28 @@ classnpc* MapController::collision_player_npcs(character* playerObj, const short
 
         collision_detection rect_collision_obj;
         if (rect_collision_obj.rect_overlap(npc_rect, p_rect) == true) {
+
+            if (npc_ref->get_is_npc() == true) {
+                // NPC dialog //
+                if (InputController::get_instance()->p1_input[BTN_UP] == 1) {
+                    std::vector<std::string> message1;
+                    message1.push_back(std::string("Welcome to Corneria"));
+                    st_dialog dialog1;
+                    dialog1.msgs = message1;
+                    GameManager::get_instance()->add_queue_dialog(dialog1);
+
+                    std::vector<std::string> message2;
+                    message2.push_back(std::string("I like Swords!"));
+                    st_dialog dialog2;
+                    dialog2.msgs = message2;
+                    GameManager::get_instance()->add_queue_dialog(dialog2);
+                } else {
+                    draw::get_instance()->draw_game_button(playerObj->get_real_position().x+playerObj->get_size().width/2, playerObj->get_real_position().y-20, INPUT_IMAGES_DPAD_UP);
+                }
+                return nullptr;
+            }
+
+
             return npc_ref;
         }
     }
@@ -2070,9 +2150,9 @@ void MapController::collision_player_special_attack(character* playerObj, const 
     p_rect.y = playerObj->getPosition().y + reduce_y;
     p_rect.h = playerObj->get_size().height;
 
-    std::vector<classnpc>::iterator npc_it;
+    std::vector<GameEnemy>::iterator npc_it;
     for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
-        classnpc* npc_ref = &(*npc_it);
+        GameEnemy* npc_ref = &(*npc_it);
         if (npc_ref->is_player_friend() == true) {
             continue;
         }
@@ -2108,14 +2188,14 @@ void MapController::collision_player_special_attack(character* playerObj, const 
     }
 }
 
-classnpc* MapController::find_nearest_npc(st_position pos)
+GameEnemy* MapController::find_nearest_npc(st_position pos)
 {
     int min_dist = 9999;
-    classnpc* min_dist_npc = nullptr;
+    GameEnemy* min_dist_npc = nullptr;
 
-    std::vector<classnpc>::iterator npc_it;
+    std::vector<GameEnemy>::iterator npc_it;
     for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
-        classnpc* npc_ref = &(*npc_it);
+        GameEnemy* npc_ref = &(*npc_it);
         if (npc_ref->is_player_friend() == true) {
             //std::cout << "collision_player_npcs - FRIEND" << std::endl;
             continue;
@@ -2140,14 +2220,14 @@ classnpc* MapController::find_nearest_npc(st_position pos)
     return min_dist_npc;
 }
 
-classnpc *MapController::find_nearest_npc_on_direction(st_position pos, int direction)
+GameEnemy *MapController::find_nearest_npc_on_direction(st_position pos, int direction)
 {
     int lower_dist = 9999;
-    classnpc* ret = nullptr;
+    GameEnemy* ret = nullptr;
 
-    std::vector<classnpc>::iterator npc_it;
+    std::vector<GameEnemy>::iterator npc_it;
     for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
-        classnpc* npc_ref = &(*npc_it);
+        GameEnemy* npc_ref = &(*npc_it);
         if (npc_ref->is_on_visible_screen() == false) {
             continue;
         }
@@ -2203,12 +2283,7 @@ void MapController::clear_animations()
     animation_list.erase(animation_list.begin(), animation_list.end());
 }
 
-void MapController::set_player(classPlayer *player_ref)
-{
-    _player_ref = player_ref;
-}
-
-classnpc* MapController::spawn_map_npc(short npc_id, st_position npc_pos, short int direction, bool player_friend, bool progressive_span)
+GameEnemy* MapController::spawn_map_npc(short npc_id, st_position npc_pos, short int direction, bool player_friend, bool progressive_span)
 {
 
 #ifdef ANDROID
@@ -2217,14 +2292,14 @@ classnpc* MapController::spawn_map_npc(short npc_id, st_position npc_pos, short 
 
     //std::cout << "$$$ MAP::SPAWN-NPC, pos[" << npc_pos.x << ", " << npc_pos.y << "], map.scroll.x[" << scroll.x << "]" << std::endl;
 
-    classnpc new_npc(SharedData::get_instance()->file_v5_selected_map, npc_id, npc_pos, direction, player_friend);
+    GameEnemy new_npc(SharedData::get_instance()->v6_selected_area, npc_id, npc_pos, direction, player_friend);
 
     if (progressive_span == true) {
         new_npc.set_progressive_appear_pos(new_npc.get_size().height);
     }
     _npc_spawn_list.push_back(new_npc); // insert new npc at the list-end
 
-    classnpc* npc_ref = &(_npc_spawn_list.back());
+    GameEnemy* npc_ref = &(_npc_spawn_list.back());
 
     int id = npc_ref->get_number();
     std::string npc_name = npc_ref->get_name();
@@ -2235,10 +2310,10 @@ classnpc* MapController::spawn_map_npc(short npc_id, st_position npc_pos, short 
 int MapController::child_npc_count(int parent_id)
 {
     int count = 0;
-    std::vector<classnpc>::iterator npc_it;
+    std::vector<GameEnemy>::iterator npc_it;
     int n = 0;
     for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
-        classnpc* npc_ref = &(*npc_it);
+        GameEnemy* npc_ref = &(*npc_it);
         //std::cout << "NPC[" << n << "][" << npc_ref->get_name() << "].parent[" << npc_ref->get_parent_id() << ", parent_id[" << parent_id << "]" << std::endl;
         if (npc_ref->is_dead() == false && npc_ref->get_parent_id() == parent_id) {
             count++;
@@ -2246,7 +2321,7 @@ int MapController::child_npc_count(int parent_id)
         n++;
     }
     for (npc_it = _npc_spawn_list.begin(); npc_it != _npc_spawn_list.end(); npc_it++) {
-        classnpc* npc_ref = &(*npc_it);
+        GameEnemy* npc_ref = &(*npc_it);
         //std::cout << "NPC.SPANWLIST[" << n << "][" << npc_ref->get_name() << "].parent[" << npc_ref->get_parent_id() << ", parent_id[" << parent_id << "]" << std::endl;
         if (npc_ref->is_dead() == false && npc_ref->get_parent_id() == parent_id) {
             count++;
@@ -2261,10 +2336,10 @@ void MapController::move_npcs() /// @TODO - check out of screen
 {
     //std::cout << "*************** MapController::showMap - npc_list.size: " << _npc_list.size() << std::endl;
 
-    std::vector<classnpc>::iterator npc_it;
+    std::vector<GameEnemy>::iterator npc_it;
     for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
 
-        classnpc* npc_ref = &(*npc_it);
+        GameEnemy* npc_ref = &(*npc_it);
         // check if NPC is outside the visible area
         st_position npc_pos = npc_ref->get_real_position();
         short dead_state = npc_ref->get_dead_state();
@@ -2306,7 +2381,7 @@ void MapController::move_npcs() /// @TODO - check out of screen
                 }
                 // check if boss flag wasn't passed to a spawn on dying reaction AI
                 if (npc_ref->is_boss()) {
-                    gameManager::get_instance()->check_player_return_teleport();
+                    GameManager::get_instance()->check_player_return_teleport();
                 }
 
                 // all kinds of bosses need to remove projectiles once dying
@@ -2328,26 +2403,26 @@ void MapController::move_npcs() /// @TODO - check out of screen
 
                 if (npc_ref->is_stage_boss() == false) { // if now the NPC is not the stage boss anymore, continue
                     std::cout << "##### STAGE-BOSS IS DEAD (#2) #####" << std::endl;
-                    gameManager::get_instance()->draw_explosion(npc_pos, true);
+                    GameManager::get_instance()->draw_explosion(npc_pos, true);
                     SoundView::get_instance()->play_boss_music();
                     ImageView::get_instance()->blink_screen(255, 255, 255);
                     continue;
                 } else {
                     std::cout << "##### STAGE-BOSS IS DEAD (#3) #####" << std::endl;
-                    gameManager::get_instance()->remove_all_projectiles();
+                    GameManager::get_instance()->remove_all_projectiles();
                     std::cout << "MapController::showMap - killed stage boss" << std::endl;
                     /// @TODO - replace with game_data.final_boss_id
                     if (SharedData::get_instance()->game_data.final_boss_id == npc_ref->get_number()) {
                         SoundView::get_instance()->stop_music();
-                        gameManager::get_instance()->draw_explosion(npc_pos, true);
+                        GameManager::get_instance()->draw_explosion(npc_pos, true);
                         ImageView::get_instance()->blink_screen(255, 255, 255);
                         ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
-                        ImageView::get_instance()->updateScreen();
+                        ImageView::get_instance()->updateRender();
                         TimerView::get_instance()->delay(1000);
-                        gameManager::get_instance()->show_ending();
+                        GameManager::get_instance()->show_ending();
                         return;
                     } else {
-                        gameManager::get_instance()->draw_explosion(npc_pos, true);
+                        GameManager::get_instance()->draw_explosion(npc_pos, true);
                     }
                 }
             }
@@ -2356,7 +2431,7 @@ void MapController::move_npcs() /// @TODO - check out of screen
     }
 
     if (_npc_spawn_list.size() > 0) {
-        std::vector<classnpc>::iterator npc_it;
+        std::vector<GameEnemy>::iterator npc_it;
         for (npc_it = _npc_spawn_list.begin(); npc_it != _npc_spawn_list.end(); npc_it++) {
             //std::cout << "(B) ######### _npc_list.add, size[" << _npc_list.size() << "]" << std::endl;
             _npc_list.push_back(*npc_it);
@@ -2368,10 +2443,17 @@ void MapController::move_npcs() /// @TODO - check out of screen
 void MapController::show_npcs() /// @TODO - check out of screen
 {
     bool has_boss = false;
-    std::vector<classnpc>::iterator npc_it;
+
+    //std::cout << "%%%%%%%%% MapController::show_npcs - _npc_list.size[" << _npc_list.size() << "]" << std::endl;
+
+    std::vector<GameEnemy>::iterator npc_it;
     for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
-        classnpc* npc_ref = &(*npc_it);
-        if (gameManager::get_instance()->must_show_boss_hp() && npc_ref->is_boss() && npc_ref->is_on_visible_screen() == true) {
+        GameEnemy* npc_ref = &(*npc_it);
+
+        //std::cout << "%%%%%%%%% MapController::show_npcs - show[" << npc_ref->get_name() << "], dead[" << npc_ref->is_dead() << "]" << std::endl;
+
+
+        if (GameManager::get_instance()->must_show_boss_hp() && npc_ref->is_boss() && npc_ref->is_on_visible_screen() == true) {
             has_boss = true;
             draw::get_instance()->set_boss_hp(npc_ref->get_current_hp());
         }
@@ -2387,9 +2469,9 @@ void MapController::show_npcs() /// @TODO - check out of screen
 
 void MapController::show_npcs_to_left(int x)
 {
-    std::vector<classnpc>::iterator npc_it;
+    std::vector<GameEnemy>::iterator npc_it;
     for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
-        classnpc* npc_ref = &(*npc_it);
+        GameEnemy* npc_ref = &(*npc_it);
         //std::cout << "MAP::show_npcs_to_left[" << npc_ref->get_name() << "], x[" << x << "], npc.x[" << npc_ref->getPosition().x << "]" << std::endl;
         if (npc_ref->is_dead() == false && npc_ref->is_on_visible_screen() && npc_ref->getPosition().x <= x) {
             npc_ref->show();
@@ -2399,18 +2481,34 @@ void MapController::show_npcs_to_left(int x)
     draw::get_instance()->set_boss_hp(-99);
 }
 
-void MapController::move_objects(bool paused)
+
+
+void MapController::build_screen_area_object_list()
 {
-    /// @TODO - update timers
+    on_screen_area_object_list.clear();
     std::vector<GameObject>::iterator object_it;
-    for (object_it = object_list.begin(); object_it != object_list.end(); object_it++) {
-        if ((*object_it).finished() == true) {
-            object_list.erase(object_it);
-            break;
-        } else {
-            (*object_it).execute(paused); /// @TODO: must pass scroll map to npcs somwhow...
+    //for (object_it = object_list.begin(); object_it != object_list.end(); object_it++) {
+    for (int i=0; i<object_list.size(); i++) {
+        if (object_list.at(i).is_on_screen() == true) {
+            if (object_list.at(i).finished() == true) {
+                std::cout << "OBJ[" << object_list.at(i).get_name() << "] is finished, remove it from lists" << std::endl;
+                object_list.erase(object_list.begin()+i);
+                break;
+            }
+            on_screen_area_object_list.push_back(i);
         }
     }
+    //std::cout << "MapController::build_screen_area_object_list - on_screen_area_object_list.size[" << on_screen_area_object_list.size() << "]" << std::endl;
+}
+
+void MapController::move_objects(bool paused)
+{
+
+    for (int i=0; i<on_screen_area_object_list.size(); i++) {
+        GameObject *obj_ref = &object_list.at(on_screen_area_object_list.at(i));
+        obj_ref->execute(paused);
+    }
+
 }
 
 void MapController::clean_finished_objects()
@@ -2444,10 +2542,13 @@ void MapController::show_objects(int adjust_y, int adjust_x)
 {
     /// @TODO - update timers
     std::vector<GameObject>::iterator object_it;
+    int n = 0;
     for (object_it = object_list.begin(); object_it != object_list.end(); object_it++) {
-        if ((*object_it).get_type() != OBJ_STAGE_BOSS_TELEPORTER && (*object_it).get_type() != OBJ_BOSS_TELEPORTER && (*object_it).get_type() != OBJ_FINAL_BOSS_TELEPORTER && (*object_it).get_type() != OBJ_MAP_DOOR) { // teleporters are shown above
+        if ((*object_it).get_type() != OBJ_STAGE_BOSS_TELEPORTER && (*object_it).get_type() != OBJ_BOSS_TELEPORTER && (*object_it).get_type() != OBJ_FINAL_BOSS_TELEPORTER && (*object_it).get_type() != OBJ_DOOR_AREA_LINK && (*object_it).get_type() != OBJ_DOOR_LOCKED) { // teleporters are shown above
+            //std::cout << ">>> MapController::show_objects - OBJ[" << n << "], name[" << (*object_it).get_name() << ", type[" << (int)(*object_it).get_type() << "]" << std::endl;
             (*object_it).show(adjust_y, adjust_x); // TODO: must pass scroll map to objects somwhow...
         }
+        n++;
     }
 }
 
@@ -2455,13 +2556,13 @@ void MapController::show_above_objects(int adjust_y, int adjust_x)
 {
     std::vector<GameObject>::iterator object_it;
     for (object_it = object_list.begin(); object_it != object_list.end(); object_it++) {
-        if ((*object_it).get_type() == OBJ_STAGE_BOSS_TELEPORTER || (*object_it).get_type() == OBJ_BOSS_TELEPORTER || (*object_it).get_type() == OBJ_FINAL_BOSS_TELEPORTER || (*object_it).get_type() == OBJ_BOSS_DOOR || (*object_it).get_type() == OBJ_MAP_DOOR) { // teleporters are shown above
+        if ((*object_it).get_type() == OBJ_STAGE_BOSS_TELEPORTER || (*object_it).get_type() == OBJ_BOSS_TELEPORTER || (*object_it).get_type() == OBJ_FINAL_BOSS_TELEPORTER || (*object_it).get_type() == OBJ_BOSS_DOOR || (*object_it).get_type() == OBJ_DOOR_AREA_LINK || (*object_it).get_type() == OBJ_DOOR_LOCKED) { // teleporters are shown above
             (*object_it).show(adjust_y, adjust_x); // TODO: must pass scroll map to objects somwhow...
         }
     }
 }
 
-bool MapController::boss_hit_ground(classnpc* npc_ref)
+bool MapController::boss_hit_ground(GameEnemy* npc_ref)
 {
     if (npc_ref->is_boss() == true && npc_ref->is_on_visible_screen() == true) {
         //std::cout << "MAP::boss_hit_ground - move boss to ground - pos.y: " << npc_ref->getPosition().y << std::endl;
@@ -2495,11 +2596,11 @@ bool MapController::boss_hit_ground(classnpc* npc_ref)
     return false;
 }
 
-classnpc *MapController::get_near_boss()
+GameEnemy *MapController::get_near_boss()
 {
-    std::vector<classnpc>::iterator npc_it;
+    std::vector<GameEnemy>::iterator npc_it;
     for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
-        classnpc* npc_ref = &(*npc_it);
+        GameEnemy* npc_ref = &(*npc_it);
         if (npc_ref->is_boss() == true && npc_ref->is_on_visible_screen() == true) {
             return npc_ref;
         }

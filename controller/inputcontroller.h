@@ -80,6 +80,8 @@ private:
     long held_button_timer;
     int default_keys_codes[BTN_COUNT];
 
+    bool alt_key = false;
+    bool enter_key = false;
 
 };
 

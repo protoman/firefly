@@ -15,7 +15,7 @@
 
 #include "scenes/dialogs.h"
 
-#include "gameManager.h"
+#include "GameManager.h"
 
 game_menu::game_menu()
 {
@@ -365,7 +365,7 @@ void game_menu::show_config_performance()
             options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_mode, SharedData::get_instance()->game_config.selected_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_config_high, SharedData::get_instance()->game_config.selected_language));
         }
 
-        if (gameManager::get_instance()->get_show_fps_enabled()) {
+        if (GameManager::get_instance()->get_show_fps_enabled()) {
             options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_video_show_fps, SharedData::get_instance()->game_config.selected_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_ingame_config_on, SharedData::get_instance()->game_config.selected_language));
         } else {
             options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_video_show_fps, SharedData::get_instance()->game_config.selected_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_ingame_config_off, SharedData::get_instance()->game_config.selected_language));
@@ -382,7 +382,7 @@ void game_menu::show_config_performance()
                 SharedData::get_instance()->game_config.graphics_performance_mode = PERFORMANCE_MODE_LOW;
             }
         } else if (selected_option == 1) {
-            gameManager::get_instance()->set_show_fps_enabled(!gameManager::get_instance()->get_show_fps_enabled());
+            GameManager::get_instance()->set_show_fps_enabled(!GameManager::get_instance()->get_show_fps_enabled());
         }
         ImageView::get_instance()->clearScreenArea(config_text_pos.x-1, config_text_pos.y-1, RES_W,  180, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
     }

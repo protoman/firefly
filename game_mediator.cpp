@@ -60,7 +60,7 @@ int GameMediator::get_enemy_list_size()
 GameMediator::GameMediator()
 {
     enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>("game_enemy_list_3_1_2.dat");
-    object_list = fio_cmm.load_from_disk<file_object>("game_object_list.dat");
+    SharedData::get_instance()->v6_object_list = fio_cmm.load_from_disk<v6_file_object>("game_object_list_v6.dat");
     ai_list = fio_cmm.load_from_disk<file_artificial_inteligence>("game_ai_list.dat");
     projectile_list = fio_cmm.load_from_disk<file_projectilev3>("data/game_projectile_list_v3.dat");
 

@@ -149,6 +149,15 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
                         }
                     }
                 }
+
+                if (SharedData::get_instance()->event.key.keysym.sym == SDLK_LALT) {
+                    alt_key = true;
+                }
+                if (SharedData::get_instance()->event.key.keysym.sym == SDLK_RETURN) {
+                    enter_key = true;
+                }
+
+
             } else if (SharedData::get_instance()->event.type == SDL_KEYUP) {
                 for (int i=0; i<BTN_COUNT; i++) {
                     if (key_config_tmp[i] != -1 && key_config_tmp[i] == SharedData::get_instance()->event.key.keysym.sym) {
@@ -160,6 +169,14 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
                         }
                     }
                 }
+
+                if (SharedData::get_instance()->event.key.keysym.sym == SDLK_LALT) {
+                    alt_key = false;
+                }
+                if (SharedData::get_instance()->event.key.keysym.sym == SDLK_RETURN) {
+                    enter_key = false;
+                }
+
             }
             SDL_PumpEvents(); // check keyboard events
 #if !defined(PLAYSTATION2) && !defined(PSP) && !defined(WII) && !defined(DREAMCAST)
@@ -171,9 +188,16 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
         }
 
 
+
         if (_used_keyboard == true) { // next commands are all joystick only
             if (check_input_cheat) {
                 check_cheat_input();
+            }
+            if (alt_key == true && enter_key == true) {
+                std::cout << ">>>>>>>>>>>>>>>>>>> ENTER FULL SCREEN" << std::endl;
+                p1_input[BTN_FULL_SCREEN] = 1;
+            } else {
+                p1_input[BTN_FULL_SCREEN] = 0;
             }
             return;
         }
@@ -413,6 +437,7 @@ int InputController::clean_and_wait_scape_time(int wait_period)
 
 void InputController::wait_keypress()
 {
+    std::cout << "InputController::wait_keypress" << std::endl;
     bool fim = false;
     while (!fim) {
         read_input();
@@ -421,7 +446,9 @@ void InputController::wait_keypress()
         }
         TimerView::get_instance()->delay(1);
     }
+    std::cout << "InputController::wait_keypress #1" << std::endl;
     clean_confirm_button();
+    std::cout << "InputController::wait_keypress END" << std::endl;
 }
 
 void InputController::clean_confirm_button()

@@ -24,7 +24,7 @@
 
 #include "file/file_io.h"
 
-#include "gameManager.h"
+#include "GameManager.h"
 #include "view/timerview.h"
 #include "view/textview.h"
 
@@ -37,7 +37,7 @@ draw::draw() : _rain_pos(0), _effect_timer(0), _flash_pos(0), _flash_timer(0), s
 {
     for (int i=0; i<FLASH_POINTS_N; i++) {
         flash_points[i].x = rand() % RES_W;
-        flash_points[i].y = rand() % RES_H;
+        flash_points[i].y = rand() % AREA_H;
     }
     _weapon_tooltip_timer = 0;
     _weapon_tooltip_n = 0;
@@ -56,6 +56,11 @@ draw::draw() : _rain_pos(0), _effect_timer(0), _flash_pos(0), _flash_timer(0), s
     teleport_small_frame_count = 1;
     teleport_small_frame = 0;
     teleport_small_frame_timer = 0;
+
+    // level colors
+    level_color_list.push_back(st_color(186, 19, 192));
+    level_color_list.push_back(st_color(17, 150, 17));
+    level_color_list.push_back(st_color(252, 71, 1));
 
 }
 
@@ -88,11 +93,18 @@ void draw::preload()
     filename = SharedData::get_instance()->GAMEPATH + "shared/images/boss_intro_bg.png";
     boss_intro_bg = ImageView::get_instance()->imageFromFile(filename);
 
+    filename = SharedData::get_instance()->GAMEPATH + "shared/images/dark_effect_mask.png";
+    dark_effect_mask = ImageView::get_instance()->imageFromFile(filename);
+
+
+    ImageView::get_instance()->init_target_image(dark_effect_surface, RES_W, AREA_H);
+    ImageView::get_instance()->clear_texture_area(0, 0, RES_W, RES_H, 0, 0, 0, 155, dark_effect_surface);
+
 
     // DROPABLE OBJECT GRAPHICS
-    for (int i=0; i<GameMediator::get_instance()->object_list.size(); i++) {
+    for (int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
         for (int j=0; j<DROP_ITEM_COUNT; j++) {
-            short obj_type_n = gameManager::get_instance()->get_drop_item_id(j);
+            short obj_type_n = GameManager::get_instance()->get_drop_item_id(j);
             if (obj_type_n != -1) {
                 get_object_graphic(obj_type_n);
             }
@@ -134,6 +146,24 @@ void draw::preload()
     input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_Y, st_imageData()));
     input_images_map.at(INPUT_IMAGES_Y) = ImageView::get_instance()->imageFromFile(filename);
 
+    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/d_pad_up.png";
+    input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_DPAD_UP, st_imageData()));
+    input_images_map.at(INPUT_IMAGES_DPAD_UP) = ImageView::get_instance()->imageFromFile(filename);
+
+    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/d_pad_down.png";
+    input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_DPAD_DOWN, st_imageData()));
+    input_images_map.at(INPUT_IMAGES_DPAD_DOWN) = ImageView::get_instance()->imageFromFile(filename);
+
+    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/d_pad_left.png";
+    input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_DPAD_LEFT, st_imageData()));
+    input_images_map.at(INPUT_IMAGES_DPAD_LEFT) = ImageView::get_instance()->imageFromFile(filename);
+
+    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/d_pad_right.png";
+    input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_DPAD_RIGHT, st_imageData()));
+    input_images_map.at(INPUT_IMAGES_DPAD_RIGHT) = ImageView::get_instance()->imageFromFile(filename);
+
+
+
     filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/map.png";
     interstage_map = ImageView::get_instance()->imageFromFile(filename);
 
@@ -143,10 +173,10 @@ void draw::preload()
     filename = SharedData::get_instance()->FILEPATH + "images/energy_bars.png";
     hud_energy_bar = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/ingame_menu_001.png";
+    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/ingame_menu_002.png";
     in_game_menu_bg = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/ingame_menu_001_clean.png";
+    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/ingame_menu_002_clean.png";
     in_game_menu_bg_clean = ImageView::get_instance()->imageFromFile(filename);
 
     filename = SharedData::get_instance()->FILEPATH + "images/hud/door_h.png";
@@ -154,11 +184,19 @@ void draw::preload()
 
     filename = SharedData::get_instance()->FILEPATH + "images/hud/door_v.png";
     door_v = ImageView::get_instance()->imageFromFile(filename);
+
+    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/dialog.png";
+    dialog_surface = ImageView::get_instance()->imageFromFile(filename);
+    ImageView::get_instance()->set_surface_alpha(200, dialog_surface);
+
 }
 
 void draw::show_gfx()
 {
     //std::cout << "screen_gfx[" << (int)screen_gfx << "]" << std::endl;
+
+    show_dark_effect();
+
     if (screen_gfx == SCREEN_GFX_RAIN) {
         show_rain();
     } else if (screen_gfx == SCREEN_GFX_SNOW) {
@@ -185,6 +223,7 @@ st_imageData *draw::get_input_surface(e_INPUT_IMAGES input)
     return &input_images_map.at(input);
 }
 
+// show GFX or things added to pipeline //
 void draw::update_screen()
 {
     if (current_alpha != -1) {
@@ -199,7 +238,25 @@ void draw::update_screen()
             ImageView::get_instance()->renderTexturePortionAt(0, 0, current_alpha_surface.surface->w, current_alpha_surface.surface->h, 0, 0, current_alpha_surface.texture);
         }
     }
-    ImageView::get_instance()->updateScreen();
+    // TODO: make this into a vector and generic with position and image //
+    if (draw_game_button_request.x >= 0 && draw_game_button_request.y >= 0) {
+        ImageView::get_instance()->renderTexturePortionAt(0, 0, input_images_map.at(draw_game_button_request.button).surface->w, input_images_map.at(draw_game_button_request.button).surface->h, draw_game_button_request.x, draw_game_button_request.y, input_images_map.at(draw_game_button_request.button).texture);
+        draw_game_button_request.x = -1;
+        draw_game_button_request.y = -1;
+    }
+
+    // GFX //
+    //show_rain();
+    //show_flash();
+    //show_snow_effect();
+    //show_train_effect();
+    //show_lightingbolt_effect();
+    //show_shadow_top_effect();
+    //show_inferno_effect();
+    //show_dark_effect();
+
+
+    ImageView::get_instance()->updateRender();
 }
 
 void draw::set_gfx(Uint8 gfx, short mode)
@@ -235,7 +292,7 @@ void draw::set_flash_enabled(bool enabled)
 void draw::show_rain()
 {
     for (int i=0; i<RES_W/TILESIZE; i++) {
-        for (int j=0; j<RES_H/TILESIZE; j++) {
+        for (int j=0; j<AREA_H/TILESIZE; j++) {
             ImageView::get_instance()->renderTexturePortionAt(_rain_pos*TILESIZE, 0, TILESIZE, TILESIZE, i*TILESIZE, j*TILESIZE, rain_obj.texture);
         }
     }
@@ -430,7 +487,7 @@ int draw::show_credits(bool can_leave)
         SoundView::get_instance()->play_music();
         return 1;
     }
-    ImageView::get_instance()->updateScreen();
+    ImageView::get_instance()->updateRender();
     TimerView::get_instance()->delay(1000);
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(100);
@@ -634,9 +691,11 @@ st_imageData *draw::get_object_graphic(int obj_id)
     std::map<unsigned int, st_imageData>::iterator it;
     st_imageData temp_sprite;
 
+    //std::cout << "objects_sprite_list.size[" << objects_sprite_list.size() << "]" << std::endl;
+
     it = objects_sprite_list.find(obj_id);
     if (it == objects_sprite_list.end()) { // there is no graphic with this key yet, add it
-        std::string graphic_filename(GameMediator::get_instance()->object_list.at(obj_id).graphic_filename);
+        std::string graphic_filename(SharedData::get_instance()->v6_object_list.at(obj_id).graphic_filename);
         if (graphic_filename.length() > 0) {
             std::string complete_filename(SharedData::get_instance()->FILEPATH + "images/sprites/objects/" + graphic_filename);
             temp_sprite = ImageView::get_instance()->imageFromFile(complete_filename);
@@ -650,6 +709,16 @@ st_imageData *draw::get_object_graphic(int obj_id)
     return &(*it).second;
 }
 
+void draw::show_object_graphic(int x, int y, int obj_id)
+{
+    st_imageData *obj_graphic = get_object_graphic(obj_id);
+    if (obj_graphic != nullptr) {
+        int framesize_w = SharedData::get_instance()->v6_object_list.at(obj_id).size.width;
+        int framesize_h = SharedData::get_instance()->v6_object_list.at(obj_id).size.height;
+        ImageView::get_instance()->renderTexturePortionAt(0, 0, framesize_w, framesize_h, x, y-framesize_h, draw::get_instance()->get_object_graphic(obj_id)->texture);
+    }
+}
+
 void draw::remove_object_graphic(int obj_id)
 {
     std::map<unsigned int, st_imageData>::iterator it;
@@ -659,14 +728,16 @@ void draw::remove_object_graphic(int obj_id)
     }
 }
 
-void draw::show_ingame_warning(std::vector<std::string> message)
+void draw::show_ingame_warning(st_dialog dialog)
 {
-    ImageView::get_instance()->show_dialog(0);
-    st_position dialog_pos = ImageView::get_instance()->get_dialog_pos();
-    for (unsigned int i=0; i<message.size(); i++) {
-        TextView::get_instance()->renderText(dialog_pos.x+30, dialog_pos.y+56+((FONT_SIZE*1.5)*i), st_color(250, 250, 250), false, message[i]);
+    draw::get_instance()->show_dialog(1);
+    st_position dialog_pos = draw::get_instance()->get_dialog_pos();
+    for (unsigned int i=0; i<dialog.msgs.size(); i++) {
+        TextView::get_instance()->renderText(dialog_pos.x+30, dialog_pos.y+56+((FONT_SIZE*1.5)*i), st_color(250, 250, 250), false, dialog.msgs.at(i));
     }
-    //ImageView::get_instance()->show_dialog_button(0);
+    if (dialog.timer == 0) {
+        draw::get_instance()->show_dialog_button(0);
+    }
     update_screen();
 }
 
@@ -695,7 +766,7 @@ void draw::fade_screen(int r, int g, int b, int total_delay, bool reverse)
             ImageView::get_instance()->set_surface_alpha(255-alpha_n, transparent_area);
             ImageView::get_instance()->renderImageAt(0, 0, transparent_area);
         }
-        ImageView::get_instance()->updateScreen();
+        ImageView::get_instance()->updateRender();
         alpha_n += step;
         if (delay >= 1) {
             TimerView::get_instance()->delay(delay);
@@ -762,7 +833,7 @@ void draw::pixelate_screen()
         }
         //std::cout << "pixelationAmount[" << pixelationAmount << "]" << std::endl;
         ImageView::get_instance()->renderImageAt(0, 0, res_surface);
-        ImageView::get_instance()->updateScreen();
+        ImageView::get_instance()->updateRender();
         TimerView::get_instance()->delay(20);
     }
     std::cout << "END" << std::endl;
@@ -805,7 +876,7 @@ void draw::draw_castle_path(bool instant, st_position initial_point, st_position
 
     draw_castle_point(initial_point.x, initial_point.y);
     draw_castle_point(final_point.x, final_point.y);
-    ImageView::get_instance()->updateScreen();
+    ImageView::get_instance()->updateRender();
 
     int pos_y = initial_point.y - 1;
     int pos_x = initial_point.x + 2;
@@ -831,7 +902,7 @@ void draw::draw_castle_path(bool instant, st_position initial_point, st_position
             }
             if (step_delay > 0) {
                 TimerView::get_instance()->delay(step_delay);
-                ImageView::get_instance()->updateScreen();
+                ImageView::get_instance()->updateRender();
             }
         }
     }
@@ -872,7 +943,7 @@ void draw::draw_castle_path(bool instant, st_position initial_point, st_position
             }
             if (step_delay > 0) {
                 TimerView::get_instance()->delay(step_delay);
-                ImageView::get_instance()->updateScreen();
+                ImageView::get_instance()->updateRender();
             }
         }
     }
@@ -888,7 +959,7 @@ void draw::show_interstage_map_bg(st_position pos)
 {
     ImageView::get_instance()->renderImageAt(0, 0, interstage_map);
     ImageView::get_instance()->renderTexturePortionAt(TILESIZE, 0, TILESIZE, TILESIZE, pos.x-4, pos.y-4, hud_player_1up.texture);
-    ImageView::get_instance()->updateScreen();
+    ImageView::get_instance()->updateRender();
     TimerView::get_instance()->delay(5000);
 }
 
@@ -925,7 +996,7 @@ void draw::draw_in_game_menu_animation()
     // @TODO: set map scroll to current room //
     in_game_menu_map_pos = st_position(0, 0);
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 20);
-    ImageView::get_instance()->updateScreen();
+    ImageView::get_instance()->updateRender();
     TimerView::get_instance()->delay(100);
     // menu 001 animation //
 
@@ -933,14 +1004,14 @@ void draw::draw_in_game_menu_animation()
         SDL_RenderClear(gRenderer);
         ImageView::get_instance()->renderTexturePortionAt(0, 0, in_game_menu_bg.surface->w, 137+i, 10, 10, in_game_menu_bg.texture);
         ImageView::get_instance()->renderTexturePortionAt(0, 548, in_game_menu_bg.surface->w, 152, 10, 137+i, in_game_menu_bg.texture);
-        ImageView::get_instance()->updateScreen();
+        ImageView::get_instance()->updateRender();
         TimerView::get_instance()->delay(1);
     }
     int final_pos = 420;
     SDL_RenderClear(gRenderer);
     ImageView::get_instance()->renderTexturePortionAt(0, 0, in_game_menu_bg.surface->w, 137+final_pos, 10, 10, in_game_menu_bg.texture);
     ImageView::get_instance()->renderTexturePortionAt(0, 548, in_game_menu_bg.surface->w, 152, 10, 138+final_pos, in_game_menu_bg.texture);
-    ImageView::get_instance()->updateScreen();
+    ImageView::get_instance()->updateRender();
 }
 
 void draw::draw_in_game_menu_map()
@@ -962,7 +1033,7 @@ void draw::draw_in_game_menu_map()
                     if (i == SharedData::get_instance()->v6_selected_area && x == SharedData::get_instance()->current_room_pos.x && y == SharedData::get_instance()->current_room_pos.y) {
                         ImageView::get_instance()->clearScreenArea(x*MAP_ROOM_SIZE_W+adjust_x, y*MAP_ROOM_SIZE_H+adjust_y, MAP_ROOM_SIZE_W, MAP_ROOM_SIZE_H, 0, 150, 255);
                     } else {
-                        ImageView::get_instance()->clearScreenArea(x*MAP_ROOM_SIZE_W+adjust_x, y*MAP_ROOM_SIZE_H+adjust_y, MAP_ROOM_SIZE_W, MAP_ROOM_SIZE_H, 0, 0, 180);
+                        ImageView::get_instance()->clearScreenArea(x*MAP_ROOM_SIZE_W+adjust_x, y*MAP_ROOM_SIZE_H+adjust_y, MAP_ROOM_SIZE_W, MAP_ROOM_SIZE_H, level_color_list.at(i).r, level_color_list.at(i).g, level_color_list.at(i).b);
                     }
                 } else {
                     ImageView::get_instance()->clearScreenArea(x*MAP_ROOM_SIZE_W+adjust_x, y*MAP_ROOM_SIZE_H+adjust_y, MAP_ROOM_SIZE_W, MAP_ROOM_SIZE_H, 0, 0, 0);
@@ -977,6 +1048,59 @@ void draw::draw_in_game_menu_map()
             ImageView::get_instance()->clearScreenArea(adjust_x, y*MAP_ROOM_SIZE_H+adjust_y, FILE_AREA_W*MAP_ROOM_SIZE_W, 1, 255, 255, 255);
         }
     }
+}
+
+void draw::draw_game_button(int x, int y, e_INPUT_IMAGES button)
+{
+    //std::cout << "draw::draw_game_button - x[" << x << "], y[" << y << "]" << std::endl;
+    draw_game_button_request.x = x - input_images_map.at(draw_game_button_request.button).surface->w/2;
+    draw_game_button_request.y = y - input_images_map.at(draw_game_button_request.button).surface->h/2;
+    draw_game_button_request.button = button;
+}
+
+void draw::show_dialog(Uint8 position)
+{
+    int posX = (RES_W-dialog_surface.surface->w)*0.5;
+    int posY;
+
+    if (position == 0) {
+        posY = (RES_H-dialog_surface.surface->h)*0.5;
+    } else if (position == 1) {
+        posY = 3;
+    } else {
+        posY = RES_H - dialog_surface.surface->h - 25;
+    }
+
+    _dialog_pos.x = posX;
+    _dialog_pos.y = posY;
+
+    st_position bg_pos(posX, posY);
+    ImageView::get_instance()->renderImageAt(bg_pos.x, bg_pos.y, dialog_surface);
+
+}
+
+void draw::show_dialog_button(Uint8 position)
+{
+    int posX = (RES_W-dialog_surface.surface->w)*0.5;
+    int posY;
+
+    if (position == 0) {
+        posY = (RES_H-dialog_surface.surface->h)*0.5;
+    } else if (position == 1) {
+        posY = 3;
+    } else {
+        posY = RES_H - dialog_surface.surface->h - 25;
+    }
+
+    int btn_dest_x = posX + dialog_surface.surface->w-input_images_map.at(INPUT_IMAGES_A).surface->w - 10;
+    int btn_dest_y = posY+dialog_surface.surface->h-input_images_map.at(INPUT_IMAGES_A).surface->h-TILESIZE/2;
+    ImageView::get_instance()->renderTexturePortionAt(0, 0, input_images_map.at(INPUT_IMAGES_A).surface->w, input_images_map.at(INPUT_IMAGES_A).surface->h, btn_dest_x, btn_dest_y, input_images_map.at(INPUT_IMAGES_A).texture);
+
+}
+
+st_position draw::get_dialog_pos() const
+{
+    return _dialog_pos;
 }
 
 void draw::draw_explosion(st_position center_point, int radius, int angle_inc)
@@ -1161,7 +1285,7 @@ void draw::set_boss_hp(int hp)
 void draw::show_boss_intro_bg()
 {
     ImageView::get_instance()->renderImageAt(0, 0, boss_intro_bg);
-    ImageView::get_instance()->updateScreen();
+    ImageView::get_instance()->updateRender();
 }
 
 void draw::clear_maps_dynamic_background_list()
@@ -1234,7 +1358,7 @@ void draw::show_snow_effect()
                 temp_particle->x_dist = 0;
                 temp_particle->direction = !temp_particle->direction;
             }
-            if (temp_particle->position.y > RES_H) {
+            if (temp_particle->position.y > AREA_H) {
                 temp_particle->position.x = rand() % RES_W;
                 temp_particle->speed = rand() % 5;
                 if (temp_particle->speed < 1) {
@@ -1298,12 +1422,12 @@ void draw::show_lightingbolt_effect()
                 SoundView::get_instance()->play_shared_sfx("thunder.wav");
             }
             st_imageData transparent_area;
-            transparent_area = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
-            ImageView::get_instance()->clear_surface_area(0, 0, RES_W, RES_H, 250, 250, 158, transparent_area);
+            transparent_area = ImageView::get_instance()->initSurface(st_size(RES_W, AREA_H));
+            ImageView::get_instance()->clear_surface_area(0, 0, RES_W, AREA_H, 250, 250, 158, transparent_area);
             ImageView::get_instance()->set_surface_alpha(80, transparent_area);
             ImageView::get_instance()->renderImageAt(0, 0, transparent_area);
 
-            ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 250, 250, 158);
+            //ImageView::get_instance()->clearScreenArea(0, 0, RES_W, AREA_H, 250, 250, 158);
         }
     }
 }
@@ -1341,6 +1465,16 @@ void draw::show_inferno_effect()
             _inferno_alpha_mode = 0;
         }
     }
+}
+
+void draw::show_dark_effect()
+{
+    ImageView::get_instance()->clear_texture_area(0, 0, RES_W, RES_H, 0, 0, 0, 255, dark_effect_surface);
+
+    st_position player_center_pos = GameManager::get_instance()->get_player_relative_center_position();
+    ImageView::get_instance()->blend_images(dark_effect_mask, dark_effect_surface, player_center_pos.x-256, player_center_pos.y-256);
+    ImageView::get_instance()->blend_images(dark_effect_mask, dark_effect_surface, player_center_pos.x-56, player_center_pos.y-56);
+    ImageView::get_instance()->renderImageAt(0, 0, dark_effect_surface);
 }
 
 void draw::free_inferno_surface()

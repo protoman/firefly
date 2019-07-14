@@ -20,6 +20,7 @@
 #include "file/v6/file_level_v6.h"
 #include "file/v6/file_area_v6.h"
 #include "file/v6/file_room_v6.h"
+#include "file/v6/file_object_v6.h"
 
 
 class SharedData
@@ -56,26 +57,24 @@ public:
     // GAME-DATA //
     file_game game_data;
     std::vector<file_npc_v3_1_2> enemy_list;
-    std::vector<file_object> object_list;
     std::vector<file_projectilev3> projectile_list_v3;
     std::vector<file_scene_list> scene_list;
     std::vector<file_anim_block> anim_block_list;
     std::vector<file_player_v3_1_1> player_list_v3_1;
     std::vector<file_artificial_inteligence> ai_list;
     std::vector<file_v5_slope_tile> slope_list;
-    std::vector<struct_file_v5_area> area_list;
+    //std::vector<struct_file_v5_area> area_list;
 
     st_save game_save;
     st_checkpoint checkpoint;
 
 
     // MAPS DATA //
-    std::vector<file_v5_map_header> file_v5_map_header_list;
     std::vector<file_v5_map_link> file_v5_map_link_list;
     std::map<unsigned int, std::vector<file_v5_map_object>>  file_v5_map_object_map; // map objects
     std::map<unsigned int, std::vector<file_v5_map_npc>>  file_v5_map_npc_map; // map enemies
     std::map<unsigned int, std::vector<struct_file_v5_area_link>> file_v5_area_link_map;
-    unsigned int file_v5_selected_map = 0;
+    std::vector<struct_file_v5_area_link> current_area_link_list;
     unsigned int file_v5_selected_area = 0;
     unsigned int file_v5_selected_layer = 0;
     unsigned int file_v5_selected_slope = 0;
@@ -93,12 +92,15 @@ public:
 
 
 
+
     // FILE-V6 //
     std::vector<file_v6_level> v6_level_list;
     std::vector<file_v6_area> v6_area_list;
+    std::vector<st_size> v6_area_list_size;
     int v6_selected_area = 0;
     int v6_selected_level = 0;
     file_v6_level v6_current_level_data;
+    std::vector<v6_file_object> v6_object_list;
 
     int leftmost_room = FILE_AREA_W;
     int rightmost_room = 0;
@@ -109,6 +111,13 @@ public:
     st_position current_room_pos;
 
     int level_count = 0;
+
+    std::vector<std::vector<std::string>> dialog_list;
+    int currentDialog = 0;
+    unsigned long get_item_timer = 0;
+
+    bool must_interrupt_character_execution = false;
+    bool fullscreen_mode = false;
 
 };
 

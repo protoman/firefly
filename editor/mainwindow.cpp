@@ -26,7 +26,7 @@ bool background_filled = false;
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), _npcedit_tab_selectednpc(0), _data_loading(false)
 {
 	ui->setupUi(this);
-    QString window_title = QString("Rockbot Editor ") + QString(VERSION_NUMBER);
+    QString window_title = QString("FIREFLY EDITOR ") + QString(VERSION_NUMBER);
     setWindowTitle(window_title);
 
 	// insert NPC tab form
@@ -64,9 +64,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     area_edit_tab = new AreaEditTab;
     ui->areaEditScrollArea->setWidget(area_edit_tab);
 
-    std::cout << "CONNECT::BEFORE" << std::endl;
-    QObject::connect(level_editor, SIGNAL(on_area_changed()), map_edit_tab, SLOT(update_area_data()));
-    std::cout << "CONNECT::AFTER" << std::endl;
 }
 
 MainWindow::~MainWindow()
@@ -81,7 +78,7 @@ void MainWindow::loadData()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Rockbot Editor :: Game Editor", tr("Save data before leaving?\n"), QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
+    QMessageBox::StandardButton resBtn = QMessageBox::question( this, "FIREFLY EDITOR :: Game Editor", tr("Save data before leaving?\n"), QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
     if (resBtn == QMessageBox::Yes) {
         Mediator::get_instance()->save_game();
     } else if (resBtn == QMessageBox::Cancel) {
@@ -92,7 +89,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     /*
     QMessageBox msgBox;
-    msgBox.setWindowTitle("Rockbot Editor");
+    msgBox.setWindowTitle("FIREFLY EDITOR");
     msgBox.setText("Save data before leaving?\n");
     msgBox.setStandardButtons(QMessageBox::Yes);
     msgBox.addButton(QMessageBox::No);

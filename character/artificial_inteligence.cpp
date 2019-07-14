@@ -19,9 +19,9 @@
 #include "view/imageview.h"
 #include "view/soundview.h"
 
-#include "gameManager.h"
+#include "GameManager.h"
 
-#include "gameManager.h"
+#include "GameManager.h"
 #define JUMP_ROOF_MIN_SPEED 3
 #define MAX_NPC_SPAWN 3
 
@@ -303,16 +303,16 @@ struct_player_dist artificial_inteligence::dist_npc_players()
 {
     int dist;
     struct struct_player_dist res;
-    if (gameManager::get_instance()->get_current_map_obj() == nullptr) {
+    if (GameManager::get_instance()->get_current_map_obj() == nullptr) {
         std::cout << "ERROR: trying to calc NPC-player distance before map pointer is set on NPC" << std::endl;
         exception_manager::throw_param_exception(std::string("ERROR: trying to calc NPC-player distance before map pointer is set on NPC"), "");
     }
-    if (gameManager::get_instance()->get_current_map_obj()->_player_ref == nullptr) {
+    if (GameManager::get_instance()->get_player() == nullptr) {
         std::cout << "ERROR: trying to calc NPC-player distance before there is a player in the game or this NPC does not have set the player_list" << std::endl;
         exception_manager::throw_param_exception(std::string("ERROR: trying to calc NPC-player but there is no player on player_list."), "");
     }
 
-    res.pObj = gameManager::get_instance()->get_current_map_obj()->_player_ref;
+    res.pObj = GameManager::get_instance()->get_player();
     dist = sqrt(pow((position.x - res.pObj->getPosition().x), 2) + pow((position.y - res.pObj->getPosition().y), 2));
     res.dist_xy.x = abs((float)position.x - res.pObj->getPosition().x);
     res.dist_xy.y = abs((float)position.y - res.pObj->getPosition().y);
@@ -328,25 +328,25 @@ struct_player_dist artificial_inteligence::dist_npc_players()
 void artificial_inteligence::ground_damage_players()
 {
     // check if player is on ground
-    st_float_position npc_pos = gameManager::get_instance()->get_current_map_obj()->_player_ref->getPosition();
-    npc_pos.x = (npc_pos.x + gameManager::get_instance()->get_current_map_obj()->_player_ref->get_size().width/2)/TILESIZE;
-    npc_pos.y = (npc_pos.y + gameManager::get_instance()->get_current_map_obj()->_player_ref->get_size().height)/TILESIZE;
-    int lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(npc_pos.x, npc_pos.y));
+    st_float_position npc_pos = GameManager::get_instance()->get_player()->getPosition();
+    npc_pos.x = (npc_pos.x + GameManager::get_instance()->get_player()->get_size().width/2)/TILESIZE;
+    npc_pos.y = (npc_pos.y + GameManager::get_instance()->get_player()->get_size().height)/TILESIZE;
+    int lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(npc_pos.x, npc_pos.y));
     //std::cout << "ground_damage_players - NPC[" << _player_ref->getName() << "].lock: " << lock << ", x: " << npc_pos.x << ", y: " << npc_pos.y << std::endl;
     if (lock != TERRAIN_UNBLOCKED && lock != TERRAIN_STAIR && lock != TERRAIN_WATER) {
         //std::cout << "&&&&&&&&&&&&& ground_damage_players - DAMAGING PLAYER[" << _player_ref->getName() << "]" << std::endl;
-        gameManager::get_instance()->get_current_map_obj()->_player_ref->damage(3, false);
+        GameManager::get_instance()->get_player()->damage(3, false);
     }
 }
 
 void artificial_inteligence::push_back_players(short direction)
 {
-    gameManager::get_instance()->get_current_map_obj()->_player_ref->push_back(direction);
+    GameManager::get_instance()->get_player()->push_back(direction);
 }
 
 void artificial_inteligence::pull_players(short direction)
 {
-    gameManager::get_instance()->get_current_map_obj()->_player_ref->pull(direction);
+    GameManager::get_instance()->get_player()->pull(direction);
 }
 
 bool artificial_inteligence::auto_respawn() const
@@ -683,7 +683,7 @@ void artificial_inteligence::ia_action_jump_to_roof()
 		int limit_y = 0;
 		for (int y=position.y; y>=0; y--) {
             st_position new_pos((position.x+frameSize.width/2)/TILESIZE, (y)/TILESIZE);
-            if (gameManager::get_instance()->get_current_map_obj()->is_point_solid(new_pos) == true) {
+            if (GameManager::get_instance()->get_current_map_obj()->is_point_solid(new_pos) == true) {
 				limit_y = y;
 				break;
 			}
@@ -1145,8 +1145,8 @@ bool artificial_inteligence::throw_projectile(int projectile_type, bool invert_d
     }
 
     if (temp_projectile.trajectory == TRAJECTORY_TARGET_DIRECTION || temp_projectile.trajectory == TRAJECTORY_TARGET_EXACT || temp_projectile.trajectory == TRAJECTORY_ARC_TO_TARGET || temp_projectile.trajectory == TRAJECTORY_FOLLOW) {
-        if (!is_player() && gameManager::get_instance()->get_current_map_obj()->_player_ref != nullptr) {
-            character* p_player = gameManager::get_instance()->get_current_map_obj()->_player_ref;
+        if (!is_player() && GameManager::get_instance()->get_player() != nullptr) {
+            character* p_player = GameManager::get_instance()->get_player();
             temp_proj.set_target_position(p_player->get_position_ref());
         }
     }
@@ -1417,8 +1417,8 @@ void artificial_inteligence::execute_ai_step_fly()
                 }
 
                 if (GameMediator::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_TARGET_DIRECTION || GameMediator::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_TARGET_EXACT || GameMediator::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_ARC_TO_TARGET || GameMediator::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_FOLLOW) {
-                    if (!is_player() && gameManager::get_instance()->get_current_map_obj()->_player_ref != nullptr) {
-                        character* p_player = gameManager::get_instance()->get_current_map_obj()->_player_ref;
+                    if (!is_player() && GameManager::get_instance()->get_player() != nullptr) {
+                        character* p_player = GameManager::get_instance()->get_player();
                         temp_proj.set_target_position(p_player->get_position_ref());
                     }
                 }
@@ -1793,7 +1793,7 @@ can_move_struct artificial_inteligence::check_can_move_to_point(st_float_positio
             if (state.direction == ANIM_DIRECTION_RIGHT) {
                 map_point.x = (position.x + frameSize.width)/TILESIZE;
             }
-            int map_lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(map_point);
+            int map_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(map_point);
             //if (!is_player()) std::cout << "AI::move_to_point[" << name << "] - HOLE check: " << map_lock << " - direction: " << (int)state.direction << std::endl;
             if (map_lock == TERRAIN_UNBLOCKED || map_lock == TERRAIN_WATER) {
                 //if (!is_player()) std::cout << "AI::move_to_point[" << name << "] - HOLE AHEAD - direction: " << (int)state.direction << std::endl;
@@ -1808,9 +1808,9 @@ can_move_struct artificial_inteligence::check_can_move_to_point(st_float_positio
         }
 
         st_position map_point_ahead((position.x+xinc2)/TILESIZE, (position.y + frameSize.height-2)/TILESIZE);
-        int map_lock_ahead = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(map_point_ahead);
+        int map_lock_ahead = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(map_point_ahead);
         st_position map_point_top((position.x+xinc2)/TILESIZE, (position.y - TILESIZE + frameSize.height-2)/TILESIZE);
-        int map_lock_top = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(map_point_top);
+        int map_lock_top = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(map_point_top);
 
 
 
@@ -1843,13 +1843,13 @@ int artificial_inteligence::create_rand_x_point(int max_range)
 {
     bool keep_going = true;
     int rand_x = 0;
-    int scroll_x = gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
+    int scroll_x = GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
     while (keep_going) {
         rand_x = position.x + rand() % max_range*2 - max_range;
         if (rand_x < scroll_x+TILESIZE || rand_x+frameSize.width > scroll_x+RES_W-TILESIZE) {
             continue;
         }
-        int point_lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position((rand_x+frameSize.width/2)/TILESIZE, (position.y+frameSize.height/2)/TILESIZE));
+        int point_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position((rand_x+frameSize.width/2)/TILESIZE, (position.y+frameSize.height/2)/TILESIZE));
         if (point_lock == TERRAIN_WATER || point_lock == TERRAIN_UNBLOCKED) {
             keep_going = false;
         }
@@ -1866,7 +1866,7 @@ int artificial_inteligence::create_rand_y_point(int max_range)
         if (rand_y < 0 || rand_y+frameSize.height > RES_H-TILESIZE) {
             continue;
         }
-        int point_lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position((position.x+frameSize.width/2)/TILESIZE, (rand_y+frameSize.height/2)/TILESIZE));
+        int point_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position((position.x+frameSize.width/2)/TILESIZE, (rand_y+frameSize.height/2)/TILESIZE));
         if (point_lock == TERRAIN_WATER || point_lock == TERRAIN_UNBLOCKED) {
             keep_going = false;
         }
@@ -1879,7 +1879,7 @@ st_position artificial_inteligence::create_rand_point(int max_range)
     bool keep_going = true;
     int rand_x = 0;
     int rand_y = 0;
-    int scroll_x = gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
+    int scroll_x = GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
     while (keep_going) {
         rand_x = position.x + rand() % max_range*2 - max_range;
         rand_y = position.y + rand() % max_range*2 - max_range;
@@ -1892,7 +1892,7 @@ st_position artificial_inteligence::create_rand_point(int max_range)
         if (rand_y < 0 || rand_y+frameSize.height > RES_H-TILESIZE) {
             continue;
         }
-        int point_lock = gameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position((rand_x+frameSize.width/2)/TILESIZE, (rand_y+frameSize.height/2)/TILESIZE));
+        int point_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position((rand_x+frameSize.width/2)/TILESIZE, (rand_y+frameSize.height/2)/TILESIZE));
         if (point_lock == TERRAIN_WATER || point_lock == TERRAIN_UNBLOCKED) {
             keep_going = false;
         }
@@ -1941,13 +1941,13 @@ int artificial_inteligence::find_wall(float initial_x, int direction)
     int ini_x = initial_x / TILESIZE;
     int pos_x = -1;
     if (direction == ANIM_DIRECTION_LEFT) {
-        pos_x = gameManager::get_instance()->get_current_map_obj()->get_first_lock_on_left(ini_x);
+        pos_x = GameManager::get_instance()->get_current_map_obj()->get_first_lock_on_left(ini_x);
     } else if (direction == ANIM_DIRECTION_RIGHT) {
-        pos_x = gameManager::get_instance()->get_current_map_obj()->get_first_lock_on_right(ini_x);
+        pos_x = GameManager::get_instance()->get_current_map_obj()->get_first_lock_on_right(ini_x);
     } else if (direction == ANIM_DIRECTION_UP) {
-        pos_x = gameManager::get_instance()->get_current_map_obj()->get_first_lock_on_bottom(ini_x, -1);
+        pos_x = GameManager::get_instance()->get_current_map_obj()->get_first_lock_on_bottom(ini_x, -1);
     } else if (direction == ANIM_DIRECTION_DOWN) {
-        pos_x = gameManager::get_instance()->get_current_map_obj()->get_first_lock_on_right(ini_x);
+        pos_x = GameManager::get_instance()->get_current_map_obj()->get_first_lock_on_right(ini_x);
     }
     std::cout << "AI::find_wall - pos_x: " << pos_x << std::endl;
     return pos_x;
@@ -2012,7 +2012,7 @@ void artificial_inteligence::execute_ai_replace_itself(bool morph)
     hitPoints.current = 0;
     _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
     // spawn new npc
-    classnpc* npc_ref = gameManager::get_instance()->get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y+frameSize.height/2), state.direction, false, false);
+    GameEnemy* npc_ref = GameManager::get_instance()->get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y+frameSize.height/2), state.direction, false, false);
     // is executing reaction and is dying and is map-boss -> set child as new map-boss
     if (_reaction_state == 1 && _reaction_type == 2 && _is_stage_boss == true) {
         std::cout << "########################## SET NEW BOSS (REPLACE)" << std::endl;
@@ -2044,13 +2044,13 @@ void artificial_inteligence::execute_ai_step_spawn_npc()
 
     //std::cout << "%%%%%%%%%%%%%%%% EXECUTE-SPAWN-NPC %%%%%%%%%%%%%%%%%%%%" << std::endl;
     // still spawning an NPC, leave
-    if (gameManager::get_instance()->get_current_map_obj()->_npc_spawn_list.size() > 0) {
+    if (GameManager::get_instance()->get_current_map_obj()->_npc_spawn_list.size() > 0) {
         //std::cout << ">>>>>>> still executing a previous spawn, leave" << std::endl;
         _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
         return;
     }
 
-    int child_count = gameManager::get_instance()->get_current_map_obj()->child_npc_count(get_number());
+    int child_count = GameManager::get_instance()->get_current_map_obj()->child_npc_count(get_number());
     if (child_count >= MAX_NPC_SPAWN) {
         //std::cout << ">> CAN'T SPAWN - child-count[" << child_count << "], max[" << MAX_NPC_SPAWN << "]" << std::endl;
         _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
@@ -2065,11 +2065,11 @@ void artificial_inteligence::execute_ai_step_spawn_npc()
         } else if (is_on_attack_frame() == false){
             set_animation_type(ANIM_TYPE_ATTACK);
         }
-        classnpc* npc_ref;
+        GameEnemy* npc_ref;
         if (name == "TOP HAT") {
-            npc_ref = gameManager::get_instance()->get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y), state.direction, false, true);
+            npc_ref = GameManager::get_instance()->get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y), state.direction, false, true);
         } else {
-            npc_ref = gameManager::get_instance()->get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y+frameSize.height/2), state.direction, false, false);
+            npc_ref = GameManager::get_instance()->get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y+frameSize.height/2), state.direction, false, false);
         }
 
         if (npc_ref == nullptr) {
@@ -2210,11 +2210,11 @@ void artificial_inteligence::ia_action_teleport()
                 // find wall to the left
                 if (_parameter == AI_ACTION_TELEPORT_OPTION_LEFT || (_parameter == AI_ACTION_TELEPORT_OPTION_AHEAD && state.direction == ANIM_DIRECTION_LEFT)) {
                     std::cout << "#1 - AI::AI_ACTION_TELEPORT_LEFT/AHEAD - x: " << position.x << std::endl;
-                    st_position dest_pos = gameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(st_position(position.x, position.y+frameSize.height/2), st_size(walk_range, 0), ANIM_DIRECTION_LEFT);
+                    st_position dest_pos = GameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(st_position(position.x, position.y+frameSize.height/2), st_size(walk_range, 0), ANIM_DIRECTION_LEFT);
                     position.x = dest_pos.x;
                 // find wall to the right
                 } else if (_parameter == AI_ACTION_TELEPORT_OPTION_RIGHT || (_parameter == AI_ACTION_TELEPORT_OPTION_AHEAD && state.direction == ANIM_DIRECTION_RIGHT)) {
-                    st_position dest_pos = gameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(st_position(position.x+frameSize.width, position.y+frameSize.height/2), st_size(walk_range, 0), ANIM_DIRECTION_RIGHT);
+                    st_position dest_pos = GameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(st_position(position.x+frameSize.width, position.y+frameSize.height/2), st_size(walk_range, 0), ANIM_DIRECTION_RIGHT);
                     std::cout << "#1 - AI::AI_ACTION_TELEPORT_RIGHT/AHEAD - x: " << position.x << ", walk_range[" << walk_range << "], dest.x[" << dest_pos.x << "]" << std::endl;
                     position.x = dest_pos.x-frameSize.width;
                 } else if (_parameter == AI_ACTION_TELEPORT_OPTION_TO_PLAYER) {
@@ -2223,7 +2223,7 @@ void artificial_inteligence::ia_action_teleport()
                 } else if (_parameter == AI_ACTION_TELEPORT_OPTION_RANDOM_X) {
                     std::cout << "#1 - AI::AI_ACTION_TELEPORT_OPTION_RANDOM_X - x: " << position.x << std::endl;
                     int rand_x = create_rand_x_point(walk_range);
-                    st_position dest_pos = gameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(st_position(position.x, position.y+frameSize.height/2), st_size(abs(position.x-rand_x), 0), (rand_x > position.x));
+                    st_position dest_pos = GameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(st_position(position.x, position.y+frameSize.height/2), st_size(abs(position.x-rand_x), 0), (rand_x > position.x));
                     position.x = dest_pos.x;
                     //std::cout << "#2 - AI::AI_ACTION_TELEPORT_OPTION_RANDOM_X - x: " << position.x << std::endl;
                 } else if (_parameter == AI_ACTION_TELEPORT_OPTION_RANDOM_Y) {
@@ -2235,7 +2235,7 @@ void artificial_inteligence::ia_action_teleport()
                         pos = st_position(position.x+frameSize.width/2, position.y+frameSize.height);
                         direction = ANIM_DIRECTION_DOWN;
                     }
-                    st_position dest_pos = gameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(pos, st_size(0, abs(position.y-rand_y)), direction);
+                    st_position dest_pos = GameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(pos, st_size(0, abs(position.y-rand_y)), direction);
                     if (direction == ANIM_DIRECTION_DOWN) {
                         position.y = dest_pos.y - frameSize.height;
                     } else {
@@ -2273,7 +2273,7 @@ void artificial_inteligence::ia_action_teleport()
                         }
                     }
                     int calc_y = abs(position.y-rand_pos.y);
-                    position = gameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(pos, st_size(abs(position.x-rand_pos.x), calc_y), direction);
+                    position = GameManager::get_instance()->get_current_map_obj()->get_first_lock_in_direction(pos, st_size(abs(position.x-rand_pos.x), calc_y), direction);
                     if (direction == ANIM_DIRECTION_UP_RIGHT || direction == ANIM_DIRECTION_DOWN_RIGHT) {
                         position.x -= frameSize.width;
                     }
@@ -2331,6 +2331,16 @@ int artificial_inteligence::get_ai_type() {
     }
     //std::cout << "AI::get_ai_type ==> _current_ai_type: " << _current_ai_type << ", new_type: " << type << ", _parameter: " << _parameter << std::endl;
     return type;
+}
+
+bool artificial_inteligence::get_is_npc()
+{
+    return SharedData::get_instance()->enemy_list.at(_number).is_npc;
+}
+
+int artificial_inteligence::get_dialog_id()
+{
+    return SharedData::get_instance()->enemy_list.at(_number).npc_dialog_id;
 }
 
 bool artificial_inteligence::always_move_ahead() const

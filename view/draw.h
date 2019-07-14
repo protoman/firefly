@@ -36,6 +36,13 @@ struct st_snow_particle {
     }
 };
 
+
+struct st_draw_game_button {
+    float x = 0;
+    float y = 0;
+    e_INPUT_IMAGES button = INPUT_IMAGES_Y;
+};
+
 class draw
 {
 public:
@@ -56,8 +63,9 @@ public:
     void show_unlocked_charsMsg();
     std::vector<std::string> create_engine_credits_text();
     st_imageData* get_object_graphic(int obj_id);
+    void show_object_graphic(int x, int y, int obj_id);
     void remove_object_graphic(int obj_id);
-    void show_ingame_warning(std::vector<std::string> message);
+    void show_ingame_warning(st_dialog dialog);
     void fade_in_screen(int r, int g, int b, int total_delay);
     void fade_screen(int r, int g, int b, int total_delay, bool reverse);
     void add_fade_out_effect(int r, int g, int b);
@@ -80,6 +88,14 @@ public:
     void draw_in_game_menu_bg(int screen);
     void draw_in_game_menu_animation();
     void draw_in_game_menu_map();
+    void draw_game_button(int x, int y, e_INPUT_IMAGES button);
+
+    void show_dialog(Uint8 position);
+    void show_dialog_button(Uint8 position);
+    st_position get_dialog_pos() const;
+
+
+
 
 private:
     draw();
@@ -95,6 +111,7 @@ private:
     void show_lightingbolt_effect();
     void show_shadow_top_effect();
     void show_inferno_effect();
+    void show_dark_effect();
     void free_inferno_surface();
     st_float_position get_radius_point(st_position center_point, int radius, float angle);
     //void create_dynamic_background_surface(st_imageData& dest_surface, st_imageData& image_surface, int auto_scroll_mode);
@@ -105,6 +122,7 @@ private:
     static draw* _instance;
     st_imageData boss_intro_bg;
     st_imageData rain_obj;
+    st_imageData dark_effect_mask;
     unsigned int _effect_timer;
     short int _rain_pos;
 
@@ -130,6 +148,7 @@ private:
     st_imageData _inferno_surface;
     int _inferno_alpha;
     short _inferno_alpha_mode; // 0 increasing, 1 decreasing
+    st_imageData dark_effect_surface;
 
 
     // USED IN TRAIN EFFECT
@@ -180,6 +199,14 @@ private:
     long timer_hud_center = 0;
     bool timer_hud_center_show = false;
     st_position in_game_menu_map_pos;
+
+    std::vector<st_color> level_color_list;
+
+    st_draw_game_button draw_game_button_request;
+
+    // DIALOG //
+    st_imageData dialog_surface;
+    st_position _dialog_pos;
 
 };
 

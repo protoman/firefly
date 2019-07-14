@@ -18,6 +18,7 @@ public:
 
 private:
     void fill_data();
+    void fill_ability_data();
 
 private slots:
 	void on_graphicfile_combo_currentIndexChanged(const QString &arg1);
@@ -50,9 +51,11 @@ private slots:
 
     void on_givenAbilityComboBox_currentIndexChanged(int index);
 
+    void on_key_comboBox_currentIndexChanged(int index);
+
 private:
     Ui::object_tab *ui;
-	int _current_object;
+    unsigned long _current_object = 0;
 	int _data_loaded;
 };
 

@@ -87,7 +87,6 @@ void areasEditorArea::paintEvent(QPaintEvent *event)
     }
 
     // draw links
-    /*
     if (SharedData::get_instance()->file_v5_area_link_map.find(currentArea) != SharedData::get_instance()->file_v5_area_link_map.end()) {
         std::cout << "MAP-LINKS #1"<< std::endl;
         for (int i=0; i<SharedData::get_instance()->file_v5_area_link_map.at(currentArea).size(); i++) {
@@ -128,7 +127,7 @@ void areasEditorArea::paintEvent(QPaintEvent *event)
     } else {
         std::cout << "MAP-LINKS #3"<< std::endl;
     }
-    */
+
 
 
     painter.setPen(pen);
@@ -165,16 +164,14 @@ void areasEditorArea::mousePressEvent(QMouseEvent *event)
         } else if (SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY].area_n == currentMap) {
             SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY].area_n = -1;
         }
-        emit on_area_changed();
         repaint();
     } else if (edit_mode == AREA_EDIT_MODE_VLINK || edit_mode == AREA_EDIT_MODE_HLINK) {
-        /// TODO ///
-        /*
         // TODO: check if point has a link, so delete it
         if (SharedData::get_instance()->file_v5_area_link_map.find(currentArea) != SharedData::get_instance()->file_v5_area_link_map.end()) {
             for (int i=0; i<SharedData::get_instance()->file_v5_area_link_map.at(currentArea).size(); i++) {
                 struct_file_v5_area_link &link_data = SharedData::get_instance()->file_v5_area_link_map.at(currentArea).at(i);
                 if ((link_data.p1.x == editor_selectedTileX && link_data.p1.y == editor_selectedTileY) || (link_data.p2.x == editor_selectedTileX && link_data.p2.y == editor_selectedTileY)) {
+                    std::cout << "#### REMOVED LINK ####" << std::endl;
                     SharedData::get_instance()->file_v5_area_link_map.at(currentArea).erase(SharedData::get_instance()->file_v5_area_link_map.at(currentArea).begin()+i);
                     edit_mode == AREA_EDIT_MODE_NORMAL;
                     QApplication::setOverrideCursor(Qt::ArrowCursor);
@@ -188,6 +185,7 @@ void areasEditorArea::mousePressEvent(QMouseEvent *event)
 
         // first point, just set
         if (link_p1.x == -1 && link_p1.y == -1) {
+            std::cout << "#### ADD LINK - PART 1 ####" << std::endl;
             link_p1.x = editor_selectedTileX;
             link_p1.y = editor_selectedTileY;
             repaint();
@@ -199,6 +197,7 @@ void areasEditorArea::mousePressEvent(QMouseEvent *event)
             } else if (edit_mode == AREA_EDIT_MODE_HLINK && editor_selectedTileY == link_p1.y && (editor_selectedTileX == link_p1.x-1 || editor_selectedTileX == link_p1.x+1)) {
                 added_link = true;
             }
+            std::cout << "#### ADD LINK - PART 2 - added_link[" << added_link << "] ####" << std::endl;
             if (added_link == true) {
                 if (SharedData::get_instance()->file_v5_area_link_map.find(currentArea) == SharedData::get_instance()->file_v5_area_link_map.end()) {
                     SharedData::get_instance()->file_v5_area_link_map.insert(std::pair<unsigned int, std::vector<struct_file_v5_area_link>>(currentArea, std::vector<struct_file_v5_area_link>()));
@@ -209,7 +208,6 @@ void areasEditorArea::mousePressEvent(QMouseEvent *event)
                 repaint();
             }
         }
-        */
     }
 }
 

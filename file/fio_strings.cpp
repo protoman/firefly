@@ -142,6 +142,44 @@ void fio_strings::save_game_strings(std::vector<std::string> list, std::string f
     fp.close();
 }
 
+void fio_strings::save_game_dialogs(std::vector<std::vector<std::string> >)
+{
+    Json::Value root;   // starts as "null"; will contain the root value after parsing
+    //std::cin >> root;
+
+    // Get the value of the member of root named 'my-encoding', return 'UTF-32' if there is no
+    // such member.
+    //std::string my_encoding = root.get("my-encoding", "UTF-32" ).asString();
+
+    // Get the value of the member of root named 'my-plug-ins'; return a 'null' value if
+    // there is no such member.
+    //const Json::Value my_plugins = root["my-plug-ins"];
+    root["encoding"] = "yourlib::getCurrentEncoding()";
+    root["indent"]["length"] = "yourlib::getCurrentIndentLength()";
+    root["indent"]["use_space"] = "yourlib::getCurrentIndentUseSpace()";
+
+    // Make a new JSON document with the new configuration. Preserve original comments.
+    std::cout << "root: " << root << std::endl;
+}
+
+std::vector<std::vector<std::string> > fio_strings::load_game_dialogs()
+{
+    std::vector<std::vector<std::string> > res;
+    // TEST DATA //
+    std::vector<std::string> list1;
+    list1.push_back("AAAAA");
+    list1.push_back("BBBBB");
+
+    std::vector<std::string> list2;
+    list2.push_back("DDDDDD");
+    list2.push_back("EEEEEE");
+
+    res.push_back(list1);
+    res.push_back(list2);
+
+    return res;
+}
+
 std::string fio_strings::get_common_strings_filename(int language)
 {
     std::string filename = SharedData::get_instance()->FILEPATH + "/common_strings_" + get_language_filename_prefix(language) + ".dat";

@@ -13,7 +13,12 @@ StringsEditor::StringsEditor(QWidget *parent, int mode) : QDialog(parent), ui(ne
 {
     pick_mode = mode;
     string_list = fio_str.load_game_strings(LANGUAGE_ENGLISH, false);
+    SharedData::get_instance()->dialog_list = fio_str.load_game_dialogs();
     ui->setupUi(this);
+
+    dialogEditForm = new DialogEditForm();
+    ui->gameDialogsScrollArea->setWidget(dialogEditForm);
+
     common::fill_languages_combo(ui->languageSelector_comboBox);
     reload();
 }
@@ -23,6 +28,7 @@ void StringsEditor::save()
 {
     fio_str.save_common_strings(string_edit_model.get_data(), ui->languageSelector_comboBox->currentIndex());
     ui->gameCredits_widget->save_data();
+    fio_str.save_game_dialogs(SharedData::get_instance()->dialog_list);
 }
 
 StringsEditor::~StringsEditor()
@@ -100,6 +106,7 @@ void StringsEditor::save_data()
         return;
     }
     fio_str.save_game_strings(translation_string_list, fio_str.get_game_strings_filename(ui->languageSelector_comboBox->currentIndex()));
+    fio_str.save_game_dialogs(SharedData::get_instance()->dialog_list);
 }
 
 void StringsEditor::set_target_qline(QLineEdit *line)
@@ -130,7 +137,7 @@ int StringsEditor::get_pick_mode()
 void StringsEditor::closeEvent(QCloseEvent *event)
 {
     if (pick_mode == pick_mode_edit) {
-        QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Firefly Editor :: Movie Editor", tr("Save data before leaving?\n"), QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
+        QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Firefly Editor :: String Editor", tr("Save data before leaving?\n"), QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
         if (resBtn == QMessageBox::Yes) {
             save();
         } else if (resBtn == QMessageBox::Cancel) {
@@ -204,6 +211,7 @@ void StringsEditor::on_buttonBox_rejected()
 void StringsEditor::load_language(std::string filename)
 {
     translation_string_list = fio_str.load_game_strings_from_file(filename, ui->languageSelector_comboBox->currentIndex(), false);
+    SharedData::get_instance()->dialog_list = fio_str.load_game_dialogs();
     fill_translation();
 }
 

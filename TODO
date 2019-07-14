@@ -1,11 +1,17 @@
-FILE-FORMAT:
-    OK - refazer sistema de salas
-    OK - cada "tela" da área é separada individualmente
-    - é possível definir na tela se ela tem paredes em N, S, W, E (já seta os tiles para blocked, não deixa mudar)
-    OK - ao carregar o mapa no jogo, elas são unidas em uma só sala
-    - só permitir salas contnuas no editor de área
-    - cria rlinks entre áreas
+- criar lista de inimigos, projéteis e objetos que estão na tela e próximo dela
+- criar dark room (apenas círculo ao redor do jogador é mais transparente)
+- alternate full screen (alt + enter)
+    # essas teclas não podem ser definidas como em uso na config
 
+
+- criar sistema de diálogos
+    # quem for usar o diálogo, aponta para o número dele
+    # pode ter n linhas
+    # pode ter n frases (com as linhas)
+
+
+- GameObject::gravity: remover quando fora do mapa
+- está pegando item ao voltar do teleporte de área
 
 - GAME-DESIGN:
     # criar primeiro mapa
@@ -16,8 +22,8 @@ FILE-FORMAT:
     # mostrar items (item vai ter que ter um ícone)
 
 - menu:
-    # adicionar L/R para mudar tela
     # desenhar fundo tela menu (moldura)
+        # mostrar chaves no in-game-menu
         # (default start) upgrades, items e armas
         # (default select) mapa
         # options

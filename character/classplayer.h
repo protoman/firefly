@@ -2,10 +2,10 @@
 #define CLASSPLAYER_H
 
 #include "character/character.h"
-#include "character/classnpc.h"
+#include "character/GameEnemy.h"
 #include "file/file_io.h"
 
-class classnpc; // advance declaration
+class GameEnemy; // advance declaration
 
 /**
  * @brief child of character, this class is used to store data for a player (human controlled character)

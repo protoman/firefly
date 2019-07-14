@@ -29,7 +29,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>About Rockbot Editor 1.1</string>
+        <string>About Firefly Editor 1.1</string>
        </property>
       </widget>
      </item>
@@ -56,7 +56,7 @@
      <item>
       <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>MEGAMAN AND ROCKMAN ARE TRADEMARKS OF CAPCOM INC. SOME OF THE GRAPHICS AND SOUND EFFECTS USED IN THIS GAME ARE PROPERTY OF CAPCOM INC. THIS FANGAME IS A TRIBUTE TO MEGAMAN, FREE AND OPEN-SOURCE WE THANK CAPCOM FOR CREATING MEGAMAN AND ITS CLASSIC GAMES, ALSO FOR BEING FRIENDLY TOWARDS FANGAMES.</string>
+        <string/>
        </property>
        <property name="wordWrap">
         <bool>true</bool>

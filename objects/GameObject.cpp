@@ -9,7 +9,7 @@
 #define DELAY_RAY 1500
 #define FRAMETIMER_DEATHRAY 30
 
-#include "gameManager.h"
+#include "GameManager.h"
 
 #define DISAPPEARNING_VISIBLE_TIME 1500
 #define DISAPPEARNING_HIDDEN_TIME 2000
@@ -22,18 +22,22 @@
 // constructor for map_object
 GameObject::GameObject(short set_id, MapController *set_map, st_position map_pos, st_position teleporter_dest, short map_dest) : _finished(false), _state(0), _duration(0), _timer_limit(0), _started(false), _animation_finished(false), _animation_reversed(false), _hidden(false)
 {
+    if (set_id >= SharedData::get_instance()->v6_object_list.size()) {
+        std::cout << "Invalid object_id[" << set_id << "], for list with size[" << SharedData::get_instance()->v6_object_list.size() << "]" << std::endl;
+        exit(-1);
+    }
 	map = set_map;
 	_id = set_id;
-    name = std::string(GameMediator::get_instance()->object_list.at(_id).name);
-    graphic_filename = GameMediator::get_instance()->object_list.at(_id).graphic_filename;
-    type = GameMediator::get_instance()->object_list.at(_id).type;
-    obj_timer = GameMediator::get_instance()->object_list.at(_id).timer;
-    speed = GameMediator::get_instance()->object_list.at(_id).speed;
-    limit = GameMediator::get_instance()->object_list.at(_id).limit;
+    name = std::string(SharedData::get_instance()->v6_object_list.at(_id).name);
+    graphic_filename = SharedData::get_instance()->v6_object_list.at(_id).graphic_filename;
+    type = SharedData::get_instance()->v6_object_list.at(_id).type;
+    obj_timer = SharedData::get_instance()->v6_object_list.at(_id).timer;
+    speed = SharedData::get_instance()->v6_object_list.at(_id).speed;
+    limit = SharedData::get_instance()->v6_object_list.at(_id).limit;
 	direction = 0;
 	distance = 0;
-    framesize_w = GameMediator::get_instance()->object_list.at(_id).size.width;
-    framesize_h = GameMediator::get_instance()->object_list.at(_id).size.height;
+    framesize_w = SharedData::get_instance()->v6_object_list.at(_id).size.width;
+    framesize_h = SharedData::get_instance()->v6_object_list.at(_id).size.height;
 	frame = 0;
 	start_point.x = map_pos.x*TILESIZE;
 	start_point.y = map_pos.y*TILESIZE;
@@ -55,7 +59,7 @@ GameObject::GameObject(short set_id, MapController *set_map, st_position map_pos
     _command_up = false;
 	_command_down = false;
     _start_timer = 0;
-    _frame_duration = GameMediator::get_instance()->object_list.at(_id).frame_duration;
+    _frame_duration = SharedData::get_instance()->v6_object_list.at(_id).frame_duration;
     _obj_frame_timer = TimerView::get_instance()->getTimer()+_frame_duration;
     frame = 0;
     _timer_limit = 0;
@@ -158,7 +162,15 @@ void GameObject::reset_obj_anim_timer()
 void GameObject::add_graphic()
 {
     draw::get_instance()->get_object_graphic(_id);
-    max_frames = ((draw::get_instance()->get_object_graphic(_id))->surface->w/framesize_w)-1;
+    if ((draw::get_instance()->get_object_graphic(_id))->surface->w ==framesize_w) {
+        max_frames = 1;
+    } else {
+        max_frames = ((draw::get_instance()->get_object_graphic(_id))->surface->w/framesize_w);
+    }
+    if (max_frames == 0) {
+        std::cout << "Invalid object size.w[" << framesize_w << "] for img-w[" << (draw::get_instance()->get_object_graphic(_id))->surface->w << "]" << std::endl;
+        exit(-1);
+    }
 }
 
 void GameObject::remove_graphic()
@@ -185,8 +197,10 @@ void GameObject::gravity()
 			break;
 		}
 	}
+    // @TODO: remove only of you of map //
 	if (position.y > RES_H) {
-		_finished = true;
+        //std::cout << "@TODO - REMOVE #3 ITEM[" << name << "]" << std::endl;
+        //_finished = true;
 	}
 }
 
@@ -199,33 +213,36 @@ bool GameObject::test_change_position(short xinc, short yinc)
 		return true;
 	}
 
-    if (yinc > 0 && position.y > RES_H) { // check if item felt out of screen
+    if (yinc > 0 && position.y > map->get_size().height*TILESIZE) { // check if item felt out of screen
         //std::cout << "OBJ::test_change_position - out of screen(down)" << std::endl;
-        if (position.y < RES_H+TILESIZE*2) {
+        if (position.y < (map->get_size().height*TILESIZE)+TILESIZE*2) {
             if (type != OBJ_FALL_PLATFORM && type != OBJ_MOVING_PLATFORM_UPDOWN) {
                 _finished = true;
                 return false;
             } else {
+                std::cout << ">>>>>>>>>>>>>>>>>> object out of screen #1, fall" << std::endl;
                 return true; // fall platform can move out of screen
             }
         } else {
+            std::cout << ">>>>>>>>>>>>>>>>>> object out of screen #2, fall" << std::endl;
             return true; // too much out of the screen, can't move more
         }
     }
 
     if (is_consumable() == false) {
         // collision against player when player is not using a platform
-        int blocked = map->collision_rect_player_obj(gameManager::get_instance()->get_player()->get_hitbox(), this, 0, 0, xinc, yinc);
+        int blocked = map->collision_rect_player_obj(GameManager::get_instance()->get_player()->get_hitbox(), this, 0, 0, xinc, yinc);
         //if (blocked != 0) std::cout << "obj.blocked: " << blocked << std::endl;
         /// @TODO - consumable items should not stop if blocked by player
         ///
-        if (gameManager::get_instance()->get_player_platform() != this && blocked != 0 && is_teleporting() == false && !(type == OBJ_ITEM_JUMP && yinc > 0) && is_consumable() == false) {
+        if (GameManager::get_instance()->get_player_platform() != this && blocked != 0 && is_teleporting() == false && !(type == OBJ_ITEM_JUMP && yinc > 0) && is_consumable() == false) {
             //std::cout << "OBJ::test_change_position - can't move, BLOCKED by player" << std::endl;
             return false;
         }
     }
 
-    if (position.y+yinc+framesize_h-2 > RES_H) { // falling out of the screen
+    if (position.y+yinc+framesize_h-2 > map->get_size().height*TILESIZE) { // falling out of the screen
+        std::cout << ">>>>>>>>>>>>>>>>>> object out of screen #3, fall" << std::endl;
         return true;
     }
 
@@ -261,9 +278,9 @@ void GameObject::check_player_move(int xinc, int yinc) const
 	if (yinc > 0 && position.y > RES_H) {
 		return;
     }
-	if (gameManager::get_instance()->get_player_platform() == this) {
+    if (GameManager::get_instance()->get_player_platform() == this) {
         //std::cout << "************* object::check_player_move - MOVE xinc: " << xinc << ", yinc: " << yinc << " **************" << std::endl;
-        gameManager::get_instance()->change_player_position(xinc, yinc);
+        GameManager::get_instance()->change_player_position(xinc, yinc);
     }
 }
 
@@ -293,10 +310,21 @@ bool GameObject::is_consumable()
 
 int GameObject::get_ability()
 {
-    if (type != OBJ_ABILITY_ITEM || _id > SharedData::get_instance()->object_list.size()) {
+    if ((type != OBJ_ABILITY_ITEM && type != OBJ_TREASURE_CHEST) || _id > SharedData::get_instance()->v6_object_list.size()) {
         return -1;
     }
-    return SharedData::get_instance()->object_list.at(_id).given_ability;
+    v6_file_object& ref_obj = SharedData::get_instance()->v6_object_list.at(_id);
+    return SharedData::get_instance()->v6_object_list.at(_id).given_ability;
+}
+
+int GameObject::get_key_n()
+{
+    if (type != OBJ_ABILITY_ITEM || _id > SharedData::get_instance()->v6_object_list.size()) {
+        return -1;
+    }
+    v6_file_object& ref_obj = SharedData::get_instance()->v6_object_list.at(_id);
+    return SharedData::get_instance()->v6_object_list.at(_id).key_id;
+
 }
 
 
@@ -337,7 +365,9 @@ void GameObject::show(int adjust_y, int adjust_x)
 	st_rectangle graphic_origin;
 	st_position graphic_destiny;
 
+
     if (map == nullptr) {
+        std::cout << "### OBJECT::SHOW - can't find object map ###" << std::endl;
 		return;
 	}
 
@@ -351,14 +381,15 @@ void GameObject::show(int adjust_y, int adjust_x)
     }
 
     if (draw::get_instance()->get_object_graphic(_id) == nullptr) {
-        std::cout << "### OBJECT::SHOW - can't find graphic' ###" << std::endl;
+        std::cout << "### OBJECT::SHOW - can't find graphic ###" << std::endl;
 		return;
 	}
 
     if (_hidden == true && type != OBJ_ACTIVE_OPENING_SLIM_PLATFORM) {
-        //std::cout << "### OBJECT::SHOW::HIDDEN ###" << std::endl;
+        std::cout << "### OBJECT::SHOW::HIDDEN ###" << std::endl;
 		return;
 	}
+
 
 
     //std::cout << "LOOP: obj[" << name << "] position.x: " << position.x << ", scroll_x: " << scroll_x << ", dest.x: " << graphic_destiny.x << ", dest.y: " << graphic_destiny.y << std::endl;
@@ -383,6 +414,28 @@ void GameObject::show(int adjust_y, int adjust_x)
     //} else if (type == OBJ_BOSS_DOOR) {
         //show_boss_door(adjust_x, adjust_y);
         //return;
+    } else if (type == OBJ_DOOR_LOCKED) {
+        int frame_n = 0;
+        if (_started == true) {
+            frame_n = 1;
+        }
+        show_frame_n(frame_n, adjust_y);
+        // if is still starting (animation opening) show a part of the old frame
+        if (_started == true && _state < framesize_h) {
+            show_frame_n(0, adjust_y);
+            distance += 4;
+            if (distance >= framesize_h) {
+                _state = 1;
+            }
+        }
+        return;
+    } else if (type == OBJ_TREASURE_CHEST) {
+        int frame_n = 0;
+        if (_started == true) {
+            frame_n = 1;
+        }
+        show_frame_n(frame_n, adjust_y);
+        return;
     }
 
     if (show_teleport) {
@@ -406,18 +459,19 @@ void GameObject::show(int adjust_y, int adjust_x)
 
 
 	// checks if the Object is near the screen to show it
-    if (is_on_screen() == true) {
+    show_on_screen_debug = true;
+    //std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>> ON-SCREEN: obj[" << name << "] position.x: " << position.x << ", scroll_x: " << scroll_x << ", dest.x: " << graphic_destiny.x << ", dest.y: " << graphic_destiny.y << std::endl;
+    bool is_on_screen_now = is_on_screen();
+    show_on_screen_debug = false;
+    if (is_on_screen_now == true) {
 
+        //std::cout << "ON-SCREEN: obj[" << name << "] position.x: " << position.x << ", scroll_x: " << scroll_x << ", dest.x: " << graphic_destiny.x << ", dest.y: " << graphic_destiny.y << std::endl;
         // animation
-        if ((GameMediator::get_instance()->object_list.at(_id).animation_auto_start == true || (GameMediator::get_instance()->object_list.at(_id).animation_auto_start == false && _started == true)) && framesize_w * 2 <= (draw::get_instance()->get_object_graphic(_id)->surface->w))  { // have at least two frames
-
+        if ((SharedData::get_instance()->v6_object_list.at(_id).animation_auto_start == true || (SharedData::get_instance()->v6_object_list.at(_id).animation_auto_start == false && _started == true)) && framesize_w * 2 <= (draw::get_instance()->get_object_graphic(_id)->surface->w))  { // have at least two frames
             //std::cout << "OBJECT::SHOW::ANIM[#1], _obj_frame_timer[" << _obj_frame_timer << "], timer[" << TimerView::get_instance()->getTimer() << "]" << std::endl;
-
 			graphic_origin.x = frame * framesize_w;
             if (_obj_frame_timer < TimerView::get_instance()->getTimer()) {
-
                 //std::cout << "OBJECT::SHOW - timer passed, _animation_finished[" << _animation_finished << "]" << std::endl;
-
                 if (_animation_finished == false) {
 					if (_animation_reversed == false) {
 						frame++;
@@ -447,8 +501,8 @@ void GameObject::show(int adjust_y, int adjust_x)
             //std::cout << "obj[" << name << "].show.frame[" << (int)frame << "]" << std::endl;
 
 			if	(_animation_reversed == false && frame > max_frames) {
-                if (GameMediator::get_instance()->object_list.at(_id).animation_loop == false) { // if animation loop is set to false, set this to show always the last frame
-                    if (GameMediator::get_instance()->object_list.at(_id).animation_reverse == false) { // don't need to reverse animation, finish it
+                if (SharedData::get_instance()->v6_object_list.at(_id).animation_loop == false) { // if animation loop is set to false, set this to show always the last frame
+                    if (SharedData::get_instance()->v6_object_list.at(_id).animation_reverse == false) { // don't need to reverse animation, finish it
 						_animation_finished = true;
                         frame = draw::get_instance()->get_object_graphic(_id)->surface->w/framesize_w-1;
 					} else {
@@ -491,13 +545,14 @@ void GameObject::show(int adjust_y, int adjust_x)
 		// parte que vai ser colada
         graphic_destiny.x = position.x - scroll_x;
         //graphic_destiny.y = adjust_y + position.y - map->getMapScrolling().y;
-        graphic_destiny.y = adjust_y + position.y - scroll_y;
+        //graphic_destiny.y = adjust_y + position.y - scroll_y;
+        graphic_destiny.y = position.y - scroll_y;
 
         // -240 -> (160) -> -80
 
+        //std::cout << "obj[" << name << "] position.x: " << position.x << ", scroll_x: " << scroll_x << ", dest.x: " << graphic_destiny.x << ", dest.y: " << graphic_destiny.y << std::endl;
         //std::cout << "object::show::name[" << name << "]::adjust_y[" << adjust_y << "]::graphic_destiny.y[" << graphic_destiny.y << "]::position.y[" << position.y << "]" << std::endl;
 
-        //std::cout << "obj[" << name << "] position.x: " << position.x << ", scroll_x: " << scroll_x << ", dest.x: " << graphic_destiny.x << ", dest.y: " << graphic_destiny.y << std::endl;
 
         if (draw::get_instance()->get_object_graphic(_id) != nullptr) { // there is no graphic with this key yet, add it
             ImageView::get_instance()->renderTexturePortionAt(graphic_origin.x, graphic_origin.y, graphic_origin.w, graphic_origin.h, graphic_destiny.x, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
@@ -513,8 +568,36 @@ void GameObject::show(int adjust_y, int adjust_x)
 
 	// remove item that is out of vision
     } else if (_teleport_state == e_object_teleport_state_waiting && (type == OBJ_ITEM_FLY || type == OBJ_ITEM_JUMP)) {
+        std::cout << "REMOVE #1 ITEM[" << name << "]" << std::endl;
 		_finished = true;
+    } else {
+        //std::cout << "OFF-SCREEN: obj[" << name << "] position.x: " << position.x << ", scroll_x: " << scroll_x << ", dest.x: " << graphic_destiny.x << ", dest.y: " << graphic_destiny.y << std::endl;
     }
+}
+
+void GameObject::show_frame_n(int frame_n, int adjust_y)
+{
+    // if invalid, show first frame
+    float scroll_x = (float)map->getMapScrolling().x;
+    float scroll_y = (float)map->getMapScrolling().y;
+    int graphic_destiny_x = position.x - scroll_x;
+    int graphic_destiny_y = adjust_y + position.y - scroll_y;
+
+    //std::cout << "GameObject::show_frame_n - obj[" << name << "], frame_n[" << frame_n << "], max_frames[" << max_frames << "]" << std::endl;
+
+    if (frame_n >= max_frames) {
+        std::cout << "GameObject::show_frame_n - Inmvalid frame_n, set to ZERO" << std::endl;
+        frame_n = 0;
+    }
+    ImageView::get_instance()->renderTexturePortionAt(frame_n*framesize_w, 0, framesize_w, framesize_h, graphic_destiny_x, graphic_destiny_y, draw::get_instance()->get_object_graphic(_id)->texture);
+}
+
+st_float_position GameObject::get_relative_position()
+{
+    float scroll_x = (float)map->getMapScrolling().x;
+    float scroll_y = (float)map->getMapScrolling().y;
+    return st_float_position(position.x - scroll_x, position.y - scroll_y);
+
 }
 
 
@@ -559,7 +642,7 @@ void GameObject::show_deathray_vertical(int adjust_x, int adjust_y)
             } else {
                 int start_x = RES_H/TILESIZE;
                 if (map) {
-                    start_x = _state - SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map).tiles_h;
+                    start_x = _state - GameManager::get_instance()->get_current_map_obj()->get_size().height;
                 }
                 // body
                 for (int i=start_x+1; i<_state; i++) {
@@ -753,6 +836,7 @@ void GameObject::move(bool paused)
             _teleport_state = e_object_teleport_state_teleport_out;
             teleport_max_timer = TimerView::get_instance()->getTimer() + TELEPORT_TIME;
         } else if (show_teleport == false) {
+            std::cout << "REMOVE #2 ITEM[" << name << "]" << std::endl;
             _finished = true;
         }
         return;
@@ -820,7 +904,7 @@ void GameObject::move(bool paused)
 				_state = OBJ_STATE_RETURN;
 			}
 		} else if (_state == OBJ_STATE_RETURN) { // returning state
-            if (gameManager::get_instance()->get_player_platform() != this) { // do not return if player is on it
+            if (GameManager::get_instance()->get_player_platform() != this) { // do not return if player is on it
                 if (distance == 0) { // added because of initial delay
                     stop();
                 } else {
@@ -942,14 +1026,14 @@ void GameObject::move(bool paused)
         if (_started == true && _timer_limit < TimerView::get_instance()->getTimer()) {
             if (_state == 0) {
                 // check is player is above it
-                int blocked = map->collision_rect_player_obj(gameManager::get_instance()->get_player()->get_hitbox(), this, 0, 2, 0, 0);
+                int blocked = map->collision_rect_player_obj(GameManager::get_instance()->get_player()->get_hitbox(), this, 0, 2, 0, 0);
 
                 std::cout << "OBJ_DAMAGING_PLATFORM - DAMAGE-CHECK, blocked[" << blocked << "]" << std::endl;
 
                 /// @TODO - consumable items should not stop if blocked by player
                 if (blocked != 0) {
                     //std::cout << "OBJ::test_change_position - can't move, BLOCKED by player" << std::endl;
-                    gameManager::get_instance()->get_player()->damage(TOUCH_DAMAGE_SMALL, false);
+                    GameManager::get_instance()->get_player()->damage(TOUCH_DAMAGE_SMALL, false);
                 }
                 _state++;
                 _timer_limit = TimerView::get_instance()->getTimer() + DAMAGING_PLATFORM_TIME;
@@ -1091,9 +1175,9 @@ void GameObject::move(bool paused)
                 _state = e_OBJECT_BOSS_DOOR_STATE_OPENED;
             }
         } else if (_state == e_OBJECT_BOSS_DOOR_STATE_OPENED) {
-            gameManager::get_instance()->horizontal_screen_move(ANIM_DIRECTION_RIGHT, true, position.x/TILESIZE);
+            GameManager::get_instance()->horizontal_screen_move(ANIM_DIRECTION_RIGHT, true, position.x/TILESIZE, (position.y+framesize_h/2)/TILESIZE);
             _state = e_OBJECT_BOSS_DOOR_STATE_NONE;
-            gameManager::get_instance()->show_door_animation();
+            GameManager::get_instance()->show_door_animation();
         } else if (_state == e_OBJECT_BOSS_DOOR_STATE_CLOSING) {
             _ray_state--;
             if (_ray_state <= 0) {
@@ -1316,9 +1400,12 @@ void GameObject::start()
         if (type == OBJ_BOSS_DOOR) {
             _state = e_OBJECT_BOSS_DOOR_STATE_OPENED;
             _teleport_state = 0;
-            gameManager::get_instance()->show_door_animation();
+            GameManager::get_instance()->show_door_animation();
         }
         _timer_limit = TimerView::get_instance()->getTimer() + obj_timer;
+    } else if (type == OBJ_DOOR_LOCKED) {
+        distance = 0;
+        _state = 0;
     }
 }
 
@@ -1351,12 +1438,18 @@ bool GameObject::is_started() const
 
 bool GameObject::is_on_screen()
 {
+    if (map == nullptr) {
+        return false;
+    }
     st_float_position scroll = map->getMapScrolling();
     // entre scroll.x-RES_W/2 e scroll.x+RES_W+RES_W/2
 
     //if (realPosition.x < -TILESIZE*2 || realPosition.x > (RES_W+TILESIZE*2)) {
+    //if (show_on_screen_debug) std::cout << "GameObject::is_on_screen[" << name << "], CHECK - scroll.x[" << scroll.x << "], position.x[" << position.x << "], scroll.y[" << scroll.y << "], position.y[" << position.y << "]" << std::endl;
     if (abs((float)position.x) > scroll.x-RES_W/2 && abs((float)position.x) < scroll.x+RES_W*1.5) {
+        //if (show_on_screen_debug) std::cout << "GameObject::is_on_screen[" << name << "], X* visible - scroll.y[" << scroll.y << "], position.y[" << position.y << "]" << std::endl;
         if (abs((float)position.y) > scroll.y-AREA_H/2 && abs((float)position.y) < scroll.y+AREA_H*1.5) {
+            //if (show_on_screen_debug) std::cout << "GameObject::is_on_screen[" << name << "], Y visible - scroll.y[" << scroll.y << "], position.y[" << position.y << "]" << std::endl;
             return true;
         }
     }

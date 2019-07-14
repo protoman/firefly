@@ -5,6 +5,7 @@
 #include "file/fio_strings.h"
 #include "file/file_io.h"
 #include "model/stringeditmodel.h"
+#include "text/dialogeditform.h"
 
 #include <QDialog>
 #include <QSignalMapper>
@@ -81,6 +82,7 @@ private:
     QLineEdit* target_qline;
     // target int property
     int* target_property;
+    DialogEditForm* dialogEditForm;
 };
 
 #endif // STRINGSEDITOR_H

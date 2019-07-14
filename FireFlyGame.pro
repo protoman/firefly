@@ -23,7 +23,11 @@ linux {
 
 
 SOURCES += \
+    GameManager.cpp \
     aux_tools/ability_name.cpp \
+    aux_tools/jsoncpp.cpp \
+    character/GameEnemy.cpp \
+    character/gamenpc.cpp \
         main.cpp \
     view/textview.cpp \
     view/imageview.cpp \
@@ -47,7 +51,6 @@ SOURCES += \
     character/artificial_inteligence.cpp \
     character/character.cpp \
     character/character_animation.cpp \
-    character/classnpc.cpp \
     character/classplayer.cpp \
     view/draw.cpp \
     view/gfx_sin_wave.cpp \
@@ -60,18 +63,23 @@ SOURCES += \
     class_config.cpp \
     options/key_map.cpp \
     ports/android/android_game_services.cpp \
-    gameManager.cpp \
     objects/GameObject.cpp \
     scenes/dialogs.cpp \
     options/pausemenu.cpp
 
 HEADERS += \
+    GameManager.h \
     aux_tools/ability_name.h \
+    aux_tools/json/json-forwards.h \
+    aux_tools/json/json.h \
+    character/GameEnemy.h \
+    character/gamenpc.h \
     file/v4/file_save_v4.h \
     file/v5/struct_file_area_data.h \
     file/v5/struct_file_game_area_map.h \
     file/v6/file_area_v6.h \
     file/v6/file_level_v6.h \
+    file/v6/file_object_v6.h \
     file/v6/file_room_v6.h \
     view/textview.h \
     view/imageview.h \
@@ -101,7 +109,6 @@ HEADERS += \
     character/artificial_inteligence.h \
     character/character.h \
     character/character_animation.h \
-    character/classnpc.h \
     character/classplayer.h \
     view/draw.h \
     view/gfx_sin_wave.h \
@@ -119,7 +126,6 @@ HEADERS += \
     class_config.h \
     options/key_map.h \
     ports/android/android_game_services.h \
-    gameManager.h \
     objects/GameObject.h \
     scenes/dialogs.h \
     options/pausemenu.h \

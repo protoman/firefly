@@ -66,14 +66,6 @@ void map_tab::fill_data()
 
     fill_map_selector();
 
-
-
-    std::cout << "################# SharedData::get_instance()->file_v5_map_header_list.size[" << SharedData::get_instance()->file_v5_map_header_list.size() << "]" << std::endl;
-
-    file_v5_map_header& map_header = SharedData::get_instance()->file_v5_map_header_list.at(SharedData::get_instance()->file_v5_selected_map);
-    QString bg1_filename(map_header.backgrounds[SharedData::get_instance()->file_v5_selected_layer].filename);
-
-
     _data_loading = false;
 }
 
@@ -378,7 +370,7 @@ void map_tab::on_editModeSlope_Button_clicked()
 
 void map_tab::on_addMap_pushButton_clicked()
 {
-    SharedData::get_instance()->file_v5_map_header_list.push_back(file_v5_map_header());
+    SharedData::get_instance()->v6_area_list.push_back(file_v6_area());
     _data_loading = true;
     fill_map_selector();
     fill_data();
@@ -388,18 +380,17 @@ void map_tab::on_addMap_pushButton_clicked()
 void map_tab::fill_map_selector()
 {
     ui->mapSelector_comboBox->clear();
-    for (unsigned int i=0; i<SharedData::get_instance()->file_v5_map_header_list.size(); i++) {
-        QString itemName = QString("[") + QString::number(i) + QString("] - ") + QString(SharedData::get_instance()->file_v5_map_header_list.at(i).map_name);
+    for (unsigned int i=0; i<SharedData::get_instance()->v6_area_list.size(); i++) {
+        QString itemName = QString("[") + QString::number(i) + QString("] - ") + QString(SharedData::get_instance()->v6_area_list.at(i).map_name);
         ui->mapSelector_comboBox->addItem(itemName);
     }
-    ui->mapSelector_comboBox->setCurrentIndex(SharedData::get_instance()->file_v5_selected_map);
+    ui->mapSelector_comboBox->setCurrentIndex(SharedData::get_instance()->v6_selected_area);
 }
 
 
 void map_tab::on_mapSelector_comboBox_currentIndexChanged(int index)
 {
     if (_data_loading == true) { return; }
-    SharedData::get_instance()->file_v5_selected_map = index;
     SharedData::get_instance()->v6_selected_area = index;
     _data_loading = true;
     fill_data();

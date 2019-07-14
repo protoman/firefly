@@ -170,7 +170,7 @@ void option_picker::show_reset_config_dialog()
     TextView::get_instance()->renderText(20, 44, st_color(250, 250, 250), false, "TO RESET CONFIGURATION.");
     TextView::get_instance()->renderText(20, 60, st_color(250, 250, 250), false, "OR WAIT 10 SECONDS TO");
     TextView::get_instance()->renderText(20, 72, st_color(250, 250, 250), false, "RETURN.");
-    ImageView::get_instance()->updateScreen();
+    ImageView::get_instance()->updateRender();
     long init_timer = TimerView::get_instance()->getTimer();
     while (InputController::get_instance()->is_check_input_reset_command_activated() == false) {
         InputController::get_instance()->read_input(true, false);
@@ -188,14 +188,14 @@ void option_picker::show_reset_config_dialog()
 
     wait_release_reset_config();
     ImageView::get_instance()->renderImageAt(0, 0, screen_copy);
-    ImageView::get_instance()->updateScreen();
+    ImageView::get_instance()->updateRender();
 }
 
 void option_picker::wait_release_reset_config()
 {
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 40, 0, 0);
     TextView::get_instance()->renderText(20, 20, st_color(250, 250, 250), false, "PLEASE RELEASE BUTTONS");
-    ImageView::get_instance()->updateScreen();
+    ImageView::get_instance()->updateRender();
     while (InputController::get_instance()->is_check_input_reset_command_activated() == true) {
         InputController::get_instance()->read_input(true, false);
         TimerView::get_instance()->delay(1);

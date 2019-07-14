@@ -361,7 +361,14 @@ struct st_imageData {
             surface = SDL_CreateRGBSurface(SDL_RLEACCEL , original.surface->w, original.surface->h, VIDEO_MODE_COLORS, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
             SDL_Rect srcRect = {0, 0, original.surface->w, original.surface->h};
             SDL_BlitSurface(original.surface, &srcRect, surface, nullptr);
-            texture = SDL_CreateTextureFromSurface(gRenderer, surface);
+
+            int access_mode;
+            SDL_QueryTexture(original.texture, nullptr, &access_mode, nullptr, nullptr);
+            if (access_mode == SDL_TEXTUREACCESS_TARGET) {
+                texture = SDL_CreateTexture(gRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, original.surface->w, original.surface->h);
+            } else {
+                texture = SDL_CreateTextureFromSurface(gRenderer, surface);
+            }
         }
     }
 
@@ -518,6 +525,14 @@ struct st_surface_with_direction {
     st_imageData surface[2];
 };
 
+
+struct st_dialog {
+    unsigned long timer = 0;                // if greater than zero, instead of waiting keypress, dialog will wait this time to vanish
+    std::string music_filename = "";        // plays a tune when dialog shows up
+    std::string face_name = "";             // if provided, shows a character portrair in dialog window
+    bool show_close_button = true;          // show a button on dialog window to close itself
+    std::vector<std::string> msgs;          // text in the dialog
+};
 
 
 

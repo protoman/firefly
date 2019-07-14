@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-
+#include "view/textview.h"
 
 
 
@@ -103,7 +103,8 @@ void fps_control::fps_count()
         }
         std::string temp_str(_fps_buffer);
         // @TODO: set in sharedData //
-        //TextView::get_instance()->renderText(12, 2, temp_str);
+        //std::cout << "FPS[" << temp_str << "]" << std::endl;
+        TextView::get_instance()->renderText(12, 2, temp_str);
     }
 }
 

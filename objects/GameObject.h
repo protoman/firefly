@@ -40,6 +40,8 @@ public:
     void reset_timer();
     void reset_obj_anim_timer();
     void show(int adjust_y=0, int adjust_x=0);
+    void show_frame_n(int frame_n, int adjust_y);
+    st_float_position get_relative_position();
 
 
     void show_vertical_ray(int adjust_x, int adjust_y=0);
@@ -149,6 +151,7 @@ public:
     void set_teleport_out();
     bool is_consumable();                                       // if item is a energy, tank, life, that player can get
     int get_ability();
+    int get_key_n();
     void enable_teleport_animation();                           // when this is called, object will show a teleporting in-animation
     void set_precise_position(st_position pos, int direction);                                // used to get a fine-tuning positioning instead of map-position
     void set_position(st_position pos);
@@ -190,7 +193,7 @@ private:
     bool _started;																// some object types will only start to act/move after player interaction
     unsigned int _start_timer;                                                           // holds the time of the activation (used for initial delay)
     bool _finished;																// indicates to map->show() that the object must be deleted
-    Sint8 _state;
+    int _state;
     unsigned int _duration;
     unsigned int _timer_limit;
     bool _command_up;
@@ -211,6 +214,8 @@ private:
     bool is_dropped;
     bool show_teleport;
     long teleport_max_timer;
+
+    bool show_on_screen_debug = false;
 };
 
 #endif // OBJECT_H

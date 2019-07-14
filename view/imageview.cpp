@@ -83,6 +83,50 @@ SDL_Texture *ImageView::get_texture_renderer()
     return texture_render_target;
 }
 
+void ImageView::set_fullscreen(bool mode)
+{
+    if (mode == true) {
+        SDL_DisplayMode DM;
+        SDL_GetCurrentDisplayMode(0, &DM);
+        auto res_width = DM.w;
+        auto res_height = DM.h;
+
+        std::cout << "res_width[" << res_width << "], res_height[" << res_height << "]" << std::endl;
+
+        float scale_w = (float)res_width/RES_W;
+        float scale_h = (float)res_height/RES_H;
+        SDL_RenderSetScale(gRenderer, scale_w, scale_w);
+
+        std::cout << ">>>> scale_w[" << scale_w << "], scale_h[" << scale_h << "]" << std::endl;
+
+        SDL_SetWindowFullscreen(SharedData::get_instance()->window, SDL_WINDOW_FULLSCREEN);
+    } else {
+        SDL_RenderSetScale(gRenderer, 1, 1);
+        SDL_SetWindowFullscreen(SharedData::get_instance()->window, 0);
+        }
+}
+
+void ImageView::blend_images(st_imageData &source, st_imageData &dest, int x, int y)
+{
+
+    int res = SDL_SetRenderTarget(gRenderer, dest.texture);
+    //std::cout << "ImageView::blend_images.res[" << res << "], error[" << SDL_GetError() << "]" << std::endl;
+
+    //SDL_BLENDMODE_NONE = 0x00000000,     /**< no blending dstRGBA = srcRGBA */
+    //SDL_BLENDMODE_BLEND = 0x00000001,    /**< alpha blending dstRGB = (srcRGB * srcA) + (dstRGB * (1-srcA)) dstA = srcA + (dstA * (1-srcA)) */
+    //SDL_BLENDMODE_ADD = 0x00000002,      /**< additive blending dstRGB = (srcRGB * srcA) + dstRGB dstA = dstA */
+    //SDL_BLENDMODE_MOD = 0x00000004,      /**< color modulate dstRGB = srcRGB * dstRGB dstA = dstA */
+
+    SDL_SetTextureBlendMode(source.texture, SDL_BLENDMODE_BLEND);
+
+
+    SDL_Rect origin = {0, 0, source.surface->w, source.surface->h};
+    SDL_Rect destiny  = {x, y, source.surface->w, source.surface->h};
+    SDL_RenderCopy(gRenderer, source.texture, &origin, &destiny);
+
+    SDL_SetRenderTarget(gRenderer, nullptr);
+}
+
 
 void ImageView::copyArea(st_imageData &origin, st_imageData &dest)
 {
@@ -149,42 +193,6 @@ void ImageView::eraseCursor(st_position pos)
     clearScreenArea(pos.x, pos.y, CURSOR_SPACING, CURSOR_SPACING, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
 }
 
-void ImageView::show_dialog(Uint8 position)
-{
-    int posX = (RES_W-dialog_surface.surface->w)*0.5;
-    int posY;
-
-    if (position == 0) {
-        posY = (RES_H-dialog_surface.surface->h)*0.5;
-    } else if (position == 1) {
-        posY = 3;
-    } else {
-        posY = RES_H - dialog_surface.surface->h - 25;
-    }
-
-    _dialog_pos.x = posX;
-    _dialog_pos.y = posY;
-
-    st_position bg_pos(posX, posY);
-    renderImageAt(bg_pos.x, bg_pos.y, dialog_surface);
-
-}
-
-void ImageView::show_dialog_button(Uint8 position)
-{
-    int posX = (RES_W-dialog_surface.surface->w)*0.5;
-    int posY;
-
-    if (position == 0) {
-        posY = (RES_H-dialog_surface.surface->h)*0.5;
-    } else if (position == 1) {
-        posY = 3;
-    } else {
-        posY = RES_H - dialog_surface.surface->h - 25;
-    }
-
-    show_btn_a(st_position(posX+dialog_surface.surface->w-_btn_a_surface.surface->w-2-TILESIZE, posY+dialog_surface.surface->h-_btn_a_surface.surface->h-TILESIZE/2));
-}
 
 void ImageView::place_face(std::string face_file, st_position pos)
 {
@@ -202,12 +210,7 @@ void ImageView::place_face(std::string face_file, st_position pos)
     renderImageAt(pos.x, pos.y, FACES_SURFACES[face_file]);
 }
 
-st_position ImageView::get_dialog_pos() const
-{
-    return _dialog_pos;
-}
-
-st_position ImageView::get_config_menu_pos() const
+st_position ImageView::get_config_menu_pos()
 {
     return _config_menu_pos;
 }
@@ -256,7 +259,7 @@ void ImageView::zoom_image(st_position dest, st_imageData &picture, int smooth)
             SDL_Texture* newTexture = nullptr;
             newTexture = SDL_CreateTextureFromSurface(gRenderer, rotozoom_picture);
             renderTexturePortionAt(origin_rectangle.x, origin_rectangle.y, origin_rectangle.w, origin_rectangle.h, dest_zoom.x, dest_zoom.y, newTexture);
-            updateScreen();
+            updateRender();
             TimerView::get_instance()->delay(20);
             SDL_FreeSurface(rotozoom_picture);
             SDL_DestroyTexture(newTexture);
@@ -472,7 +475,7 @@ void ImageView::clearScreenArea(short x, short y, short w, short h, short r, sho
     SDL_RenderFillRect(gRenderer, &rect);
 }
 
-void ImageView::updateScreen()
+void ImageView::updateRender()
 {
     SDL_RenderPresent(gRenderer);
 }
@@ -489,7 +492,17 @@ st_imageData ImageView::initSurface(st_size size)
     return res;
 }
 
-void ImageView::clear_surface_area(short x, short y, short w, short h, short r, short g, short b, st_imageData &image) const
+void ImageView::init_target_image(st_imageData& image, int w, int h)
+{
+    image.surface = SDL_CreateRGBSurface(SDL_RLEACCEL, w, h, VIDEO_MODE_COLORS, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+    if (image.surface == nullptr) {
+        exit(EXIT_FAILURE);
+    }
+    image.texture = SDL_CreateTexture(gRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, w, h);
+
+}
+
+void ImageView::clear_surface_area(short x, short y, short w, short h, short r, short g, short b, st_imageData &image)
 {
     SDL_Rect dest;
     if (image.surface == nullptr || image.surface->format == nullptr) {
@@ -500,6 +513,21 @@ void ImageView::clear_surface_area(short x, short y, short w, short h, short r, 
     dest.w = w;
     dest.h = h;
     SDL_FillRect(image.surface, &dest, SDL_MapRGB(image.surface->format, r, g, b));
+    rebuildTexture(image);
+}
+
+void ImageView::clear_texture_area(short x, short y, short w, short h, Uint8 r, Uint8 g, Uint8 b, Uint8 alpha, st_imageData &image)
+{
+    SDL_SetRenderTarget(gRenderer, image.texture);
+    SDL_Rect dest;
+    dest.x = x;
+    dest.y = y;
+    dest.w = w;
+    dest.h = h;
+    SDL_SetRenderDrawColor(gRenderer, r, g, b, alpha);
+    SDL_SetTextureBlendMode(image.texture, SDL_BLENDMODE_BLEND);
+    SDL_RenderFillRect(gRenderer, &dest);
+    SDL_SetRenderTarget(gRenderer, nullptr);
 }
 
 void ImageView::set_surface_alpha(int alpha, st_imageData &image)
@@ -633,10 +661,8 @@ void ImageView::place_3rd_level_tile(int origin_x, int origin_y, int dest_x, int
 
 void ImageView::load_icons()
 {
-    std::string filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/dialog.png";
-    dialog_surface = imageFromFile(filename);
 
-    filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/weapon_menu.png";
+    std::string filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/weapon_menu.png";
     ingame_menu = imageFromFile(filename);
 
     filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/btn_a.png";

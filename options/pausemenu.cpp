@@ -24,7 +24,7 @@ PauseMenu *PauseMenu::get_instance()
 
 bool PauseMenu::execute_pause_menu()
 {
-    if (InputController::get_instance()->p1_input[BTN_START] == 1) {
+    if (InputController::get_instance()->p1_input[BTN_FULL_SCREEN] == 0 && InputController::get_instance()->p1_input[BTN_START] == 1) {
         is_paused = !is_paused;
         if (is_paused) { // entered pause mode, show animation //
             draw::get_instance()->draw_in_game_menu_animation();

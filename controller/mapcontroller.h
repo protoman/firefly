@@ -7,7 +7,7 @@
 #include "data/shareddata.h"
 #include "view/imageview.h"
 
-#include "character/classnpc.h"
+#include "character/GameEnemy.h"
 #include "objects/GameObject.h"
 #include "view/animation.h"
 #include "view/draw.h"
@@ -79,7 +79,7 @@ public:
     void loadMap();
     void show();
     void updated_visited_room();
-
+    int get_level_from_room(int x, int y);
 
     int collision_rect_player_obj(st_rectangle player_rect, GameObject* temp_obj, const short int x_inc, const short int y_inc, const short obj_xinc, const short obj_yinc);
     int getMapPointLock(st_position pos) const;
@@ -98,7 +98,7 @@ public:
     bool isEdgeColumnLocked(int incX, bool first);
 
     void add_bubble_animation(st_position pos);
-    classnpc* collision_player_npcs(character*, const short int, const short int);
+    GameEnemy* collision_player_npcs(character*, const short int, const short int);
     st_float_position get_last_scrolled() const;
 
     // LAYERS //
@@ -144,9 +144,9 @@ public:
 
     void collision_player_special_attack(character*, const short int, const short int, short int, short int);
 
-    classnpc* find_nearest_npc(st_position pos);
+    GameEnemy* find_nearest_npc(st_position pos);
 
-    classnpc* find_nearest_npc_on_direction(st_position pos, int direction);
+    GameEnemy* find_nearest_npc_on_direction(st_position pos, int direction);
 
     void clean_map_npcs_projectiles();
 
@@ -172,9 +172,7 @@ public:
 
     void clear_animations(); // remove all animations from map
 
-    void set_player(classPlayer* player_ref);
-
-    classnpc *spawn_map_npc(short int npc_id, st_position npc_pos, short direction, bool player_friend, bool progressive_span);
+    GameEnemy *spawn_map_npc(short int npc_id, st_position npc_pos, short direction, bool player_friend, bool progressive_span);
 
     int child_npc_count(int parent_id);
 
@@ -182,6 +180,8 @@ public:
 
     void show_npcs();
     void show_npcs_to_left(int x);
+
+    void build_screen_area_object_list();
 
     void move_objects(bool paused);
 
@@ -193,9 +193,9 @@ public:
 
     void show_above_objects(int adjust_y=0, int adjust_x=0);
 
-    bool boss_hit_ground(classnpc *npc_ref);
+    bool boss_hit_ground(GameEnemy *npc_ref);
 
-    classnpc* get_near_boss();
+    GameEnemy* get_near_boss();
 
     void reset_map_npcs();
 
@@ -206,7 +206,7 @@ public:
     st_position get_first_lock_in_direction(st_position pos, st_size max_dist, int direction);
 
 
-    void drop_item(classnpc *npc_ref);
+    void drop_item(GameEnemy *npc_ref);
 
     void set_bg_scroll(int scrollx);
 
@@ -239,7 +239,7 @@ public:
     st_rectangle get_player_hitbox();
     bool must_show_static_bg();                                 // method used to prevent showing enemies on transition if showing static-bg
 
-
+    void reset_map_loaded();
 
 
 
@@ -266,11 +266,8 @@ private:
     std::map<unsigned int, st_background> imageLayerMap;
 
 public:
-    std::vector<classnpc> _npc_list;                                        // vector npcs
-    std::vector<classnpc> _npc_spawn_list;                                  // list of enemyes to be spawned, after added into _npc_list
-
-
-    classPlayer* _player_ref;                                               // vector players
+    std::vector<GameEnemy> _npc_list;                                        // vector npcs
+    std::vector<GameEnemy> _npc_spawn_list;                                  // list of enemyes to be spawned, after added into _npc_list
     std::vector<animation> animation_list;
     // vector teleporters
     // vector objects
@@ -296,10 +293,17 @@ private:
 
     std::map<int, st_imageData> slope_image_map;
 
+
+    // list of objects, enemies and projectiles in screen-area
+    // stores the position of the object in the "main" list
+    std::vector<int> on_screen_area_object_list;
+
+
     // FIL-V6 //
     std::map<st_position, file_v6_room_tile> area_tile_map;
     int map_tiles_w = 0;
     int map_tiles_h = 0;
+    bool map_was_reloaded = false;
 };
 
 #endif // MAPCONTROLLER_H

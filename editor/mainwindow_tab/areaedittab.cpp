@@ -23,7 +23,11 @@ AreaEditTab::~AreaEditTab()
 
 void AreaEditTab::on_currentAreaComboBox_currentIndexChanged(int index)
 {
+    SharedData::get_instance()->v6_selected_area = index;
     set_data();
+    ui->areaEditPreviewWidgetObj->update_files();
+    ui->areaEditPreviewWidgetObj->repaint();
+
 }
 
 void AreaEditTab::reload()
@@ -56,6 +60,8 @@ void AreaEditTab::fill_data()
     }
     common::fill_files_combo("/images/map_backgrounds", ui->layerImageComboBox);
     common::fill_layer_scroll_mode(ui->layerAutoscrollComboBox);
+
+    common::fill_files_combo("/music", ui->musicFilenameComboBox);
 
     set_data();
     is_loading = false;
@@ -100,6 +106,8 @@ void AreaEditTab::set_data()
 
     ui->areaEditPreviewWidgetObj->update_files();
     ui->areaEditPreviewWidgetObj->repaint();
+
+    ui->musicFilenameComboBox->setCurrentIndex(ui->musicFilenameComboBox->findText(SharedData::get_instance()->v6_area_list.at(currentMap).music_filename));
 
     if (must_reset_is_loading) {
         is_loading = false;
@@ -243,4 +251,10 @@ void AreaEditTab::on_backgroundColorPushButton_clicked()
     colorDialog->setOption(QColorDialog::DontUseNativeDialog, true);
     QObject::connect(colorDialog, SIGNAL(colorSelected(QColor)), this, SLOT(on_color_selected1(QColor)));
     colorDialog->show();
+}
+
+void AreaEditTab::on_musicFilenameComboBox_currentIndexChanged(const QString &arg1)
+{
+    if (checkLoadingAndValid()) { return; }
+    sprintf(SharedData::get_instance()->v6_area_list.at(ui->currentAreaComboBox->currentIndex()).music_filename, "%s", arg1.toStdString().c_str());
 }

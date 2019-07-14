@@ -57,6 +57,7 @@ struct st_save {
     int mp;
     st_save_checkpoint checkpoint;
     bool abilities[ABILITIES_SLOTS];
+    bool keys[KEY_TYPE_COUNT];
 
 
     st_save() {
@@ -69,6 +70,9 @@ struct st_save {
         mp = PLAYER_INITIAL_HP;
         for (int i=0; i<ABILITIES_SLOTS; i++) {
             abilities[i] = false;
+        }
+        for (int i=0; i<KEY_TYPE_COUNT; i++) {
+            keys[i] = false;
         }
     }
 };

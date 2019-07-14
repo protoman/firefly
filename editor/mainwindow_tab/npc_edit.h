@@ -97,6 +97,8 @@ private slots:
 
     void on_backgroundFileComboBox_currentIndexChanged(const QString &arg1);
 
+    void on_isNPC_checkBox_toggled(bool checked);
+
 private:
 	void fill_data();
 

@@ -44,7 +44,6 @@ public:
 
     int get_heart_pieces_number(st_save game_save);
 
-
     std::string get_sufix();
 
 private:

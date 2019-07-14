@@ -57,11 +57,14 @@ TARGET = ../build/editor
 TEMPLATE = app
 SOURCES += main.cpp \
     ../aux_tools/ability_name.cpp \
+    ../aux_tools/jsoncpp.cpp \
     mainwindow.cpp \
     editorarea.cpp \
     editortilepallete.cpp \
     mainwindow_tab/areaedittab.cpp \
     mainwindow_tab/leveleditor.cpp \
+    mainwindow_tab/text/dialogeditform.cpp \
+    mainwindow_tab/text/model/dialogtableitemmodel.cpp \
     mediator.cpp \
     addwizard.cpp \
     loadgamepicker.cpp \
@@ -125,10 +128,14 @@ SOURCES += main.cpp \
 
 HEADERS += mainwindow.h \
     ../aux_tools/ability_name.h \
+    ../aux_tools/json/json-forwards.h \
+    ../aux_tools/json/json.h \
     editorarea.h \
     editortilepallete.h \
     mainwindow_tab/areaedittab.h \
     mainwindow_tab/leveleditor.h \
+    mainwindow_tab/text/dialogeditform.h \
+    mainwindow_tab/text/model/dialogtableitemmodel.h \
     mediator.h \
     addwizard.h \
     addwizard.h \
@@ -223,6 +230,7 @@ FORMS += mainwindow.ui \
     mainwindow_tab/leveleditor.ui \
     mainwindow_tab/npc_edit.ui \
     mainwindow_tab/object_tab.ui \
+    mainwindow_tab/text/dialogeditform.ui \
     mainwindow_tab/weapon_edit.ui \
     mainwindow_tab/stage_edit.ui \
     mainwindow_tab/artificial_inteligence_tab.ui \

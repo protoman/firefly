@@ -148,10 +148,23 @@ void common::fill_object_combo(QComboBox* combo)
 {
     combo->clear(); // delete all previous entries
 
-    for (int i=0; i<Mediator::get_instance()->object_list.size(); i++) {
-        QString temp_str = QString("[") + QString::number(i) + QString("] - ") + QString(Mediator::get_instance()->object_list.at(i).name);
+    for (int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
+        QString temp_str = QString("[") + QString::number(i) + QString("] - ") + QString(SharedData::get_instance()->v6_object_list.at(i).name);
         combo->addItem(temp_str);
-	}
+    }
+}
+
+void common::fill_object_combo(QComboBox *combo, OBJECT_TYPE type)
+{
+    combo->clear(); // delete all previous entries
+
+    for (int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
+        std::cout << "%%%%%%%%% obj[" << SharedData::get_instance()->v6_object_list.at(i).name << "], type[" << SharedData::get_instance()->v6_object_list.at(i).type << "], expected[" << (int)type << "]" << std::endl;
+        if (SharedData::get_instance()->v6_object_list.at(i).type == type) {
+            QString temp_str = QString("[") + QString::number(i) + QString("] - ") + QString(SharedData::get_instance()->v6_object_list.at(i).name);
+            combo->addItem(temp_str);
+        }
+    }
 }
 
 
@@ -319,18 +332,18 @@ void common::fill_object_listWidget(QListWidget *listWidget)
 
     listWidget->clear();
 
-    for (int i=0; i<Mediator::get_instance()->object_list.size(); i++) {
+    for (int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
         item = new QListWidgetItem;
         QString temp_str = QString("[");
         if (i < 10) {
             temp_str += "0";
         }
 
-        temp_str += QString::number(i) + QString("] - ") + QString(Mediator::get_instance()->object_list.at(i).name);
+        temp_str += QString::number(i) + QString("] - ") + QString(SharedData::get_instance()->v6_object_list.at(i).name);
         item->setText(temp_str);
-        std::string filename = SharedData::get_instance()->FILEPATH + "/images/sprites/objects/" + Mediator::get_instance()->object_list.at(i).graphic_filename;
+        std::string filename = SharedData::get_instance()->FILEPATH + "/images/sprites/objects/" + SharedData::get_instance()->v6_object_list.at(i).graphic_filename;
         QPixmap image(filename.c_str());
-        image = image.copy(0, 0, Mediator::get_instance()->object_list.at(i).size.width, Mediator::get_instance()->object_list.at(i).size.height);
+        image = image.copy(0, 0, SharedData::get_instance()->v6_object_list.at(i).size.width, SharedData::get_instance()->v6_object_list.at(i).size.height);
         if (image.isNull() == false && image.width() > 0) {
             image = image.scaled(32, 32);
         }
@@ -449,6 +462,7 @@ void common::fill_abilities_combo(QComboBox *combo)
         combo->addItem(QString(AbilityName::get_instance()->get_name_from_number(i).c_str()));
     }
 }
+
 
 
 

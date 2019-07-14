@@ -96,7 +96,7 @@
             <x>0</x>
             <y>0</y>
             <width>653</width>
-            <height>417</height>
+            <height>401</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
@@ -151,7 +151,7 @@
             <x>0</x>
             <y>0</y>
             <width>653</width>
-            <height>417</height>
+            <height>401</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_7">
@@ -182,6 +182,30 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_game_dialogs">
+      <attribute name="title">
+       <string>Game Dialogs</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QScrollArea" name="gameDialogsScrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="gameDialogScrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>653</width>
+            <height>401</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tab_4">
       <attribute name="title">
        <string>Game Credits</string>
@@ -198,7 +222,7 @@
             <x>0</x>
             <y>0</y>
             <width>653</width>
-            <height>417</height>
+            <height>401</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_10">

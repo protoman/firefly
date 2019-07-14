@@ -221,7 +221,6 @@ public:
     st_position get_attack_position(short direction);
     st_float_position get_last_moved();
 
-
 private:
     ATTACK_TYPES check_must_attack(bool always_charged);
     void check_charging_colors(bool always_charged);
@@ -335,7 +334,7 @@ protected:
 
     unsigned int    _moving_platform_timer;             // used to control character movement when is over a moving platform
 
-    int             _number;                            // used for player or npc_id
+    unsigned long   _number;                            // used for player or npc_id
 
     bool            _super_jump;                        // indicates if the jump is super high
     bool            _force_jump;                        // when character is catapulted by an object, ignores jump button state until jump is finished (no matter if the jump button is released in the middle of jump, it will jump until reaching top)
@@ -381,6 +380,8 @@ protected:
     bool must_show_dash_effect;
     st_imageData dash_effect_shadow_surface_frame;
     bool was_on_slope = false;
+
+    int got_item_id = -1;
 };
 
 #endif // CHARACTER_H

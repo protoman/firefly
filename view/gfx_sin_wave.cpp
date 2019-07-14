@@ -42,7 +42,7 @@ void gfx_sin_wave::show(int x, int y)
             ImageView::get_instance()->renderTexturePortionAt(0, i, surface->surface->w, 1, pos_x, pos_y, surface->texture);
         }
         amplitude--;
-        ImageView::get_instance()->updateScreen();
+        ImageView::get_instance()->updateRender();
         TimerView::get_instance()->delay(40);
     }
 }

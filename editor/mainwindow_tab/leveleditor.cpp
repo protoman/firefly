@@ -9,8 +9,6 @@ LevelEditor::LevelEditor(QWidget *parent) :
     ui(new Ui::AreaEditor)
 {
     ui->setupUi(this);
-    QObject::connect(ui->areaPreviewWidget, SIGNAL(on_area_changed()), this, SLOT(area_changed()));
-    std::cout << "DEBUG" << std::endl;
 }
 
 LevelEditor::~LevelEditor()
@@ -91,7 +89,3 @@ void LevelEditor::on_addHorizontalLinkPushButton_clicked()
     ui->areaPreviewWidget->set_edit_mode(AREA_EDIT_MODE_HLINK);
 }
 
-void LevelEditor::area_changed()
-{
-    emit on_area_changed();
-}

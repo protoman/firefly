@@ -53,6 +53,8 @@ private slots:
 
     void on_backgroundColorPushButton_clicked();
 
+    void on_musicFilenameComboBox_currentIndexChanged(const QString &arg1);
+
 private:
     void fill_data();
     void set_data();
