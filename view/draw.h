@@ -17,6 +17,7 @@
 #define SNOW_PARTICLES_NUMBER 20
 
 #define HUD_CENTER_BLINK_TIMER 400
+#define WATER_ANIMATION_FRAME_TIME 20
 
 struct st_snow_particle {
     st_float_position position;
@@ -55,7 +56,6 @@ public:
     void set_gfx(Uint8 gfx, short mode);
     Uint8 get_gfx();
     void set_flash_enabled(bool enabled);
-    void show_ready();
     void show_bubble(int x, int y);
     void show_teleport_small(int x, int y);
     int show_credits_text(bool can_leave, std::vector<std::string> credit_text);
@@ -93,7 +93,9 @@ public:
     void show_dialog(Uint8 position);
     void show_dialog_button(Uint8 position);
     st_position get_dialog_pos() const;
+    void show_dialogs_from_queue();
 
+    void draw_water_tile_overlay(int x, int y);
 
 
 
@@ -123,12 +125,14 @@ private:
     st_imageData boss_intro_bg;
     st_imageData rain_obj;
     st_imageData dark_effect_mask;
-    unsigned int _effect_timer;
-    short int _rain_pos;
+    st_imageData yellow_light_mask;
+    st_imageData red_light_mask;
+    unsigned int _effect_timer = 0;
+    short int _rain_pos = 0;
 
     st_imageData flash_obj;
-    short int _flash_pos;
-    unsigned int _flash_timer;
+    short int _flash_pos = 0;
+    unsigned int _flash_timer = 0;
     st_position flash_points[FLASH_POINTS_N];
 
     st_imageData _bubble_gfx;
@@ -160,9 +164,9 @@ private:
     int _lightingbolt_effect_timer;
     int _lightingbolt_effect_state;
 
-    Uint8 screen_gfx;
+    Uint8 screen_gfx = SCREEN_GFX_NONE;
     Uint8 screen_gfx_mode;
-    bool flash_effect_enabled;
+    bool flash_effect_enabled = false;
 
     // used in HUD
     st_imageData hud_player_hp_ball;
@@ -187,6 +191,8 @@ private:
     st_imageData hud_image;
     st_imageData hud_energy_bar;
 
+    st_imageData water_tile_overlay;
+
 
     // used to avoid having multiple copies of same background for all 3 maps in same stage
     std::map<std::string, st_imageData> maps_dynamic_background_list;
@@ -207,6 +213,9 @@ private:
     // DIALOG //
     st_imageData dialog_surface;
     st_position _dialog_pos;
+
+    int water_animation_pos = 0;
+    long water_animation_timer = 0;
 
 };
 

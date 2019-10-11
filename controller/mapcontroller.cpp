@@ -37,7 +37,7 @@ void MapController::loadMap()
         for (int j=0; j<FILE_AREA_H; j++) {
             //std::cout << "room[" << i << "][" << j << "].area_n[" << SharedData::get_instance()->v6_current_level_data.rooms[i][j].area_n << "]" << std::endl;
             if (SharedData::get_instance()->v6_current_level_data.rooms[i][j].area_n == SharedData::get_instance()->v6_selected_area) {
-                std::cout << "@@@@@@@ MapController::loadMap - room[" << i << "][" << j << "].area_n[" << SharedData::get_instance()->v6_current_level_data.rooms[i][j].area_n << "]" << std::endl;
+                //std::cout << "@@@@@@@ MapController::loadMap - room[" << i << "][" << j << "].area_n[" << SharedData::get_instance()->v6_current_level_data.rooms[i][j].area_n << "]" << std::endl;
                 SharedData::get_instance()->area_room_list.push_back(st_position(i, j));
                 if (i < SharedData::get_instance()->leftmost_room) {
                     SharedData::get_instance()->leftmost_room = i;
@@ -58,10 +58,11 @@ void MapController::loadMap()
     map_tiles_w = (SharedData::get_instance()->rightmost_room-SharedData::get_instance()->leftmost_room+1)*AREA_ROOM_W;
     map_tiles_h = (SharedData::get_instance()->bottommost_room-SharedData::get_instance()->topmost_room+1)*AREA_ROOM_H;
 
-    std::cout << "MapController::loadMap - v6_selected_area[" << SharedData::get_instance()->v6_selected_area << "], rightmost_room[" << SharedData::get_instance()->rightmost_room << "], leftmost_room[" << SharedData::get_instance()->leftmost_room << "], bottommost_room[" << SharedData::get_instance()->bottommost_room << "], topmost_room[" << SharedData::get_instance()->topmost_room << "], map_tiles_w[" << map_tiles_w << "], map_tiles_h[" << map_tiles_h << "]" << std::endl;
+    //std::cout << "MapController::loadMap - v6_selected_area[" << SharedData::get_instance()->v6_selected_area << "], rightmost_room[" << SharedData::get_instance()->rightmost_room << "], leftmost_room[" << SharedData::get_instance()->leftmost_room << "], bottommost_room[" << SharedData::get_instance()->bottommost_room << "], topmost_room[" << SharedData::get_instance()->topmost_room << "], map_tiles_w[" << map_tiles_w << "], map_tiles_h[" << map_tiles_h << "]" << std::endl;
 
     area_tile_map.clear();
-    _level3_tiles.clear();
+    level3_tiles.clear();
+    level3_water_tiles.clear();
     int i_count = 0;
     for (int i=SharedData::get_instance()->leftmost_room; i<=SharedData::get_instance()->rightmost_room; i++) {
         int j_count = 0;
@@ -71,13 +72,18 @@ void MapController::loadMap()
                     for (int n=0; n<AREA_ROOM_H; n++) {
                         int tile_x = m + i_count*AREA_ROOM_W;
                         int tile_y = n + j_count*AREA_ROOM_H;
+                        int tile_type = SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n].locked;
                         area_tile_map.insert(std::pair<st_position, file_v6_room_tile>(st_position(tile_x, tile_y), SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n]));
+                        if (tile_type != 0) { std::cout << "tile[" << i << "][" << j << "].type[" << tile_type << "]" << std::endl; }
+                        if (tile_type == TERRAIN_WATER) {
+                            level3_water_tiles.push_back(st_position(tile_x, tile_y));
+                        }
 
                         int overlay_x = SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n].tile_overlay.x;
                         int overlay_y = SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n].tile_overlay.y;
                         if (overlay_x != -1 && overlay_y != -1) {
                             struct st_level3_tile temp_tile(st_position(overlay_x, overlay_y), st_position(tile_x, tile_y));
-                            _level3_tiles.push_back(temp_tile);
+                            level3_tiles.push_back(temp_tile);
                         }
                     }
                 }
@@ -87,7 +93,7 @@ void MapController::loadMap()
         i_count++;
     }
 
-    // load mpa-links for this area //
+    // load area-links for this area //
     //std::map<unsigned int, std::vector<struct_file_v5_area_link>> file_v5_area_link_map;
     //SharedData::get_instance()->current_area_link_list
     for (auto const& item : SharedData::get_instance()->file_v5_area_link_map) {
@@ -345,6 +351,8 @@ void MapController::draw_map_tiles()
     ImageView::get_instance()->rebuildTexture(map_screen);
 }
 
+
+
 void MapController::draw_animated_tiles()
 {
 
@@ -438,16 +446,21 @@ void MapController::showAbove(int scroll_y, int temp_scroll_x, bool show_fg)
         scroll_x = temp_scroll_x;
     }
     // only show pieces that in current screen position
-    short start_point = scroll_x/TILESIZE;
-    if (start_point > 0) { start_point--; }
-    short end_point = (scroll_x+RES_W)/TILESIZE;
-    if (end_point < map_tiles_w-1) { end_point++; }
+    short start_point_x = scroll_x/TILESIZE;
+    if (start_point_x > 0) { start_point_x--; }
+    short end_point_x = (scroll_x+RES_W)/TILESIZE;
+    if (end_point_x < map_tiles_w-1) { end_point_x++; }
     //std::cout << "showAbove - start_point: " << start_point << ", end_point: " << end_point << std::endl;
+
+    short start_point_y = scroll.y/TILESIZE;
+    if (start_point_y > 0) { start_point_y--; }
+    short end_point_y = (scroll.y+AREA_H)/TILESIZE;
+    if (end_point_y < map_tiles_h-1) { end_point_y++; }
 
 
     // draw 3rd tile level
     std::vector<st_level3_tile>::iterator tile3_it;
-    for (tile3_it = _level3_tiles.begin(); tile3_it != _level3_tiles.end(); tile3_it++) {
+    for (tile3_it = level3_tiles.begin(); tile3_it != level3_tiles.end(); tile3_it++) {
 
         if (_3rd_level_ignore_area.x != -1 && _3rd_level_ignore_area.w > 0 && ((*tile3_it).map_position.x >= _3rd_level_ignore_area.x && (*tile3_it).map_position.x < _3rd_level_ignore_area.x+_3rd_level_ignore_area.w && (*tile3_it).map_position.y >= _3rd_level_ignore_area.y && (*tile3_it).map_position.y < _3rd_level_ignore_area.y+_3rd_level_ignore_area.h)) {
             continue;
@@ -456,8 +469,37 @@ void MapController::showAbove(int scroll_y, int temp_scroll_x, bool show_fg)
         int pos_y = (*tile3_it).tileset_pos.y;
         // only show tile if it is on the screen range
 
-        ImageView::get_instance()->place_3rd_level_tile(pos_x, pos_y, ((*tile3_it).map_position.x*TILESIZE)-scroll_x, ((*tile3_it).map_position.y*TILESIZE)+scroll_y);
+        ImageView::get_instance()->place_3rd_level_tile(pos_x, pos_y, ((*tile3_it).map_position.x*TILESIZE)-scroll_x, ((*tile3_it).map_position.y*TILESIZE)-scroll.y);
+        //ImageView::get_instance()->clearScreenArea(pos_x, pos_y, TILESIZE, TILESIZE, 100, 0, 0);
     }
+
+    // draw a blue hue over water tiles
+    //std::cout << "$$$$$$$$$$$$$$$$$ level3_water_tiles.size[" << level3_water_tiles.size() << "]" << std::endl;
+
+    std::vector<st_position>::iterator tile3_water_it;
+    for (tile3_water_it = level3_water_tiles.begin(); tile3_water_it != level3_water_tiles.end(); tile3_water_it++) {
+        int pos_x = (*tile3_water_it).x;
+        int pos_y = (*tile3_water_it).y;
+
+        /*
+        if (_3rd_level_ignore_area.x != -1 && _3rd_level_ignore_area.w > 0 && ((*tile3_water_it).x >= _3rd_level_ignore_area.x && (*tile3_water_it).x < _3rd_level_ignore_area.x+_3rd_level_ignore_area.w && (*tile3_water_it).y >= _3rd_level_ignore_area.y && (*tile3_water_it).y < _3rd_level_ignore_area.y+_3rd_level_ignore_area.h)) {
+            continue;
+        }
+        */
+
+        if ((pos_x >= start_point_x && pos_x <= end_point_x) && (pos_y >= start_point_y && pos_y <= end_point_y)) {
+            // only show tile if it is on the screen range
+            int dest_x = pos_x*TILESIZE-scroll_x;
+            int dest_y = pos_y*TILESIZE-scroll.y;
+            //std::cout << "$$$$$$$$$$$$$$$$$$$$$ tile.water[" << pos_x << "][" << pos_y << "], scroll_x[" << scroll_x << "], scroll_y[" << scroll_y << "], dest[" << dest_x << "][" << dest_y << "]" << std::endl;
+
+            //ImageView::get_instance()->clearScreenArea(dest_x, dest_y, TILESIZE, TILESIZE, 100, 0, 0);
+            draw::get_instance()->draw_water_tile_overlay(dest_x, dest_y);
+        }
+    }
+
+
+
 
     if (_water_bubble.pos.x != -1) {
         draw::get_instance()->show_bubble(_water_bubble.pos.x+_water_bubble.x_adjust, _water_bubble.pos.y);
@@ -829,14 +871,14 @@ void MapController::load_map_npcs()
     }
 
 
-    std::cout << ">>>>>>>>>>> MapController::load_map_npcs - file_v5_map_npc_map[" << SharedData::get_instance()->v6_selected_area << "] size[" << SharedData::get_instance()->file_v5_map_npc_map.at(SharedData::get_instance()->v6_selected_area).size() << "]" << std::endl;
+    //std::cout << ">>>>>>>>>>> MapController::load_map_npcs - file_v5_map_npc_map[" << SharedData::get_instance()->v6_selected_area << "] size[" << SharedData::get_instance()->file_v5_map_npc_map.at(SharedData::get_instance()->v6_selected_area).size() << "]" << std::endl;
 
     for (int i=0; i<SharedData::get_instance()->file_v5_map_npc_map.at(SharedData::get_instance()->v6_selected_area).size(); i++) {
         file_v5_map_npc& npc_ref = SharedData::get_instance()->file_v5_map_npc_map.at(SharedData::get_instance()->v6_selected_area).at(i);
 
         int npc_id = npc_ref.id_npc;
 
-        std::cout << ">>>>>>>>>>> MapController::load_map_npcs - add NPC[" << npc_id << "]" << std::endl;
+        //std::cout << ">>>>>>>>>>> MapController::load_map_npcs - add NPC[" << npc_id << "]" << std::endl;
 
         if (npc_id != -1) {
             GameEnemy new_npc = GameEnemy(SharedData::get_instance()->v6_selected_area, npc_id, i);
@@ -932,13 +974,15 @@ void MapController::drawLayers(bool isFg)
 
             for (unsigned int j=0; j<repeat_y_n; j++) {
                 // draw leftmost part
-                ImageView::get_instance()->renderTexturePortionAt(0, 0, surface_bg->surface->w, surface_bg->surface->h, x1, y1+(j*surface_bg->surface->h), surface_bg->texture);
+                //ImageView::get_instance()->renderTexturePortionAt(0, 0, surface_bg->surface->w, surface_bg->surface->h, x1, y1+(j*surface_bg->surface->h), surface_bg->texture);
+                render_layer(x1, y1+(j*surface_bg->surface->h), surface_bg);
                 // draw rightmost part, if needed
 
                 if (abs(it->second.pos.x) > RES_W) {
                     //std::cout << "### MUST DRAW SECOND BG-POS-LEFT ###" << std::endl;
                     float bg_pos_x = RES_W - (abs(x1)-RES_W);
-                    ImageView::get_instance()->renderTexturePortionAt(0, 0, surface_bg->surface->w, surface_bg->surface->h, bg_pos_x, y1+(j*surface_bg->surface->h), surface_bg->texture);
+                    //ImageView::get_instance()->renderTexturePortionAt(0, 0, surface_bg->surface->w, surface_bg->surface->h, bg_pos_x, y1+(j*surface_bg->surface->h), surface_bg->texture);
+                    render_layer(bg_pos_x, y1+(j*surface_bg->surface->h), surface_bg);
                 }  else if (surface_bg->surface->w - abs(it->second.pos.x) < RES_W) {
                     int repeat_x_n = 1;
                     if (bg_ref.repeatX) {
@@ -948,12 +992,18 @@ void MapController::drawLayers(bool isFg)
                     for (unsigned int i=0; i<repeat_x_n; i++) {
                         //std::cout << "### MUST DRAW SECOND BG-POS-RIGHT ###" << std::endl;
                         float bg_pos_x = surface_bg->surface->w - (int)abs(it->second.pos.x) + i*surface_bg->surface->w;
-                        ImageView::get_instance()->renderTexturePortionAt(0, 0, surface_bg->surface->w, surface_bg->surface->h, bg_pos_x, y1+(j*surface_bg->surface->h), surface_bg->texture);
+                        render_layer(bg_pos_x, y1+(j*surface_bg->surface->h), surface_bg);
+                        //ImageView::get_instance()->renderTexturePortionAt(0, 0, surface_bg->surface->w, surface_bg->surface->h, bg_pos_x, y1+(j*surface_bg->surface->h), surface_bg->texture);
                     }
                 }
             }
         }
     }
+}
+
+void MapController::render_layer(float x, float y, st_imageData *surface_bg)
+{
+    ImageView::get_instance()->renderTexturePortionAt(0, 0, surface_bg->surface->w, surface_bg->surface->h, x, y, surface_bg->texture);
 }
 
 
@@ -1066,6 +1116,7 @@ void MapController::draw_dynamic_backgrounds_into_surface(st_imageData &surface)
 
 void MapController::add_object(GameObject obj)
 {
+    std::cout <<"MapController::add_object::START" << std::endl;
     object_list.push_back(obj);
 }
 
@@ -1195,8 +1246,7 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos)
 int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
 {
 
-    //std::cout << "get_first_lock_on_bottom, y_pos[" << y_pos << "]" << std::endl;
-    //std::cout << ">>>>>> MAP::get_first_lock_on_bottom - START" << std::endl;
+    std::cout << ">>>>>> MAP::get_first_lock_on_bottom - START - x_pos[" << x_pos << "], y_pos[" << y_pos << "]" << std::endl;
 
     int tilex = x_pos/TILESIZE;
     int above_tiles_to_test = h/TILESIZE;
@@ -1208,12 +1258,13 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
         right_tiles_to_test = 1;
     }
 
-    int initial_y = map_tiles_h-1;
+    //int initial_y = map_tiles_h-1;
+    int initial_y = (y_pos+AREA_H)/TILESIZE;
     if (y_pos >= 0) {
         initial_y = y_pos/TILESIZE;
     }
 
-    //std::cout << ">>>>>> MAP::get_first_lock_on_bottom - initial_y[" << initial_y << "], above_tiles_to_test[" << (above_tiles_to_test+1) << "]" << std::endl;
+    std::cout << ">>>>>> MAP::get_first_lock_on_bottom - initial_y[" << initial_y << "], above_tiles_to_test[" << (above_tiles_to_test+1) << "]" << std::endl;
     for (int i=initial_y; i>=above_tiles_to_test+1; i--) { // ignore here first tiles, as we need to test them next
 
         //std::cout << "get_first_lock_on_bottom, i[" << i << "]" << std::endl;
@@ -1225,8 +1276,9 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
                 for (int k=0; k<right_tiles_to_test; k++) {
                     int map_lock2 = getMapPointLock(st_position(tilex+k, j));
 
-                    //std::cout << ">>>>>> MAP::get_first_lock_on_bottom - test-point[" << (tilex+k) << "][" << j << "].terrain[" << map_lock2 << "], above_tiles_to_test[" << above_tiles_to_test << "],right_tiles_to_test[" << right_tiles_to_test << "]" << std::endl;
+                    std::cout << ">>>>>> MAP::get_first_lock_on_bottom - test-point[" << (tilex+k) << "][" << j << "].terrain[" << map_lock2 << "], above_tiles_to_test[" << above_tiles_to_test << "],right_tiles_to_test[" << right_tiles_to_test << "]" << std::endl;
                     if (map_lock2 != TERRAIN_UNBLOCKED && map_lock2 != TERRAIN_WATER) { // found a stop point, now check above ones
+                        std::cout << ">>>>>> MAP::get_first_lock_on_bottom::BAD-POINT - test-point[" << (tilex+k) << "][" << j << "].terrain[" << map_lock2 << "], above_tiles_to_test[" << above_tiles_to_test << "],right_tiles_to_test[" << right_tiles_to_test << "]" << std::endl;
                         found_bad_point = true;
                         break;
                     }
@@ -1236,17 +1288,18 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
                 }
             }
             if (found_bad_point == false) {
-                //std::cout << ">>>>>> MAP::get_first_lock_on_bottom - good-point[" << (i-1) << "]" << std::endl;
+                std::cout << ">>>>>> MAP::get_first_lock_on_bottom - good-point[" << (i-1) << "]" << std::endl;
                 return i-1;
             }
         }
     }
-    //std::cout << ">>>>>> MAP::get_first_lock_on_bottom - FAIL" << std::endl;
+    std::cout << ">>>>>> MAP::get_first_lock_on_bottom - FAIL" << std::endl;
     return 0;
 }
 
 void MapController::drop_item(GameEnemy* npc_ref)
 {
+    std::cout << ">>>>>>> MapController::drop_item::START" << std::endl;
     st_float_position position = st_float_position(npc_ref->getPosition().x + npc_ref->get_size().width/2, npc_ref->getPosition().y + npc_ref->get_size().height/2);
     // dying out of screen should not drop item
     if (position.y > RES_H) {
@@ -1302,6 +1355,33 @@ void MapController::drop_item(GameEnemy* npc_ref)
     GameObject temp_obj = GameObject(obj_type_n, this, obj_pos, st_position(-1, -1), map_dest);
     temp_obj.set_position(st_position(static_cast<int>(position.x), static_cast<int>(position.y)));
     temp_obj.set_duration(4500);
+    add_object(temp_obj);
+}
+
+void MapController::drop_game_item(int obj_id, int uuid, int x, int y)
+{
+    std::cout << ">>>>>>> MapController::drop_game_item::START" << std::endl;
+    short map_dest = -1;
+    st_position obj_pos(x, y);
+
+    GameObject temp_obj = GameObject(obj_id, this, obj_pos, st_position(-1, -1), map_dest);
+    temp_obj.set_position(st_position(static_cast<int>(obj_pos.x), static_cast<int>(obj_pos.y)));
+    // @TODO: better to remove the item
+    if (SharedData::get_instance()->game_object_state_map.find(uuid) != SharedData::get_instance()->game_object_state_map.end()) {
+        SharedData::get_instance()->game_object_state_map.at(uuid).area_n = SharedData::get_instance()->v6_selected_area;
+        SharedData::get_instance()->game_object_state_map.at(uuid).x = x;
+        SharedData::get_instance()->game_object_state_map.at(uuid).y = y;
+    } else {
+        v6_file_game_object_state obj_state;
+        obj_state.uuid = uuid;
+        obj_state.obj_id = obj_id;
+        obj_state.area_n = SharedData::get_instance()->v6_selected_area;
+        obj_state.x = x;
+        obj_state.y = y;
+        std::cout << ">>>>>>> MapController::drop_game_item - obj_state.x[" << obj_state.x << "], obj_state.y[" << obj_state.y << "]" << std::endl;
+        obj_state.finished = false;
+        SharedData::get_instance()->game_object_state_map.insert(std::pair<int, v6_file_game_object_state>(uuid, obj_state));
+    }
     add_object(temp_obj);
 }
 
@@ -1487,15 +1567,26 @@ void MapController::load_map_objects() {
     object_list.clear();
 
     unsigned int mapNumber = SharedData::get_instance()->v6_selected_area;
-    for (int i=0; i<SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).size(); i++) {
-        if (SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).id_object != -1) {
-            GameObject temp_obj(SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).id_object, this, SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).start_point, SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).teleporter_data.link_dest, SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).teleporter_data.map_dest);
+    for (int i=0; i<SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).size(); i++) {
+        if (SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).at(i).id_object != -1) {
+
+            //std::cout << "################# OBJ[" << i << "].name[" << SharedData::get_instance()->v6_object_list.at(SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).at(i).id_object).name  << "].uuid[" << SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).at(i).uuid << "]" << std::endl;
+
+
+            GameObject temp_obj(SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).at(i).id_object, this, SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).at(i).start_point, SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).at(i).dest_position, SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).at(i).dest_map);
             temp_obj.set_obj_map_id(i);
-            temp_obj.set_direction(SharedData::get_instance()->file_v5_map_object_map.at(mapNumber).at(i).direction);
+            temp_obj.set_direction(SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).at(i).direction);
+            temp_obj.set_uuid(SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).at(i).uuid);
+            st_position obj_state_id = st_position(SharedData::get_instance()->v6_selected_area, temp_obj.get_id());
+            if (SharedData::get_instance()->game_object_state_map.find(temp_obj.get_uuid()) != SharedData::get_instance()->game_object_state_map.end()) {
+                st_position obj_state_position(SharedData::get_instance()->game_object_state_map.at(temp_obj.get_uuid()).x, SharedData::get_instance()->game_object_state_map.at(temp_obj.get_uuid()).y);
+                //std::cout << "SET obj-pos to x[" << obj_state_position.x << "], y[" << obj_state_position.y << "]" << std::endl;
+                temp_obj.set_position(obj_state_position);
+            }
             object_list.push_back(temp_obj);
         }
     }
-    std::cout << "MapController::load_map_objects, count[" << object_list.size() << "]" << std::endl;
+    //std::cout << "MapController::load_map_objects, count[" << object_list.size() << "]" << std::endl;
 }
 
 
@@ -1642,6 +1733,9 @@ bool MapController::is_obj_ignored_by_enemies(Uint8 obj_type)
     if (obj_type == OBJ_PLATFORM_TELEPORTER) {
         return true;
     }
+    if (obj_type == OBJ_FRONT_DOOR_TELEPORTER) {
+        return true;
+    }
     if (obj_type == OBJ_FINAL_BOSS_TELEPORTER) {
         return true;
     }
@@ -1658,6 +1752,9 @@ bool MapController::is_obj_ignored_by_enemies(Uint8 obj_type)
         return true;
     }
     if (obj_type == OBJ_DOOR_LOCKED) {
+        return true;
+    }
+    if (obj_type == OBJ_GAME_ITEM_PICKEABLE || obj_type == OBJ_GAME_ITEM_STATIC) {
         return true;
     }
     return false;
@@ -1693,33 +1790,38 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
             //std::cout << "### obj[" << temp_obj.get_name() << "] - CHECK #0 ###" << std::endl;
 
             if (temp_obj.is_hidden() == true) {
-                //std::cout << "obj[" << temp_obj.get_name() << "] - leave #1" << std::endl;
-                continue;
-            }
-
-            if (temp_obj.is_on_screen() == false) {
-                //std::cout << "obj[" << temp_obj.get_name() << "] - leave #2" << std::endl;
+                //if (charObj->is_player()) std::cout << "obj[" << temp_obj.get_name() << "] - leave #1" << std::endl;
                 continue;
             }
 
             if (temp_obj.finished() == true) {
-                //std::cout << "obj[" << temp_obj.get_name() << "] - leave #3" << std::endl;
+                //if (charObj->is_player()) std::cout << "obj[" << temp_obj.get_name() << "] - leave (finished)" << std::endl;
+                continue;
+            }
+
+            if (temp_obj.is_on_screen() == false) {
+                //if (charObj->is_player()) std::cout << "obj[" << temp_obj.get_name() << "] - leave #2" << std::endl;
+                continue;
+            }
+
+            if (temp_obj.finished() == true) {
+                //if (charObj->is_player()) std::cout << "obj[" << temp_obj.get_name() << "] - leave #3" << std::endl;
                 continue;
             }
 
             if (charObj->is_player() == false && is_obj_ignored_by_enemies(temp_obj.get_type())) {
-                //std::cout << "obj[" << temp_obj.get_name() << "] - leave #4" << std::endl;
+                //if (charObj->is_player()) std::cout << "obj[" << temp_obj.get_name() << "] - leave #4" << std::endl;
                 continue;
             }
 
             // slim platform won't collide if movement is from bottom to top
             if (temp_obj.get_type() == OBJ_ACTIVE_OPENING_SLIM_PLATFORM && y_inc < 0) {
-                //std::cout << "obj[" << temp_obj.get_name() << "] - leave #5" << std::endl;
+                //if (charObj->is_player()) std::cout << "obj[" << temp_obj.get_name() << "] - leave #5" << std::endl;
                 continue;
             }
 
             if (temp_obj.is_teleporting()) {
-                //std::cout << "obj[" << temp_obj.get_name() << "] - leave #6 [teleporting object]" << std::endl;
+                //if (charObj->is_player()) std::cout << "obj[" << temp_obj.get_name() << "] - leave #6 [teleporting object]" << std::endl;
                 continue;
             }
 
@@ -1739,14 +1841,14 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
             int no_move_blocked = collision_rect_player_obj(stopped_char_rect, &temp_obj, 0, 0, 0, 0);
 
 
-            //std::cout << "### obj[" << temp_obj.get_name() << "] - CHECK #1 ###" << std::endl;
+            //if (charObj->is_player()) std::cout << "### obj[" << temp_obj.get_name() << "] - CHECK #1 ###" << std::endl;
 
 
             // some platforms can kill the player if he gets stuck inside it
             if (charObj->is_player() == true && (temp_obj.get_type() == OBJ_MOVING_PLATFORM_UPDOWN || temp_obj.get_type() == OBJ_FLY_PLATFORM)) {
                 if (no_move_blocked == BLOCK_XY) {
                     _obj_collision = object_collision(BLOCK_INSIDE_OBJ, &temp_obj);
-                    std::cout << "obj[" << temp_obj.get_name() << "] - leave #5" << std::endl;
+                    //if (charObj->is_player()) std::cout << "obj[" << temp_obj.get_name() << "] - leave #5" << std::endl;
                     return;
                 }
             }
@@ -1756,7 +1858,7 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
             //std::cout << "collision_rect_player_obj::CALL #2" << std::endl;
             temp_blocked = collision_rect_player_obj(char_rect, &temp_obj, x_inc, y_inc, 0, 0);
 
-            //std::cout << "### obj[" << temp_obj.get_name() << "] - CHECK #A::temp_blocked[" << temp_blocked << "] ###" << std::endl;
+            //if (charObj->is_player()) std::cout << "### obj[" << temp_obj.get_name() << "] - CHECK #A::temp_blocked[" << temp_blocked << "] ###" << std::endl;
 
 
             int temp_obj_y = temp_obj.get_position().y;
@@ -1764,12 +1866,12 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
                 temp_obj_y += OBJ_JUMP_Y_ADJUST;
             }
 
-            //std::cout << "### obj[" << temp_obj.get_name() << "] - CHECK #2 - temp_blocked[" << temp_blocked << "], is_platform[" << temp_obj.is_platform() << "] ###" << std::endl;
+            //if (charObj->is_player()) std::cout << "### obj[" << temp_obj.get_name() << "] - CHECK #2 - temp_blocked[" << temp_blocked << "], is_platform[" << temp_obj.is_platform() << "] ###" << std::endl;
 
             // to enter platform, player.x+player.h must not be much higher than obj.y
             if (temp_blocked != 0 && temp_obj.is_platform() == false) {
 
-                //std::cout << "COLLISION WITH OBJECT, Type[" << temp_obj.get_type() << "]" << std::endl;
+                //std::cout << "COLLISION WITH OBJECT, Type[" << (int)temp_obj.get_type() << "]" << std::endl;
 
                 if (temp_obj.get_type() == OBJ_CHECKPOINT) {
                     if (temp_obj.is_started() == false) {
@@ -1816,6 +1918,16 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
                     }
                     //std::cout << "%%%%%%%%%%%%%%%%%%%%%%%%% OBJ_DOOR_LOCKED" << std::endl;
                     // @TODO //
+                } else if (charObj->is_player() == true && temp_obj.get_type() == OBJ_GAME_ITEM_PICKEABLE) {
+                    temp_blocked = BLOCK_UNBLOCKED;
+                    if (InputController::get_instance()->p1_input[BTN_ITEM] == 1) {
+                        charObj->pick_game_item(temp_obj);
+                        return;
+                    }
+                } else if (charObj->is_player() == true && temp_obj.get_type() == OBJ_GAME_ITEM_STATIC) {
+                    temp_blocked = BLOCK_UNBLOCKED;
+                } else if (charObj->is_player() == true && temp_obj.get_type() == OBJ_GAME_ITEM_STATIC) {
+                    temp_blocked = BLOCK_UNBLOCKED;
                 }
             }
 
@@ -2507,6 +2619,10 @@ void MapController::move_objects(bool paused)
     for (int i=0; i<on_screen_area_object_list.size(); i++) {
         GameObject *obj_ref = &object_list.at(on_screen_area_object_list.at(i));
         obj_ref->execute(paused);
+
+        st_float_position obj_real_pos = obj_ref->get_relative_position();
+        st_size obj_size = obj_ref->get_size();
+        SharedData::get_instance()->lightpoint_list.push_back(st_light_point(obj_real_pos.x+obj_size.width/2, obj_real_pos.y+obj_size.height/2, LIGHT_POINT_COLOR_YELLOW));
     }
 
 }

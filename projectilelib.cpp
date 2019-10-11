@@ -220,10 +220,36 @@ st_size projectile::get_size() const
 
 void projectile::move_ahead(st_size &moved)
 {
-    if (direction == ANIM_DIRECTION_LEFT || direction == ANIM_DIRECTION_DOWN_LEFT || direction == ANIM_DIRECTION_UP_LEFT) {
+    if (direction == ANIM_DIRECTION_LEFT) {
         position.x -= get_speed();
         moved.width -= get_speed();
-    } else {
+    } else if (direction == ANIM_DIRECTION_UP) {
+        position.y -= get_speed();
+        moved.height -= get_speed();
+    } else if (direction == ANIM_DIRECTION_DOWN) {
+        position.y += get_speed();
+        moved.height += get_speed();
+    } else if (direction == ANIM_DIRECTION_DOWN_RIGHT) {
+        position.x += get_speed();
+        moved.width += get_speed();
+        position.y += get_speed();
+        moved.height += get_speed();
+    } else if (direction == ANIM_DIRECTION_DOWN_LEFT) {
+        position.x -= get_speed();
+        moved.width -= get_speed();
+        position.y += get_speed();
+        moved.height += get_speed();
+    } else if (direction == ANIM_DIRECTION_UP_RIGHT) {
+        position.x += get_speed();
+        moved.width += get_speed();
+        position.y -= get_speed();
+        moved.height -= get_speed();
+    } else if (direction == ANIM_DIRECTION_UP_LEFT) {
+        position.x -= get_speed();
+        moved.width -= get_speed();
+        position.y -= get_speed();
+        moved.height -= get_speed();
+    } else { // RIGHT
         position.x += get_speed();
         moved.width += get_speed();
     }
@@ -471,8 +497,32 @@ st_float_position projectile::get_position()
     return position;
 }
 
+void projectile::set_max_dist(int max_value)
+{
+    max_dist = max_value;
+}
+
+bool projectile::check_max_distance()
+{
+    if (max_dist == -1) {
+        return false;
+    }
+
+    float total_dist = sqrt(pow(position.x - position0.x, 2) + pow(position.y - position0.y, 2));
+    if (total_dist > max_dist) {
+        return true;
+    }
+
+    return false;
+}
+
 st_size projectile::move() {
 	st_size moved;
+
+    if (check_max_distance() == true) {
+        finish();
+        return st_size(0, 0);
+    }
 
 	//std::cout << "projectile::move - TRAJECTORY: " << _move_type << ", x: " << position.x << ", y: " << position.y << ", direction: " << direction << std::endl;
 
@@ -1163,6 +1213,7 @@ void projectile::finish()
         //std::cout << "[[[freeze_weapon_effect(RESET #4)]]] - timer: " << _quake_info.timer << std::endl;
         draw::get_instance()->set_flash_enabled(false);
     }
+    is_finished = true;
 }
 
 void projectile::set_weapon_id(short wpn_id)

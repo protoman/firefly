@@ -29,6 +29,8 @@ SOURCES += \
     character/GameEnemy.cpp \
     character/gamenpc.cpp \
         main.cpp \
+    text/i18ntext.cpp \
+    view/ingame_presentation.cpp \
     view/textview.cpp \
     view/imageview.cpp \
     data/shareddata.cpp \
@@ -78,9 +80,12 @@ HEADERS += \
     file/v5/struct_file_area_data.h \
     file/v5/struct_file_game_area_map.h \
     file/v6/file_area_v6.h \
+    file/v6/file_game_object_state.h \
     file/v6/file_level_v6.h \
     file/v6/file_object_v6.h \
     file/v6/file_room_v6.h \
+    text/i18ntext.h \
+    view/ingame_presentation.h \
     view/textview.h \
     view/imageview.h \
     defines.h \

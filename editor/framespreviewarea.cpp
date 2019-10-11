@@ -44,6 +44,21 @@ void framesPreviewArea::set_sprite_pos(st_position s_pos)
     _sprites_pos.y = s_pos.y;
 }
 
+st_size framesPreviewArea::get_image_size()
+{
+    if (graphic_filename.find(".png") == std::string::npos) {
+        return st_size(64, 64);
+    }
+    QPixmap image(graphic_filename.c_str());
+    if (image.isNull() == false && image.width() > 0) {
+        return st_size(image.width(), image.height());
+    } else {
+        return st_size(64, 64);
+    }
+}
+
+
+
 
 void framesPreviewArea::paintEvent(QPaintEvent *) {
 	QPainter painter(this);

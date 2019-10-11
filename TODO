@@ -1,3 +1,50 @@
+Créditos:
+Credit "Tio Aimar @ opengameart.org" or simply "Tio Aimar" (this is not mandatory)
+Credit "Kenney.nl" or "www.kenney.nl", this is not mandatory.
+
+#######################################################################################################
+i18n:
+fazer totalmente hardcoded, sem arquivo separado.
+adicionar suporte a level no arquivo de save de posição de objetos
+adicionar método que, ao usar um game-item, se tem um objeto no local, pode dar trigger nele
+#######################################################################################################
+
+Sistema de uso de item
+- Fazer hardcoded em parte
+- a definição de qual item é usado é setada pelo editor
+- mas a forma, é hardcoded
+- para isso precisamos de um sub-tipo de item, definido em enum mas que vai ir aumentando
+
+#######################################################################################################
+- terreno que faz dano (não como spike, como tocar um inimigo)
+- corrigir transição de tela vertical
+- corrigir posição do texto no menu de quit
+- fazer chicote e inimigos segmentados, cujas partes obedecem função matemática de movimento
+- elevadores
+- usar lib de partculas para explosões e cia
+- animação de armas e inimigos usando rotação
+- inimigos com sombra (tipo o dash, mas com gráfico próprio para a sombra)
+- transparência real ao ser atingido (idem inimigos)
+
+
+- intro
+- tela game-start
+- colocar nome ao criar novo jogo
+
+
+- Converter para modo "async" de atualização da tela (como diálogos).
+  Usar flags para indicar que está trancado esperando a execução de alguma coisa (pensar como fazer a flag)
+    # draw::show_ready
+    # draw::show_credits_text
+    # draw::show_ingame_warning
+    # character::execute_jump_up
+    # character::execute_jump
+    # character::fall
+
+- corrigir GFX que estão quebrados após separação de layers game e hud
+
+- EDITOR: não está salvando projétil, sempre volta para o default
+
 - criar lista de inimigos, projéteis e objetos que estão na tela e próximo dela
 - criar dark room (apenas círculo ao redor do jogador é mais transparente)
 - alternate full screen (alt + enter)

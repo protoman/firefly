@@ -224,7 +224,7 @@ Sint8 key_map::draw_config_buttons(st_game_config& game_config_copy)
     sprintf(btn_codes[BTN_JUMP], "[%s/%d]", InputController::get_instance()->get_key_name(game_config_copy.keys_codes[BTN_JUMP]).c_str(), game_config_copy.button_codes[BTN_JUMP].value);
     sprintf(btn_codes[BTN_ATTACK], "[%s/%d]", InputController::get_instance()->get_key_name(game_config_copy.keys_codes[BTN_ATTACK]).c_str(), game_config_copy.button_codes[BTN_ATTACK].value);
     sprintf(btn_codes[BTN_DASH], "[%s/%d]", InputController::get_instance()->get_key_name(game_config_copy.keys_codes[BTN_DASH]).c_str(), game_config_copy.button_codes[BTN_DASH].value);
-    sprintf(btn_codes[BTN_SHIELD], "[%s/%d]", InputController::get_instance()->get_key_name(game_config_copy.keys_codes[BTN_SHIELD]).c_str(), game_config_copy.button_codes[BTN_SHIELD].value);
+    sprintf(btn_codes[BTN_ITEM], "[%s/%d]", InputController::get_instance()->get_key_name(game_config_copy.keys_codes[BTN_ITEM]).c_str(), game_config_copy.button_codes[BTN_ITEM].value);
     sprintf(btn_codes[BTN_L], "[%s/%d]", InputController::get_instance()->get_key_name(game_config_copy.keys_codes[BTN_L]).c_str(), game_config_copy.button_codes[BTN_L].value);
     sprintf(btn_codes[BTN_R], "[%s/%d]", InputController::get_instance()->get_key_name(game_config_copy.keys_codes[BTN_R]).c_str(), game_config_copy.button_codes[BTN_R].value);
     sprintf(btn_codes[BTN_START], "[%s/%d]", InputController::get_instance()->get_key_name(game_config_copy.keys_codes[BTN_START]).c_str(), game_config_copy.button_codes[BTN_START].value);
@@ -249,7 +249,7 @@ Sint8 key_map::draw_config_buttons(st_game_config& game_config_copy)
     options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_jump, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_JUMP])));
     options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_fire, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_ATTACK])));
     options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_dash, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_DASH])));
-    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_shield, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_SHIELD])));
+    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_shield, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_ITEM])));
     options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_keyl, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_L])));
     options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_keyr, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_R])));
     options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_start, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_START])));
@@ -323,7 +323,7 @@ void key_map::config_buttons()
             } else if (selected_option == 3) {
                 selected_key = BTN_DASH;
             } else if (selected_option == 4) {
-                selected_key = BTN_SHIELD;
+                selected_key = BTN_ITEM;
             } else if (selected_option == 5) {
                 selected_key = BTN_L;
             } else if (selected_option == 6) {

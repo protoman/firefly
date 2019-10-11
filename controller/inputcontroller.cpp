@@ -20,7 +20,7 @@ InputController::InputController()  : _used_keyboard(false), held_button_count(0
     cheat_input_sequence.push_back(input_sequence(BTN_LEFT));
     cheat_input_sequence.push_back(input_sequence(BTN_RIGHT));
     cheat_input_sequence.push_back(input_sequence(BTN_DASH));
-    cheat_input_sequence.push_back(input_sequence(BTN_SHIELD));
+    cheat_input_sequence.push_back(input_sequence(BTN_ITEM));
     cheat_input_is_active = false;
 
 #ifdef ANDROID
@@ -72,6 +72,8 @@ void InputController::clean()
             p1_input[i] = 0;
         }
     }
+    alt_key = false;
+    enter_key = false;
     while (SDL_PollEvent(&SharedData::get_instance()->event)) {
         SDL_PumpEvents(); // check keyboard events
     }

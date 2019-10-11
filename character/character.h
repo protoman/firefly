@@ -54,7 +54,7 @@ struct st_characterMovements { // this instruction holds commands passed from pl
     short jump;
     short start;
     short dash;
-    short shield;
+    short use_item;
 	st_characterMovements()
 	{
 		up = 0;
@@ -69,7 +69,7 @@ struct st_characterMovements { // this instruction holds commands passed from pl
  */
         start = 0;
 		dash = 0;
-		shield = 0;
+        use_item = 0;
 	}
 };
 
@@ -220,6 +220,10 @@ public:
     st_position get_attack_position();
     st_position get_attack_position(short direction);
     st_float_position get_last_moved();
+
+    void pick_game_item(GameObject& obj_info);
+    void use_game_item();
+
 
 private:
     ATTACK_TYPES check_must_attack(bool always_charged);
@@ -382,6 +386,8 @@ protected:
     bool was_on_slope = false;
 
     int got_item_id = -1;
+
+    long last_water_damage_warning_sound_timer = 0;
 };
 
 #endif // CHARACTER_H

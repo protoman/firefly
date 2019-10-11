@@ -11,8 +11,9 @@
 #include "data/shareddata.h"
 
 enum e_RENDER_TARGET {
-    RENDER_TARGET_SCREEN,
-    RENDER_TARGET_TEXTURE,
+    RENDER_TARGET_DIRECT_SCREEN,
+    RENDER_TARGET_GAME_TEXTURE,
+    RENDER_TARGET_HUD_TEXTURE,
     RENDER_TARGET_COUNT
 };
 
@@ -189,11 +190,19 @@ public:
 
     // this allow us to render at a texture, so we can copy the screen
     void change_render_target(e_RENDER_TARGET target);
-    SDL_Texture* get_texture_renderer();
+    SDL_Texture* get_game_texture_renderer();
+    SDL_Texture* get_hud_texture_renderer();
+    e_RENDER_TARGET get_current_target();
 
     void set_fullscreen(bool mode);
 
     void blend_images(st_imageData& source, st_imageData& dest, int x, int y);
+
+    void preload();
+
+    void inc_scale(float inc);
+    float get_scale();
+    void reset_scale();
 
 
 private:
@@ -236,6 +245,7 @@ private:
     st_imageData explosion_player_death;
     st_imageData preloaded_images[PRELOADED_IMAGES_COUNT];
     st_imageData small_explosion;
+    st_imageData hud_area;
 
 
     st_position _config_menu_pos;
@@ -243,6 +253,13 @@ private:
     int _explosion_animation_pos;
 
     SDL_Texture* texture_render_target;
+    SDL_Texture* hud_texture_render_target;
+    e_RENDER_TARGET game_render_target;
+
+    SDL_Rect curBounds;
+
+    float screen_scale = 1.0;
+    SDL_Rect screen_scale_adjust;
 };
 
 #endif // IMAGEVIEW_H

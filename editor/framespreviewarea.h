@@ -21,6 +21,7 @@ public:
   void set_grid_w(int new_w);
   void set_grid_h(int new_h);
   void set_sprite_pos(st_position s_pos);
+  st_size get_image_size();
   int get_cursor_pos();
 
   // variables

@@ -148,6 +148,7 @@ void character::charMove() {
     }
 
 
+
     //if (is_player()) std::cout << "CHAR::CHARMOVE - _fractional_move_speed: " << _fractional_move_speed << std::endl;
 
 
@@ -159,6 +160,11 @@ void character::charMove() {
     int water_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position((position.x+frameSize.width/2)/TILESIZE, (position.y+6)/TILESIZE));
     if (is_player() == true && water_lock == TERRAIN_WATER) {
         GameManager::get_instance()->get_current_map_obj()->add_bubble_animation(st_position(realPosition.x+frameSize.width/2, position.y+6));
+        if (TimerView::get_instance()->getTimer() > last_water_damage_warning_sound_timer) {
+            SoundView::get_instance()->play_sfx(SFX_BEAM);
+            last_water_damage_warning_sound_timer = TimerView::get_instance()->getTimer() + 1200;
+        }
+        damage(2, false);
     }
 
     int map_point_x = (position.x+frameSize.width/2)/TILESIZE;
@@ -310,7 +316,7 @@ void character::charMove() {
                         state.animation_timer = 0;
                     }
                     if (state.animation_type != ANIM_TYPE_WALK && state.animation_type != ANIM_TYPE_JUMP && state.animation_type != ANIM_TYPE_SLIDE && state.animation_type != ANIM_TYPE_JUMP_ATTACK && state.animation_type != ANIM_TYPE_HIT && (state.animation_type != ANIM_TYPE_WALK_ATTACK || (state.animation_type == ANIM_TYPE_WALK_ATTACK && state.attack_timer+ATTACK_DELAY < TimerView::get_instance()->getTimer()))) {
-                        std::cout << "SET-ANIM_TYPE_WALK #5" << std::endl;
+                        //std::cout << "SET-ANIM_TYPE_WALK #5" << std::endl;
                         set_animation_type(ANIM_TYPE_WALK);
                     }
                     moved = true;
@@ -404,7 +410,7 @@ void character::charMove() {
 			}
             if (is_in_stairs_frame() && (top_terrain == TERRAIN_UNBLOCKED || top_terrain == TERRAIN_WATER || top_terrain == TERRAIN_STAIR)) {
                 position.y -= temp_move_speed * STAIRS_MOVE_MULTIPLIER;
-                std::cout << "<<<<<<<<<<< POS.X.SET #1 >>>>>>>>>>>>>" << std::endl;
+                //std::cout << "<<<<<<<<<<< POS.X.SET #1 >>>>>>>>>>>>>" << std::endl;
                 position.x = stairs_pos.x * TILESIZE - 6;
             }
 		// out of stairs
@@ -467,7 +473,7 @@ void character::charMove() {
 
                     //std::cout << "### STAIRS-DOWN #2 ###" << std::endl;
                     position.y += temp_move_speed * STAIRS_MOVE_MULTIPLIER;
-                    std::cout << "<<<<<<<<<<< POS.X.SET #2 >>>>>>>>>>>>>" << std::endl;
+                    //std::cout << "<<<<<<<<<<< POS.X.SET #2 >>>>>>>>>>>>>" << std::endl;
                     position.x = stairs_pos_bottom.x * TILESIZE - 6;
                 }
             }
@@ -554,7 +560,7 @@ void character::check_y_scroll()
     if (is_player()) {
         // BOTTOM //
         if (realPosition.y+frameSize.height > AREA_H*0.8) {
-            int diffY = realPosition.y+frameSize.height - AREA_H*0.8;
+            int diffY = realPosition.y+frameSize.height - AREA_H*0.9;
             GameManager::get_instance()->get_current_map_obj()->changeScrolling(st_float_position(0, diffY), true);
         // TOP //
         } else if (realPosition.y < AREA_H*0.3) {
@@ -779,6 +785,45 @@ st_float_position character::get_last_moved()
     return moved_dist;
 }
 
+void character::pick_game_item(GameObject &obj_info)
+{
+    if (is_player() == false) {
+        return;
+    }
+    std::cout << "character::pick_item::START" << std::endl;
+    std::cout << "character::pick_item[" << (int)obj_info.get_id() << ", '" << obj_info.get_name() << "']" << std::endl;
+    bool picked_item = false;
+    for (int i=0; i<GAME_ITEM_SLOTS; i++) {
+        if (SharedData::get_instance()->game_save.game_item_list[i].uuid == -1) {
+            std::cout << "picked item in slot[" << i << "]" << std::endl;
+            SharedData::get_instance()->game_save.game_item_list[i].obj_id = obj_info.get_id();
+            SharedData::get_instance()->game_save.game_item_list[i].uuid = obj_info.get_uuid();
+            obj_info.set_finished(true);
+            picked_item = true;
+            InputController::get_instance()->p1_input[BTN_ITEM] = 0;
+            moveCommands.use_item = 0;
+            break;
+        }
+    }
+    std::cout << "character::pick_item::END" << std::endl;
+
+}
+
+void character::use_game_item()
+{
+    std::cout << "character::use_game_item::START" << std::endl;
+    if (SharedData::get_instance()->game_save.game_item_list[0].uuid != -1) {
+        std::cout << "picked_item[FALSE]" << std::endl;
+        GameManager::get_instance()->get_current_map_obj()->drop_game_item(SharedData::get_instance()->game_save.game_item_list[0].obj_id, SharedData::get_instance()->game_save.game_item_list[0].uuid, position.x, position.y);
+        SharedData::get_instance()->game_save.game_item_list[0] = SharedData::get_instance()->game_save.game_item_list[1];
+        SharedData::get_instance()->game_save.game_item_list[1] = SharedData::get_instance()->game_save.game_item_list[2];
+        SharedData::get_instance()->game_save.game_item_list[2].uuid = -1;
+        SharedData::get_instance()->game_save.game_item_list[2].obj_id = -1;
+        moveCommands.use_item = 0;
+        InputController::get_instance()->p1_input[BTN_ITEM] = 0;
+    }
+}
+
 /// @TODO: this must be moved to player, as character attack must be very simple
 void character::attack(bool dont_update_colors, short updown_trajectory, bool always_charged)
 {
@@ -988,14 +1033,33 @@ void character::show() {
 
     if (is_player() && state.animation_type == ANIM_TYPE_GOT_ITEM) {
         std::cout << ">>>>>>>>>>>>>>>>>>>> ANIM_TYPE_GOT_ITEM - interrupt-timer[" << SharedData::get_instance()->get_item_timer << "], timer[" << TimerView::get_instance()->getTimer() << "]" << std::endl;
+        // revert animation
         if (SharedData::get_instance()->get_item_timer <= TimerView::get_instance()->getTimer()) {
-            SharedData::get_instance()->must_interrupt_character_execution = false;
-            SharedData::get_instance()->get_item_timer = 0;
-            set_animation_type(ANIM_TYPE_STAND);
-            GameManager::get_instance()->start_stage_music();
+            if (_is_last_frame == true && state.animation_inverse == false) {
+                std::cout << ">>>>>>>> ANIM_TYPE_GOT_ITEM - invert frames" << std::endl;
+                state.animation_inverse = true;
+            // reached first frame
+            } else if (_is_last_frame == false && state.animation_inverse == true && state.animation_state != 0) {
+                std::cout << "GOT-ITEM - DEC-ZOOM" << std::endl;
+                if (ImageView::get_instance()->get_scale() > 1.0) {
+                    ImageView::get_instance()->inc_scale(-0.02);
+                }
+            } else if (state.animation_state == 0 && state.animation_inverse == true) {
+                std::cout << ">>>>>>>> ANIM_TYPE_GOT_ITEM - FINISH" << std::endl;
+                state.animation_inverse = false;
+                SharedData::get_instance()->must_interrupt_character_execution = false;
+                SharedData::get_instance()->get_item_timer = 0;
+                ImageView::get_instance()->reset_scale();
+                set_animation_type(ANIM_TYPE_STAND);
+                GameManager::get_instance()->start_stage_music();
+            }
         // show item over player (on his hand)
         } else {
-            draw::get_instance()->show_object_graphic(realPosition.x, realPosition.y, got_item_id);
+            std::cout << "GOT-ITEM - INC-ZOOM" << std::endl;
+            if (ImageView::get_instance()->get_scale() < 1.2) {
+                ImageView::get_instance()->inc_scale(0.01);
+            }
+            draw::get_instance()->show_object_graphic(realPosition.x, realPosition.y+40, got_item_id);
         }
     }
 }
@@ -1401,7 +1465,7 @@ bool character::gravity(bool boss_demo_mode=false)
 				}
                 if (state.animation_type != ANIM_TYPE_JUMP && state.animation_type != ANIM_TYPE_JUMP_ATTACK && state.animation_type != ANIM_TYPE_TELEPORT && state.animation_type != ANIM_TYPE_SLIDE && state.animation_type != ANIM_TYPE_HIT && (state.animation_type != ANIM_TYPE_JUMP_ATTACK || (state.animation_type == ANIM_TYPE_JUMP_ATTACK && state.attack_timer+ATTACK_DELAY < TimerView::get_instance()->getTimer()))) {
                     //std::cout << "LEAVE STAIRS - GRAVITY #1, current-anim-type[" << state.animation_type << "]" << std::endl;
-                    if (is_player()) std::cout << "CHAR::GRAVITY - p.x[" << position.x << "] CHAR::RESET_TO_JUMP #A.1" << std::endl;
+                    //if (is_player()) std::cout << "CHAR::GRAVITY - p.x[" << position.x << "] CHAR::RESET_TO_JUMP #A.1" << std::endl;
                     set_animation_type(ANIM_TYPE_JUMP);
 				}
 				was_moved = true;
@@ -1614,8 +1678,8 @@ st_float_position character::getPosition() const
 
 void character::set_position(struct st_position new_pos)
 {
-    std::cout << "### character::set_position, x[" << new_pos.x << "], y[" << new_pos.y << "] ###" << std::endl;
-    std::cout << "<<<<<<<<<<< POS.X.SET #3 >>>>>>>>>>>>>" << std::endl;
+    //std::cout << "### character::set_position, x[" << new_pos.x << "], y[" << new_pos.y << "] ###" << std::endl;
+    //std::cout << "<<<<<<<<<<< POS.X.SET #3 >>>>>>>>>>>>>" << std::endl;
     position.x = new_pos.x;
 	position.y = new_pos.y;
     char_update_real_position();
@@ -2174,15 +2238,16 @@ st_map_collision character::map_collision(const float incx, const short incy, st
         return st_map_collision(BLOCK_XY, TERRAIN_SOLID);
     }
 
-    //std::cout << "CHAR::map_collision, y_inc[" << incy << "]" << std::endl;
     GameManager::get_instance()->get_current_map_obj()->collision_char_object(this, incx, incy);
     object_collision res_collision_object = GameManager::get_instance()->get_current_map_obj()->get_obj_collision();
+
+    //std::cout << "CHAR::map_collision, y_inc[" << incy << "], obj_collision.block[" << res_collision_object._block << "]" << std::endl;
 
     if (is_player() == true && res_collision_object._block != 0) {
         // deal with teleporter object that have special block-area and effect (9)teleporting)
         if (state.animation_type != ANIM_TYPE_TELEPORT && res_collision_object._object != nullptr) {
 
-            //std::cout << "CHAR::PLAYER::check-obj-collision #1, p.x[" << position.x << "], block["  << res_collision_object._block << "], type[" << res_collision_object._object->get_type() << "]" << std::endl;
+            std::cout << "CHAR::PLAYER::check-obj-collision #1, p.x[" << position.x << "], block["  << res_collision_object._block << "], type[" << res_collision_object._object->get_type() << "]" << std::endl;
 
             if (res_collision_object._object->get_type() == OBJ_BOSS_TELEPORTER || (res_collision_object._object->get_type() == OBJ_FINAL_BOSS_TELEPORTER && res_collision_object._object->is_started() == true)) {
                 if (is_on_teleporter_capsulse(res_collision_object._object) == true) {
@@ -2203,8 +2268,20 @@ st_map_collision character::map_collision(const float incx, const short incy, st
             // ignore block
             } else if (res_collision_object._object->get_type() == OBJ_FINAL_BOSS_TELEPORTER && res_collision_object._object->is_started() == false) {
                 // do nothing
+            } else if (res_collision_object._object->get_type() == OBJ_FRONT_DOOR_TELEPORTER && InputController::get_instance()->p1_input[BTN_UP] == 1) {
+                SoundView::get_instance()->play_sfx(SFX_TELEPORT);
+                GameManager::get_instance()->object_teleport_boss(res_collision_object._object->get_boss_teleporter_dest(), res_collision_object._object->get_boss_teleport_map_dest(), res_collision_object._object->get_obj_map_id(), false);
+            } else if (res_collision_object._object->get_type() == OBJ_TYPE_PUSH_BOX && incx != 0) {
+                st_position obj_pos = res_collision_object._object->get_position();
+                int obj_move_speed  = res_collision_object._object->get_move_speed();
+                if (incx > 0) {
+                    res_collision_object._object->inc_position(obj_move_speed, 0);
+                } else {
+                    res_collision_object._object->inc_position(-obj_move_speed, 0);
+                }
+                // still blocks player
+                map_block = res_collision_object._block;
             } else if (!get_item(res_collision_object)) {
-
                 if (res_collision_object._object->get_type() == OBJ_TREASURE_CHEST) {
                     if (res_collision_object._object->is_started() == false) {
                         draw::get_instance()->draw_game_button(realPosition.x+frameSize.width/2, realPosition.y-20, INPUT_IMAGES_DPAD_DOWN);
@@ -3255,7 +3332,6 @@ void character::execute_jump_up()
         GameManager::get_instance()->get_current_map_obj()->show();
 		show();
         GameManager::get_instance()->get_current_map_obj()->showAbove(0);
-        draw::get_instance()->update_screen();
 	}
 
     //activate_super_jump();
@@ -3270,7 +3346,6 @@ void character::execute_jump_up()
         GameManager::get_instance()->get_current_map_obj()->show();
 		show();
         GameManager::get_instance()->get_current_map_obj()->showAbove();
-        draw::get_instance()->update_screen();
         TimerView::get_instance()->delay(20);
 	}
     _obj_jump.interrupt();
@@ -3297,7 +3372,6 @@ void character::execute_jump()
         GameManager::get_instance()->get_current_map_obj()->show();
 		show();
         GameManager::get_instance()->get_current_map_obj()->showAbove();
-        draw::get_instance()->update_screen();
         TimerView::get_instance()->delay(20);
     }
 }
@@ -3318,13 +3392,11 @@ void character::fall()
             GameManager::get_instance()->get_current_map_obj()->show();
 			show();
             GameManager::get_instance()->get_current_map_obj()->showAbove();
-            draw::get_instance()->update_screen();
 			return;
 		}
         GameManager::get_instance()->get_current_map_obj()->show();
 		show();
         GameManager::get_instance()->get_current_map_obj()->showAbove();
-        draw::get_instance()->update_screen();
         TimerView::get_instance()->delay(10);
     }
 }
@@ -3495,7 +3567,7 @@ bool character::test_change_position(short xinc, short yinc)
 bool character::is_shielded(int projectile_direction) const
 {
 	if (is_player()) {
-        if (InputController::get_instance()->p1_input[BTN_SHIELD] == 1 && state.animation_type == ANIM_TYPE_SHIELD) { // player is on SHIELD animation and is keeping the shield button pressed
+        if (InputController::get_instance()->p1_input[BTN_ITEM] == 1 && state.animation_type == ANIM_TYPE_SHIELD) { // player is on SHIELD animation and is keeping the shield button pressed
             if (shield_type == SHIELD_FULL || shield_type == SHIELD_FRONT) { // player can use shield
                 return true;
             }

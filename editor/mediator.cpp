@@ -150,21 +150,24 @@ void Mediator::setPallete(char *value) {
 
 
 void Mediator::load_game() {
-    fio.read_game(game_data);
+    fio.read_game(SharedData::get_instance()->game_data);
+
+    std::cout << "@@@@@@@@@@@@@@@ Mediator::load_game - game_data.obj_uuid[" << SharedData::get_instance()->game_data.obj_uuid << "]" << std::endl;
+
     std::string stages_extra_data_filename = "data/stages_extra_data" + fio.get_sufix() + ".dat";
 
     // convert enemy-ist to 3.1.2
-    enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>("game_enemy_list_3_1_2.dat");
+    enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "game_enemy_list_3_1_2.dat");
     if (enemy_list.size() == 0) {
         enemy_list.push_back(file_npc_v3_1_2());
     }
 
-    SharedData::get_instance()->v6_object_list = fio_cmm.load_from_disk<v6_file_object>("game_object_list_v6.dat");
+    SharedData::get_instance()->v6_object_list = fio_cmm.load_from_disk<v6_file_object>(SharedData::get_instance()->FILEPATH + "game_object_list_v6.dat");
     if (SharedData::get_instance()->v6_object_list.size() == 0) { // add one first item to avoid errors
         SharedData::get_instance()->v6_object_list.push_back(v6_file_object());
     }
 
-    ai_list = fio_cmm.load_from_disk<file_artificial_inteligence>("game_ai_list.dat");
+    ai_list = fio_cmm.load_from_disk<file_artificial_inteligence>(SharedData::get_instance()->FILEPATH + "game_ai_list.dat");
     //std::cout << "MEDIATOR::load_game::ai_list.size(): " << ai_list.size() << std::endl;
     if (ai_list.size() == 0) { // add one first item to avoid errors
         for (int i=0; i<enemy_list.size(); i++) {
@@ -173,11 +176,15 @@ void Mediator::load_game() {
     }
 
 
-    projectile_list_v3 = fio_cmm.load_from_disk<file_projectilev3>(PROJECTILE_FILE_V3);
+    projectile_list_v3 = fio_cmm.load_from_disk<file_projectilev3>(SharedData::get_instance()->FILEPATH + PROJECTILE_FILE_V3);
     if (projectile_list_v3.size() == 0) {
+        std::cout << "%%%%%%%%%%%%%%%%%%%%%%%%% projectile list is empty, add default projectile" << std::endl;
         projectile_list_v3.push_back(file_projectilev3());
     }
     std::cout << "@@@@@@@@@@@@@@@@@@@@@@@ projectile_list_v3.size[" << projectile_list_v3.size() << "]" << std::endl;
+    if (projectile_list_v3.size() > 0) {
+        std::cout << "$$$$$$$$$$$$$$$$$$ projectile[0].name[" << projectile_list_v3.at(0).name << "]" << std::endl;
+    }
 
 
     scene_list = fio_scenes.load_scenes();
@@ -185,9 +192,9 @@ void Mediator::load_game() {
         scene_list.push_back(file_scene_list());
     }
 
-    anim_block_list = fio_cmm.load_from_disk<file_anim_block>("anim_block_list.dat");
+    anim_block_list = fio_cmm.load_from_disk<file_anim_block>(SharedData::get_instance()->FILEPATH + "anim_block_list.dat");
 
-    player_list_v3_1 = fio_cmm.load_from_disk<file_player_v3_1_1>("player_list_v3_1_1.dat");
+    player_list_v3_1 = fio_cmm.load_from_disk<file_player_v3_1_1>(SharedData::get_instance()->FILEPATH + "player_list_v3_1_1.dat");
     if (player_list_v3_1.size() == 0) {
         for (int i=0; i<FS_MAX_PLAYERS; i++) {
             player_list_v3_1.push_back(file_player_v3_1_1(i));
@@ -229,14 +236,14 @@ void Mediator::load_game() {
         }
 
         // load map objects //
-        QString filename_area_objects = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_objects.dat");
-        SharedData::get_instance()->file_v5_map_object_map.insert(std::pair<unsigned int, std::vector<file_v5_map_object>>(i, std::vector<file_v5_map_object>()));
+        QString filename_area_objects = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v6_map_") + QString::number(i) + QString("_objects.dat");
+        SharedData::get_instance()->file_v6_map_object_map.insert(std::pair<unsigned int, std::vector<v6_map_object>>(i, std::vector<v6_map_object>()));
 
         std::cout << ">>>>>>> try to load map-objects of area[" << i << "] from file[" << filename_area_objects.toStdString() << "]" << std::endl;
 
         if (fio.file_exists(filename_area_objects.toStdString())) {
-            SharedData::get_instance()->file_v5_map_object_map.at(i) = fio_cmm.load_from_disk<file_v5_map_object>(filename_area_objects.toStdString());
-            std::cout << ">> FOUND AREA-OBJECTS FILE, size[" <<  SharedData::get_instance()->file_v5_map_object_map.at(i).size() << "] <<" << std::endl;
+            SharedData::get_instance()->file_v6_map_object_map.at(i) = fio_cmm.load_from_disk<v6_map_object>(filename_area_objects.toStdString());
+            std::cout << ">> FOUND AREA-OBJECTS FILE, size[" <<  SharedData::get_instance()->file_v6_map_object_map.at(i).size() << "] <<" << std::endl;
         }
 
 
@@ -245,7 +252,7 @@ void Mediator::load_game() {
         SharedData::get_instance()->file_v5_map_npc_map.insert(std::pair<unsigned int, std::vector<file_v5_map_npc>>(i, std::vector<file_v5_map_npc>()));
         if (fio.file_exists(filename_area_enemies.toStdString())) {
             SharedData::get_instance()->file_v5_map_npc_map.at(i) = fio_cmm.load_from_disk<file_v5_map_npc>(filename_area_enemies.toStdString());
-            std::cout << ">> FOUND AREA-ENEMIES FILE, size[" <<  SharedData::get_instance()->file_v5_map_object_map.at(i).size() << "] <<" << std::endl;
+            std::cout << ">> FOUND AREA-ENEMIES FILE, size[" <<  SharedData::get_instance()->file_v6_map_object_map.at(i).size() << "] <<" << std::endl;
         }
 
     }
@@ -317,25 +324,30 @@ void Mediator::save_game()
     clean_data();
     //temp_fix_player_colors_order();
 
-    Mediator::get_instance()->fio.write_game(game_data);
+
+    std::cout << "@@@@@@@@@@@@@@@ Mediator::save_game - game_data.obj_uuid[" << SharedData::get_instance()->game_data.obj_uuid << "]" << std::endl;
+
+    Mediator::get_instance()->fio.write_game(SharedData::get_instance()->game_data);
+
+
+
 
     std::string stages_extra_data_filename = "data/stages_extra_data" + fio.get_sufix() + ".dat";
 
 
-    fio_cmm.save_data_to_disk<file_npc_v3_1_2>("game_enemy_list_3_1_2.dat", enemy_list);
-    fio_cmm.save_data_to_disk<v6_file_object>("game_object_list_v6.dat", SharedData::get_instance()->v6_object_list);
-    fio_cmm.save_data_to_disk<file_artificial_inteligence>("game_ai_list.dat", ai_list);
+    fio_cmm.save_data_to_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "game_enemy_list_3_1_2.dat", enemy_list);
+    fio_cmm.save_data_to_disk<v6_file_object>(SharedData::get_instance()->FILEPATH + "game_object_list_v6.dat", SharedData::get_instance()->v6_object_list);
+    fio_cmm.save_data_to_disk<file_artificial_inteligence>(SharedData::get_instance()->FILEPATH + "game_ai_list.dat", ai_list);
 
 
-    //convert_ai_list_to_v3();
     //fio_cmm.save_data_to_disk<file_artificial_inteligence_v3>("game_ai_list_v3.dat", ai_list);
 
-    //convertProjectileListToV2();
-    fio_cmm.save_data_to_disk<file_projectilev3>("data/game_projectile_list_v3.dat", projectile_list_v3);
+    std::cout << "################### save projectile list size[" << projectile_list_v3.size() << "]" << std::endl;
+    fio_cmm.save_data_to_disk<file_projectilev3>(SharedData::get_instance()->FILEPATH + PROJECTILE_FILE_V3, projectile_list_v3);
 
-    fio_cmm.save_data_to_disk<file_anim_block>("anim_block_list.dat", anim_block_list);
+    fio_cmm.save_data_to_disk<file_anim_block>(SharedData::get_instance()->FILEPATH + "anim_block_list.dat", anim_block_list);
 
-    fio_cmm.save_data_to_disk<file_player_v3_1_1>("player_list_v3_1_1.dat", player_list_v3_1);
+    fio_cmm.save_data_to_disk<file_player_v3_1_1>(SharedData::get_instance()->FILEPATH + "player_list_v3_1_1.dat", player_list_v3_1);
 
 
     ScenesMediator::get_instance()->save_game_scenes();
@@ -359,10 +371,10 @@ void Mediator::save_game()
         }
 
         // map objects //
-        QString filename_area_objects = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_objects.dat");
-        if (SharedData::get_instance()->file_v5_map_object_map.find(i) != SharedData::get_instance()->file_v5_map_object_map.end()) {
+        QString filename_area_objects = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v6_map_") + QString::number(i) + QString("_objects.dat");
+        if (SharedData::get_instance()->file_v6_map_object_map.find(i) != SharedData::get_instance()->file_v6_map_object_map.end()) {
             std::cout << "################ save area[" << i << "] map-objects in [" << filename_area_objects.toStdString() << "]" << std::endl;
-            fio_cmm.save_data_to_disk<file_v5_map_object>(filename_area_objects.toStdString(), SharedData::get_instance()->file_v5_map_object_map.at(i));
+            fio_cmm.save_data_to_disk<v6_map_object>(filename_area_objects.toStdString(), SharedData::get_instance()->file_v6_map_object_map.at(i));
         }
 
         // map enemies //

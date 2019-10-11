@@ -60,7 +60,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>288</height>
+             <height>295</height>
             </rect>
            </property>
           </widget>
@@ -84,7 +84,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>288</height>
+             <height>295</height>
             </rect>
            </property>
           </widget>
@@ -108,7 +108,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>288</height>
+             <height>295</height>
             </rect>
            </property>
           </widget>
@@ -132,7 +132,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>288</height>
+             <height>295</height>
             </rect>
            </property>
           </widget>
@@ -156,7 +156,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>288</height>
+             <height>295</height>
             </rect>
            </property>
           </widget>
@@ -180,7 +180,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>288</height>
+             <height>295</height>
             </rect>
            </property>
           </widget>
@@ -204,7 +204,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>288</height>
+             <height>295</height>
             </rect>
            </property>
           </widget>
@@ -228,7 +228,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>288</height>
+             <height>295</height>
             </rect>
            </property>
           </widget>
@@ -252,7 +252,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>288</height>
+             <height>295</height>
             </rect>
            </property>
           </widget>
@@ -276,7 +276,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>288</height>
+             <height>295</height>
             </rect>
            </property>
           </widget>
@@ -309,7 +309,7 @@
      <x>0</x>
      <y>0</y>
      <width>870</width>
-     <height>23</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFILE">
@@ -367,6 +367,7 @@
     <addaction name="actionObjects"/>
     <addaction name="actionNPCs"/>
     <addaction name="actionTeleporters"/>
+    <addaction name="actionOverlay"/>
    </widget>
    <addaction name="menuFILE"/>
    <addaction name="menuEdit"/>
@@ -584,6 +585,17 @@
    </property>
    <property name="text">
     <string>gRID</string>
+   </property>
+  </action>
+  <action name="actionOverlay">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Overlay</string>
    </property>
   </action>
  </widget>

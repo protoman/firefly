@@ -19,7 +19,7 @@ public:
     void renderText(int x, int y, std::string text);
     void renderCenteredText(int y, std::string text);
     void renderCenteredText(int y, st_color color, std::string text);
-
+    st_size get_text_size(std::string text);
 
 private:
     TextView();

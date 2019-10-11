@@ -26,19 +26,19 @@ struct npc_frameset {
  * @brief
  *
  */
-class classnpc : public artificial_inteligence
+class GameEnemy : public artificial_inteligence
 {
 public:
-	classnpc();
-    ~classnpc();
-    classnpc(std::string set_name);
-    classnpc(int map_id, int main_id, int id); // load data from game_data and create a new npc
-    classnpc(int map_id, int main_id, st_position npc_pos, short int direction, bool player_friend); // spawned npc
+    GameEnemy();
+    ~GameEnemy();
+    GameEnemy(std::string set_name);
+    GameEnemy(int map_id, int main_id, int id); // load data from game_data and create a new npc
+    GameEnemy(int map_id, int main_id, st_position npc_pos, short int direction, bool player_friend); // spawned npc
     void initFrames();
     void execute();
     void init_animation();
     void boss_move();
-    void copy(classnpc *from);
+    void copy(GameEnemy *from);
     void move();
     void move_projectiles();
     void show_projectiles();

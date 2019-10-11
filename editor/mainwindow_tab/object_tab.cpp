@@ -43,21 +43,33 @@ void object_tab::fill_ability_data()
 {
     bool original_data_loaded = _data_loaded;
     _data_loaded = false;
-    int obj_type =SharedData::get_instance()->v6_object_list.at(ui->objectlist_combo->currentIndex()).type;
-    if (SharedData::get_instance()->v6_object_list.size() > 0 && (obj_type == OBJ_ABILITY_ITEM || obj_type == OBJ_TREASURE_CHEST)) {
+
+
+
+    int obj_type = SharedData::get_instance()->v6_object_list.at(_current_object).type;
+
+    std::cout << "object_tab::fill_ability_data - _current_object[" << _current_object << "], obj_type[" << obj_type << "], OBJ_ABILITY_ITEM[" << (int)OBJ_ABILITY_ITEM << "]" << std::endl;
+
+    if (obj_type == OBJ_TREASURE_CHEST) {
         ui->givenAbility_label->setText("Given Item");
         common::fill_object_combo(ui->givenAbilityComboBox);
         ui->givenAbilityComboBox->setEnabled(true);
+        ui->givenAbilityComboBox->setCurrentIndex(SharedData::get_instance()->v6_object_list.at(_current_object).given_ability+1);
+        ui->key_comboBox->setCurrentIndex(SharedData::get_instance()->v6_object_list.at(_current_object).key_id);
+        SharedData::get_instance()->v6_object_list.at(_current_object).given_ability = 0;
         ui->key_comboBox->setEnabled(true);
-        ui->givenAbilityComboBox->setCurrentIndex(SharedData::get_instance()->v6_object_list.at(ui->objectlist_combo->currentIndex()).given_ability);
-        ui->key_comboBox->setCurrentIndex(SharedData::get_instance()->v6_object_list.at(ui->objectlist_combo->currentIndex()).key_id);
-    } else {
+    } else if (obj_type == OBJ_ABILITY_ITEM) {
         ui->givenAbility_label->setText("Given Ability");
         common::fill_abilities_combo(ui->givenAbilityComboBox);
-        SharedData::get_instance()->v6_object_list.at(ui->objectlist_combo->currentIndex()).given_ability = -1;
-        ui->givenAbilityComboBox->setEnabled(false);
+        ui->givenAbilityComboBox->setCurrentIndex(SharedData::get_instance()->v6_object_list.at(_current_object).given_ability+1);
+        ui->givenAbilityComboBox->setEnabled(true);
+        ui->key_comboBox->setCurrentIndex(0);
         ui->key_comboBox->setEnabled(false);
+    } else {
+        SharedData::get_instance()->v6_object_list.at(_current_object).given_ability = 0;
+        ui->givenAbilityComboBox->setEnabled(false);
     }
+    ui->subType_comboBox->setCurrentIndex(SharedData::get_instance()->v6_object_list.at(_current_object).sub_type);
 
     _data_loaded = original_data_loaded;
 }
@@ -69,6 +81,9 @@ void object_tab::on_graphicfile_combo_currentIndexChanged(const QString &arg1)
 	}
     sprintf(SharedData::get_instance()->v6_object_list.at(_current_object).graphic_filename, "%s", arg1.toStdString().c_str());
     ui->object_preview_area->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/objects/")+arg1.toStdString());
+    st_size img_size = ui->object_preview_area->get_image_size();
+    ui->graphic_w->setValue(img_size.width);
+    ui->graphic_h->setValue(img_size.height);
     ui->object_preview_area->repaint();
 }
 
@@ -78,9 +93,8 @@ void object_tab::on_objectlist_combo_currentIndexChanged(int index)
 		return;
 	}
 
-    fill_ability_data();
+    _current_object = index;
 
-	_current_object = index;
     std::cout << ">>>>>>>>>>>>>>>> _current_object[" << _current_object << "], list.size[" << SharedData::get_instance()->v6_object_list.size() << "]" << std::endl;
     if (_current_object >= SharedData::get_instance()->v6_object_list.size()) {
         std::cout << "INVALID OBJ-N, LEAVE" << std::endl;
@@ -115,13 +129,13 @@ void object_tab::on_type_combo_currentIndexChanged(int index)
 		return;
 	}
     fill_ability_data();
-    if (index == OBJ_DOOR_LOCKED || index == OBJ_BOSS_DOOR || index == OBJ_DOOR_KEY) {
+    if (SharedData::get_instance()->v6_object_list.size() > 0) {
+        SharedData::get_instance()->v6_object_list.at(_current_object).type = index;
+    }
+    if (SharedData::get_instance()->v6_object_list.size() > 0 && (index == OBJ_ABILITY_ITEM || index == OBJ_TREASURE_CHEST)) {
         ui->key_comboBox->setEnabled(true);
     } else {
         ui->key_comboBox->setEnabled(false);
-    }
-    if (SharedData::get_instance()->v6_object_list.size() > 0) {
-        SharedData::get_instance()->v6_object_list.at(_current_object).type = index;
     }
 
 }
@@ -193,11 +207,22 @@ void object_tab::on_pushButton_clicked()
 void object_tab::on_givenAbilityComboBox_currentIndexChanged(int index)
 {
     if (_data_loaded == false) { return; }
-    SharedData::get_instance()->v6_object_list.at(_current_object).given_ability = index;
+    SharedData::get_instance()->v6_object_list.at(_current_object).given_ability = index-1;
 }
 
 void object_tab::on_key_comboBox_currentIndexChanged(int index)
 {
     if (_data_loaded == false) { return; }
     SharedData::get_instance()->v6_object_list.at(_current_object).key_id = index;
+    if (index == 0) {
+        SharedData::get_instance()->v6_object_list.at(_current_object).sub_type = 0;
+    }
+}
+
+
+
+void object_tab::on_subType_comboBox_currentIndexChanged(int index)
+{
+    if (_data_loaded == false) { return; }
+    SharedData::get_instance()->v6_object_list.at(_current_object).sub_type = index;
 }

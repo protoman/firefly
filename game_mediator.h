@@ -32,7 +32,6 @@ public:
     std::vector<file_artificial_inteligence> ai_list;
     std::vector<file_anim_block> anim_tile_list;
     std::vector<file_player_v3_1_1> player_list_v3_1;
-    std::vector<file_projectilev3> projectile_list;
     std::map<std::string, st_imageData> character_graphic_map;      // character graphics
 
 private:

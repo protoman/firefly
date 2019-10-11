@@ -139,8 +139,8 @@ struct st_size {
     int height;
 	st_size()
 	{
-		width = 0;
-        height = 0;
+            width = 0;
+            height = 0;
 	}
 /**
  * @brief
@@ -534,6 +534,33 @@ struct st_dialog {
     std::vector<std::string> msgs;          // text in the dialog
 };
 
+
+struct st_light_point {
+    int x = 0;
+    int y = 0;
+    e_LIGHT_POINT_COLOR color;
+
+    st_light_point(int set_x, int set_y, e_LIGHT_POINT_COLOR set_color) {
+        x = set_x;
+        y = set_y;
+        color = set_color;
+    }
+};
+
+struct st_dialog_status {
+
+    bool started = false;
+    unsigned long timer = 0;
+
+    st_dialog_status() {
+        reset();
+    }
+
+    void reset() {
+        started = false;
+        timer = 0;
+    }
+};
 
 
 #endif // ST_COMMON_H

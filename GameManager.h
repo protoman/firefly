@@ -7,11 +7,11 @@
 #include <string>
 
 class classPlayer;
-class classnpc;
+class GameEnemy;
 
 
 #include "character/classplayer.h"
-#include "character/classnpc.h"
+#include "character/GameEnemy.h"
 #include "sceneslib.h"
 #include "objects/GameObject.h"
 #include "class_config.h"
@@ -23,19 +23,23 @@ class classnpc;
 #include "ports/psp/psp_ram.h"
 #endif
 
+
+
 /**
  * @brief
  *
  */
-class gameManager
+class GameManager
 {
 public:
-    static gameManager* get_instance();
+    static GameManager* get_instance();
 
     void initHardwareLayer();
     void preloadGameData();
 
     void initGame();
+
+    void start_stage_music();
 
     bool show_game_intro();
     void show_beta_version_warning();
@@ -45,12 +49,17 @@ public:
     void set_player_direction(ANIM_DIRECTION dir);
     void show_player_at(int x, int y);
     void update_stage_scrolling();
+
+    void build_screen_area_lists();
+
     void show_game(bool can_characters_move, bool can_scroll_stage);
+
+
     Uint8 getMapPointLock(struct st_position);
     st_size get_map_size();
     st_float_position checkScrolling();
 
-    void horizontal_screen_move(short direction, bool is_door, short tileX);
+    void horizontal_screen_move(short direction, bool is_door, short tileX, short tileY);
     void vertical_screen_move(short direction, bool is_door, short tileX);
 
     void show_door_animation();
@@ -95,6 +104,7 @@ public:
     short get_current_save_slot();
     void set_current_save_slot(short n);
     void save_game();
+    void read_save();
     void set_show_fps_enabled(bool enabled);
     bool get_show_fps_enabled();
     void add_autoscroll_delay();
@@ -107,12 +117,21 @@ public:
     void show_hud(bool update_room);
     void build_game_area_map(int x, int y, int map_tile_x, int map_tile_y);
 
+    // QUEUE HANDLERS //
+    void consume_dialogs_from_queue();
+    void add_queue_dialog(st_dialog dialog);
+
+    st_position get_player_relative_center_position();
+
+    st_dialog_status* get_dialog_status();
+    std::vector<st_dialog>* get_dialog_queue();
+
 
 private:
-    gameManager();
-    ~gameManager();
-    gameManager(gameManager const&) : _show_boss_hp(false), player1(0) {};             // copy constructor is private
-    gameManager& operator=(gameManager const&){ return *this; };  // assignment operator is private
+    GameManager();
+    ~GameManager();
+    GameManager(GameManager const&) : _show_boss_hp(false), player1(0) {};             // copy constructor is private
+    GameManager& operator=(GameManager const&){ return *this; };  // assignment operator is private
 
     void exit_game();
     void start_stage();
@@ -121,9 +140,8 @@ private:
 
     void loadGameData();
     void loadMapData();
+    void loadAreaListSize();
     int mapNumberFromAreaPosition(int area_n, int x, int y);
-
-    void show_ready();
 
     void restart_stage();
     void transition_screen(Uint8 type, Uint8 map_n, short int adjust_x, classPlayer *pObj);
@@ -143,13 +161,17 @@ private:
 
     void init_map_and_player_to_bottom();
 
+    st_size calc_area_tile_size(int area_n);
+
+
+
 public:
     bool is_showing_boss_intro;
 
 
 
 private:
-    static gameManager* _instance;
+    static GameManager* _instance;
     file_io fio;
     fio_common fio_cmm;
 
@@ -177,11 +199,20 @@ private:
 
     short current_save_slot;
 
-    bool show_fps_enabled;
+    bool show_fps_enabled = true;
 
     std::vector<st_position> map_interstage_points;
     long autoscroll_timer = 0;
     int current_area = 0;
+
+    // dialogs queue //
+    // @TODO: add into a struct, so you can hold portraits, play music and other options //
+    std::vector<st_dialog> dialog_queue;
+    st_dialog_status dialog_status;
+
+    bool must_wait_keypress = true;
+
+    e_GAME_INTERRUPT_MODE interrupt_mode = GAME_INTERRUPT_MODE_NONE;
 
 
 #ifdef PSP

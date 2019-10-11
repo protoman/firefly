@@ -1,7 +1,7 @@
 #ifndef GAMENPC_H
 #define GAMENPC_H
 
-#include <QWidget>
+#include "character/GameEnemy.h"
 
 class GameNPC : public GameEnemy
 {

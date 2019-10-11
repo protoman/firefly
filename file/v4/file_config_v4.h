@@ -32,7 +32,7 @@ struct st_game_config {
     keys_codes_copy[BTN_ATTACK] = SDLK_a;
     keys_codes_copy[BTN_JUMP] = SDLK_x;
     keys_codes_copy[BTN_DASH] = SDLK_c;
-    keys_codes_copy[BTN_SHIELD] = SDLK_z;
+    keys_codes_copy[BTN_ITEM] = SDLK_z;
     keys_codes_copy[BTN_L] = SDLK_q;
     keys_codes_copy[BTN_R] = SDLK_w;
     keys_codes_copy[BTN_QUIT] = SDLK_ESCAPE;
@@ -86,8 +86,8 @@ struct st_game_config {
         button_codes_copy[BTN_JUMP].value = 1;
         button_codes_copy[BTN_DASH].type = JOYSTICK_INPUT_TYPE_BUTTON;
         button_codes_copy[BTN_DASH].value = 0;
-        button_codes_copy[BTN_SHIELD].type = JOYSTICK_INPUT_TYPE_BUTTON;
-        button_codes_copy[BTN_SHIELD].value = 3;
+        button_codes_copy[BTN_ITEM].type = JOYSTICK_INPUT_TYPE_BUTTON;
+        button_codes_copy[BTN_ITEM].value = 3;
         button_codes_copy[BTN_L].type = JOYSTICK_INPUT_TYPE_BUTTON;
         button_codes_copy[BTN_L].value = 6;
         button_codes_copy[BTN_R].type = JOYSTICK_INPUT_TYPE_BUTTON;

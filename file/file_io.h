@@ -22,10 +22,11 @@ class file_io {
 
 public:
     file_io();
-    void read_game(file_game& data_out) const;
-    void write_game(file_game& data_in) const;
+    void read_game(file_game& data_out);
+    void write_game(file_game& data_in);
+    std::string get_game_properties_filename();
 
-    bool file_exists(std::string filename) const;
+    bool file_exists(std::string filename);
     std::vector<std::string> read_game_list();
     std::vector<std::string> read_directory_list(std::string filename, bool dir_only);
     std::vector<std::string> read_file_list(std::string filename);
@@ -33,6 +34,11 @@ public:
     std::string get_save_filename(short save_n);
     bool write_save(st_save& data_in, short save_n);
     bool read_save(st_save& data_out, short save_n);
+
+    std::string get_object_state_filename();
+    void write_game_object_state();
+    void load_game_object_state();
+
     bool save_exists(short save_n);
     bool have_one_save_file();
     bool can_access_castle(st_save& data_in);

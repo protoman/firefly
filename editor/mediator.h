@@ -114,7 +114,6 @@ public:
     int current_ai;
 
     // old globals
-    file_game game_data;
 
 
     std::vector<file_npc_v3_1_2> enemy_list;

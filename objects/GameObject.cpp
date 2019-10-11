@@ -352,6 +352,12 @@ void GameObject::set_position(st_position pos)
     position.y = pos.y - framesize_h/2;
 }
 
+void GameObject::inc_position(int incx, int incy)
+{
+    position.x += incx;
+    position.y += incy;
+}
+
 
 
 
@@ -1249,9 +1255,16 @@ st_position GameObject::get_position() const
     return position;
 }
 
+
+
 st_position GameObject::get_start_position() const
 {
     return start_point;
+}
+
+int GameObject::get_move_speed()
+{
+    return SharedData::get_instance()->v6_object_list.at(_id).speed;
 }
 
 st_rectangle GameObject::get_area()
@@ -1300,6 +1313,11 @@ Uint8 GameObject::get_type() const
 Uint8 GameObject::get_id() const
 {
     return _id;
+}
+
+int GameObject::get_uuid()
+{
+    return uuid;
 }
 
 // ********************************************************************************************** //
@@ -1484,6 +1502,11 @@ Uint8 GameObject::get_obj_map_id()
 void GameObject::set_obj_map_id(Uint8 id)
 {
     _obj_map_id = id;
+}
+
+void GameObject::set_uuid(int uuid)
+{
+    this->uuid = uuid;
 }
 
 bool GameObject::is_teleporting()

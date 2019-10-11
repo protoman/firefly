@@ -53,6 +53,8 @@ private slots:
 
     void on_key_comboBox_currentIndexChanged(int index);
 
+    void on_subType_comboBox_currentIndexChanged(int index);
+
 private:
     Ui::object_tab *ui;
     unsigned long _current_object = 0;

@@ -50,6 +50,12 @@ struct st_save_checkpoint {
     unsigned int y = 0;
 };
 
+
+struct game_item_slot {
+    int obj_id = -1;
+    int uuid = -1;
+};
+
 struct st_save {
     st_items items;
     int selected_player;
@@ -58,6 +64,7 @@ struct st_save {
     st_save_checkpoint checkpoint;
     bool abilities[ABILITIES_SLOTS];
     bool keys[KEY_TYPE_COUNT];
+    game_item_slot game_item_list[GAME_ITEM_SLOTS];
 
 
     st_save() {

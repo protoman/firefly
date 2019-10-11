@@ -29,15 +29,15 @@ Mix_Chunk* GameMediator::get_sfx(std::string filename)
 
 file_projectilev3 GameMediator::get_projectile(int n)
 {
-    if (n < 0 || n >= projectile_list.size()) {
-        return projectile_list.at(0);
+    if (n < 0 || n >= SharedData::get_instance()->projectile_list_v3.size()) {
+        return SharedData::get_instance()->projectile_list_v3.at(0);
     }
-    return projectile_list.at(n);
+    return SharedData::get_instance()->projectile_list_v3.at(n);
 }
 
 int GameMediator::get_projectile_list_size()
 {
-    return projectile_list.size();
+    return SharedData::get_instance()->projectile_list_v3.size();
 }
 
 file_npc_v3_1_2* GameMediator::get_enemy(int n)
@@ -59,19 +59,15 @@ int GameMediator::get_enemy_list_size()
 
 GameMediator::GameMediator()
 {
-    enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>("game_enemy_list_3_1_2.dat");
-    SharedData::get_instance()->v6_object_list = fio_cmm.load_from_disk<v6_file_object>("game_object_list_v6.dat");
-    ai_list = fio_cmm.load_from_disk<file_artificial_inteligence>("game_ai_list.dat");
-    projectile_list = fio_cmm.load_from_disk<file_projectilev3>("data/game_projectile_list_v3.dat");
+    enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "/game_enemy_list_3_1_2.dat");
+    SharedData::get_instance()->v6_object_list = fio_cmm.load_from_disk<v6_file_object>(SharedData::get_instance()->FILEPATH + "/game_object_list_v6.dat");
+    ai_list = fio_cmm.load_from_disk<file_artificial_inteligence>(SharedData::get_instance()->FILEPATH + "/game_ai_list.dat");
 
-    anim_tile_list = fio_cmm.load_from_disk<file_anim_block>("anim_block_list.dat");
-    player_list_v3_1 = fio_cmm.load_from_disk<file_player_v3_1_1>("player_list_v3_1_1.dat");
+    anim_tile_list = fio_cmm.load_from_disk<file_anim_block>(SharedData::get_instance()->FILEPATH + "/anim_block_list.dat");
+    player_list_v3_1 = fio_cmm.load_from_disk<file_player_v3_1_1>(SharedData::get_instance()->FILEPATH + "/player_list_v3_1_1.dat");
 
 
     // add some dummy data for game not to crash
-    if (projectile_list.size() == 0) {
-        projectile_list.push_back(file_projectilev3());
-    }
     if (player_list_v3_1.size() == 0) {
         for (int i=0; i<FS_MAX_PLAYERS; i++) {
             player_list_v3_1.push_back(file_player_v3_1_1(i));

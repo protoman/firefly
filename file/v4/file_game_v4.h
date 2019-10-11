@@ -443,7 +443,9 @@ struct file_game {
     char game_start_screen_music_filename[FS_CHAR_NAME_SIZE];
     bool use_second_castle;
     Uint8 game_style;                                               // if 1, stages are executed one after another, like castlevania or ghouls & ghosts
-    Uint8 final_boss_id;                                            // indicates who is the final boss, the id refers NPC, so it is possible to add the same final boss intro two stages
+    Sint8 final_boss_id;                                            // indicates who is the final boss, the id refers NPC, so it is possible to add the same final boss intro two stages
+    int obj_uuid;
+    int npc_uuid;
 
 
     // CONSTRUCTOR //
@@ -461,7 +463,8 @@ struct file_game {
         game_style = 0;
         use_second_castle = false;
         final_boss_id = -1;
-
+        obj_uuid = 0;
+        npc_uuid = 0;
     }
 
 };

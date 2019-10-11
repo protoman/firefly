@@ -109,7 +109,7 @@
            <enum>QFrame::NoFrame</enum>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="tabSpacing">
            <number>6</number>
@@ -120,7 +120,7 @@
              <x>0</x>
              <y>0</y>
              <width>330</width>
-             <height>705</height>
+             <height>729</height>
             </rect>
            </property>
            <attribute name="label">
@@ -165,7 +165,7 @@
                    </item>
                    <item>
                     <property name="text">
-                     <string>Overlay</string>
+                     <string>OverlayS</string>
                     </property>
                    </item>
                   </widget>
@@ -235,7 +235,7 @@
              <x>0</x>
              <y>0</y>
              <width>330</width>
-             <height>705</height>
+             <height>729</height>
             </rect>
            </property>
            <attribute name="label">
@@ -372,8 +372,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>146</width>
-             <height>114</height>
+             <width>330</width>
+             <height>729</height>
             </rect>
            </property>
            <attribute name="label">
@@ -455,8 +455,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>98</width>
-             <height>28</height>
+             <width>330</width>
+             <height>729</height>
             </rect>
            </property>
            <attribute name="label">
@@ -565,8 +565,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>146</width>
-             <height>122</height>
+             <width>330</width>
+             <height>729</height>
             </rect>
            </property>
            <attribute name="label">
@@ -618,8 +618,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>98</width>
-             <height>94</height>
+             <width>330</width>
+             <height>729</height>
             </rect>
            </property>
            <attribute name="label">
@@ -636,8 +636,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>98</width>
-                 <height>28</height>
+                 <width>310</width>
+                 <height>351</height>
                 </rect>
                </property>
                <widget class="animTilePalette" name="animTilePaletteWidget" native="true">
@@ -694,8 +694,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>98</width>
-             <height>28</height>
+             <width>330</width>
+             <height>729</height>
             </rect>
            </property>
            <attribute name="label">

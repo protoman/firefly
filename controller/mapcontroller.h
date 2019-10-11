@@ -105,6 +105,7 @@ public:
     void addLayer(unsigned int n, bool isFg);
     void clearLayers();
     void drawLayers(bool isFg);
+    void render_layer(float x, float y, st_imageData* surface_bg);
 
     void draw_map_tiles();
 
@@ -207,6 +208,7 @@ public:
 
 
     void drop_item(GameEnemy *npc_ref);
+    void drop_game_item(int obj_id, int uuid, int x, int y);
 
     void set_bg_scroll(int scrollx);
 
@@ -283,12 +285,13 @@ private:
     water_bubble _water_bubble;
     st_rectangle _3rd_level_ignore_area;
     object_collision _obj_collision;
-    std::vector<st_level3_tile> _level3_tiles;
+    std::vector<st_level3_tile> level3_tiles;
+    std::vector<st_position> level3_water_tiles;
     std::vector<GameObject> object_list;
     // DRAW MEMBERS //
     int _show_map_pos_x;                                                    // this is used to compare the position that the map was drawn last time to the current scrolling to check if map needs to be redrawn
     int _show_map_pos_y;                                                    // this is used to compare the position that the map was drawn last time to the current scrolling to check if map needs to be redrawn
-    st_imageData map_screen;                                        // use to avoid having to draw the tilesets each time we update screen
+    st_imageData map_screen;                                                // use to avoid having to draw the tilesets each time we update screen
     std::vector<anim_tile_desc> anim_tile_list;                             // list of animated tiles, so we don't need to loop through all tiles when drawing only the animated ones
 
     std::map<int, st_imageData> slope_image_map;

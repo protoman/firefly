@@ -138,6 +138,8 @@ private slots:
 
     void on_areaEditTabWidget_currentChanged(int index);
 
+    void on_actionOverlay_toggled(bool arg1);
+
 private:
     Ui::MainWindow *ui;
     npc_edit *npc_edit_tab;

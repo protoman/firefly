@@ -458,6 +458,7 @@ void common::fill_anim_block_combo(QComboBox *combo)
 void common::fill_abilities_combo(QComboBox *combo)
 {
     combo->clear();
+    combo->addItem(QString("None"));
     for (int i=0; i<PROPERTY_NAME_COUNT; i++) {
         combo->addItem(QString(AbilityName::get_instance()->get_name_from_number(i).c_str()));
     }

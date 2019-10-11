@@ -68,6 +68,8 @@ public:
     short get_id();
     void play_sfx(bool called_from_npc);
     st_float_position get_position();
+    void set_max_dist(int max_value);
+    bool check_max_distance();
 
 private:
     // methods that return properties taking in account id -1 (default projectile)
@@ -147,6 +149,8 @@ private:
 
     // used for rotated images
     st_imageData rotated_surface;
+
+    int max_dist = -1;
 
 };
 #endif // PROJECTILELIB_H

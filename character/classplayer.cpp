@@ -81,6 +81,9 @@ void classPlayer::initialize()
 
 bool classPlayer::get_item(object_collision &obj_info)
 {
+
+    //std::cout << "classPlayer::get_item[" << (int)obj_info._object->get_type() << "]" << std::endl;
+
     if (state.animation_type == ANIM_TYPE_TELEPORT) {
         return false;
     }
@@ -142,8 +145,10 @@ bool classPlayer::get_item(object_collision &obj_info)
 			break;
 		}
 	}
-	return res;
+    return res;
 }
+
+
 
 void classPlayer::recharge(e_energy_types _en_type, int value)
 {
@@ -224,10 +229,12 @@ void classPlayer::attack(bool dont_update_colors)
 
 
     if (state.animation_type == ANIM_TYPE_HIT) { // can't fire when hit
+        //std::cout << "classPlayer::attack::LEAVE #1" << std::endl;
         return;
     }
 
     if (state.animation_type == ANIM_TYPE_SHIELD) { // can't attack when using shield
+        //std::cout << "classPlayer::attack::LEAVE #2" << std::endl;
         return;
     }
 
@@ -259,6 +266,7 @@ void classPlayer::attack(bool dont_update_colors)
         if (_player_must_reset_colors == true) {
             _player_must_reset_colors = false;
         }
+        //std::cout << "classPlayer::attack::LEAVE #3" << std::endl;
         return;
     }
 
@@ -297,27 +305,53 @@ void classPlayer::attack(bool dont_update_colors)
             proj_pos = st_position(position.x+frameSize.width-TILESIZE*2, position.y+frameSize.height/2);
         }
 
+
+        int proj_direction = state.direction;
+        if (_number == 0) { // frankie can shoot 8 directions
+            if (InputController::get_instance()->p1_input[BTN_R] == 1) {
+                if (InputController::get_instance()->p1_input[BTN_DOWN] == 1) {
+                    if (state.direction == ANIM_DIRECTION_LEFT) {
+                        proj_direction = ANIM_DIRECTION_DOWN_LEFT;
+                    } else {
+                        proj_direction = ANIM_DIRECTION_DOWN_RIGHT;
+                    }
+                } else {
+                    if (state.direction == ANIM_DIRECTION_LEFT) {
+                        proj_direction = ANIM_DIRECTION_UP_LEFT;
+                    } else {
+                        proj_direction = ANIM_DIRECTION_UP_RIGHT;
+                    }
+                }
+            } else {
+                if (InputController::get_instance()->p1_input[BTN_UP] == 1) {
+                    proj_direction = ANIM_DIRECTION_UP;
+                } else if (InputController::get_instance()->p1_input[BTN_DOWN] == 1) {
+                    proj_direction = ANIM_DIRECTION_DOWN;
+                }
+            }
+        }
+
         short int weapon_id = 0;
 
         std::cout << "PLAYER::ATTACK - used_weapon[" << used_weapon << "]" << std::endl;
 
         weapon_id = used_weapon;
 
-        if (weapon_id == 0) { /// @TODO - this is a temporary exit to handle incomplete weapons
-            return;
-        } else if (weapon_id == -1) {
+        if (weapon_id == -1) {
             weapon_id = 0;
         }
 
-        projectile_list.push_back(projectile(0, state.direction, get_attack_position(), is_player()));
+        std::cout << ">>>>>>>>>>>>>>>>>> proj_direction[" << proj_direction << "] <<<<<<<<<<<<<<<<<<" << std::endl;
+        projectile_list.push_back(projectile(0, proj_direction, get_attack_position(), is_player()));
         projectile &temp_proj = projectile_list.back();
         temp_proj.play_sfx(false);
         temp_proj.set_is_permanent();
         temp_proj.set_weapon_id(weapon_id);
         temp_proj.set_owner(this);
+        temp_proj.set_max_dist(TILESIZE*4);
 
 
-        //std::cout << "weapon_id: " << weapon_id << ", projectile_id: " << game_data.weapons[weapon_id].id_projectile << std::endl;
+        std::cout << "classPlayer::attack::DEBUG #1" << std::endl;
 
         int weapon_trajectory = GameMediator::get_instance()->get_projectile(0).trajectory;
         if (weapon_trajectory == TRAJECTORY_CENTERED || weapon_trajectory == TRAJECTORY_SLASH) {
@@ -331,7 +365,7 @@ void classPlayer::attack(bool dont_update_colors)
             st_rectangle hitbox = get_hitbox();
             GameEnemy* temp = GameManager::get_instance()->get_current_map_obj()->find_nearest_npc(st_position(hitbox.x+hitbox.w/2, hitbox.y+hitbox.h/2));
             if (temp != nullptr) {
-                //std::cout << "PLAYER::attack - could not find target" << std::endl;
+                std::cout << "PLAYER::attack - could not find target" << std::endl;
                 temp_proj.set_target_position(temp->get_position_ref());
             }
         } else if (weapon_trajectory == TRAJECTORY_TARGET_DIRECTION || weapon_trajectory == TRAJECTORY_TARGET_EXACT || weapon_trajectory == TRAJECTORY_ARC_TO_TARGET) {
@@ -339,7 +373,7 @@ void classPlayer::attack(bool dont_update_colors)
             st_position player_pos(hitbox.x+hitbox.w/2, hitbox.y+hitbox.h/2);
             GameEnemy* temp = GameManager::get_instance()->get_current_map_obj()->find_nearest_npc_on_direction(player_pos, state.direction);
             if (temp != nullptr) {
-                //std::cout << "PLAYER::attack - could not find target" << std::endl;
+                std::cout << "PLAYER::attack - could not find target" << std::endl;
                 temp_proj.set_target_position(temp->get_position_ref());
             }
             if (weapon_trajectory == TRAJECTORY_ARC_TO_TARGET) {
@@ -359,7 +393,7 @@ void classPlayer::attack(bool dont_update_colors)
             }
         }
 
-        //std::cout << "Added projectile - id: " << game_data.weapons[weapon_id].id_projectile << std::endl;
+        std::cout << "classPlayer::attack::DEBUG #2" << std::endl;
 
         attack_state = ATTACK_START;
         state.attack_timer = TimerView::get_instance()->getTimer();
@@ -372,6 +406,8 @@ void classPlayer::attack(bool dont_update_colors)
         } else if (state.animation_type == ANIM_TYPE_WALK) {
             set_animation_type(ANIM_TYPE_WALK_ATTACK);
         }
+
+        std::cout << "classPlayer::attack::DEBUG #3" << std::endl;
     }
 }
 
@@ -419,8 +455,8 @@ void classPlayer::damage_ground_npcs()
 void classPlayer::initFrames()
 {
 
-    frameSize.width = GameMediator::get_instance()->player_list_v3_1[_number].sprite_size.width;
-    frameSize.height = GameMediator::get_instance()->player_list_v3_1[_number].sprite_size.height;
+    frameSize.width = PLAYER_SPRITE_SIZE;
+    frameSize.height = PLAYER_SPRITE_SIZE;
 
 
     add_graphic();
@@ -510,7 +546,10 @@ void classPlayer::initFrames()
     addSpriteFrame(ANIM_TYPE_GOT_WEAPON, 26, playerSpriteSurface, 200);
     addSpriteFrame(ANIM_TYPE_GOT_WEAPON, 27, playerSpriteSurface, 200);
 
-    addSpriteFrame(ANIM_TYPE_GOT_ITEM, 27, playerSpriteSurface, 200);
+    addSpriteFrame(ANIM_TYPE_GOT_ITEM, 33, playerSpriteSurface, 60);
+    addSpriteFrame(ANIM_TYPE_GOT_ITEM, 34, playerSpriteSurface, 60);
+    addSpriteFrame(ANIM_TYPE_GOT_ITEM, 35, playerSpriteSurface, 60);
+    addSpriteFrame(ANIM_TYPE_GOT_ITEM, 36, playerSpriteSurface, 8000);
 
 
     playerSpriteSurface.freeGraphic();
@@ -712,14 +751,14 @@ void classPlayer::move()
         //std::cout << ">>> moveCommands.attack::RESET #1" << std::endl;
 		moveCommands.attack = 0;
 	}
-    if (InputController::get_instance()->p1_input[BTN_SHIELD] == 1) {
-		moveCommands.shield = 1;
+    if (InputController::get_instance()->p1_input[BTN_ITEM] == 1) {
+		moveCommands.use_item = 1;
         moveCommands.left = 0;
         moveCommands.right = 0;
         moveCommands.up = 0;
         moveCommands.down = 0;
 	} else {
-		moveCommands.shield = 0;
+		moveCommands.use_item = 0;
 	}
     if (InputController::get_instance()->p1_input[BTN_DASH] == 1) {
 		moveCommands.dash = 1;
@@ -772,18 +811,9 @@ void classPlayer::move()
 		}
 	}
 
-    if (GameMediator::get_instance()->player_list_v3_1[_number].have_shield == true && moveCommands.up == 0 && moveCommands.down == 0 && moveCommands.left == 0 && moveCommands.right == 0 && moveCommands.jump == 0 && moveCommands.shield == 1) {
-		if (state.animation_type != ANIM_TYPE_SHIELD) {
-			std::cout << "playerClass::initShield CHANGE anim_type: " << state.animation_type << " to " << ANIM_TYPE_SHIELD << std::endl;
-            set_animation_type(ANIM_TYPE_SHIELD);
-			state.animation_timer = 0;
-			state.animation_state = 0;
-		}
+    if (state.animation_type == ANIM_TYPE_STAND && moveCommands.jump == 0 && moveCommands.use_item == 1) {
+        use_game_item();
 		return;
-	} else if (state.animation_type == ANIM_TYPE_SHIELD) {
-        //std::cout << "playerClass::initShield REMOVE shield" << std::endl;
-        if (is_player()) std::cout << "********* reset to STAND #15 **********" << std::endl;
-        set_animation_type(ANIM_TYPE_STAND);
 	}
     execute_projectiles();
 }
@@ -880,7 +910,7 @@ void classPlayer::clean_move_commands()
     moveCommands.jump = 0;
     moveCommands.left = 0;
     moveCommands.right = 0;
-    moveCommands.shield = 0;
+    moveCommands.use_item = 0;
     moveCommands.start = 0;
     moveCommands.up = 0;
 }

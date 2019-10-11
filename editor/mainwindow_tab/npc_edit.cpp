@@ -395,17 +395,17 @@ void npc_edit::reload_frame_list(int index)
 
 
 	// insert all sprites for the given type into the combo
-    //std::cout << ">> Adding frames for NPC[" << Mediator::get_instance()->game_data.game_npcs[i].name << "] - type: " << index << std::endl;
+    //std::cout << ">> Adding frames for NPC[" << SharedData::get_instance()->game_data.game_npcs[i].name << "] - type: " << index << std::endl;
     std::string filename = SharedData::get_instance()->FILEPATH + "/images/sprites/enemies/" + Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).graphic_filename;
     // @204
     for (int j=0; j<ANIM_FRAMES_COUNT; j++) {
         if (Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[index][j].used == true) {
             int calc_pos_x = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[index][j].sprite_graphic_pos_x * Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width;
-            //std::cout << "NPC[" << Mediator::get_instance()->game_data.game_npcs[i].name << "] - frame.pos_x: " << Mediator::get_instance()->game_data.game_npcs[i].sprites[index][j].sprite_graphic_pos_x << ", cal_pos_x: " << calc_pos_x << std::endl;
+            //std::cout << "NPC[" << SharedData::get_instance()->game_data.game_npcs[i].name << "] - frame.pos_x: " << SharedData::get_instance()->game_data.game_npcs[i].sprites[index][j].sprite_graphic_pos_x << ", cal_pos_x: " << calc_pos_x << std::endl;
             QListWidgetItem* item = new QListWidgetItem;
             QString temp_str(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).name + QString(" (") + QString::number(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[index][j].duration) + QString(")"));
             item->setText(temp_str);
-            //Mediator::get_instance()->game_data.game_npcs[i].name + " (" + QString::number(Mediator::get_instance()->game_data.game_npcs[i].sprites[index][j].duration).c_ + ")");
+            //SharedData::get_instance()->game_data.game_npcs[i].name + " (" + QString::number(SharedData::get_instance()->game_data.game_npcs[i].sprites[index][j].duration).c_ + ")");
             QPixmap image(filename.c_str());
             if (image.isNull() == false && image.width() > 0) {
                 image = image.copy(calc_pos_x, 0, Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width, Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height);

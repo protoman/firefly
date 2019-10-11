@@ -1,6 +1,7 @@
 #include "imageview.h"
 
 #include <SDL2/SDL2_rotozoom.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
 
 extern SDL_Renderer* gRenderer;
 
@@ -14,7 +15,11 @@ ImageView* ImageView::_instance = nullptr;
 
 ImageView::ImageView()
 {
-
+    screen_scale_adjust.x = 0;
+    screen_scale_adjust.y = 0;
+    screen_scale_adjust.w = RES_W;
+    screen_scale_adjust.h = RES_H;
+    game_render_target = RENDER_TARGET_DIRECT_SCREEN;
 }
 
 
@@ -47,7 +52,7 @@ void ImageView::copySDLPortion(st_rectangle original_rect, st_rectangle destiny_
         return;
     }
     if (src.y >= surfaceOrigin->h || (src.y+src.h) > surfaceOrigin->h) {
-        printf(">> Invalid Y portion[%d] h[%d] for image.w[%d] and image.h[%d] <<\n", src.y, src.h, surfaceOrigin->w, surfaceOrigin->h);
+        printf(">> Invalid Y portion - w[%d], h[%d] for image.w[%d] and image.h[%d] <<\n", src.y, src.h, surfaceOrigin->w, surfaceOrigin->h);
         fflush(stdout);
         return;
     }
@@ -71,16 +76,29 @@ void ImageView::draw_weapon_tooltip_icon(short weapon_n, st_position position, b
 
 void ImageView::change_render_target(e_RENDER_TARGET target)
 {
-    if (target == RENDER_TARGET_SCREEN) {
+    if (target == RENDER_TARGET_DIRECT_SCREEN) {
         SDL_SetRenderTarget(gRenderer, nullptr);
-    } else if (target == RENDER_TARGET_TEXTURE) {
+    } else if (target == RENDER_TARGET_GAME_TEXTURE) {
         SDL_SetRenderTarget(gRenderer, texture_render_target);
+    } else if (target == RENDER_TARGET_HUD_TEXTURE) {
+        SDL_SetRenderTarget(gRenderer, hud_texture_render_target);
     }
+    game_render_target = target;
 }
 
-SDL_Texture *ImageView::get_texture_renderer()
+SDL_Texture *ImageView::get_game_texture_renderer()
 {
     return texture_render_target;
+}
+
+SDL_Texture *ImageView::get_hud_texture_renderer()
+{
+    return hud_texture_render_target;
+}
+
+e_RENDER_TARGET ImageView::get_current_target()
+{
+    return game_render_target;
 }
 
 void ImageView::set_fullscreen(bool mode)
@@ -99,27 +117,19 @@ void ImageView::set_fullscreen(bool mode)
 
         std::cout << ">>>> scale_w[" << scale_w << "], scale_h[" << scale_h << "]" << std::endl;
 
-        SDL_SetWindowFullscreen(SharedData::get_instance()->window, SDL_WINDOW_FULLSCREEN);
+        SDL_SetWindowFullscreen(SharedData::get_instance()->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     } else {
         SDL_RenderSetScale(gRenderer, 1, 1);
         SDL_SetWindowFullscreen(SharedData::get_instance()->window, 0);
-        }
+    }
 }
 
 void ImageView::blend_images(st_imageData &source, st_imageData &dest, int x, int y)
 {
 
-    int res = SDL_SetRenderTarget(gRenderer, dest.texture);
-    //std::cout << "ImageView::blend_images.res[" << res << "], error[" << SDL_GetError() << "]" << std::endl;
+    SDL_SetRenderTarget(gRenderer, dest.texture);
 
-    //SDL_BLENDMODE_NONE = 0x00000000,     /**< no blending dstRGBA = srcRGBA */
-    //SDL_BLENDMODE_BLEND = 0x00000001,    /**< alpha blending dstRGB = (srcRGB * srcA) + (dstRGB * (1-srcA)) dstA = srcA + (dstA * (1-srcA)) */
-    //SDL_BLENDMODE_ADD = 0x00000002,      /**< additive blending dstRGB = (srcRGB * srcA) + dstRGB dstA = dstA */
-    //SDL_BLENDMODE_MOD = 0x00000004,      /**< color modulate dstRGB = srcRGB * dstRGB dstA = dstA */
-
-    SDL_SetTextureBlendMode(source.texture, SDL_BLENDMODE_BLEND);
-
-
+    SDL_SetTextureBlendMode(source.texture, SDL_BLENDMODE_ADD);
     SDL_Rect origin = {0, 0, source.surface->w, source.surface->h};
     SDL_Rect destiny  = {x, y, source.surface->w, source.surface->h};
     SDL_RenderCopy(gRenderer, source.texture, &origin, &destiny);
@@ -336,7 +346,7 @@ void ImageView::init()
 
     load_icons();
 
-    std::string filename = SharedData::get_instance()->FILEPATH + "images/tilesets/default.png";
+    std::string filename = SharedData::get_instance()->FILEPATH + "images/tilesets/swamp.png";
     if (tileset.surface != nullptr) {
         tileset.freeGraphic();
     }
@@ -349,17 +359,6 @@ void ImageView::init()
     filename = SharedData::get_instance()->FILEPATH + "images/animations/explosion_boss.png";
     small_explosion = imageFromFile(filename);
 
-    // projectile images
-    for (int i=0; i<GameMediator::get_instance()->get_projectile_list_size(); i++) {
-        std::string filename(GameMediator::get_instance()->get_projectile(i).graphic_filename);
-        filename = SharedData::get_instance()->FILEPATH + "images/projectiles/" + filename;
-        projectile_surface.push_back(st_surface_with_direction());
-        if (filename.length() > 0 && filename.find(".png") != std::string::npos) {
-            //std::cout << "GRAPHLIB::preload_images - i[" << i << "], list.size[" << projectile_surface.size() << "]" << std::endl;
-            projectile_surface.at(i).surface[ANIM_DIRECTION_RIGHT] = imageFromFile(filename);
-            flip_image(projectile_surface.at(i).surface[ANIM_DIRECTION_RIGHT], projectile_surface.at(i).surface[ANIM_DIRECTION_LEFT], flip_type_horizontal);
-        }
-    }
 
     // bomb explosion
     filename = SharedData::get_instance()->FILEPATH + std::string("/images/animations/big_boss_explosion.png");
@@ -380,6 +379,27 @@ void ImageView::init()
     filename = SharedData::get_instance()->FILEPATH + "images/animations/explosion_32.png";
     preloaded_images[PRELOADED_IMAGES_EXPLOSION_BUBBLE] = imageFromFile(filename);
     set_surface_alpha(120, preloaded_images[PRELOADED_IMAGES_EXPLOSION_BUBBLE]);
+
+    texture_render_target = SDL_CreateTexture( gRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, RES_W, AREA_H);
+    hud_texture_render_target = SDL_CreateTexture( gRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, RES_W, HUD_H);
+
+}
+
+
+void ImageView::preload()
+{
+    // projectile images
+    int total_projectile = GameMediator::get_instance()->get_projectile_list_size();
+    for (int i=0; i<total_projectile; i++) {
+        std::string filename(GameMediator::get_instance()->get_projectile(i).graphic_filename);
+        filename = SharedData::get_instance()->FILEPATH + "images/projectiles/" + filename;
+        projectile_surface.push_back(st_surface_with_direction());
+        if (filename.length() > 0 && filename.find(".png") != std::string::npos) {
+            //std::cout << "GRAPHLIB::preload_images - i[" << i << "], list.size[" << projectile_surface.size() << "]" << std::endl;
+            projectile_surface.at(i).surface[ANIM_DIRECTION_RIGHT] = imageFromFile(filename);
+            flip_image(projectile_surface.at(i).surface[ANIM_DIRECTION_RIGHT], projectile_surface.at(i).surface[ANIM_DIRECTION_LEFT], flip_type_horizontal);
+        }
+    }
 
     int max = GameMediator::get_instance()->anim_tile_list.size();
     //std::cout << "graphicsLib::preload_anim_tiles - max: " << max << std::endl;
@@ -405,9 +425,31 @@ void ImageView::init()
         }
     }
 
-    texture_render_target = SDL_CreateTexture( gRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, RES_W, AREA_H);
-
 }
+
+void ImageView::inc_scale(float inc)
+{
+    screen_scale += inc;
+    screen_scale_adjust.x = RES_W-(RES_W*screen_scale);
+    screen_scale_adjust.y = RES_H-(RES_H*screen_scale);
+    screen_scale_adjust.w = RES_W;
+    screen_scale_adjust.h = RES_H;
+}
+
+float ImageView::get_scale()
+{
+    return screen_scale;
+}
+
+void ImageView::reset_scale()
+{
+    screen_scale = 1.0;
+    screen_scale_adjust.x = RES_W-(RES_W*screen_scale);
+    screen_scale_adjust.y = RES_H-(RES_H*screen_scale);
+    screen_scale_adjust.w = RES_W;
+    screen_scale_adjust.h = RES_H;
+}
+
 
 ImageView* ImageView::get_instance()
 {
@@ -477,6 +519,10 @@ void ImageView::clearScreenArea(short x, short y, short w, short h, short r, sho
 
 void ImageView::updateRender()
 {
+    //SDL_RenderSetViewport(gRenderer, &screen_scale_adjust);
+
+    //renderTexturePortionAt(0, 0, RES_W, HUD_H, 0, AREA_H-50, hud_texture_render_target);
+
     SDL_RenderPresent(gRenderer);
 }
 

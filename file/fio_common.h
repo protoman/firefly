@@ -89,7 +89,7 @@ template <class T> int fio_common::get_list_size(std::string filename)
 {
     FILE *fp = fopen(filename.c_str(), "rb");
     if (!fp) {
-        std::cout << ">>file_io::load_from_disk - file '" << filename << "' not found." << std::endl;
+        std::cout << ">>file_io::get_list_size - file '" << filename << "' not found." << std::endl;
         return 0;
     }
     int n = 0;
@@ -142,7 +142,7 @@ template <class T> T fio_common::load_single_object_from_disk(std::string filena
     T res;
     FILE *fp = fopen(filename.c_str(), "rb");
     if (!fp) {
-        std::cout << ">>file_io::load_from_disk - file '" << filename << "' not found." << std::endl;
+        std::cout << ">>file_io::load_single_object_from_disk - file '" << filename << "' not found." << std::endl;
         return res;
     }
 
@@ -182,7 +182,7 @@ template <class T> T fio_common::load_single_object_from_list(std::string filena
     T res;
     FILE *fp = fopen(filename.c_str(), "rb");
     if (!fp) {
-        std::cout << ">>file_io::load_from_disk - file '" << filename << "' not found." << std::endl;
+        std::cout << ">>file_io::load_single_object_from_list - file '" << filename << "' not found." << std::endl;
         exit(-1);
     }
 

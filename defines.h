@@ -10,7 +10,7 @@
 #define HUD_GRID_SIZE 21
 #define HUD_GRID_BORDER 2
 #define HUD_GRID_CENTER_X 1207
-#define HUD_GRID_CENTER_Y AREA_H+28
+#define HUD_GRID_CENTER_Y 28
 
 
 // INPUT //
@@ -39,6 +39,7 @@
 
 #define FS_MAX_PLAYERS 4
 #define PLAYER_INITIAL_HP 100
+#define PLAYER_SPRITE_SIZE 162
 #define CHAR_NAME_SIZE 30
 #define FS_CHAR_NAME_SIZE 30
 #define FS_NAME_SIZE 30
@@ -159,10 +160,13 @@
 #define ITEM_SLOTS 3
 #define WEAPON_SLOTS 2
 #define ABILITIES_SLOTS 2
+#define GAME_ITEM_SLOTS 3
 #define ITEM_UPGRADES 200  // items like armor, special weapons, etc
 
 #define SLIDE_TILES_MAX_DISTANCE 10
 
+#define GAME_TEXT_LINE_SEPARATOR_CHAR ';'
+#define GAME_TEXT_DIALOG_SEPARATOR_CHAR '#'
 
 enum e_KEY_TYPE {
     KEY_TYPE_NONE,
@@ -475,6 +479,10 @@ enum OBJECT_TYPE {
     OBJ_DOOR_KEY,
     OBJ_DOOR_LOCKED,
     OBJ_TREASURE_CHEST,
+    OBJ_GAME_ITEM_PICKEABLE,                                // the actions are determined by the sub-type. By default, does nothing, just stays there
+    OBJ_GAME_ITEM_STATIC,
+    OBJ_FRONT_DOOR_TELEPORTER,                              // like teleporter, but player needs to press up to activate
+    OBJ_TYPE_PUSH_BOX,
     OBJ_TYPE_COUNT
 };
 
@@ -584,7 +592,7 @@ enum INPUT_COMMANDS {
     BTN_L,
     BTN_R,
     BTN_DASH,
-    BTN_SHIELD,
+    BTN_ITEM,
     BTN_JUMP_TIMER,
     BTN_FULL_SCREEN,
     BTN_COUNT
@@ -601,6 +609,13 @@ enum ANIM_DIRECTION {
     ANIM_DIRECTION_DOWN_LEFT,
     ANIM_DIRECTION_DOWN_RIGHT,
     ANIM_DIRECTION_COUNT
+};
+
+enum e_LIGHT_POINT_COLOR {
+    LIGHT_POINT_COLOR_WHITE,
+    LIGHT_POINT_COLOR_YELLOW,
+    LIGHT_POINT_COLOR_RED,
+    LIGHT_POINT_COLOR_COUNT
 };
 
 
@@ -1034,6 +1049,26 @@ enum e_LINK_TYPES {
     LINK_TELEPORT_LEFT_LOCK,
     LINK_TELEPORT_RIGHT_LOCK,
     LINK_TYPE_COUNT
+};
+
+enum e_GAME_INTERRUPT_MODE {
+    GAME_INTERRUPT_MODE_NONE,
+    GAME_INTERRUPT_MODE_FULL,               // everything can't move
+    GAME_INTERRUPT_MODE_PLAYER,             // player can't move
+    GAME_INTERRUPT_MODE_COUNT
+};
+
+// enum that stores types for objects that need a key
+// the sub-type determines what the object will do when the key is used on it
+// only a few are meant to be generic, each other should describe a different behavior
+enum e_OBJ_SUB_TYPE {
+    OBJ_SUB_TYPE_NONE,
+    OBJ_SUB_TYPE_BLOCKED_CAVERN,            // needs dynamite, will explode and disappear
+    OBJ_SUB_TYPE_BLOCKED_DOOR,              // opens with a given key
+    OBJ_SUB_TYPE_ELEVATOR,                  // can be activated once key is used
+
+    OBJ_SUB_TYPE_TNT,
+    OBJ_SUB_TYPE_COUNT,
 };
 
 

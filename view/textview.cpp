@@ -96,5 +96,12 @@ void TextView::renderCenteredText(int y, st_color color, std::string text)
     renderText(0, y, st_color(color.r, color.g, color.b), true, text);
 }
 
+st_size TextView::get_text_size(std::string text)
+{
+    SDL_Color black = {0, 0, 0};
+    SDL_Surface* text_outlineSF = TTF_RenderUTF8_Blended(outline_font, text.c_str(), black);
+    return st_size(text_outlineSF->w, text_outlineSF->h);
+}
+
 
 

@@ -122,6 +122,8 @@ protected:
     int topmost_room = FILE_AREA_H;
     int bottommost_room = 0;
 
+    v6_map_object* obj_ref = nullptr;
+
 
 //signals:
 //     void save();

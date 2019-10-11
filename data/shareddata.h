@@ -21,6 +21,7 @@
 #include "file/v6/file_area_v6.h"
 #include "file/v6/file_room_v6.h"
 #include "file/v6/file_object_v6.h"
+#include "file/v6/file_game_object_state.h"
 
 
 class SharedData
@@ -71,7 +72,10 @@ public:
 
     // MAPS DATA //
     std::vector<file_v5_map_link> file_v5_map_link_list;
-    std::map<unsigned int, std::vector<file_v5_map_object>>  file_v5_map_object_map; // map objects
+
+    std::map<unsigned int, std::vector<v6_map_object>>  file_v6_map_object_map; // map objects
+
+
     std::map<unsigned int, std::vector<file_v5_map_npc>>  file_v5_map_npc_map; // map enemies
     std::map<unsigned int, std::vector<struct_file_v5_area_link>> file_v5_area_link_map;
     std::vector<struct_file_v5_area_link> current_area_link_list;
@@ -118,6 +122,10 @@ public:
 
     bool must_interrupt_character_execution = false;
     bool fullscreen_mode = false;
+
+    std::vector<st_light_point> lightpoint_list;
+
+    std::map<int, v6_file_game_object_state> game_object_state_map; // key x for area-id, y for area-object-n
 
 };
 

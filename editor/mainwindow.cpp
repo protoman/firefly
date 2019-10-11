@@ -507,3 +507,9 @@ void MainWindow::on_areaEditTabWidget_currentChanged(int index)
 {
     map_edit_tab->reload();
 }
+
+void MainWindow::on_actionOverlay_toggled(bool arg1)
+{
+    Mediator::get_instance()->show_fg_layer = arg1;
+    map_edit_tab->update_edit_area();
+}

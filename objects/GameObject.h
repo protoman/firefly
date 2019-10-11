@@ -80,11 +80,14 @@ public:
 
     st_position get_start_position() const;
 
+    int get_move_speed();
+
 
     st_rectangle get_area();
     st_size get_size();
     Uint8 get_type() const;
     Uint8 get_id() const;
+    int get_uuid();
     Uint8 get_direction() const;
     void set_direction(int);
     /**
@@ -155,11 +158,13 @@ public:
     void enable_teleport_animation();                           // when this is called, object will show a teleporting in-animation
     void set_precise_position(st_position pos, int direction);                                // used to get a fine-tuning positioning instead of map-position
     void set_position(st_position pos);
+    void inc_position(int incx, int incy);
     void remove_graphic();
     st_position get_boss_teleporter_dest();
     Uint8 get_boss_teleport_map_dest();
     Uint8 get_obj_map_id();
     void set_obj_map_id(Uint8 id);
+    void set_uuid(int uuid);
     bool is_teleporting();
     void set_is_dropped(bool dropped);
     bool get_is_dropped();
@@ -174,6 +179,7 @@ private:
 
 private:
     short _id;
+    int uuid;
     std::string name;
     std::string graphic_filename;												// graphic file used on it
     short type;

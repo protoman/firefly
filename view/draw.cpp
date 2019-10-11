@@ -27,13 +27,14 @@
 #include "GameManager.h"
 #include "view/timerview.h"
 #include "view/textview.h"
+#include "view/ingame_presentation.h"
 
 #include "game_mediator.h"
 #include "file/v5/struct_file_game_area_map.h"
 
 draw* draw::_instance = nullptr;
 
-draw::draw() : _rain_pos(0), _effect_timer(0), _flash_pos(0), _flash_timer(0), screen_gfx(SCREEN_GFX_NONE), flash_effect_enabled(false)
+draw::draw()
 {
     for (int i=0; i<FLASH_POINTS_N; i++) {
         flash_points[i].x = rand() % RES_W;
@@ -96,13 +97,19 @@ void draw::preload()
     filename = SharedData::get_instance()->GAMEPATH + "shared/images/dark_effect_mask.png";
     dark_effect_mask = ImageView::get_instance()->imageFromFile(filename);
 
+    filename = SharedData::get_instance()->GAMEPATH + "shared/images/yellow_light_mask.png";
+    yellow_light_mask = ImageView::get_instance()->imageFromFile(filename);
+
+    filename = SharedData::get_instance()->GAMEPATH + "shared/images/red_light_mask.png";
+    red_light_mask = ImageView::get_instance()->imageFromFile(filename);
+
 
     ImageView::get_instance()->init_target_image(dark_effect_surface, RES_W, AREA_H);
     ImageView::get_instance()->clear_texture_area(0, 0, RES_W, RES_H, 0, 0, 0, 155, dark_effect_surface);
 
 
     // DROPABLE OBJECT GRAPHICS
-    for (int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
+    for (unsigned int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
         for (int j=0; j<DROP_ITEM_COUNT; j++) {
             short obj_type_n = GameManager::get_instance()->get_drop_item_id(j);
             if (obj_type_n != -1) {
@@ -189,13 +196,18 @@ void draw::preload()
     dialog_surface = ImageView::get_instance()->imageFromFile(filename);
     ImageView::get_instance()->set_surface_alpha(200, dialog_surface);
 
+    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/water_animation.png";
+    water_tile_overlay = ImageView::get_instance()->imageFromFile(filename);
+    ImageView::get_instance()->set_surface_alpha(160, water_tile_overlay);
 }
 
 void draw::show_gfx()
 {
     //std::cout << "screen_gfx[" << (int)screen_gfx << "]" << std::endl;
 
-    show_dark_effect();
+    //show_dark_effect();
+
+    screen_gfx = SCREEN_GFX_NONE;
 
     if (screen_gfx == SCREEN_GFX_RAIN) {
         show_rain();
@@ -226,6 +238,16 @@ st_imageData *draw::get_input_surface(e_INPUT_IMAGES input)
 // show GFX or things added to pipeline //
 void draw::update_screen()
 {
+
+    ImageView::get_instance()->change_render_target(RENDER_TARGET_DIRECT_SCREEN);
+    // show game-texture
+    ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W*ImageView::get_instance()->get_scale(), AREA_H*ImageView::get_instance()->get_scale(), RES_W-(RES_W*ImageView::get_instance()->get_scale()), AREA_H-(AREA_H*ImageView::get_instance()->get_scale()), ImageView::get_instance()->get_game_texture_renderer());
+
+    // show hud-texture
+    ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, HUD_H, 0, AREA_H, ImageView::get_instance()->get_hud_texture_renderer());
+
+
+    // show overlay effects
     if (current_alpha != -1) {
         if (current_alpha < 254) {
             current_alpha += 2;
@@ -245,16 +267,13 @@ void draw::update_screen()
         draw_game_button_request.y = -1;
     }
 
-    // GFX //
-    //show_rain();
-    //show_flash();
-    //show_snow_effect();
-    //show_train_effect();
-    //show_lightingbolt_effect();
-    //show_shadow_top_effect();
-    //show_inferno_effect();
-    //show_dark_effect();
 
+    //std::cout << "draw::update_screen - queue_size[" << GameManager::get_instance()->get_dialog_queue()->size() << "]" << std::endl;
+    if (GameManager::get_instance()->get_dialog_queue()->size() > 0 && InGamePresentation::get_instance()->is_showing_ready() == false) {
+        show_dialogs_from_queue(); // TODO: update screen should not be executed anywere else
+    }
+
+    InGamePresentation::get_instance()->execute_ingame_presentation();
 
     ImageView::get_instance()->updateRender();
 }
@@ -326,26 +345,6 @@ void draw::show_flash()
 }
 
 
-
-void draw::show_ready()
-{
-    st_position dest_pos((RES_W/2)-26, (RES_H/2)-6);
-    st_imageData screen_copy;
-    screen_copy = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
-    ImageView::get_instance()->copyScreenAreaToImage(0, 0, RES_W, RES_H, 0, 0, screen_copy);
-
-    for (int i=0; i<6; i++) {
-        TextView::get_instance()->renderText(0, dest_pos.y, st_color(250, 250, 250), true, strings_map::get_instance()->get_ingame_string(strings_ingame_ready_message, SharedData::get_instance()->game_config.selected_language));
-        update_screen();
-        TimerView::get_instance()->delay(200);
-
-        ImageView::get_instance()->copyScreenAreaToImage(0, 0, RES_W, RES_H, 0, 0, screen_copy);
-
-        update_screen();
-        TimerView::get_instance()->delay(200);
-    }
-}
-
 void draw::show_bubble(int x, int y)
 {
     if (_bubble_gfx.surface == nullptr) {
@@ -375,6 +374,7 @@ void draw::show_teleport_small(int x, int y)
     }
 }
 
+/// @TODO: make "async" like dialogs
 int draw::show_credits_text(bool can_leave, std::vector<std::string> credit_text)
 {
     int line_n=0;
@@ -403,8 +403,6 @@ int draw::show_credits_text(bool can_leave, std::vector<std::string> credit_text
     TimerView::get_instance()->delay(200);
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(200);
-
-    update_screen();
 
     // scroll the lines
     int limit = (credit_text.size()*12)+RES_H/2;
@@ -469,9 +467,7 @@ int draw::show_credits_text(bool can_leave, std::vector<std::string> credit_text
         if (bg2_pos >= RES_H) {
             bg2_pos = 0;
         }
-        update_screen();
     }
-    update_screen();
     return 0;
 }
 
@@ -738,7 +734,6 @@ void draw::show_ingame_warning(st_dialog dialog)
     if (dialog.timer == 0) {
         draw::get_instance()->show_dialog_button(0);
     }
-    update_screen();
 }
 
 
@@ -757,12 +752,12 @@ void draw::fade_screen(int r, int g, int b, int total_delay, bool reverse)
     for (float i=0; i<=20; i++) {
         if (reverse == false) {
             //std::cout << "LOOP.DIRECT[" << i << "]" << std::endl;
-            ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, AREA_H, 0, 0, ImageView::get_instance()->get_texture_renderer());
+            ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, AREA_H, 0, 0, ImageView::get_instance()->get_game_texture_renderer());
             ImageView::get_instance()->set_surface_alpha(alpha_n, transparent_area);
             ImageView::get_instance()->renderImageAt(0, 0, transparent_area);
         } else {
             //std::cout << "LOOP.REVERSE[" << i << "]" << std::endl;
-            ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, AREA_H, 0, 0, ImageView::get_instance()->get_texture_renderer());
+            ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, AREA_H, 0, 0, ImageView::get_instance()->get_game_texture_renderer());
             ImageView::get_instance()->set_surface_alpha(255-alpha_n, transparent_area);
             ImageView::get_instance()->renderImageAt(0, 0, transparent_area);
         }
@@ -1103,6 +1098,41 @@ st_position draw::get_dialog_pos() const
     return _dialog_pos;
 }
 
+void draw::show_dialogs_from_queue()
+{
+    if (GameManager::get_instance()->get_dialog_queue()->size() > 0) {
+        draw::get_instance()->show_ingame_warning(GameManager::get_instance()->get_dialog_queue()->at(0));
+        if (GameManager::get_instance()->get_dialog_queue()->at(0).music_filename.length() > 0 && GameManager::get_instance()->get_dialog_status()->started == false) {
+            GameManager::get_instance()->get_dialog_status()->started = true;
+            SoundView::get_instance()->stop_music();
+            SoundView::get_instance()->load_music(GameManager::get_instance()->get_dialog_queue()->at(0).music_filename);
+            SoundView::get_instance()->play_music_once();
+            GameManager::get_instance()->get_dialog_status()->timer = TimerView::get_instance()->getTimer() + GameManager::get_instance()->get_dialog_queue()->at(0).timer;
+        }
+    }
+}
+
+void draw::draw_water_tile_overlay(int x, int y)
+{
+    // TODO: we can add animation to the water tile overlay
+    std::cout << "draw::draw_water_tile_overlay - water_animation_pos[" << water_animation_pos << "]" << std::endl;
+
+    // left part
+    ImageView::get_instance()->renderTexturePortionAt(water_animation_pos, 0, TILESIZE-water_animation_pos, TILESIZE, x, y, water_tile_overlay.texture);
+
+    // right part
+    ImageView::get_instance()->renderTexturePortionAt(0, 0, water_animation_pos, TILESIZE, x+TILESIZE-water_animation_pos, y, water_tile_overlay.texture);
+
+
+    if (TimerView::get_instance()->getTimer() > water_animation_timer) {
+        water_animation_timer = TimerView::get_instance()->getTimer()+WATER_ANIMATION_FRAME_TIME;
+        water_animation_pos++;
+        if (water_animation_pos >= TILESIZE) {
+            water_animation_pos = 0;
+        }
+    }
+}
+
 void draw::draw_explosion(st_position center_point, int radius, int angle_inc)
 {
     // 8 initial points
@@ -1120,7 +1150,6 @@ void draw::draw_explosion(st_position center_point, int radius, int angle_inc)
         std::cout << "DRAW::draw_explosion - angle[" << angle_rad << "], point[" << j << "][" << points[j].x << "][" << points[j].y << "]" << std::endl;
         ImageView::get_instance()->renderTexturePortionAt(frame*32, 0, 32, 32, points[j].x, points[j].y, ImageView::get_instance()->get_preloaded_image(PRELOADED_IMAGES_EXPLOSION_BUBBLE)->texture);
     }
-    update_screen();
 }
 
 
@@ -1164,7 +1193,7 @@ void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weap
 {
     // TODO::IURI - usar imagem de fundo //
     ImageView::get_instance()->clearScreenArea(0, AREA_H, RES_W, HUD_H, 0, 0, 0);
-    ImageView::get_instance()->renderImageAt(0, AREA_H, hud_image);
+    ImageView::get_instance()->renderImageAt(0, 0, hud_image);
 
     // player HP
     int hp_percent = (100 * hp) / fio.get_heart_pieces_number(SharedData::get_instance()->game_save);
@@ -1223,36 +1252,10 @@ void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weap
         timer_hud_center_show = !timer_hud_center_show;
     }
 
-    /*
 
-    if (selected_weapon != WEAPON_DEFAULT && selected_weapon < WEAPON_ITEM_ETANK) {
-        // draw weapon
-
-        int wpn_percent = (100 * selected_weapon_value) / fio.get_heart_pieces_number(SharedData::get_instance()->game_save);
-        //std::cout << "selected_weapon_value[" << selected_weapon_value << "]" << std::endl;
-        draw_enery_bars(wpn_percent, 62, hud_player_wpn_ball);
-    } else if (selected_weapon != WEAPON_DEFAULT && selected_weapon >= WEAPON_ITEM_ETANK) {
-        int wpn_percent = 0;
-        if (selected_weapon == WEAPON_ITEM_ETANK) {
-            wpn_percent = SharedData::get_instance()->game_save.items.energy_tanks*10;
-        } else if (selected_weapon == WEAPON_ITEM_WTANK) {
-            wpn_percent = SharedData::get_instance()->game_save.items.weapon_tanks*10;
-        } else if (selected_weapon == WEAPON_ITEM_STANK) {
-            wpn_percent = SharedData::get_instance()->game_save.items.special_tanks*10;
-        }
-        //std::cout << "selected_weapon_value[" << selected_weapon_value << "]" << std::endl;
-        draw_enery_bars(wpn_percent, 62, hud_player_wpn_ball);
-    }
-
-    // boss HP
-
-    if (gameManager::get_instance()->must_show_boss_hp() && _boss_current_hp != -99) {
-        int boss_hp_percent = (100 * _boss_current_hp) / BOSS_INITIAL_HP;
-        TextView::get_instance()->renderText(RES_W-95, 10, st_color(250, 250, 250), false, "BOSS:");
-        draw_enery_bars(boss_hp_percent, RES_W-55, hud_boss_hp_ball);
-    }
-    */
-
+    //ImageView::get_instance()->clearScreenArea(100, 10, RES_W, AREA_H, 227, 2, 2);
+    //renderTexturePortionAt(0, 0, RES_W, HUD_H, 0, AREA_H-50, hud_texture_render_target);
+    ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, HUD_H, 0, AREA_H, ImageView::get_instance()->get_hud_texture_renderer());
 }
 
 void draw::draw_enery_bars(int value, int x_pos, int y_pos, int type)
@@ -1469,12 +1472,48 @@ void draw::show_inferno_effect()
 
 void draw::show_dark_effect()
 {
-    ImageView::get_instance()->clear_texture_area(0, 0, RES_W, RES_H, 0, 0, 0, 255, dark_effect_surface);
+    int alpha = 180;
+
+    ImageView::get_instance()->clear_texture_area(0, 0, RES_W, RES_H, 0, 0, 0, 155, dark_effect_surface);
 
     st_position player_center_pos = GameManager::get_instance()->get_player_relative_center_position();
-    ImageView::get_instance()->blend_images(dark_effect_mask, dark_effect_surface, player_center_pos.x-256, player_center_pos.y-256);
-    ImageView::get_instance()->blend_images(dark_effect_mask, dark_effect_surface, player_center_pos.x-56, player_center_pos.y-56);
+
+
+    //ImageView::get_instance()->blend_images(dark_effect_mask, dark_effect_surface, player_center_pos.x-512, player_center_pos.y-512);
+    std::cout << "WHITE x[" << (player_center_pos.x-dark_effect_mask.surface->w/2) << "], y[" << (player_center_pos.y-dark_effect_mask.surface->h/2) << "]" << std::endl;
+    //WHITE x[209], y[-148]
+    ImageView::get_instance()->blend_images(dark_effect_mask, dark_effect_surface, player_center_pos.x-dark_effect_mask.surface->w/2, player_center_pos.y-dark_effect_mask.surface->h/2);
+
+    //ImageView::get_instance()->blend_images(yellow_light_mask, dark_effect_surface, player_center_pos.x-128, player_center_pos.y-128);
+    //ImageView::get_instance()->set_surface_alpha(50, light_points_layer);
+
+
+    for (int i=0; i<SharedData::get_instance()->lightpoint_list.size(); i++) {
+        if (SharedData::get_instance()->lightpoint_list.at(i).color == LIGHT_POINT_COLOR_WHITE) {
+            ImageView::get_instance()->blend_images(dark_effect_mask, dark_effect_surface,  SharedData::get_instance()->lightpoint_list.at(i).x-dark_effect_mask.surface->w/2, SharedData::get_instance()->lightpoint_list.at(i).y-dark_effect_mask.surface->h/2);
+        } else if (SharedData::get_instance()->lightpoint_list.at(i).color == LIGHT_POINT_COLOR_YELLOW) {
+            ImageView::get_instance()->blend_images(yellow_light_mask, dark_effect_surface, SharedData::get_instance()->lightpoint_list.at(i).x-yellow_light_mask.surface->w/2, SharedData::get_instance()->lightpoint_list.at(i).y-yellow_light_mask.surface->h/2);
+        } else if (SharedData::get_instance()->lightpoint_list.at(i).color == LIGHT_POINT_COLOR_RED) {
+            ImageView::get_instance()->blend_images(red_light_mask, dark_effect_surface, SharedData::get_instance()->lightpoint_list.at(i).x-red_light_mask.surface->w/2, SharedData::get_instance()->lightpoint_list.at(i).y-red_light_mask.surface->h/2);
+        }
+    }
+
+
+    SDL_SetTextureBlendMode(dark_effect_surface.texture, SDL_BLENDMODE_MOD);
+    //SDL_SetTextureAlphaMod(dark_effect_surface.texture, 120);
     ImageView::get_instance()->renderImageAt(0, 0, dark_effect_surface);
+    SDL_SetTextureBlendMode(dark_effect_surface.texture, SDL_BLENDMODE_BLEND);
+
+
+    /*
+
+    ImageView::get_instance()->clear_texture_area(0, 0, RES_W, RES_H, 0, 0, 0, 55, dark_effect_surface);
+    ImageView::get_instance()->blend_images(dark_effect_mask, dark_effect_surface, player_center_pos.x, player_center_pos.y);
+    SDL_SetTextureBlendMode(dark_effect_surface.texture, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureAlphaMod(dark_effect_surface.texture, alpha);
+    ImageView::get_instance()->renderImageAt(0, 0, dark_effect_surface);
+    */
+
 }
 
 void draw::free_inferno_surface()

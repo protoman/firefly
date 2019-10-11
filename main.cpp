@@ -51,10 +51,11 @@ int main()
     GameManager::get_instance()->preloadGameData();
     GameManager::get_instance()->initGame();
 
-    while (true) {
+    while (SharedData::get_instance()->run_game) {
         GameManager::get_instance()->show_game(true, true);
         SDL_Delay(10);
     }
 
+    SDL_Quit();
     return 0;
 }
