@@ -59,6 +59,7 @@ private:
     Ui::object_tab *ui;
     unsigned long _current_object = 0;
 	int _data_loaded;
+    bool ignore_change = false;
 };
 
 #endif // OBJECT_TAB_H

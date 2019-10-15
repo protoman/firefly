@@ -190,6 +190,7 @@ public:
 
     // this allow us to render at a texture, so we can copy the screen
     void change_render_target(e_RENDER_TARGET target);
+    void restore_render_target();
     SDL_Texture* get_game_texture_renderer();
     SDL_Texture* get_hud_texture_renderer();
     e_RENDER_TARGET get_current_target();

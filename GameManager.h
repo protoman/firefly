@@ -67,6 +67,7 @@ public:
     void return_to_intro_screen();
     void game_pause();
     void game_unpause();
+    bool is_paused();
     void show_ending();
     void draw_explosion(st_position center, bool show_players);
     void show_player();
@@ -213,6 +214,8 @@ private:
     bool must_wait_keypress = true;
 
     e_GAME_INTERRUPT_MODE interrupt_mode = GAME_INTERRUPT_MODE_NONE;
+
+    bool _is_paused = false;
 
 
 #ifdef PSP

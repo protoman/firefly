@@ -1062,7 +1062,7 @@ bool MapController::must_show_static_bg()
     return false;
 }
 
-void MapController::reset_map_loaded()
+void MapController::reset_map_loaded_flag()
 {
     map_was_reloaded = false;
 }
@@ -1579,10 +1579,21 @@ void MapController::load_map_objects() {
             temp_obj.set_uuid(SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).at(i).uuid);
             st_position obj_state_id = st_position(SharedData::get_instance()->v6_selected_area, temp_obj.get_id());
             if (SharedData::get_instance()->game_object_state_map.find(temp_obj.get_uuid()) != SharedData::get_instance()->game_object_state_map.end()) {
+                // finished objects should be ignored and not added to the map
+                if (SharedData::get_instance()->game_object_state_map.at(temp_obj.get_uuid()).finished == true) {
+                    continue;
+                }
                 st_position obj_state_position(SharedData::get_instance()->game_object_state_map.at(temp_obj.get_uuid()).x, SharedData::get_instance()->game_object_state_map.at(temp_obj.get_uuid()).y);
                 //std::cout << "SET obj-pos to x[" << obj_state_position.x << "], y[" << obj_state_position.y << "]" << std::endl;
                 temp_obj.set_position(obj_state_position);
             }
+            // if object is smaller in width than the tileset, center it
+            if (temp_obj.get_size().width < TILESIZE) {
+                int obj_tile_x = temp_obj.get_position().x/TILESIZE;
+                int new_pos_x = obj_tile_x*TILESIZE + TILESIZE/2 - temp_obj.get_size().width/2;
+                temp_obj.set_position(st_position(new_pos_x, temp_obj.get_position().y));
+            }
+
             object_list.push_back(temp_obj);
         }
     }

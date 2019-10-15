@@ -1938,20 +1938,20 @@ bool character::jump(int jumpCommandStage, st_float_position mapScrolling)
                 }
             }
         } else {
-            std::cout << "char::jump - _is_falling[" << _is_falling << "], _jumps_number: " << _jumps_number << ", obj::_jumps_number: " << _obj_jump.get_jumps_number() << std::endl;
+            //std::cout << "char::jump - _is_falling[" << _is_falling << "], _jumps_number: " << _jumps_number << ", obj::_jumps_number: " << _obj_jump.get_jumps_number() << std::endl;
             if (_is_falling == false && (_obj_jump.is_started() == false || (_jumps_number > _obj_jump.get_jumps_number()))) {
                 if (_super_jump == true) {
                     _super_jump = false;
-                    std::cout << "JUMP START #1" << std::endl;
+                    //std::cout << "JUMP START #1" << std::endl;
                     _obj_jump.start(true, water_lock);
                 } else {
-                    std::cout << "JUMP START #2" << std::endl;
+                    //std::cout << "JUMP START #2" << std::endl;
                     _obj_jump.start(false, water_lock);
                 }
                 if (state.animation_type == ANIM_TYPE_SLIDE) {
                     _dashed_jump = true;
                 }
-                if (is_player()) std::cout << "CHAR::RESET_TO_JUMP #A.6" << std::endl;
+                //if (is_player()) std::cout << "CHAR::RESET_TO_JUMP #A.6" << std::endl;
                 set_animation_type(ANIM_TYPE_JUMP);
                 jump_button_released = false;
             }
@@ -2247,7 +2247,7 @@ st_map_collision character::map_collision(const float incx, const short incy, st
         // deal with teleporter object that have special block-area and effect (9)teleporting)
         if (state.animation_type != ANIM_TYPE_TELEPORT && res_collision_object._object != nullptr) {
 
-            std::cout << "CHAR::PLAYER::check-obj-collision #1, p.x[" << position.x << "], block["  << res_collision_object._block << "], type[" << res_collision_object._object->get_type() << "]" << std::endl;
+            //std::cout << "CHAR::PLAYER::check-obj-collision #1, p.x[" << position.x << "], block["  << res_collision_object._block << "], type[" << res_collision_object._object->get_type() << "]" << std::endl;
 
             if (res_collision_object._object->get_type() == OBJ_BOSS_TELEPORTER || (res_collision_object._object->get_type() == OBJ_FINAL_BOSS_TELEPORTER && res_collision_object._object->is_started() == true)) {
                 if (is_on_teleporter_capsulse(res_collision_object._object) == true) {
@@ -2255,7 +2255,7 @@ st_map_collision character::map_collision(const float incx, const short incy, st
                     GameManager::get_instance()->object_teleport_boss(res_collision_object._object->get_boss_teleporter_dest(), res_collision_object._object->get_boss_teleport_map_dest(), res_collision_object._object->get_obj_map_id(), true);
                 }
             } else if (res_collision_object._object->get_type() == OBJ_STAGE_BOSS_TELEPORTER) {
-                std::cout << "character::map_collision - OBJ_STAGE_BOSS_TELEPORTER" << std::endl;
+                //std::cout << "character::map_collision - OBJ_STAGE_BOSS_TELEPORTER" << std::endl;
                 if (is_on_teleporter_capsulse(res_collision_object._object) == true) {
                     state.direction = ANIM_DIRECTION_RIGHT;
                     GameManager::get_instance()->object_teleport_boss(res_collision_object._object->get_boss_teleporter_dest(), res_collision_object._object->get_boss_teleport_map_dest(), res_collision_object._object->get_obj_map_id(), false);

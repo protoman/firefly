@@ -196,7 +196,7 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
                 check_cheat_input();
             }
             if (alt_key == true && enter_key == true) {
-                std::cout << ">>>>>>>>>>>>>>>>>>> ENTER FULL SCREEN" << std::endl;
+                //std::cout << ">>>>>>>>>>>>>>>>>>> ENTER FULL SCREEN" << std::endl;
                 p1_input[BTN_FULL_SCREEN] = 1;
             } else {
                 p1_input[BTN_FULL_SCREEN] = 0;

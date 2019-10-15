@@ -86,6 +86,18 @@ void ImageView::change_render_target(e_RENDER_TARGET target)
     game_render_target = target;
 }
 
+void ImageView::restore_render_target()
+{
+    if (game_render_target == RENDER_TARGET_DIRECT_SCREEN) {
+        SDL_SetRenderTarget(gRenderer, nullptr);
+    } else if (game_render_target == RENDER_TARGET_GAME_TEXTURE) {
+        SDL_SetRenderTarget(gRenderer, texture_render_target);
+    } else if (game_render_target == RENDER_TARGET_HUD_TEXTURE) {
+        SDL_SetRenderTarget(gRenderer, hud_texture_render_target);
+    }
+
+}
+
 SDL_Texture *ImageView::get_game_texture_renderer()
 {
     return texture_render_target;
@@ -103,25 +115,13 @@ e_RENDER_TARGET ImageView::get_current_target()
 
 void ImageView::set_fullscreen(bool mode)
 {
+    std::cout << "ImageView::set_fullscreen::START" << std::endl;
     if (mode == true) {
-        SDL_DisplayMode DM;
-        SDL_GetCurrentDisplayMode(0, &DM);
-        auto res_width = DM.w;
-        auto res_height = DM.h;
-
-        std::cout << "res_width[" << res_width << "], res_height[" << res_height << "]" << std::endl;
-
-        float scale_w = (float)res_width/RES_W;
-        float scale_h = (float)res_height/RES_H;
-        SDL_RenderSetScale(gRenderer, scale_w, scale_w);
-
-        std::cout << ">>>> scale_w[" << scale_w << "], scale_h[" << scale_h << "]" << std::endl;
-
-        SDL_SetWindowFullscreen(SharedData::get_instance()->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        SDL_SetWindowFullscreen(SharedData::get_instance()->window, SDL_WINDOW_FULLSCREEN);
     } else {
-        SDL_RenderSetScale(gRenderer, 1, 1);
         SDL_SetWindowFullscreen(SharedData::get_instance()->window, 0);
     }
+
 }
 
 void ImageView::blend_images(st_imageData &source, st_imageData &dest, int x, int y)
@@ -134,7 +134,7 @@ void ImageView::blend_images(st_imageData &source, st_imageData &dest, int x, in
     SDL_Rect destiny  = {x, y, source.surface->w, source.surface->h};
     SDL_RenderCopy(gRenderer, source.texture, &origin, &destiny);
 
-    SDL_SetRenderTarget(gRenderer, nullptr);
+    restore_render_target();
 }
 
 
@@ -573,7 +573,7 @@ void ImageView::clear_texture_area(short x, short y, short w, short h, Uint8 r, 
     SDL_SetRenderDrawColor(gRenderer, r, g, b, alpha);
     SDL_SetTextureBlendMode(image.texture, SDL_BLENDMODE_BLEND);
     SDL_RenderFillRect(gRenderer, &dest);
-    SDL_SetRenderTarget(gRenderer, nullptr);
+    restore_render_target();
 }
 
 void ImageView::set_surface_alpha(int alpha, st_imageData &image)

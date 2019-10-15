@@ -128,6 +128,21 @@ bool classPlayer::get_item(object_collision &obj_info)
             }
             SharedData::get_instance()->game_save.abilities[given_ability] = true;
             GameManager::get_instance()->show_ability_item_dialog(given_ability);
+
+            v6_file_game_object_state obj_state;
+            obj_state.uuid = obj_info._object->get_uuid();
+            obj_state.obj_id = obj_info._object->get_id();
+            obj_state.area_n = SharedData::get_instance()->v6_selected_area;
+            obj_state.x = -1;
+            obj_state.y = -1;
+            obj_state.finished = true;
+            SharedData::get_instance()->game_object_state_map.insert(std::pair<int, v6_file_game_object_state>(obj_state.uuid, obj_state));
+
+            set_animation_type(ANIM_TYPE_GOT_ITEM);
+            cancel_slide();
+            _obj_jump.interrupt();
+            set_animation_type(ANIM_TYPE_GOT_ITEM);
+
             res = true;
             break;
         }

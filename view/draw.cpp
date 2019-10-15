@@ -28,6 +28,7 @@
 #include "view/timerview.h"
 #include "view/textview.h"
 #include "view/ingame_presentation.h"
+#include "options/pausemenu.h"
 
 #include "game_mediator.h"
 #include "file/v5/struct_file_game_area_map.h"
@@ -205,9 +206,7 @@ void draw::show_gfx()
 {
     //std::cout << "screen_gfx[" << (int)screen_gfx << "]" << std::endl;
 
-    //show_dark_effect();
-
-    screen_gfx = SCREEN_GFX_NONE;
+    //screen_gfx = SCREEN_GFX_DARK;
 
     if (screen_gfx == SCREEN_GFX_RAIN) {
         show_rain();
@@ -221,8 +220,10 @@ void draw::show_gfx()
         show_shadow_top_effect();
     } else if (screen_gfx == SCREEN_GFX_INFERNO) {
         show_inferno_effect();
+    } else if (screen_gfx == SCREEN_GFX_DARK) {
+        show_dark_effect();
     } else if (screen_gfx != SCREEN_GFX_NONE) {
-        std::cout << "screen_gfx[" << (int)screen_gfx << "] UNKNOWN" << std::endl;
+        std::cout << "UNKNOWN screen_gfx[" << (int)screen_gfx << "] UNKNOWN" << std::endl;
     }
 
     if (flash_effect_enabled == true || screen_gfx == SCREEN_GFX_FLASH) {
@@ -239,12 +240,18 @@ st_imageData *draw::get_input_surface(e_INPUT_IMAGES input)
 void draw::update_screen()
 {
 
+    if (GameManager::get_instance()->is_paused() == false) {
+        show_gfx();
+    }
+
     ImageView::get_instance()->change_render_target(RENDER_TARGET_DIRECT_SCREEN);
     // show game-texture
     ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W*ImageView::get_instance()->get_scale(), AREA_H*ImageView::get_instance()->get_scale(), RES_W-(RES_W*ImageView::get_instance()->get_scale()), AREA_H-(AREA_H*ImageView::get_instance()->get_scale()), ImageView::get_instance()->get_game_texture_renderer());
 
     // show hud-texture
-    ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, HUD_H, 0, AREA_H, ImageView::get_instance()->get_hud_texture_renderer());
+    if (GameManager::get_instance()->is_paused() == false) {
+        ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, HUD_H, 0, AREA_H, ImageView::get_instance()->get_hud_texture_renderer());
+    }
 
 
     // show overlay effects
@@ -991,6 +998,8 @@ void draw::draw_in_game_menu_animation()
     // @TODO: set map scroll to current room //
     in_game_menu_map_pos = st_position(0, 0);
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 20);
+
+    ImageView::get_instance()->change_render_target(RENDER_TARGET_DIRECT_SCREEN);
     ImageView::get_instance()->updateRender();
     TimerView::get_instance()->delay(100);
     // menu 001 animation //
@@ -1103,6 +1112,7 @@ void draw::show_dialogs_from_queue()
     if (GameManager::get_instance()->get_dialog_queue()->size() > 0) {
         draw::get_instance()->show_ingame_warning(GameManager::get_instance()->get_dialog_queue()->at(0));
         if (GameManager::get_instance()->get_dialog_queue()->at(0).music_filename.length() > 0 && GameManager::get_instance()->get_dialog_status()->started == false) {
+            InputController::get_instance()->clean();
             GameManager::get_instance()->get_dialog_status()->started = true;
             SoundView::get_instance()->stop_music();
             SoundView::get_instance()->load_music(GameManager::get_instance()->get_dialog_queue()->at(0).music_filename);
@@ -1115,7 +1125,7 @@ void draw::show_dialogs_from_queue()
 void draw::draw_water_tile_overlay(int x, int y)
 {
     // TODO: we can add animation to the water tile overlay
-    std::cout << "draw::draw_water_tile_overlay - water_animation_pos[" << water_animation_pos << "]" << std::endl;
+    //std::cout << "draw::draw_water_tile_overlay - water_animation_pos[" << water_animation_pos << "]" << std::endl;
 
     // left part
     ImageView::get_instance()->renderTexturePortionAt(water_animation_pos, 0, TILESIZE-water_animation_pos, TILESIZE, x, y, water_tile_overlay.texture);
@@ -1470,6 +1480,8 @@ void draw::show_inferno_effect()
     }
 }
 
+
+
 void draw::show_dark_effect()
 {
     int alpha = 180;
@@ -1505,16 +1517,16 @@ void draw::show_dark_effect()
     SDL_SetTextureBlendMode(dark_effect_surface.texture, SDL_BLENDMODE_BLEND);
 
 
-    /*
 
-    ImageView::get_instance()->clear_texture_area(0, 0, RES_W, RES_H, 0, 0, 0, 55, dark_effect_surface);
-    ImageView::get_instance()->blend_images(dark_effect_mask, dark_effect_surface, player_center_pos.x, player_center_pos.y);
-    SDL_SetTextureBlendMode(dark_effect_surface.texture, SDL_BLENDMODE_BLEND);
-    SDL_SetTextureAlphaMod(dark_effect_surface.texture, alpha);
-    ImageView::get_instance()->renderImageAt(0, 0, dark_effect_surface);
-    */
+    //ImageView::get_instance()->clear_texture_area(0, 0, RES_W, RES_H, 0, 0, 0, 55, dark_effect_surface);
+    //ImageView::get_instance()->blend_images(dark_effect_mask, dark_effect_surface, player_center_pos.x, player_center_pos.y);
+    //SDL_SetTextureBlendMode(dark_effect_surface.texture, SDL_BLENDMODE_BLEND);
+    //SDL_SetTextureAlphaMod(dark_effect_surface.texture, alpha);
+    //ImageView::get_instance()->renderImageAt(0, 0, dark_effect_surface);
+
 
 }
+
 
 void draw::free_inferno_surface()
 {

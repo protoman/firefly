@@ -241,7 +241,7 @@ public:
     st_rectangle get_player_hitbox();
     bool must_show_static_bg();                                 // method used to prevent showing enemies on transition if showing static-bg
 
-    void reset_map_loaded();
+    void reset_map_loaded_flag();
 
 
 

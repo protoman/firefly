@@ -80,10 +80,16 @@ void object_tab::on_graphicfile_combo_currentIndexChanged(const QString &arg1)
 		return;
 	}
     sprintf(SharedData::get_instance()->v6_object_list.at(_current_object).graphic_filename, "%s", arg1.toStdString().c_str());
-    ui->object_preview_area->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/objects/")+arg1.toStdString());
-    st_size img_size = ui->object_preview_area->get_image_size();
-    ui->graphic_w->setValue(img_size.width);
-    ui->graphic_h->setValue(img_size.height);
+
+    if (ignore_change == false) {
+        ui->object_preview_area->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/objects/")+arg1.toStdString());
+        st_size img_size = ui->object_preview_area->get_image_size();
+        ui->graphic_w->setValue(img_size.width);
+        ui->graphic_h->setValue(img_size.height);
+    } else {
+        ui->graphic_w->setValue(SharedData::get_instance()->v6_object_list.at(_current_object).size.width);
+        ui->graphic_h->setValue(SharedData::get_instance()->v6_object_list.at(_current_object).size.height);
+    }
     ui->object_preview_area->repaint();
 }
 
@@ -101,7 +107,9 @@ void object_tab::on_objectlist_combo_currentIndexChanged(int index)
         return;
     }
     ui->name->setText(SharedData::get_instance()->v6_object_list.at(_current_object).name);
+    ignore_change = true;
     ui->graphicfile_combo->setCurrentIndex(ui->graphicfile_combo->findText(QString(SharedData::get_instance()->v6_object_list.at(index).graphic_filename)));
+    ignore_change = false;
     ui->graphic_w->setValue(SharedData::get_instance()->v6_object_list.at(_current_object).size.width);
     ui->graphic_h->setValue(SharedData::get_instance()->v6_object_list.at(_current_object).size.height);
     ui->type_combo->setCurrentIndex(SharedData::get_instance()->v6_object_list.at(_current_object).type);

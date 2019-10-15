@@ -1,35 +1,55 @@
+#######################################################################################################
 Créditos:
+#######################################################################################################
 Credit "Tio Aimar @ opengameart.org" or simply "Tio Aimar" (this is not mandatory)
 Credit "Kenney.nl" or "www.kenney.nl", this is not mandatory.
+HUD: https://opengameart.org/content/golden-ui-bigger-than-ever-edition
 
 #######################################################################################################
 i18n:
+#######################################################################################################
 fazer totalmente hardcoded, sem arquivo separado.
 adicionar suporte a level no arquivo de save de posição de objetos
 adicionar método que, ao usar um game-item, se tem um objeto no local, pode dar trigger nele
 #######################################################################################################
 
+#######################################################################################################
 Sistema de uso de item
+#######################################################################################################
 - Fazer hardcoded em parte
 - a definição de qual item é usado é setada pelo editor
 - mas a forma, é hardcoded
 - para isso precisamos de um sub-tipo de item, definido em enum mas que vai ir aumentando
 
 #######################################################################################################
-- terreno que faz dano (não como spike, como tocar um inimigo)
-- corrigir transição de tela vertical
-- corrigir posição do texto no menu de quit
-- fazer chicote e inimigos segmentados, cujas partes obedecem função matemática de movimento
+BUGS
+#######################################################################################################
+====> - animação de entrada e saída do menu in-game não está aparecendo
+====> - corrigir transição de tela vertical
+====> - corrigir posição do texto no menu de quit
+====> - corrigir GFX que estão quebrados após separação de layers game e hud
+- EDITOR: não está salvando projétil, sempre volta para o default
+
+#######################################################################################################
+FEATURES
+#######################################################################################################
+====> - adicionar rosto aos dialogos in-game
+====> - terreno que faz dano (não como spike, como tocar um inimigo)
+- transparência real ao ser atingido (idem inimigos)
+- colocar nome (seu/do-save) ao criar novo jogo
 - elevadores
-- usar lib de partculas para explosões e cia
+- fazer chicote e inimigos segmentados, cujas partes obedecem função matemática de movimento (pode ser hardcoded sem problema, faz filho da classe classBoss ou classNpc)
+- usar lib de particulas para explosões e cia
 - animação de armas e inimigos usando rotação
 - inimigos com sombra (tipo o dash, mas com gráfico próprio para a sombra)
-- transparência real ao ser atingido (idem inimigos)
+- criar dark room (apenas círculo ao redor do jogador é mais transparente)
+- não poder usar ALT como tecla (está para alternar fullscreen)
 
-
+#######################################################################################################
+FEATURES (DEPENDE ARIS)
+#######################################################################################################
 - intro
 - tela game-start
-- colocar nome ao criar novo jogo
 
 
 - Converter para modo "async" de atualização da tela (como diálogos).
@@ -41,20 +61,14 @@ Sistema de uso de item
     # character::execute_jump
     # character::fall
 
-- corrigir GFX que estão quebrados após separação de layers game e hud
 
-- EDITOR: não está salvando projétil, sempre volta para o default
-
+#######################################################################################################
+OPTIMIZAÇÃO
+#######################################################################################################
 - criar lista de inimigos, projéteis e objetos que estão na tela e próximo dela
-- criar dark room (apenas círculo ao redor do jogador é mais transparente)
-- alternate full screen (alt + enter)
-    # essas teclas não podem ser definidas como em uso na config
+- melhorar performance editor preview-areas
+    # carregar imagem na função que muda filename
 
-
-- criar sistema de diálogos
-    # quem for usar o diálogo, aponta para o número dele
-    # pode ter n linhas
-    # pode ter n frases (com as linhas)
 
 
 - GameObject::gravity: remover quando fora do mapa
@@ -64,7 +78,6 @@ Sistema de uso de item
     # criar primeiro mapa
 
 - HUD:
-    # CRÉDITOS: https://opengameart.org/content/golden-ui-bigger-than-ever-edition
     # mostrar arma #1 e #2
     # mostrar items (item vai ter que ter um ícone)
 
@@ -89,17 +102,12 @@ Sistema de uso de item
 
 - corrigir hitbox: deve ser baseada no frameSize e porcentagens
 
-- criar/implementar area-teleporter
+- criar/implementar area-teleporter (???)
 
-- melhorar performance editor preview-areas
-    # carregar imagem na função que muda filename
 
 - remodelar animation: deve ser capaz de retornar a área da imagem que deve ser mostrada
     # responsável por mostrar imagem deve ser GameController/ImageView
     # lista de animações deve ficar no gameController, não no mapa
-
-- remover armas e seleção L/R e menu
-    # remover item coil/jet
 
 - EDITOR: não pode ter largura ou altura menores do que o tamanho de tela (descontando HUD)
 

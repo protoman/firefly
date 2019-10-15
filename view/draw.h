@@ -86,7 +86,9 @@ public:
     void draw_castle_point(int x, int y);
     void show_interstage_map_bg(st_position pos);
     void draw_in_game_menu_bg(int screen);
+
     void draw_in_game_menu_animation();
+
     void draw_in_game_menu_map();
     void draw_game_button(int x, int y, e_INPUT_IMAGES button);
 
@@ -153,6 +155,8 @@ private:
     int _inferno_alpha;
     short _inferno_alpha_mode; // 0 increasing, 1 decreasing
     st_imageData dark_effect_surface;
+
+    st_imageData dark_effect_surface2;
 
 
     // USED IN TRAIN EFFECT

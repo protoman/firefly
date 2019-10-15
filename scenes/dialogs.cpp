@@ -71,6 +71,7 @@ bool dialogs::show_yes_no_dialog(std::string lines[3])
     bool repeat_menu = true;
     int picked_n = -1;
 
+    Uint8 gfx = draw::get_instance()->get_gfx();
     GameManager::get_instance()->game_pause();
 
     InputController::get_instance()->clean();

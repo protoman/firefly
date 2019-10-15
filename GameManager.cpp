@@ -580,6 +580,9 @@ void GameManager::consume_dialogs_from_queue()
 
 void GameManager::add_queue_dialog(st_dialog dialog)
 {
+    if (dialog.timer > 0) {
+        dialog.timer = TimerView::get_instance()->getTimer() + dialog.timer;
+    }
     dialog_queue.push_back(dialog);
     InputController::get_instance()->clean();
 }
@@ -656,7 +659,7 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
            consume_dialogs_from_queue();
            InputController::get_instance()->clean();
         } else if (dialog_queue.at(0).timer > 0 && TimerView::get_instance()->getTimer() > dialog_queue.at(0).timer) {
-            std::cout << "Remove dialog #2" << std::endl;
+            std::cout << "Remove dialog #2, timer[" << (int)dialog_queue.at(0).timer << "]" << std::endl;
             consume_dialogs_from_queue();
             InputController::get_instance()->clean();
         }
@@ -671,7 +674,7 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
 
     // TODO::IURI //
     if (PauseMenu::get_instance()->execute_pause_menu() == false) { // game is paused
-
+        _is_paused = false;
         build_screen_area_lists();
 
         // must jump a frame
@@ -740,7 +743,6 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
 
 
         player1.moved_dist = st_float_position(0, 0);
-        draw::get_instance()->show_gfx();
 
         ImageView::get_instance()->change_render_target(RENDER_TARGET_HUD_TEXTURE);
         show_hud(true);
@@ -751,12 +753,15 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
             fps_manager.fps_count();
         }
         fps_manager.limit();
+    } else {
+        _is_paused = true;
+        fps_manager.limit();
     }
 
 
     draw::get_instance()->update_screen();
 
-    mapController.reset_map_loaded();
+    mapController.reset_map_loaded_flag();
 }
 
 
@@ -1601,6 +1606,7 @@ void GameManager::game_pause()
     TimerView::get_instance()->pause();
     // @TODO - save-player-input
     player1.save_input();
+    _is_paused = true;
 }
 
 void GameManager::game_unpause()
@@ -1610,6 +1616,12 @@ void GameManager::game_unpause()
     player1.restore_input();
     player1.reset_sprite_animation_timer();
     mapController.reset_map_timers();
+    _is_paused = false;
+}
+
+bool GameManager::is_paused()
+{
+    return _is_paused;
 }
 
 void GameManager::exit_game()
