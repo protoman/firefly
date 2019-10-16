@@ -1073,4 +1073,12 @@ enum e_OBJ_SUB_TYPE {
 };
 
 
+// All of game's dialogs
+enum e_GAME_DIALOG {
+    GAME_DIALOG_INTRO_STAGE_SWAMP_ARRIVAL,
+    GAME_DIALOG_COUNT,
+};
+
+
+
 #endif // DEFINES_H

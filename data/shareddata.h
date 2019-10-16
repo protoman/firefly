@@ -2,6 +2,7 @@
 #define SHAREDDATA_H
 
 #include <vector>
+#include <set>
 #include <map>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -23,11 +24,13 @@
 #include "file/v6/file_object_v6.h"
 #include "file/v6/file_game_object_state.h"
 
+#include "text/i18ntext.h"
 
 class SharedData
 {
 public:
     static SharedData* get_instance();
+    std::string get_player_face_file();
 
 private:
     SharedData();
@@ -48,7 +51,7 @@ public:
     std::string FILEPATH = std::string("./games/FireFly/");
     std::string GAMEPATH = std::string("./");
     std::string GAMENAME = std::string("FireFly");
-    std::string SAVEPATH = std::string(".");
+    std::string SAVEPATH = std::string("/home/iuri/.firefly"); // @TODO: use the same as in RockDroid
 
     SDL_Event event;
     bool leave_game = false;
@@ -126,6 +129,8 @@ public:
     std::vector<st_light_point> lightpoint_list;
 
     std::map<int, v6_file_game_object_state> game_object_state_map; // key x for area-id, y for area-object-n
+    int current_player = 1;
+    std::set<e_GAME_DIALOG> used_game_dialogs;                       // once added in this list, dialog will return empty, so won't repeat again
 
 };
 

@@ -24,8 +24,6 @@ Sistema de uso de item
 #######################################################################################################
 BUGS
 #######################################################################################################
-====> - animação de entrada e saída do menu in-game não está aparecendo
-====> - corrigir transição de tela vertical
 ====> - corrigir posição do texto no menu de quit
 ====> - corrigir GFX que estão quebrados após separação de layers game e hud
 - EDITOR: não está salvando projétil, sempre volta para o default

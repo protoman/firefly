@@ -2136,7 +2136,7 @@ bool character::process_special_map_points(int map_lock, int incx, int incy, st_
     }
     int check_y = get_hitbox().y;
     if (incx != 0 && map_lock == TERRAIN_HSCROLL_LOCK) {
-        std::cout << "##### DEBUG #931 #####" << std::endl;
+        std::cout << "##### DEBUG #931 - incx[" << incx << "] #####" << std::endl;
         int temp_xinc = TILESIZE+6;
         if (state.direction == ANIM_DIRECTION_LEFT) {
             temp_xinc = -(TILESIZE+6);
@@ -2172,7 +2172,6 @@ bool character::process_special_map_points(int map_lock, int incx, int incy, st_
 
         // TODO::IURI //
         GameManager::get_instance()->vertical_screen_move(directionY, true, map_pos.y);
-        GameManager::get_instance()->show_hud(true);
         return true;
 
     }
@@ -3489,7 +3488,7 @@ void character::change_position_x(short xinc)
                 state.animation_timer = 0;
             }
             if (state.animation_type != ANIM_TYPE_WALK && state.animation_type != ANIM_TYPE_JUMP && state.animation_type != ANIM_TYPE_SLIDE && state.animation_type != ANIM_TYPE_JUMP_ATTACK && state.animation_type != ANIM_TYPE_HIT && (state.animation_type != ANIM_TYPE_WALK_ATTACK || (state.animation_type == ANIM_TYPE_WALK_ATTACK && state.attack_timer+ATTACK_DELAY < TimerView::get_instance()->getTimer()))) {
-                std::cout << "SET-ANIM_TYPE_WALK #1" << std::endl;
+                //std::cout << "SET-ANIM_TYPE_WALK #1" << std::endl;
                 set_animation_type(ANIM_TYPE_WALK);
             }
             position.x += xinc;

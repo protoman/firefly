@@ -202,6 +202,7 @@ std::string file_io::get_save_filename(short save_n)
     std::string filename = std::string(SharedData::get_instance()->SAVEPATH) + std::string("/") + SharedData::get_instance()->GAMENAME + std::string(numbered_file) + std::string(".sav");
     filename = StringUtils::clean_filename(filename);
 
+    std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>> string file_io::get_save_filename[" << filename << "]" << std::endl;
     return filename;
 }
 
@@ -263,6 +264,7 @@ bool file_io::read_save(st_save& data_out, short save_n)
     fclose(fp);
 
     load_game_object_state();
+    load_game_dialog_state();
 
     return true;
 }
@@ -270,8 +272,8 @@ bool file_io::read_save(st_save& data_out, short save_n)
 std::string file_io::get_object_state_filename()
 {
     char filenamechar[512];
-    sprintf(filenamechar, "/data/level_%d_object_state.dat", SharedData::get_instance()->v6_selected_level);
-    return SharedData::get_instance()->FILEPATH + std::string(filenamechar);
+    sprintf(filenamechar, "level_%d_object_state.dat", SharedData::get_instance()->v6_selected_level);
+    return SharedData::get_instance()->SAVEPATH + std::string("/") + std::string(filenamechar);
 }
 
 void file_io::write_game_object_state()
@@ -303,6 +305,37 @@ void file_io::load_game_object_state()
     }
 }
 
+std::string file_io::get_game_dialog_state_filename()
+{
+    return SharedData::get_instance()->SAVEPATH + std::string("/game_dialog_state.dat");
+}
+
+void file_io::load_game_dialog_state()
+{
+    fio_common fio_cmm;
+    std::vector<e_GAME_DIALOG> temp_list = fio_cmm.load_from_disk<e_GAME_DIALOG>(get_game_dialog_state_filename());
+
+    for (int i=0; i<temp_list.size(); i++) {
+        SharedData::get_instance()->used_game_dialogs.insert(temp_list.at(i));
+    }
+}
+
+void file_io::write_game_dialog_state()
+{
+    fio_common fio_cmm;
+    std::vector<e_GAME_DIALOG> temp_list;
+
+    std::set<e_GAME_DIALOG>::iterator it = SharedData::get_instance()->used_game_dialogs.begin();
+
+    while (it != SharedData::get_instance()->used_game_dialogs.end())
+    {
+        temp_list.push_back((*it));
+        it++;
+    }
+
+    fio_cmm.save_data_to_disk<e_GAME_DIALOG>(get_game_dialog_state_filename(), temp_list);
+}
+
 
 
 bool file_io::write_save(st_save& data_in, short save_n)
@@ -323,6 +356,7 @@ bool file_io::write_save(st_save& data_in, short save_n)
     fclose(fp);
 
     write_game_object_state();
+    write_game_dialog_state();
 
     return true;
 }

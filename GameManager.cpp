@@ -612,11 +612,17 @@ void GameManager::initGame()
 
 
     std::vector<st_dialog> dialog_list = InGamePresentation::get_instance()->get_game_dialog(GAME_DIALOG_INTRO_STAGE_SWAMP_ARRIVAL);
-    dialog_queue.insert(dialog_queue.end(), dialog_list.begin(), dialog_list.end());
 
-    std::cout << ">>>>>>>>>>>>>>>>>>> dialog[0].msgs.size[" << dialog_queue.at(0).msgs.size() << "]" << std::endl;
-    for (int i=0; i<dialog_queue.at(0).msgs.size(); i++) {
-        std::cout << ">>>>>>>>>>>>>> dialog[0].msgs[" << i << "][" << dialog_queue.at(0).msgs.at(i) << "]" << std::endl;
+
+    if (dialog_list.size() > 0) {
+
+        dialog_queue.insert(dialog_queue.end(), dialog_list.begin(), dialog_list.end());
+
+        std::cout << ">>>>>>>>>>>>>>>>>>> dialog[0].msgs.size[" << dialog_queue.at(0).msgs.size() << "]" << std::endl;
+        for (int i=0; i<dialog_queue.at(0).msgs.size(); i++) {
+            std::cout << ">>>>>>>>>>>>>> dialog[0].msgs[" << i << "][" << dialog_queue.at(0).msgs.at(i) << "]" << std::endl;
+            dialog_queue.at(0).face_name = SharedData::get_instance()->get_player_face_file();
+        }
     }
 }
 
@@ -1383,7 +1389,7 @@ void GameManager::transition_screen(Uint8 type, Uint8 map_n, short int adjust_x,
 
 void GameManager::horizontal_screen_move(short direction, bool is_door, short tileX, short tileY)
 {
-    std::cout << "GameManager::horizontal_screen_move" << std::endl;
+    std::cout << "GameManager::horizontal_screen_move::START" << std::endl;
     st_float_position scroll_move;
 
     game_pause();
@@ -1416,18 +1422,23 @@ void GameManager::horizontal_screen_move(short direction, bool is_door, short ti
     }
 
 
-    //int move_limit = (RES_W/abs((float)scroll_move.x)) - TILESIZE/abs((float)scroll_move.x);
     int move_limit = move_limit_top/abs(TRANSITION_STEP);
     float player_move_x = (float)(TILESIZE*2.5)/(float)move_limit; // player should move two tilesize, to avoid doors
     if (scroll_move.x < 0) {
         player_move_x = player_move_x * -1;
     }
+
+    if (player1.get_anim_type() == ANIM_TYPE_SLIDE) {
+        player_move_x += 1;
+    }
+
+    std::cout << "GameManager::horizontal_screen_move - move_limit[" << move_limit << "], player_move_x[" << player_move_x << "], scroll_move.x[" << scroll_move.x << "]" << std::endl;
+
     int static_scroll_x = mapController.getMapScrolling().x;
 
 
 
     ImageView::get_instance()->change_render_target(RENDER_TARGET_GAME_TEXTURE);
-    //std::cout << "player_move_x[" << player_move_x << "], move_limit[" << move_limit << "]" << std::endl;
     for (int i=0; i<move_limit; i++) {
         change_map_scroll(scroll_move, false);
         mapController.show();
@@ -1493,7 +1504,6 @@ void GameManager::vertical_screen_move(short direction, bool is_door, short tile
 
 
 
-    //int move_limit = (AREA_H/abs((float)scroll_move.y)) - TILESIZE/abs((float)scroll_move.y);
     int move_limit = AREA_H/abs(TRANSITION_STEP);
 
     std::cout << "$$$$$$$$$$$$$ move_limit[" << move_limit << "], scroll_move.y[" << scroll_move.y << "]" << std::endl;
@@ -1505,7 +1515,14 @@ void GameManager::vertical_screen_move(short direction, bool is_door, short tile
     int static_scroll_y = mapController.getMapScrolling().y;
 
 
+
+    if (direction != ANIM_DIRECTION_UP) {
+        move_limit -= player_move_y/2;
+    }
     std::cout << ">>>>>> player_move_y[" << player_move_y << "], move_limit[" << move_limit << "]" << std::endl;
+
+
+    ImageView::get_instance()->change_render_target(RENDER_TARGET_GAME_TEXTURE);
     for (int i=0; i<move_limit; i++) {
         //std::cout << ">>>> gameManager::vertical_screen_move scroll_move.x[" << scroll_move.x << "], scroll_move.y[" << scroll_move.y << "]" << std::endl;
 
@@ -1519,20 +1536,16 @@ void GameManager::vertical_screen_move(short direction, bool is_door, short tile
         player1.show();
         mapController.showAbove();
         mapController.show_above_objects();
-        // draw HUD
-        show_hud(false);
 #if defined(PC)
         TimerView::get_instance()->delay(2);
 #endif
         draw::get_instance()->update_screen();
 
         player1.inc_position(0, player_move_y);
-        /*
-        if (i%(TILESIZE/4) == 0) {
-            player1.set_position(st_position(player1.getPosition().x+scroll_move.x, player1.getPosition().y));
-            player1.char_update_real_position();
-        }
-        */
+
+        ImageView::get_instance()->change_render_target(RENDER_TARGET_HUD_TEXTURE);
+        show_hud(true);
+        ImageView::get_instance()->change_render_target(RENDER_TARGET_GAME_TEXTURE);
     }
     if (is_door == true) {
         remove_players_slide();

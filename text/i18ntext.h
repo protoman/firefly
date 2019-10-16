@@ -12,11 +12,6 @@ enum e_IN_GAME_TEXT {
 
 };
 
-enum e_GAME_DIALOG {
-    GAME_DIALOG_INTRO_STAGE_SWAMP_ARRIVAL,
-
-    GAME_DIALOG_COUNT,
-};
 
 
 class i18nText
@@ -39,7 +34,6 @@ private:
     std::set<e_GAME_DIALOG> one_shot_game_dialogs = {                // thos dialogs will be shown just once
         GAME_DIALOG_INTRO_STAGE_SWAMP_ARRIVAL
     };
-    std::set<e_GAME_DIALOG> used_game_dialogs;                       // once added in this list, dialog will return empty, so won't repeat again
 
 
 

@@ -1,4 +1,5 @@
 #include "i18ntext.h"
+#include "data/shareddata.h"
 
 i18nText* i18nText::_instance = nullptr;
 
@@ -28,12 +29,12 @@ std::vector<std::string> i18nText::get_dialog(e_GAME_DIALOG number)
         return res;
     }
     // if dialog is one-shot and already used, return empty
-    if (one_shot_game_dialogs.find(number) != one_shot_game_dialogs.end() && used_game_dialogs.find(number) != used_game_dialogs.end()) {
+    if (one_shot_game_dialogs.find(number) != one_shot_game_dialogs.end() && SharedData::get_instance()->used_game_dialogs.find(number) != SharedData::get_instance()->used_game_dialogs.end()) {
         std::cout << "WARNING: dialog number[" << (int)number << "] is one-shot and already used." << std::endl;
         return res;
     }
 
-    used_game_dialogs.insert(number);
+    SharedData::get_instance()->used_game_dialogs.insert(number);
     // split the dialog by the separator
     std::cout << "Splitting dialog[" << game_dialogs->at(number) << "]" << std::endl;
     res = split(game_dialogs->at(number), GAME_TEXT_DIALOG_SEPARATOR_CHAR);

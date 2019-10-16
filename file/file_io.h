@@ -39,6 +39,10 @@ public:
     void write_game_object_state();
     void load_game_object_state();
 
+    std::string get_game_dialog_state_filename();
+    void load_game_dialog_state();
+    void write_game_dialog_state();
+
     bool save_exists(short save_n);
     bool have_one_save_file();
     bool can_access_castle(st_save& data_in);
