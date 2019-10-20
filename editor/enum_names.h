@@ -74,6 +74,7 @@ void init_enum_names() {
     AI_ACTION_NAMES.push_back("WAIT TIME [RANDOM]");
     AI_ACTION_NAMES.push_back("MORPH INTO");
     AI_ACTION_NAMES.push_back("PLAY SOUND EFFECT");
+    AI_ACTION_NAMES.push_back("ROTATE GRAPHIC");
 
     // -------------------------------------------------------------- //
     AI_ACTION_SHOT_OPTIONS.push_back("FACE PLAYER");

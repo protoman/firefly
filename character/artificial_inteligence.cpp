@@ -20,8 +20,6 @@
 #include "view/soundview.h"
 
 #include "GameManager.h"
-
-#include "GameManager.h"
 #define JUMP_ROOF_MIN_SPEED 3
 #define MAX_NPC_SPAWN 3
 
@@ -50,6 +48,9 @@ artificial_inteligence::artificial_inteligence() :  walk_range(TILESIZE*6), targ
     did_hit_player = false;
     _saved_point = st_float_position(-99, -99);
 
+    if (name == "Rotate Test") {
+        boss_001_init();
+    }
 }
 
 
@@ -74,6 +75,9 @@ void artificial_inteligence::execute_ai()
     if (TimerView::get_instance()->getTimer() < _ai_timer) {
         return;
     }
+    if (execute_special_ai() == true) {
+        return;
+    }
     //std::cout << "AI::execute_ai[" << name << "] - _current_ai_type: " << _current_ai_type << ", _ai_state.sub_status: " << _ai_state.sub_status << ", parameter[" << (int)_parameter << "], direction[" << (int)state.direction << "]" << std::endl;
     // check if action is finished
     if (_current_ai_type == -1 || _ai_state.sub_status == IA_ACTION_STATE_FINISHED) {
@@ -96,6 +100,26 @@ void artificial_inteligence::execute_ai()
     // reset flag
     did_hit_player = false;
 }
+
+bool artificial_inteligence::execute_special_ai()
+{
+    if (name == "Rotate Test") {
+        boss_001_execute_ai();
+        return true;
+    }
+    return false;
+}
+
+void artificial_inteligence::show()
+{
+    //std::cout << "artificial_inteligence::show" << std::endl;
+    if (name == "Rotate Test") {
+        boss_001_show();
+    } else {
+        character::show();
+    }
+}
+
 
 void artificial_inteligence::hit_player()
 {
@@ -288,6 +312,8 @@ void artificial_inteligence::execute_ai_step()
         execute_ai_step_jump();
     } else if (_current_ai_type == AI_ACTION_WAIT_RANDOM_TIME) {
         execute_ai_wait_random_time();
+    } else if (_current_ai_type == AI_ACTION_ROTATE_GRAPHIC) {
+        execute_ai_rotate_graphic();
     } else {
         //std::cout << "AI_ACTION_JUMP_ATTACK_UP: " << (int)AI_ACTION_JUMP_ATTACK_UP << std::endl;
         std::cout << "********** AI::UNKNOWN - number[" << _number << "], pos[" << _ai_chain_n << "], _current_ai_type[" << (int)_current_ai_type << "] - NOT IMPLEMENTED *******" << std::endl;
@@ -1662,6 +1688,84 @@ void artificial_inteligence::execute_ai_wait_random_time()
     }
 }
 
+void artificial_inteligence::execute_ai_rotate_graphic()
+{
+    //std::cout << "artificial_inteligence::execute_ai_rotate_graphic::EXECUTE" << std::endl;
+    if (_ai_state.sub_status == IA_ACTION_STATE_INITIAL) {
+        int rotation_value = 0;
+        if (_parameter == 0) { // restore original
+            if (rotated_graphic_total > 0) {
+                rotation_value = -rotated_graphic_total;
+            } else {
+                rotation_value = rotated_graphic_total;
+            }
+        } else if (_parameter == 1) { // plus 10
+            rotation_value = 10;
+        } else if (_parameter == 2) { // plus 30
+            rotation_value = 30;
+        } else if (_parameter == 3) { // plus 45
+            rotation_value = 45;
+        } else if (_parameter == 4) { // plus 90
+            rotation_value = 90;
+        } else if (_parameter == 5) { // plus 360
+            rotation_value = 360;
+        } else if (_parameter == 6) { // minus 10
+            rotation_value = -10;
+        } else if (_parameter == 7) { // minus 30
+            rotation_value = -30;
+        } else if (_parameter == 8) { // minus 45
+            rotation_value = -45;
+        } else if (_parameter == 9) { // minus 90
+            rotation_value = -90;
+        } else if (_parameter == 10) { // minus 360
+            rotation_value = -360;
+        }
+        //std::cout << "artificial_inteligence::execute_ai_rotate_graphic::INIT - rotation_value[" << rotation_value << "]" << std::endl;
+        rotated_graphic_target = rotated_graphic_total + rotation_value;
+        _ai_state.sub_status = IA_ACTION_STATE_EXECUTING;
+    } else if (_ai_state.sub_status == IA_ACTION_STATE_EXECUTING) {
+        // check if delay between frames passed or not
+        if (rotated_timer < TimerView::get_instance()->getTimer()) {
+            double angle = 0;
+            if (rotated_graphic_target > 0) {
+                angle = 1;
+            } else if (rotated_graphic_target < 0) {
+                angle = -1;
+            } else {
+                if (rotated_graphic_total > 0) {
+                    angle = -1;
+                } else {
+                    angle = 1;
+                }
+            }
+            //ImageView::get_instance()->rotate_image((ImageView::get_instance()->character_graphics_list.find(name)->second).frames[state.direction][state.animation_type][state.animation_state].frameSurface, angle);
+
+            rotated_graphic_total += (int)angle;
+
+            int previous_w = frameSize.width;
+            int previous_h = frameSize.height;
+            if (rotated_graphic_frame.is_null() == false) {
+                previous_w = rotated_graphic_frame.surface->w;
+                previous_h = rotated_graphic_frame.surface->h;
+            }
+            rotated_graphic_frame = ImageView::get_instance()->rotated_from_image((ImageView::get_instance()->character_graphics_list.find(name)->second).frames[state.direction][state.animation_type][state.animation_state].frameSurface, rotated_graphic_total);
+
+            //std::cout << "artificial_inteligence::execute_ai_rotate_graphic::EXECUTE - angle[" << angle << "], rotated_graphic_target[" << rotated_graphic_target << "], rotated_graphic_total[" << rotated_graphic_total << "]" << std::endl;
+            //std::cout << "original_img.w[" << (ImageView::get_instance()->character_graphics_list.find(name)->second).frames[state.direction][state.animation_type][state.animation_state].frameSurface.surface->w << "], rotated_img_w[" << rotated_graphic_frame.surface->w << "]" << std::endl;
+            if (rotated_graphic_total == rotated_graphic_target) {
+                //std::cout << "artificial_inteligence::execute_ai_rotate_graphic::LEAVE#2" << std::endl;
+                _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
+                rotated_graphic_target = 0;
+            }
+            rotated_timer = TimerView::get_instance()->getTimer() + 10;
+            // adjust center of image
+            std::cout << ">>>>>>>>> previous_h[" << previous_h << "], new_h[" << rotated_graphic_frame.surface->h << "]" << std::endl;
+            position.x += (previous_w - rotated_graphic_frame.surface->w)/2;
+            position.y += (previous_h - rotated_graphic_frame.surface->h)/2;
+        }
+    }
+}
+
 // returns false if can ove and true if blocked
 bool artificial_inteligence::move_to_point(st_float_position dest_point, float speed_x, float speed_y, bool can_pass_walls)
 {
@@ -2044,7 +2148,7 @@ void artificial_inteligence::execute_ai_step_spawn_npc()
 
     //std::cout << "%%%%%%%%%%%%%%%% EXECUTE-SPAWN-NPC %%%%%%%%%%%%%%%%%%%%" << std::endl;
     // still spawning an NPC, leave
-    if (GameManager::get_instance()->get_current_map_obj()->_npc_spawn_list.size() > 0) {
+    if (GameManager::get_instance()->get_current_map_obj()->map_enemy_spawn_list.size() > 0) {
         //std::cout << ">>>>>>> still executing a previous spawn, leave" << std::endl;
         _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
         return;
@@ -2342,6 +2446,7 @@ int artificial_inteligence::get_dialog_id()
 {
     return SharedData::get_instance()->enemy_list.at(_number).npc_dialog_id;
 }
+
 
 bool artificial_inteligence::always_move_ahead() const
 {

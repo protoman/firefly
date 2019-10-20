@@ -388,6 +388,8 @@ protected:
     int got_item_id = -1;
 
     long last_water_damage_warning_sound_timer = 0;
+
+    st_imageData rotated_graphic_frame;
 };
 
 #endif // CHARACTER_H

@@ -268,8 +268,8 @@ private:
     std::map<unsigned int, st_background> imageLayerMap;
 
 public:
-    std::vector<GameEnemy> _npc_list;                                        // vector npcs
-    std::vector<GameEnemy> _npc_spawn_list;                                  // list of enemyes to be spawned, after added into _npc_list
+    std::vector<GameEnemy> map_enemy_list;                                        // vector npcs
+    std::vector<GameEnemy> map_enemy_spawn_list;                                  // list of enemyes to be spawned, after added into _npc_list
     std::vector<animation> animation_list;
     // vector teleporters
     // vector objects

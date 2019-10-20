@@ -269,7 +269,7 @@ void GameEnemy::show()
     ImageView::get_instance()->draw_rectangle(hitbox, 0, 0, 255, 100);
 #endif
     //std::cout << "ENEMY.SHOW[" << name << "]" << std::endl;
-    character::show();
+    artificial_inteligence::show();
 }
 
 void GameEnemy::npc_set_position(st_float_position pos)
@@ -481,17 +481,17 @@ void GameEnemy::move_projectiles()
             }
         } else { // NPC attacking other NPCs
 
-            for (int i=0; i<GameManager::get_instance()->get_current_map_obj()->_npc_list.size(); i++) {
-                st_rectangle other_npc_hitbox = GameManager::get_instance()->get_current_map_obj()->_npc_list.at(i).get_vulnerable_area();
+            for (int i=0; i<GameManager::get_instance()->get_current_map_obj()->map_enemy_list.size(); i++) {
+                st_rectangle other_npc_hitbox = GameManager::get_instance()->get_current_map_obj()->map_enemy_list.at(i).get_vulnerable_area();
 				//classnpc* enemy = (*enemy_it);
                 if (other_npc_hitbox.is_empty() == false && (*it).check_collision(other_npc_hitbox, st_position(moved.width, moved.height)) == true) {
 					//std::cout << "is_shielded::CALL 2" << std::endl;
-                    if (GameManager::get_instance()->get_current_map_obj()->_npc_list.at(i).is_intangible() == true) {
+                    if (GameManager::get_instance()->get_current_map_obj()->map_enemy_list.at(i).is_intangible() == true) {
                         continue;
-                    } else if (GameManager::get_instance()->get_current_map_obj()->_npc_list.at(i).is_shielded((*it).get_direction()) == true && (*it).get_trajectory() != TRAJECTORY_BOMB && (*it).get_trajectory() != TRAJECTORY_LIGHTING&& (*it).get_trajectory() != TRAJECTORY_SLASH) {
+                    } else if (GameManager::get_instance()->get_current_map_obj()->map_enemy_list.at(i).is_shielded((*it).get_direction()) == true && (*it).get_trajectory() != TRAJECTORY_BOMB && (*it).get_trajectory() != TRAJECTORY_LIGHTING&& (*it).get_trajectory() != TRAJECTORY_SLASH) {
                         (*it).reflect();
 					} else {
-                        GameManager::get_instance()->get_current_map_obj()->_npc_list.at(i).damage((*it).get_damage(), false);
+                        GameManager::get_instance()->get_current_map_obj()->map_enemy_list.at(i).damage((*it).get_damage(), false);
                         if ((*it).get_move_type() != TRAJECTORY_CHAIN) { /// @TODO non-destructable types
                             //std::cout << "consume_projectile #2" << std::endl;
                             (*it).consume_projectile();

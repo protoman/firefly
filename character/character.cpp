@@ -92,7 +92,7 @@ void character::char_update_real_position() {
     if (GameManager::get_instance()->get_current_map_obj() != nullptr) {
         realPosition.x = position.x - (int)GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
         realPosition.y = position.y - (int)GameManager::get_instance()->get_current_map_obj()->getMapScrolling().y;
-        //std::cout << ">>>> show::char_update_real_position - realPosition.y: " << realPosition.y << ", pos.y: " << position.y << ", gameManager::get_instance()->get_current_map_obj()->getMapScrolling().y: " << gameManager::get_instance()->get_current_map_obj()->getMapScrolling().y << std::endl;
+        //std::cout << ">>>> show::char_update_real_position - realPosition.y: " << realPosition.y << ", pos.y: " << position.y << ", gameManager::get_instance()->get_current_map_obj()->getMapScrolling().y: " << GameManager::get_instance()->get_current_map_obj()->getMapScrolling().y << std::endl;
     } else {
 		realPosition.x = position.x;
 		realPosition.y = position.y;
@@ -253,7 +253,7 @@ void character::charMove() {
 					state.animation_timer = 0;
                 }
                 if (state.animation_type != ANIM_TYPE_GOT_ITEM && state.animation_type != ANIM_TYPE_WALK && state.animation_type != ANIM_TYPE_JUMP && state.animation_type != ANIM_TYPE_SLIDE && state.animation_type != ANIM_TYPE_JUMP_ATTACK && state.animation_type != ANIM_TYPE_HIT && (state.animation_type != ANIM_TYPE_WALK_ATTACK || (state.animation_type == ANIM_TYPE_WALK_ATTACK && state.attack_timer+ATTACK_DELAY < TimerView::get_instance()->getTimer()))) {
-                    std::cout << "SET-ANIM_TYPE_WALK #4" << std::endl;
+                    //std::cout << "SET-ANIM_TYPE_WALK #4" << std::endl;
                     set_animation_type(ANIM_TYPE_WALK);
 				}
 				moved = true;
@@ -1242,9 +1242,16 @@ void character::show_sprite_graphic(short direction, short type, short frame_n, 
         }
     }
     if (_progressive_appear_pos == 0) {
-        ImageView::get_instance()->renderImageAt(frame_pos.x, frame_pos.y, *frame_surface);
+        if (rotated_graphic_frame.texture != nullptr) {
+            //if (!is_player()) std::cout << "CHAR::SHOW[" << name << "] - rotated_graphic_frame.w[" << rotated_graphic_frame.surface->w << "]" << std::endl;
+            ImageView::get_instance()->renderImageAt(frame_pos.x, frame_pos.y, rotated_graphic_frame);
+        } else {
+            //if (!is_player()) std::cout << "CHAR::SHOW[" << name << "] - NORMAL" << std::endl;
+            ImageView::get_instance()->renderImageAt(frame_pos.x, frame_pos.y, *frame_surface);
+        }
     } else {
         int diff_y = frameSize.height-_progressive_appear_pos;
+
         ImageView::get_instance()->renderTexturePortionAt(0, 0, frameSize.width, (frameSize.height-_progressive_appear_pos), frame_pos.x, frame_pos.y-diff_y, frame_surface->texture);
         _progressive_appear_pos--;
         if (_progressive_appear_pos == 0) {
@@ -1387,19 +1394,7 @@ bool character::gravity(bool boss_demo_mode=false)
 	}
 
 
-	if (is_in_stairs_frame()) {
-        // TODO: must be a list //
-        GameEnemy* npc_touch = GameManager::get_instance()->get_current_map_obj()->collision_player_npcs(this, 0, 0);
-        if (npc_touch != nullptr) {
-            if (npc_touch->get_size().height > this->get_size().height) {
-                damage(TOUCH_DAMAGE_SMALL, false);
-            } else {
-                damage(TOUCH_DAMAGE_BIG, false);
-            }
-            if (_was_hit == true) {
-                npc_touch->hit_player();
-            }
-        }
+    if (is_in_stairs_frame() && (get_anim_type() == ANIM_TYPE_HIT || get_anim_type() == ANIM_TYPE_HIT_SPECIAL)) {
         reset_gravity_speed();
         return false;
 	}
@@ -1757,25 +1752,25 @@ bool character::slide(st_float_position mapScrolling)
     // releasing down (or dash button) interrupts the slide
     if (moveCommands.dash != 1 && state.animation_type == ANIM_TYPE_SLIDE && (map_lock == BLOCK_UNBLOCKED || map_lock == BLOCK_WATER) && (map_lock_above == BLOCK_UNBLOCKED || map_lock_above == BLOCK_WATER)) {
         if (did_hit_ground) {
-            if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #Y.2" << std::endl;
+            //if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #Y.2" << std::endl;
             set_animation_type(ANIM_TYPE_STAND);
         } else {
             set_animation_type(ANIM_TYPE_JUMP);
         }
-        if (is_player()) std::cout << "CHAR::SLIDE LEAVE #1.2" << std::endl;
+        //if (is_player()) std::cout << "CHAR::SLIDE LEAVE #1.2" << std::endl;
         return false;
     }
 
 
     if (state.slide_distance > TILESIZE*SLIDE_TILES_MAX_DISTANCE && (map_lock == BLOCK_UNBLOCKED || map_lock == BLOCK_WATER) && (map_lock_above == BLOCK_UNBLOCKED || map_lock_above == BLOCK_WATER)) {
         if (did_hit_ground == true) {
-            if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #Y.3" << std::endl;
+            //if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #Y.3" << std::endl;
             set_animation_type(ANIM_TYPE_STAND);
         } else {
             set_animation_type(ANIM_TYPE_JUMP);
         }
         state.slide_distance = 0;
-        if (is_player()) std::cout << "CHAR::SLIDE LEAVE #1.3" << std::endl;
+        //if (is_player()) std::cout << "CHAR::SLIDE LEAVE #1.3" << std::endl;
         return false;
     }
 
@@ -1804,16 +1799,16 @@ bool character::slide(st_float_position mapScrolling)
     }
 
     // if there is no ground, interrupts slide
-    std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    //std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     st_rectangle hitbox_temp = get_hitbox();
-    std::cout << "hitbox x[" << hitbox_temp.x << "], y[" << hitbox_temp.y << "], w[" << hitbox_temp.w << "], h[" << hitbox_temp.h << "], py[" << position.y << "], frame.h[" << frameSize.height << "]" << std::endl;
+    //std::cout << "hitbox x[" << hitbox_temp.x << "], y[" << hitbox_temp.y << "], w[" << hitbox_temp.w << "], h[" << hitbox_temp.h << "], py[" << position.y << "], frame.h[" << frameSize.height << "]" << std::endl;
     st_map_collision map_col_fall = map_collision(0, 4, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
     int fall_map_lock = map_col_fall.block;
-    std::cout << "character::slide - fall_map_lock: " << fall_map_lock << std::endl;
-    std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+    //std::cout << "character::slide - fall_map_lock: " << fall_map_lock << std::endl;
+    //std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
 
     if (can_air_dash() == false && (fall_map_lock == BLOCK_UNBLOCKED || fall_map_lock == BLOCK_WATER)) {
-        if (is_player()) std::cout << "CHAR::RESET_TO_JUMP #A.3" << std::endl;
+        //if (is_player()) std::cout << "CHAR::RESET_TO_JUMP #A.3" << std::endl;
         set_animation_type(ANIM_TYPE_JUMP);
         state.slide_distance = 0;
         return false;
@@ -1822,21 +1817,21 @@ bool character::slide(st_float_position mapScrolling)
     // check if trying to leave screen LEFT
     if (state.direction == ANIM_DIRECTION_LEFT && position.x <= 0) {
         state.slide_distance = 0;
-        if (is_player()) std::cout << "CHAR::SLIDE LEAVE #1.4" << std::endl;
+        //if (is_player()) std::cout << "CHAR::SLIDE LEAVE #1.4" << std::endl;
         return false;
     }
 
     // check if trying to leave screen RIGHT
     if (is_player() == true && (realPosition.x + frameSize.width/2) > RES_W) {
         state.slide_distance = 0;
-        if (is_player()) std::cout << "CHAR::SLIDE LEAVE #1.5" << std::endl;
+        //if (is_player()) std::cout << "CHAR::SLIDE LEAVE #1.5" << std::endl;
         return false;
     }
 
     // end of map
     if (state.direction == ANIM_DIRECTION_RIGHT && position.x + frameSize.width > GameManager::get_instance()->get_map_size().width * TILESIZE) {
         state.slide_distance = 0;
-        if (is_player()) std::cout << "CHAR::SLIDE LEAVE #1.6" << std::endl;
+        //if (is_player()) std::cout << "CHAR::SLIDE LEAVE #1.6" << std::endl;
         return false;
     }
 
@@ -1859,7 +1854,7 @@ bool character::slide(st_float_position mapScrolling)
         st_map_collision map_col = map_collision(temp_i, -3, mapScrolling);
         mapLockAfter = map_col.block;
 
-        std::cout << "SLIDE - DEBUG i[" << i << "], map_col.terrain_type[" << map_col.terrain_type << "], map_col.block[" << map_col.block << "]" << std::endl;
+        //std::cout << "SLIDE - DEBUG i[" << i << "], map_col.terrain_type[" << map_col.terrain_type << "], map_col.block[" << map_col.block << "]" << std::endl;
 
         bool is_on_slope = isOnSlope(temp_i);
 
@@ -1870,7 +1865,7 @@ bool character::slide(st_float_position mapScrolling)
             res_move_x = temp_i*0.8;
             break;
         } else if (is_on_slope == true) {
-            std::cout << "SLIDE - DEBUG i[" << i << "] - SLOPE" << std::endl;
+            //std::cout << "SLIDE - DEBUG i[" << i << "] - SLOPE" << std::endl;
             mapLockAfter = BLOCK_UNBLOCKED;
             res_move_x = temp_i;
             break;
@@ -1879,13 +1874,13 @@ bool character::slide(st_float_position mapScrolling)
 
 
     if (res_move_x != 0 && (mapLockAfter == BLOCK_UNBLOCKED || mapLockAfter == BLOCK_WATER)) {
-        std::cout << "SLIDE - EXECUTE SLIPE" << std::endl;
+        //std::cout << "SLIDE - EXECUTE SLIPE" << std::endl;
         position.x += res_move_x;
         moved_dist.x += res_move_x;
         state.slide_distance += abs((float)res_move_x);
     } else {
-        std::cout << "SLIDE::BLOCKED - res_move_x[" << res_move_x << "], mapLockAfter[" << mapLockAfter << "]" << std::endl;
-        if (is_player()) std::cout << "CHAR::RESET_TO_JUMP #A.4" << std::endl;
+        //std::cout << "SLIDE::BLOCKED - res_move_x[" << res_move_x << "], mapLockAfter[" << mapLockAfter << "]" << std::endl;
+        //if (is_player()) std::cout << "CHAR::RESET_TO_JUMP #A.4" << std::endl;
         if (state.animation_type == ANIM_TYPE_SLIDE) {
             set_animation_type(ANIM_TYPE_JUMP);
         }
@@ -1907,13 +1902,13 @@ bool character::jump(int jumpCommandStage, st_float_position mapScrolling)
     }
 
     if (state.animation_type == ANIM_TYPE_HIT) {
-        std::cout << "JUMP LEAVE #1" << std::endl;
+        //std::cout << "JUMP LEAVE #1" << std::endl;
         return false;
     }
 
     // can't jump while on air dash
     if (state.animation_type == ANIM_TYPE_SLIDE && hit_ground() == false) {
-        std::cout << "JUMP LEAVE #2" << std::endl;
+        //std::cout << "JUMP LEAVE #2" << std::endl;
         return false;
     }
 
@@ -1928,10 +1923,10 @@ bool character::jump(int jumpCommandStage, st_float_position mapScrolling)
                 set_animation_type(ANIM_TYPE_JUMP);
                 _is_falling = true;
                 _stairs_falling_timer = TimerView::get_instance()->getTimer() + STAIRS_GRAB_TIMEOUT; // avoid player entering stairs immediatlly after jumping from it
-                std::cout << "JUMP OUT OF STAIRS #1" << std::endl;
+                //std::cout << "JUMP OUT OF STAIRS #1" << std::endl;
                 return false;
             } else {
-                std::cout << "JUMP OUT OF STAIRS #2" << std::endl;
+                //std::cout << "JUMP OUT OF STAIRS #2" << std::endl;
                 _obj_jump.interrupt();
                 if (_force_jump == true) {
                     _force_jump = false;
@@ -2966,7 +2961,7 @@ bool character::get_item(object_collision& obj_info)
 	bool res = false;
 	// deal with non-blocking items
 	if (obj_info._object != nullptr && obj_info._object->finished() == false) {
-        if (obj_info._object->get_name() != "Treasure Chest") std::cout << "character::get_item::START [" << obj_info._object->get_name() << "]" << std::endl;
+        //if (obj_info._object->get_name() != "Treasure Chest") std::cout << "character::get_item::START [" << obj_info._object->get_name() << "]" << std::endl;
         switch (obj_info._object->get_type()) {
             case OBJ_ENERGY_PILL_SMALL:
                 recharge(ENERGY_TYPE_HP, ENERGY_ITEM_SMALL);

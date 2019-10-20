@@ -1803,6 +1803,11 @@ st_position GameManager::get_player_position()
     return st_position(player1.getPosition().x, player1.getPosition().y);
 }
 
+st_position GameManager::get_player_center_position()
+{
+    return st_position(player1.get_real_position().x+player1.get_size().width/2, player1.get_real_position().y+player1.get_size().height/2);
+}
+
 st_size GameManager::get_player_size()
 {
     return player1.get_size();
@@ -2108,6 +2113,14 @@ st_size GameManager::calc_area_tile_size(int area_n)
 
     return st_size(map_tiles_w, map_tiles_h);
 
+}
+
+bool GameManager::is_special_boss(std::string name)
+{
+    if (special_bosses_list.find(name) != special_bosses_list.end()) {
+        return true;
+    }
+    return false;
 }
 
 st_dialog_status *GameManager::get_dialog_status()

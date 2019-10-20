@@ -285,10 +285,17 @@ void ImageView::zoom_image(st_position dest, st_imageData &picture, int smooth)
 void ImageView::rotate_image(st_imageData &picture, double angle)
 {
     SDL_Surface *rotozoom_picture;
+    if (picture.texture == nullptr) {
+        std::cout << "ImageView::rotate_image - WARNING: origin texture is null #1" << std::endl;
+    }
 
+    std::cout << "ImageView::rotate_image - WARNING: angle[" << angle << "]" << std::endl;
     if ((rotozoom_picture = rotozoomSurface(picture.surface, angle, 1.0, true)) != nullptr) {
         if (picture.texture != nullptr) {
+            std::cout << "ImageView::rotate_image - WARNING: erase origin texture" << std::endl;
             SDL_DestroyTexture(picture.texture);
+        } else {
+            std::cout << "ImageView::rotate_image - WARNING: origin texture is null #2" << std::endl;
         }
         picture.texture = SDL_CreateTextureFromSurface(gRenderer, rotozoom_picture);
     } else {
@@ -296,22 +303,17 @@ void ImageView::rotate_image(st_imageData &picture, double angle)
     }
 }
 
-void ImageView::rotated_from_image(st_imageData &picture, st_imageData &dest, double angle)
+st_imageData ImageView::rotated_from_image(st_imageData &picture, double angle)
 {
+    st_imageData dest;
     SDL_Surface *rotozoom_picture;
     if ((rotozoom_picture = rotozoomSurface(picture.surface, angle, 1.0, true)) != nullptr) {
-        if (dest.surface != nullptr) {
-            SDL_FreeSurface(dest.surface);
-        }
         dest.surface = rotozoom_picture;
-        if (picture.texture != nullptr) {
-            SDL_DestroyTexture(picture.texture);
-        }
-        picture.texture = SDL_CreateTextureFromSurface(gRenderer, rotozoom_picture);
+        dest.texture = SDL_CreateTextureFromSurface(gRenderer, rotozoom_picture);
     } else {
         std::cout << "GRAPHLIB::rotate_image - Error generating rotated image" << std::endl;
     }
-
+    return dest;
 }
 
 void ImageView::draw_explosion(st_position pos)
@@ -448,6 +450,17 @@ void ImageView::reset_scale()
     screen_scale_adjust.y = RES_H-(RES_H*screen_scale);
     screen_scale_adjust.w = RES_W;
     screen_scale_adjust.h = RES_H;
+}
+
+st_position ImageView::calc_rotated_position(st_imageData &original, st_imageData &rotated)
+{
+    int previous_w = original.surface->w;
+    int previous_h = original.surface->h;
+    st_position position;
+    position.x += (previous_w - rotated.surface->w)/2;
+    position.y += (previous_h - rotated.surface->h)/2;
+
+    return position;
 }
 
 

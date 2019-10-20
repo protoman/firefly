@@ -74,7 +74,7 @@ void MapController::loadMap()
                         int tile_y = n + j_count*AREA_ROOM_H;
                         int tile_type = SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n].locked;
                         area_tile_map.insert(std::pair<st_position, file_v6_room_tile>(st_position(tile_x, tile_y), SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n]));
-                        if (tile_type != 0) { std::cout << "tile[" << i << "][" << j << "].type[" << tile_type << "]" << std::endl; }
+                        //if (tile_type != 0) { std::cout << "tile[" << i << "][" << j << "].type[" << tile_type << "]" << std::endl; }
                         if (tile_type == TERRAIN_WATER) {
                             level3_water_tiles.push_back(st_position(tile_x, tile_y));
                         }
@@ -395,13 +395,13 @@ void MapController::init_animated_tiles()
                         pos_origin.x = underlay_tile.x;
                         pos_origin.y = underlay_tile.y;
 
-                        std::cout << "FOUND-ANIM-TYPE - underlay_tile[" << underlay_tile.x << "][" << underlay_tile.y << "]" << std::endl;
+                        //std::cout << "FOUND-ANIM-TYPE - underlay_tile[" << underlay_tile.x << "][" << underlay_tile.y << "]" << std::endl;
 
 
                         int anim_tile_id = pos_origin.x;
                         pos_destiny.y = j*TILESIZE + map_y*AREA_ROOM_H;
                         pos_destiny.x = i*TILESIZE + map_x*AREA_ROOM_W;
-                        std::cout << "MAP::showMap::place_anim_tile - pos_destiny[" << pos_destiny.x << "][" << pos_destiny.x << "]" << std::endl;
+                        //std::cout << "MAP::showMap::place_anim_tile - pos_destiny[" << pos_destiny.x << "][" << pos_destiny.x << "]" << std::endl;
                         anim_tile_list.push_back(anim_tile_desc(anim_tile_id, pos_destiny));
 
 
@@ -863,11 +863,11 @@ void MapController::load_map_npcs()
 {
 
     // remove all elements currently in the list
-    if (_npc_list.size() > 0) {
-        _npc_list.back().clean_character_graphics_list();
+    if (map_enemy_list.size() > 0) {
+        map_enemy_list.back().clean_character_graphics_list();
     }
-    while (!_npc_list.empty()) {
-        _npc_list.pop_back();
+    while (!map_enemy_list.empty()) {
+        map_enemy_list.pop_back();
     }
 
 
@@ -900,7 +900,7 @@ void MapController::load_map_npcs()
                 set_map_enemy_static_background(SharedData::get_instance()->FILEPATH + std::string("images/sprites/enemies/backgrounds/") + static_bg, new_npc.get_bg_position());
             }
 
-            _npc_list.push_back(new_npc); // insert new npc at the list-end
+            map_enemy_list.push_back(new_npc); // insert new npc at the list-end
             //std::cout << "(A) ######### _npc_list.add, size[" << _npc_list.size() << "]" << std::endl;
 
         }
@@ -1246,7 +1246,7 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos)
 int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
 {
 
-    std::cout << ">>>>>> MAP::get_first_lock_on_bottom - START - x_pos[" << x_pos << "], y_pos[" << y_pos << "]" << std::endl;
+    //std::cout << ">>>>>> MAP::get_first_lock_on_bottom - START - x_pos[" << x_pos << "], y_pos[" << y_pos << "]" << std::endl;
 
     int tilex = x_pos/TILESIZE;
     int above_tiles_to_test = h/TILESIZE;
@@ -1264,7 +1264,7 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
         initial_y = y_pos/TILESIZE;
     }
 
-    std::cout << ">>>>>> MAP::get_first_lock_on_bottom - initial_y[" << initial_y << "], above_tiles_to_test[" << (above_tiles_to_test+1) << "]" << std::endl;
+    //std::cout << ">>>>>> MAP::get_first_lock_on_bottom - initial_y[" << initial_y << "], above_tiles_to_test[" << (above_tiles_to_test+1) << "]" << std::endl;
     for (int i=initial_y; i>=above_tiles_to_test+1; i--) { // ignore here first tiles, as we need to test them next
 
         //std::cout << "get_first_lock_on_bottom, i[" << i << "]" << std::endl;
@@ -1276,9 +1276,9 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
                 for (int k=0; k<right_tiles_to_test; k++) {
                     int map_lock2 = getMapPointLock(st_position(tilex+k, j));
 
-                    std::cout << ">>>>>> MAP::get_first_lock_on_bottom - test-point[" << (tilex+k) << "][" << j << "].terrain[" << map_lock2 << "], above_tiles_to_test[" << above_tiles_to_test << "],right_tiles_to_test[" << right_tiles_to_test << "]" << std::endl;
+                    //std::cout << ">>>>>> MAP::get_first_lock_on_bottom - test-point[" << (tilex+k) << "][" << j << "].terrain[" << map_lock2 << "], above_tiles_to_test[" << above_tiles_to_test << "],right_tiles_to_test[" << right_tiles_to_test << "]" << std::endl;
                     if (map_lock2 != TERRAIN_UNBLOCKED && map_lock2 != TERRAIN_WATER) { // found a stop point, now check above ones
-                        std::cout << ">>>>>> MAP::get_first_lock_on_bottom::BAD-POINT - test-point[" << (tilex+k) << "][" << j << "].terrain[" << map_lock2 << "], above_tiles_to_test[" << above_tiles_to_test << "],right_tiles_to_test[" << right_tiles_to_test << "]" << std::endl;
+                        //std::cout << ">>>>>> MAP::get_first_lock_on_bottom::BAD-POINT - test-point[" << (tilex+k) << "][" << j << "].terrain[" << map_lock2 << "], above_tiles_to_test[" << above_tiles_to_test << "],right_tiles_to_test[" << right_tiles_to_test << "]" << std::endl;
                         found_bad_point = true;
                         break;
                     }
@@ -1288,12 +1288,12 @@ int MapController::get_first_lock_on_bottom(int x_pos, int y_pos, int w, int h)
                 }
             }
             if (found_bad_point == false) {
-                std::cout << ">>>>>> MAP::get_first_lock_on_bottom - good-point[" << (i-1) << "]" << std::endl;
+                //std::cout << ">>>>>> MAP::get_first_lock_on_bottom - good-point[" << (i-1) << "]" << std::endl;
                 return i-1;
             }
         }
     }
-    std::cout << ">>>>>> MAP::get_first_lock_on_bottom - FAIL" << std::endl;
+    //std::cout << ">>>>>> MAP::get_first_lock_on_bottom - FAIL" << std::endl;
     return 0;
 }
 
@@ -1417,7 +1417,7 @@ void MapController::reset_enemies_timers()
 {
     //std::cout << ">>>>>> MAP::reset_enemies_timers - _npc_list.size: " << _npc_list.size() << std::endl;
     std::vector<GameEnemy>::iterator enemy_it;
-    for (enemy_it = _npc_list.begin(); enemy_it != _npc_list.end(); enemy_it++) {
+    for (enemy_it = map_enemy_list.begin(); enemy_it != map_enemy_list.end(); enemy_it++) {
         (*enemy_it).reset_timers(); // TODO: must pass scroll map to npcs somwhow...
     }
 }
@@ -1480,7 +1480,7 @@ bool MapController::have_player_object()
 bool MapController::subboss_alive_on_left(short tileX)
 {
     std::vector<GameEnemy>::iterator npc_it;
-    for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
+    for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
         GameEnemy* npc_ref = &(*npc_it);
         if ((npc_ref->is_boss() == true || npc_ref->is_subboss() == true) && npc_ref->is_dead() == false) {
             std::cout << "Opa, achou um boss/sub-boss!" << std::endl;
@@ -2114,12 +2114,12 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
                 return;
             }
         } else if (charObj->get_platform()->is_hidden() == true) {
-            std::cout << ">> OUT OF PLATFORM #2" << std::endl;
+            //std::cout << ">> OUT OF PLATFORM #2" << std::endl;
             charObj->set_platform(nullptr);
         } else {
             _platform_leave_counter++;
             if (_platform_leave_counter > 2) {
-                std::cout << ">> OUT OF PLATFORM #3" << std::endl;
+                //std::cout << ">> OUT OF PLATFORM #3" << std::endl;
                 charObj->set_platform(nullptr);
                 _platform_leave_counter = 0;
             }
@@ -2143,7 +2143,7 @@ object_collision MapController::get_obj_collision()
 void MapController::clean_map_npcs_projectiles()
 {
     std::vector<GameEnemy>::iterator npc_it;
-    for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
+    for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
         GameEnemy* npc_ref = &(*npc_it);
         npc_ref->clean_projectiles();
     }
@@ -2196,9 +2196,10 @@ GameEnemy* MapController::collision_player_npcs(character* playerObj, const shor
     p_rect = playerObj->get_hitbox();
 
     //std::cout << "collision_player_npcs - p1.x: " << p1.x << ", p1.y: " << p1.y << std::endl;
+    collision_detection rect_collision_obj;
 
     std::vector<GameEnemy>::iterator npc_it;
-    for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
+    for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
         GameEnemy* npc_ref = &(*npc_it);
         if (npc_ref->is_player_friend() == true) {
             //std::cout << "collision_player_npcs - FRIEND" << std::endl;
@@ -2222,33 +2223,45 @@ GameEnemy* MapController::collision_player_npcs(character* playerObj, const shor
         }
 
 
-        npc_rect = npc_ref->get_hitbox();
-
-        collision_detection rect_collision_obj;
-        if (rect_collision_obj.rect_overlap(npc_rect, p_rect) == true) {
-
-            if (npc_ref->get_is_npc() == true) {
-                // NPC dialog //
-                if (InputController::get_instance()->p1_input[BTN_UP] == 1) {
-                    std::vector<std::string> message1;
-                    message1.push_back(std::string("Welcome to Corneria"));
-                    st_dialog dialog1;
-                    dialog1.msgs = message1;
-                    GameManager::get_instance()->add_queue_dialog(dialog1);
-
-                    std::vector<std::string> message2;
-                    message2.push_back(std::string("I like Swords!"));
-                    st_dialog dialog2;
-                    dialog2.msgs = message2;
-                    GameManager::get_instance()->add_queue_dialog(dialog2);
-                } else {
-                    draw::get_instance()->draw_game_button(playerObj->get_real_position().x+playerObj->get_size().width/2, playerObj->get_real_position().y-20, INPUT_IMAGES_DPAD_UP);
+        // special-bosses have multiple hit areas, so we grab it instead of a single rectangle
+        if (GameManager::get_instance()->is_special_boss(npc_ref->get_name())) {
+            if (npc_ref->get_name() == "Rotate Test") {
+                std::vector<st_rectangle> collision_list = npc_ref->get_collision_list_boss_001();
+                for (unsigned int i=0; i<collision_list.size(); i++) {
+                    if (rect_collision_obj.rect_overlap(collision_list.at(i), p_rect) == true) {
+                        return npc_ref;
+                    }
                 }
-                return nullptr;
             }
+        } else {
+
+            npc_rect = npc_ref->get_hitbox();
+
+            if (rect_collision_obj.rect_overlap(npc_rect, p_rect) == true) {
+
+                if (npc_ref->get_is_npc() == true) {
+                    // NPC dialog //
+                    if (InputController::get_instance()->p1_input[BTN_UP] == 1) {
+                        std::vector<std::string> message1;
+                        message1.push_back(std::string("Welcome to Corneria"));
+                        st_dialog dialog1;
+                        dialog1.msgs = message1;
+                        GameManager::get_instance()->add_queue_dialog(dialog1);
+
+                        std::vector<std::string> message2;
+                        message2.push_back(std::string("I like Swords!"));
+                        st_dialog dialog2;
+                        dialog2.msgs = message2;
+                        GameManager::get_instance()->add_queue_dialog(dialog2);
+                    } else {
+                        draw::get_instance()->draw_game_button(playerObj->get_real_position().x+playerObj->get_size().width/2, playerObj->get_real_position().y-20, INPUT_IMAGES_DPAD_UP);
+                    }
+                    return nullptr;
+                }
 
 
-            return npc_ref;
+                return npc_ref;
+            }
         }
     }
     return nullptr;
@@ -2274,7 +2287,7 @@ void MapController::collision_player_special_attack(character* playerObj, const 
     p_rect.h = playerObj->get_size().height;
 
     std::vector<GameEnemy>::iterator npc_it;
-    for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
+    for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
         GameEnemy* npc_ref = &(*npc_it);
         if (npc_ref->is_player_friend() == true) {
             continue;
@@ -2317,7 +2330,7 @@ GameEnemy* MapController::find_nearest_npc(st_position pos)
     GameEnemy* min_dist_npc = nullptr;
 
     std::vector<GameEnemy>::iterator npc_it;
-    for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
+    for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
         GameEnemy* npc_ref = &(*npc_it);
         if (npc_ref->is_player_friend() == true) {
             //std::cout << "collision_player_npcs - FRIEND" << std::endl;
@@ -2349,7 +2362,7 @@ GameEnemy *MapController::find_nearest_npc_on_direction(st_position pos, int dir
     GameEnemy* ret = nullptr;
 
     std::vector<GameEnemy>::iterator npc_it;
-    for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
+    for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
         GameEnemy* npc_ref = &(*npc_it);
         if (npc_ref->is_on_visible_screen() == false) {
             continue;
@@ -2420,9 +2433,9 @@ GameEnemy* MapController::spawn_map_npc(short npc_id, st_position npc_pos, short
     if (progressive_span == true) {
         new_npc.set_progressive_appear_pos(new_npc.get_size().height);
     }
-    _npc_spawn_list.push_back(new_npc); // insert new npc at the list-end
+    map_enemy_spawn_list.push_back(new_npc); // insert new npc at the list-end
 
-    GameEnemy* npc_ref = &(_npc_spawn_list.back());
+    GameEnemy* npc_ref = &(map_enemy_spawn_list.back());
 
     int id = npc_ref->get_number();
     std::string npc_name = npc_ref->get_name();
@@ -2435,7 +2448,7 @@ int MapController::child_npc_count(int parent_id)
     int count = 0;
     std::vector<GameEnemy>::iterator npc_it;
     int n = 0;
-    for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
+    for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
         GameEnemy* npc_ref = &(*npc_it);
         //std::cout << "NPC[" << n << "][" << npc_ref->get_name() << "].parent[" << npc_ref->get_parent_id() << ", parent_id[" << parent_id << "]" << std::endl;
         if (npc_ref->is_dead() == false && npc_ref->get_parent_id() == parent_id) {
@@ -2443,7 +2456,7 @@ int MapController::child_npc_count(int parent_id)
         }
         n++;
     }
-    for (npc_it = _npc_spawn_list.begin(); npc_it != _npc_spawn_list.end(); npc_it++) {
+    for (npc_it = map_enemy_spawn_list.begin(); npc_it != map_enemy_spawn_list.end(); npc_it++) {
         GameEnemy* npc_ref = &(*npc_it);
         //std::cout << "NPC.SPANWLIST[" << n << "][" << npc_ref->get_name() << "].parent[" << npc_ref->get_parent_id() << ", parent_id[" << parent_id << "]" << std::endl;
         if (npc_ref->is_dead() == false && npc_ref->get_parent_id() == parent_id) {
@@ -2460,7 +2473,7 @@ void MapController::move_npcs() /// @TODO - check out of screen
     //std::cout << "*************** MapController::showMap - npc_list.size: " << _npc_list.size() << std::endl;
 
     std::vector<GameEnemy>::iterator npc_it;
-    for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
+    for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
 
         GameEnemy* npc_ref = &(*npc_it);
         // check if NPC is outside the visible area
@@ -2553,13 +2566,13 @@ void MapController::move_npcs() /// @TODO - check out of screen
         }
     }
 
-    if (_npc_spawn_list.size() > 0) {
+    if (map_enemy_spawn_list.size() > 0) {
         std::vector<GameEnemy>::iterator npc_it;
-        for (npc_it = _npc_spawn_list.begin(); npc_it != _npc_spawn_list.end(); npc_it++) {
+        for (npc_it = map_enemy_spawn_list.begin(); npc_it != map_enemy_spawn_list.end(); npc_it++) {
             //std::cout << "(B) ######### _npc_list.add, size[" << _npc_list.size() << "]" << std::endl;
-            _npc_list.push_back(*npc_it);
+            map_enemy_list.push_back(*npc_it);
         }
-        _npc_spawn_list.clear();
+        map_enemy_spawn_list.clear();
     }
 }
 
@@ -2570,7 +2583,7 @@ void MapController::show_npcs() /// @TODO - check out of screen
     //std::cout << "%%%%%%%%% MapController::show_npcs - _npc_list.size[" << _npc_list.size() << "]" << std::endl;
 
     std::vector<GameEnemy>::iterator npc_it;
-    for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
+    for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
         GameEnemy* npc_ref = &(*npc_it);
 
         //std::cout << "%%%%%%%%% MapController::show_npcs - show[" << npc_ref->get_name() << "], dead[" << npc_ref->is_dead() << "]" << std::endl;
@@ -2593,7 +2606,7 @@ void MapController::show_npcs() /// @TODO - check out of screen
 void MapController::show_npcs_to_left(int x)
 {
     std::vector<GameEnemy>::iterator npc_it;
-    for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
+    for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
         GameEnemy* npc_ref = &(*npc_it);
         //std::cout << "MAP::show_npcs_to_left[" << npc_ref->get_name() << "], x[" << x << "], npc.x[" << npc_ref->getPosition().x << "]" << std::endl;
         if (npc_ref->is_dead() == false && npc_ref->is_on_visible_screen() && npc_ref->getPosition().x <= x) {
@@ -2726,7 +2739,7 @@ bool MapController::boss_hit_ground(GameEnemy* npc_ref)
 GameEnemy *MapController::get_near_boss()
 {
     std::vector<GameEnemy>::iterator npc_it;
-    for (npc_it = _npc_list.begin(); npc_it != _npc_list.end(); npc_it++) {
+    for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
         GameEnemy* npc_ref = &(*npc_it);
         if (npc_ref->is_boss() == true && npc_ref->is_on_visible_screen() == true) {
             return npc_ref;

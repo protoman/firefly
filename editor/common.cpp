@@ -256,6 +256,20 @@ void common::fill_ai_options_combo(int action, QComboBox *combo)
         dist_list.push_back("10");
         dist_list.push_back("20");
         list = dist_list;
+    } else if (action == AI_ACTION_ROTATE_GRAPHIC) {
+        std::vector<std::string> dist_list;
+        dist_list.push_back("RESTORE ORIGINAL");
+        dist_list.push_back("PLUS 10");
+        dist_list.push_back("PLUS 30");
+        dist_list.push_back("PLUS 45");
+        dist_list.push_back("PLUS 90");
+        dist_list.push_back("PLUS 360");
+        dist_list.push_back("MINUS 10");
+        dist_list.push_back("MINUS 30");
+        dist_list.push_back("MINUS 45");
+        dist_list.push_back("MINUS 90");
+        dist_list.push_back("MINUS 360");
+        list = dist_list;
     } else {
         return;
     }

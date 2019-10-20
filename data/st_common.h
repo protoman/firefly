@@ -352,7 +352,6 @@ struct st_imageData {
     // copy CONSTRUCTOR
     st_imageData(const st_imageData &original)
     {
-
         if (original.surface == nullptr) {
             surface = nullptr;
             texture = nullptr;
@@ -375,7 +374,7 @@ struct st_imageData {
     // assign constructor
     st_imageData& operator=(const st_imageData& original)
     {
-
+        freeGraphic();
         if (original.surface == nullptr) {
             surface = nullptr;
             texture = nullptr;
@@ -391,10 +390,12 @@ struct st_imageData {
 
     void freeGraphic()
     {
-        SDL_FreeSurface(surface);
-        surface = nullptr;
-        SDL_DestroyTexture(texture);
-        texture = nullptr;
+        if (is_null() == false) {
+            SDL_FreeSurface(surface);
+            surface = nullptr;
+            SDL_DestroyTexture(texture);
+            texture = nullptr;
+        }
     }
 
     bool is_null() {

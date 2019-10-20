@@ -75,6 +75,7 @@ public:
     void change_player_position(short xinc, short yinc);
     void set_player_anim_type(ANIM_TYPE anim_type);
     st_position get_player_position();
+    st_position get_player_center_position();
     st_size get_player_size();
     void set_player_direction(Uint8 direction);
     void map_present_boss(bool show_dialog, bool is_static_boss);
@@ -126,6 +127,7 @@ public:
 
     st_dialog_status* get_dialog_status();
     std::vector<st_dialog>* get_dialog_queue();
+    bool is_special_boss(std::string name);
 
 
 private:
@@ -216,6 +218,8 @@ private:
     e_GAME_INTERRUPT_MODE interrupt_mode = GAME_INTERRUPT_MODE_NONE;
 
     bool _is_paused = false;
+
+    std::set<std::string> special_bosses_list = {"Rotate Test"};
 
 
 #ifdef PSP

@@ -27,6 +27,7 @@ SOURCES += \
     aux_tools/ability_name.cpp \
     aux_tools/jsoncpp.cpp \
     character/GameEnemy.cpp \
+    character/custom/ai_boss_001.cpp \
     character/gamenpc.cpp \
         main.cpp \
     text/i18ntext.cpp \
@@ -75,6 +76,7 @@ HEADERS += \
     aux_tools/json/json-forwards.h \
     aux_tools/json/json.h \
     character/GameEnemy.h \
+    character/custom/ai_boss_001.h \
     character/gamenpc.h \
     file/v4/file_save_v4.h \
     file/v5/struct_file_area_data.h \

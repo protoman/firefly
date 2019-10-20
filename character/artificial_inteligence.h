@@ -105,6 +105,8 @@ public:
      */
     void execute_ai();
 
+    bool execute_special_ai(); // hardcoded ones for bosses and such
+
     void hit_player();
 
     bool is_teleporting();
@@ -112,6 +114,8 @@ public:
     bool get_is_npc();
 
     int get_dialog_id();
+
+    void show();
 
 
 protected:
@@ -244,6 +248,8 @@ protected:
 
     void execute_ai_wait_random_time();
 
+    void execute_ai_rotate_graphic();
+
     /**
      * @brief moves to a point, returns true when point was reached or can't reach the target
      * @param dest_point point of destiny
@@ -278,6 +284,16 @@ protected:
 
 
 
+    // =============================================================================================================== //
+    //                             CUSTOM AI FILES DECLARED IN EXTERNAL CPP                                            //
+    // =============================================================================================================== //
+    void boss_001_init();
+    void boss_001_execute_ai();
+    void boss_001_show();
+public:
+    std::vector<st_rectangle> get_collision_list_boss_001();
+
+    // =============================================================================================================== //
 
 protected:
     st_size distance; /**< TODO */
@@ -320,6 +336,21 @@ protected:
     int radius;
     short int jump_attack_type;                               // used by jump attack to store attack-type, if any. otherwise, it is set as -1
     bool did_hit_player;                                 // when player collides with this enemy, it will set this flag as on, so the enemy knows it
+    int rotated_graphic_total = 0;
+    int rotated_graphic_target = 0;
+    long rotated_timer = 0;
+
+    int special_ai_status = 0;
+
+    // =============================================================================================================== //
+    //                             CUSTOM MEMBERS USED ONLY BY BOSSES CLASSES                                          //
+    // =============================================================================================================== //
+    st_imageData img_boss_body;
+    st_imageData img_boss_head;
+    st_imageData img_boss_segment;
+    std::map<int, float> boss_status_list;
+    std::map<int, st_imageData> boss_image_list;
+    std::map<int, std::vector<st_imageData>> boss_sprite_image_list;
 };
 
 #endif // ARTIFICIAL_INTELIGENCE_H

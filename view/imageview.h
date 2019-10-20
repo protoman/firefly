@@ -182,7 +182,7 @@ public:
 
     void zoom_image(st_position dest, st_imageData& picture, int smooth);
     void rotate_image(st_imageData& picture, double angle);
-    void rotated_from_image(st_imageData& picture, st_imageData& dest, double angle);
+    st_imageData rotated_from_image(st_imageData& picture, double angle);
 
 
     void draw_explosion(st_position pos);
@@ -204,6 +204,8 @@ public:
     void inc_scale(float inc);
     float get_scale();
     void reset_scale();
+
+    st_position calc_rotated_position(st_imageData& original, st_imageData& rotated);
 
 
 private:

@@ -97,7 +97,7 @@ void classjump::interrupt()
     }
     if (state != JUMPUP) {
         state = JUMPDOWN;
-        std::cout << "%%%%%%%%%%%%%%%%% OBJUMP RESET SPEED #4 %%%%%%%%%%%%%%%%%%" << std::endl;
+        //std::cout << "%%%%%%%%%%%%%%%%% OBJUMP RESET SPEED #4 %%%%%%%%%%%%%%%%%%" << std::endl;
         speed = 0;
         return;
     }

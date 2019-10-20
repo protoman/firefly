@@ -54,6 +54,7 @@ SOURCES       = ../GameManager.cpp \
 		../aux_tools/ability_name.cpp \
 		../aux_tools/jsoncpp.cpp \
 		../character/GameEnemy.cpp \
+		../character/custom/ai_boss_001.cpp \
 		../character/gamenpc.cpp \
 		../main.cpp \
 		../text/i18ntext.cpp \
@@ -99,6 +100,7 @@ OBJECTS       = GameManager.o \
 		ability_name.o \
 		jsoncpp.o \
 		GameEnemy.o \
+		ai_boss_001.o \
 		gamenpc.o \
 		main.o \
 		i18ntext.o \
@@ -328,6 +330,7 @@ DIST          = ../TODO \
 		aux_tools/json/json-forwards.h \
 		aux_tools/json/json.h \
 		character/GameEnemy.h \
+		character/custom/ai_boss_001.h \
 		character/gamenpc.h \
 		file/v4/file_save_v4.h \
 		file/v5/struct_file_area_data.h \
@@ -393,6 +396,7 @@ DIST          = ../TODO \
 		../aux_tools/ability_name.cpp \
 		../aux_tools/jsoncpp.cpp \
 		../character/GameEnemy.cpp \
+		../character/custom/ai_boss_001.cpp \
 		../character/gamenpc.cpp \
 		../main.cpp \
 		../text/i18ntext.cpp \
@@ -903,6 +907,7 @@ GameManager.o: ../GameManager.cpp ../GameManager.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/imageview.h \
 		../view/animation.h \
 		../view/timerview.h \
@@ -914,8 +919,7 @@ GameManager.o: ../GameManager.cpp ../GameManager.h \
 		../aux_tools/fps_control.h \
 		../view/textview.h \
 		../options/pausemenu.h \
-		../view/ingame_presentation.h \
-		../text/i18ntext.h
+		../view/ingame_presentation.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GameManager.o ../GameManager.cpp
 
 ability_name.o: ../aux_tools/ability_name.cpp ../aux_tools/ability_name.h \
@@ -973,6 +977,7 @@ GameEnemy.o: ../character/GameEnemy.cpp ../character/GameEnemy.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/imageview.h \
 		../view/animation.h \
 		../view/timerview.h \
@@ -983,6 +988,26 @@ GameEnemy.o: ../character/GameEnemy.cpp ../character/GameEnemy.h \
 		../scenes/dialogs.h \
 		../aux_tools/fps_control.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GameEnemy.o ../character/GameEnemy.cpp
+
+ai_boss_001.o: ../character/custom/ai_boss_001.cpp ../character/artificial_inteligence.h \
+		../character/character.h \
+		../data/st_common.h \
+		../defines.h \
+		../file/format/st_characterState.h \
+		../file/format/st_teleporter.h \
+		../file/format/st_projectile.h \
+		../file/format/st_platform.h \
+		../projectilelib.h \
+		../aux_tools/trajectory_parabola.h \
+		../character/movement/jump.h \
+		../character/movement/inertia.h \
+		../character/character_animation.h \
+		../file/v4/file_game_v4.h \
+		../file/v4/file_save_v4.h \
+		../file/v4/file_config_v4.h \
+		../file/v4/file_scene_v4.h \
+		../file/format/st_hitPoints.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ai_boss_001.o ../character/custom/ai_boss_001.cpp
 
 gamenpc.o: ../character/gamenpc.cpp ../character/gamenpc.h \
 		../character/GameEnemy.h \
@@ -1026,6 +1051,7 @@ main.o: ../main.cpp ../data/shareddata.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../GameManager.h \
 		../character/classplayer.h \
 		../character/character.h \
@@ -1068,7 +1094,24 @@ main.o: ../main.cpp ../data/shareddata.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../main.cpp
 
 i18ntext.o: ../text/i18ntext.cpp ../text/i18ntext.h \
-		../defines.h
+		../defines.h \
+		../data/shareddata.h \
+		../file/v4/file_config_v4.h \
+		../data/st_common.h \
+		../file/v4/file_game_v4.h \
+		../file/v4/file_save_v4.h \
+		../file/v4/file_scene_v4.h \
+		../file/v4/file_anim_block.h \
+		../file/v5/struct_file_map.h \
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
+		../file/v5/struct_file_game_area_map.h \
+		../file/v5/struct_file_area_data.h \
+		../file/v6/file_level_v6.h \
+		../file/v6/file_room_v6.h \
+		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
+		../file/v6/file_game_object_state.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o i18ntext.o ../text/i18ntext.cpp
 
 ingame_presentation.o: ../view/ingame_presentation.cpp ../view/ingame_presentation.h \
@@ -1125,7 +1168,8 @@ textview.o: ../view/textview.cpp ../view/textview.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
-		../file/v6/file_game_object_state.h
+		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o textview.o ../view/textview.cpp
 
 imageview.o: ../view/imageview.cpp ../view/imageview.h \
@@ -1147,6 +1191,7 @@ imageview.o: ../view/imageview.cpp ../view/imageview.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/timerview.h \
 		../view/textview.h \
 		../game_mediator.h \
@@ -1175,7 +1220,8 @@ shareddata.o: ../data/shareddata.cpp ../data/shareddata.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
-		../file/v6/file_game_object_state.h
+		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o shareddata.o ../data/shareddata.cpp
 
 soundview.o: ../view/soundview.cpp ../view/soundview.h \
@@ -1196,7 +1242,8 @@ soundview.o: ../view/soundview.cpp ../view/soundview.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
-		../file/v6/file_game_object_state.h
+		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o soundview.o ../view/soundview.cpp
 
 inputcontroller.o: ../controller/inputcontroller.cpp ../controller/inputcontroller.h \
@@ -1218,6 +1265,7 @@ inputcontroller.o: ../controller/inputcontroller.cpp ../controller/inputcontroll
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/timerview.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o inputcontroller.o ../controller/inputcontroller.cpp
 
@@ -1269,7 +1317,8 @@ file_io.o: ../file/file_io.cpp ../file/file_io.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
-		../file/v6/file_game_object_state.h
+		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o file_io.o ../file/file_io.cpp
 
 fio_scenes.o: ../file/fio_scenes.cpp ../file/fio_scenes.h \
@@ -1291,6 +1340,7 @@ fio_scenes.o: ../file/fio_scenes.cpp ../file/fio_scenes.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../aux_tools/exception_manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fio_scenes.o ../file/fio_scenes.cpp
 
@@ -1317,7 +1367,8 @@ fio_strings.o: ../file/fio_strings.cpp ../file/fio_strings.h \
 		../file/v6/file_room_v6.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
-		../file/v6/file_game_object_state.h
+		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fio_strings.o ../file/fio_strings.cpp
 
 mapcontroller.o: ../controller/mapcontroller.cpp ../view/animation.h \
@@ -1341,6 +1392,7 @@ mapcontroller.o: ../controller/mapcontroller.cpp ../view/animation.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/imageview.h \
 		../character/GameEnemy.h \
 		../character/character.h \
@@ -1438,6 +1490,7 @@ artificial_inteligence.o: ../character/artificial_inteligence.cpp ../character/a
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/animation.h \
 		../view/timerview.h \
 		../view/imageview.h \
@@ -1505,6 +1558,7 @@ character.o: ../character/character.cpp ../character/character.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/imageview.h \
 		../view/animation.h \
 		../view/timerview.h \
@@ -1543,6 +1597,7 @@ character_animation.o: ../character/character_animation.cpp ../character/charact
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/timerview.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o character_animation.o ../character/character_animation.cpp
 
@@ -1581,6 +1636,7 @@ classplayer.o: ../character/classplayer.cpp ../character/classplayer.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/soundview.h \
 		../controller/mapcontroller.h \
 		../objects/GameObject.h \
@@ -1625,6 +1681,7 @@ draw.o: ../view/draw.cpp ../view/draw.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/soundview.h \
 		../view/timerview.h \
 		../controller/inputcontroller.h \
@@ -1664,7 +1721,7 @@ draw.o: ../view/draw.cpp ../view/draw.h \
 		../aux_tools/fps_control.h \
 		../view/textview.h \
 		../view/ingame_presentation.h \
-		../text/i18ntext.h
+		../options/pausemenu.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o draw.o ../view/draw.cpp
 
 gfx_sin_wave.o: ../view/gfx_sin_wave.cpp ../data/st_common.h \
@@ -1687,6 +1744,7 @@ gfx_sin_wave.o: ../view/gfx_sin_wave.cpp ../data/st_common.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/timerview.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gfx_sin_wave.o ../view/gfx_sin_wave.cpp
 
@@ -1715,6 +1773,7 @@ option_picker.o: ../view/option_picker.cpp ../view/option_picker.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../controller/inputcontroller.h \
 		../view/timerview.h \
 		../view/imageview.h \
@@ -1775,6 +1834,7 @@ projectilelib.o: ../projectilelib.cpp ../projectilelib.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/imageview.h \
 		../view/animation.h \
 		../view/timerview.h \
@@ -1818,6 +1878,7 @@ sceneslib.o: ../sceneslib.cpp ../sceneslib.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/animation.h \
 		../view/timerview.h \
 		../view/draw.h \
@@ -1883,7 +1944,8 @@ game_mediator.o: ../game_mediator.cpp ../game_mediator.h \
 		../file/v5/struct_file_area_data.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
-		../file/v6/file_game_object_state.h
+		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o game_mediator.o ../game_mediator.cpp
 
 game_menu.o: ../scenes/game_menu.cpp ../scenes/game_menu.h \
@@ -1918,6 +1980,7 @@ game_menu.o: ../scenes/game_menu.cpp ../scenes/game_menu.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/timerview.h \
 		../view/imageview.h \
 		../view/draw.h \
@@ -1982,6 +2045,7 @@ class_config.o: ../class_config.cpp ../class_config.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../controller/inputcontroller.h \
 		../view/timerview.h \
 		../view/imageview.h \
@@ -2010,6 +2074,7 @@ key_map.o: ../options/key_map.cpp ../options/key_map.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/timerview.h \
 		../view/option_picker.h \
 		../file/file_io.h \
@@ -2060,6 +2125,7 @@ GameObject.o: ../objects/GameObject.cpp ../objects/GameObject.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/imageview.h \
 		../character/GameEnemy.h \
 		../character/character.h \
@@ -2120,6 +2186,7 @@ dialogs.o: ../scenes/dialogs.cpp ../scenes/dialogs.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/timerview.h \
 		../view/option_picker.h \
 		../file/file_io.h \
@@ -2179,6 +2246,7 @@ pausemenu.o: ../options/pausemenu.cpp ../options/pausemenu.h \
 		../file/v6/file_area_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
 		../view/timerview.h \
 		../view/imageview.h \
 		../view/draw.h \

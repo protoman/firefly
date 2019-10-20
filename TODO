@@ -33,6 +33,9 @@ FEATURES
 #######################################################################################################
 ====> - adicionar rosto aos dialogos in-game
 ====> - terreno que faz dano (não como spike, como tocar um inimigo)
+- portas tipo barreira que são abertas por um botão (tipo iconoclasts)
+- plataforma fina que permite pular para baixo
+- efeito sobre uma única camada que rotaciona ele (para fazer coisas como árvore balançando)
 - transparência real ao ser atingido (idem inimigos)
 - colocar nome (seu/do-save) ao criar novo jogo
 - elevadores
