@@ -99,6 +99,10 @@ private slots:
 
     void on_isNPC_checkBox_toggled(bool checked);
 
+    void on_npc_requestedItem_comboBox_currentIndexChanged(int index);
+
+    void on_npc_givenItem_comboBox_currentIndexChanged(int index);
+
 private:
 	void fill_data();
 

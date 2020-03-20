@@ -1017,7 +1017,7 @@ void artificial_inteligence::execute_ai_step_walk()
                     _dest_point.x = position.x + frameSize.width/2 + walk_range;
                 }
             } else if (move_type == AI_ACTION_WALK_OPTION_TO_OPPOSITE_DIRECTION) {
-                if (realPosition.x > RES_W/2) {
+                if (relativePosition.x > RES_W/2) {
                     state.direction = ANIM_DIRECTION_LEFT;
                     _dest_point.x = position.x - walk_range;
                 } else {
@@ -1252,7 +1252,7 @@ void artificial_inteligence::execute_ai_step_fly()
 
 
         } else if (_parameter == AI_ACTION_FLY_OPTION_OPOSITE_WALL) {
-            if (realPosition.x > RES_W/2) {
+            if (relativePosition.x > RES_W/2) {
                 state.direction = ANIM_DIRECTION_LEFT;
                 _dest_point.x = position.x - walk_range;
             } else {
@@ -1263,7 +1263,7 @@ void artificial_inteligence::execute_ai_step_fly()
             //std::cout << "AI::AI_ACTION_FLY_OPTION_OPOSITE_WALL - dest.x: " << _dest_point.x << ", dest.y: " << _dest_point.y << ", pos.x: " << position.x << ", pos.y: " << position.y << std::endl;
             _origin_point.x = position.x;
         } else if (_parameter == AI_ACTION_FLY_OPTION_OPOSITE_SHOOT_1) {
-            if (realPosition.x + frameSize.width/2 > RES_W/2) {
+            if (relativePosition.x + frameSize.width/2 > RES_W/2) {
                 state.direction = ANIM_DIRECTION_LEFT;
                 _dest_point.x = position.x - walk_range;
             } else {
@@ -1610,7 +1610,7 @@ void artificial_inteligence::execute_ai_step_dash()
             _dest_point.y = position.y;
             //std::cout << ">>>>>>>>> AI::DASH::INIT - dest_point.x: " << _dest_point.x << ", walk_range: " << walk_range << ", position.x: " << position.x << std::endl;
         } else if (_parameter == AI_ACTION_DASH_OPTION_OPPOSITE_DIRECTION) {
-            if (realPosition.x > RES_W/2) {
+            if (relativePosition.x > RES_W/2) {
                 state.direction = ANIM_DIRECTION_LEFT;
                 _dest_point.x = position.x - walk_range;
             } else {

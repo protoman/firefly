@@ -78,6 +78,8 @@ public:
 
     std::map<unsigned int, std::vector<v6_map_object>>  file_v6_map_object_map; // map objects
 
+    std::map<int, short> enemy_state_map;
+
 
     std::map<unsigned int, std::vector<file_v5_map_npc>>  file_v5_map_npc_map; // map enemies
     std::map<unsigned int, std::vector<struct_file_v5_area_link>> file_v5_area_link_map;

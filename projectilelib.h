@@ -103,7 +103,7 @@ private:
     Uint8 _move_type;
 
     st_float_position position;
-    st_position realPosition;
+    st_position projectile_relative_position;
 	// used for trajectory calculations
     st_position position0;
     st_position position1;

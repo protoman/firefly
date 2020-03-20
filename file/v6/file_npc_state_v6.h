@@ -1,0 +1,4 @@
+#ifndef FILE_NPC_STATE_V6_H
+#define FILE_NPC_STATE_V6_H
+
+#endif // FILE_NPC_STATE_V6_H

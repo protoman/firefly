@@ -3,13 +3,6 @@
 #include "GameManager.h"
 #include <fstream>
 
-#ifdef PSP
-	#include <pspkernel.h>
-	#include <pspdebug.h>
-	#include <pspctrl.h>
-	#include <pspdebug.h>
-#endif
-
 #ifdef ANDROID
 #include <android/log.h>
 #endif
@@ -22,6 +15,7 @@
 #include "defines.h"
 #include "file/file_io.h"
 #include "file/fio_strings.h"
+#include "file/v6/file_npc_state_v6.h"
 #include "strings_map.h"
 
 #include "controller/inputcontroller.h"
@@ -122,6 +116,12 @@ void GameManager::preloadGameData()
 
 }
 
+void GameManager::introScreen()
+{
+    game_menu menu;
+    menu.show_intro_menu();
+}
+
 void GameManager::loadGameData()
 {
 
@@ -140,10 +140,12 @@ void GameManager::loadGameData()
     // CURRENT LEVEL DATA //
     SharedData::get_instance()->v6_current_level_data = fio_cmm.load_single_object_from_list<file_v6_level>(SharedData::get_instance()->FILEPATH + "/" + FILE_V6_LEVEL_LIST, SharedData::get_instance()->v6_selected_level);
 
-    SharedData::get_instance()->enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "/game_enemy_list_3_1_2.dat");
+    // ENEMIES LIST
+    SharedData::get_instance()->enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "/game_enemy_list_3_1_2_b.dat");
     if (SharedData::get_instance()->enemy_list.size() == 0) {
         SharedData::get_instance()->enemy_list.push_back(file_npc_v3_1_2());
     }
+    loadEnemyStateData();
 
     SharedData::get_instance()->v6_object_list = fio_cmm.load_from_disk<v6_file_object>(SharedData::get_instance()->FILEPATH + "/game_object_list_v6.dat");
     if (SharedData::get_instance()->v6_object_list.size() == 0) { // add one first item to avoid errors
@@ -153,7 +155,7 @@ void GameManager::loadGameData()
     SharedData::get_instance()->ai_list = fio_cmm.load_from_disk<file_artificial_inteligence>(SharedData::get_instance()->FILEPATH + "/game_ai_list.dat");
     //std::cout << "MEDIATOR::load_game::ai_list.size(): " << ai_list.size() << std::endl;
     if (SharedData::get_instance()->ai_list.size() == 0) { // add one first item to avoid errors
-        for (int i=0; i<SharedData::get_instance()->enemy_list.size(); i++) {
+        for (unsigned int i=0; i<SharedData::get_instance()->enemy_list.size(); i++) {
             SharedData::get_instance()->ai_list.push_back(file_artificial_inteligence());
         }
     }
@@ -171,6 +173,32 @@ void GameManager::loadGameData()
     }
 
     SharedData::get_instance()->slope_list = fio_cmm.load_from_disk<file_v5_slope_tile>(SharedData::get_instance()->FILEPATH+FILE_V5_MAP_SLOPE_LIST);
+}
+
+void GameManager::loadEnemyStateData()
+{
+    // ENEMIES STATE LIST
+    std::vector<file_npc_state> enemy_state_list;
+    if (fio.file_exists(SharedData::get_instance()->FILEPATH + "/game_enemy_state_list_3_1_2.dat")) { // load list from disk
+        enemy_state_list = fio_cmm.load_from_disk<file_npc_state>(SharedData::get_instance()->FILEPATH + "/game_enemy_state_list_3_1_3.dat");
+    } else { // first-time list generation
+        for (unsigned int i=0; i<SharedData::get_instance()->enemy_list.size(); i++) {
+            file_npc_v3_1_2 npc = SharedData::get_instance()->enemy_list.at(i);
+            std::cout << "######## npc.state.list.id[" << i << "]" << std::endl;
+            enemy_state_list.push_back(file_npc_state(i, false));
+        }
+    }
+    for (unsigned int i=0; i<enemy_state_list.size(); i++) { // convert to a map
+        std::cout << ">>>>> added-npc-state id[" << enemy_state_list.at(i).npc_id << "], state[" << enemy_state_list.at(i).state << "]" << std::endl;
+        SharedData::get_instance()->enemy_state_map.insert(std::pair<int, short>(enemy_state_list.at(i).npc_id, enemy_state_list.at(i).state));
+    }
+    for (unsigned int i=0; i<SharedData::get_instance()->enemy_list.size(); i++) { // fill missing npcs
+        if (SharedData::get_instance()->enemy_state_map.find(i) == SharedData::get_instance()->enemy_state_map.end()) {
+            std::cout << ">>>>> added-missing-npc-state id[" << i << "], state[false]" << std::endl;
+            SharedData::get_instance()->enemy_state_map.insert(std::pair<int, short>(i, 0));
+        }
+    }
+    std::cout << ">>>>> SharedData::get_instance()->enemy_state_map.size[" << SharedData::get_instance()->enemy_state_map.size() << "]" << std::endl;
 }
 
 void GameManager::loadMapData()
@@ -596,7 +624,6 @@ st_position GameManager::get_player_relative_center_position()
 
 void GameManager::initGame()
 {
-    std::cout << "### gameManager::initGame ###" << std::endl;
     player1.initialize();
     player1.initFrames();
     player1.set_is_player(true);
@@ -661,11 +688,11 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
 
     if (dialog_queue.size() > 0) {
         if (dialog_queue.at(0).timer == 0 && InputController::get_instance()->p1_input[BTN_JUMP] == 1) {
-            std::cout << "Remove dialog #1" << std::endl;
+            //std::cout << "Remove dialog #1" << std::endl;
            consume_dialogs_from_queue();
            InputController::get_instance()->clean();
         } else if (dialog_queue.at(0).timer > 0 && TimerView::get_instance()->getTimer() > dialog_queue.at(0).timer) {
-            std::cout << "Remove dialog #2, timer[" << (int)dialog_queue.at(0).timer << "]" << std::endl;
+            //std::cout << "Remove dialog #2, timer[" << (int)dialog_queue.at(0).timer << "]" << std::endl;
             consume_dialogs_from_queue();
             InputController::get_instance()->clean();
         }
@@ -2121,6 +2148,42 @@ bool GameManager::is_special_boss(std::string name)
         return true;
     }
     return false;
+}
+
+void GameManager::talk_with_npc(int npc_id)
+{
+    std::string obj_name = "";
+    int obj_id = player1.get_current_item_id_from_slot();
+    //std::cout << ">>>>>>>>>>> obj_id[" << obj_id << "]" << std::endl;
+    if (obj_id != -1) {
+        obj_name = SharedData::get_instance()->v6_object_list.at(obj_id).name;
+    }
+
+    // check if npc wants item or gets item from player
+
+    GameEnemy* enemy = mapController.find_npc_by_id(npc_id);
+    short requesting_item_state = npc_dialog_manager.item_request_state(npc_id, obj_id);
+    if (requesting_item_state == 0) { // show item request tooltip over npc-head
+        if (player1.get_current_item_id_from_slot() == SharedData::get_instance()->enemy_list.at(npc_id).npc_requested_item_id) {
+            // drop item
+            npc_dialog_manager.inc_request_state(npc_id);
+            mapController.drop_game_item(SharedData::get_instance()->enemy_list.at(npc_id).npc_given_item_id, -1, enemy->get_int_position().x, enemy->get_int_position().y);
+        } else {
+            enemy->npc_activate_request_item_tooltip();
+        }
+    }
+
+
+}
+
+void GameManager::morph_player_object(int new_obj_id)
+{
+    player1.morph_item(new_obj_id);
+}
+
+void GameManager::remove_player_object()
+{
+    player1.remove_game_item_from_slot();
 }
 
 st_dialog_status *GameManager::get_dialog_status()

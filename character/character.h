@@ -223,6 +223,9 @@ public:
 
     void pick_game_item(GameObject& obj_info);
     void use_game_item();
+    int get_current_item_id_from_slot();
+    void morph_item(int new_obj_id);
+    void remove_game_item_from_slot();
 
 
 private:
@@ -289,7 +292,7 @@ protected:
     unsigned int hit_animation_count;   // to control number of times blinking uses
     st_float_position position;
 
-    st_position realPosition;
+    st_position relativePosition;
     unsigned int last_execute_time;
     struct st_characterMovements moveCommands;
     struct st_characterMovements saved_move_commands;

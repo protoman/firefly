@@ -1081,5 +1081,9 @@ enum e_GAME_DIALOG {
 };
 
 
+enum e_GAME_QUEST {
+    GAME_QUEST_FROG,
+    GAME_QUEST_COUNT
+};
 
 #endif // DEFINES_H

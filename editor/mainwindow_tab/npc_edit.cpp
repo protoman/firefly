@@ -43,6 +43,8 @@ void npc_edit::fill_data()
 	_data_loading = true;
     common::fill_files_combo("images/sprites/enemies", ui->npc_edit_tab_graphiccombo);
     common::fill_files_combo("images/sprites/enemies/backgrounds", ui->backgroundFileComboBox);
+    common::fill_object_combo_with_none(ui->npc_requestedItem_comboBox);
+    common::fill_object_combo_with_none(ui->npc_givenItem_comboBox);
 
     common::fill_npc_combo(ui->npc_edit_tab_selectnpccombo);
 
@@ -94,6 +96,9 @@ void npc_edit::fill_data()
 
         ui->isNPC_checkBox->setChecked(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc);
         ui->npcDialogId_comboBox->setCurrentIndex(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_dialog_id);
+
+        ui->npc_requestedItem_comboBox->setCurrentIndex(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_requested_item_id+1);
+        ui->npc_givenItem_comboBox->setCurrentIndex(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_given_item_id+1);
     }
 
 }
@@ -192,6 +197,9 @@ void npc_edit::on_npc_edit_tab_selectnpccombo_currentIndexChanged(int index)
 
     ui->projectileOriginX_spinBox->setValue(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_arm_pos.x);
     ui->projectileOriginY_spinBox->setValue(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_arm_pos.y);
+
+    ui->isNPC_checkBox->setChecked(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc);
+
 
 	_data_loading = false;
 }
@@ -754,4 +762,21 @@ void npc_edit::on_isNPC_checkBox_toggled(bool checked)
         Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_dialog_id = -1;
     }
     Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc = checked;
+    // disable NPC fields when checkbox is set to disabled
+}
+
+void npc_edit::on_npc_requestedItem_comboBox_currentIndexChanged(int index)
+{
+    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+        return;
+    }
+    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_requested_item_id = index-1;
+}
+
+void npc_edit::on_npc_givenItem_comboBox_currentIndexChanged(int index)
+{
+    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+        return;
+    }
+    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_given_item_id = index-1;
 }

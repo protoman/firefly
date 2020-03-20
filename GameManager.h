@@ -18,6 +18,7 @@ class GameEnemy;
 #include "scenes/dialogs.h"
 #include "aux_tools/fps_control.h"
 #include "class_config.h"
+#include "text/npc_dialog_manager.h"
 
 #ifdef PSP
 #include "ports/psp/psp_ram.h"
@@ -37,6 +38,7 @@ public:
     void initHardwareLayer();
     void preloadGameData();
 
+    void introScreen();
     void initGame();
 
     void start_stage_music();
@@ -129,6 +131,10 @@ public:
     std::vector<st_dialog>* get_dialog_queue();
     bool is_special_boss(std::string name);
 
+    void talk_with_npc(int npc_id);
+    void morph_player_object(int new_obj_id);
+    void remove_player_object();
+
 
 private:
     GameManager();
@@ -142,6 +148,7 @@ private:
     void show_player_teleport(int pos_x, int pos_y);
 
     void loadGameData();
+    void loadEnemyStateData();
     void loadMapData();
     void loadAreaListSize();
     int mapNumberFromAreaPosition(int area_n, int x, int y);
@@ -221,6 +228,7 @@ private:
 
     std::set<std::string> special_bosses_list = {"Rotate Test"};
 
+    npcDialogManager npc_dialog_manager;
 
 #ifdef PSP
     psp_ram _ram_counter;

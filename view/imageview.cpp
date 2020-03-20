@@ -427,6 +427,16 @@ void ImageView::preload()
         }
     }
 
+    // object icons
+    icon_bg = imageFromFile(SharedData::get_instance()->FILEPATH + std::string("images/backgrounds/icon.png"));
+    for (unsigned int i=0; i<SharedData::get_instance()->enemy_list.size(); i++) {
+        if (SharedData::get_instance()->enemy_list.at(i).is_npc && SharedData::get_instance()->enemy_list.at(i).npc_requested_item_id != -1) {
+            // TODO: border and image size
+            std::string filename = SharedData::get_instance()->FILEPATH + std::string("images/sprites/objects/") + SharedData::get_instance()->v6_object_list.at(SharedData::get_instance()->enemy_list.at(i).npc_requested_item_id).graphic_filename;
+            object_icon_map.insert(std::pair<int, st_imageData>(SharedData::get_instance()->enemy_list.at(i).npc_requested_item_id, imageFromFile(filename)));
+        }
+    }
+
 }
 
 void ImageView::inc_scale(float inc)
@@ -461,6 +471,13 @@ st_position ImageView::calc_rotated_position(st_imageData &original, st_imageDat
     position.y += (previous_h - rotated.surface->h)/2;
 
     return position;
+}
+
+void ImageView::show_item_tooltip(st_position pos, int obj_id)
+{
+    //std::cout << ">>>>>>>>>>>>>>>>>> show_item_tooltip <<<<<<<<<<<<<<<<<<<<<" << std::endl;
+    renderImageAt(pos.x-TILESIZE/2, pos.y-TILESIZE, icon_bg);
+    renderImageAt(pos.x-TILESIZE/2, pos.y-TILESIZE, object_icon_map.at(obj_id));
 }
 
 

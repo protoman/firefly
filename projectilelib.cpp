@@ -916,14 +916,14 @@ st_size projectile::move() {
         is_finished = true;
 	}
 
-    realPosition.x = position.x - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
-    realPosition.y = position.y - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().y;
+    projectile_relative_position.x = position.x - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
+    projectile_relative_position.y = position.y - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().y;
 
     //std::cout << "PROJECTILE::MOVE - y[" << position.y << "], map.scroll.y[" << gameManager::get_instance()->get_current_map_obj()->getMapScrolling().y << "]" << std::endl;
 
 	// check out of screen
 	if (_move_type != TRAJECTORY_FREEZE && _move_type != TRAJECTORY_QUAKE) { // special effect weapons can work out of screen
-		if (realPosition.x > RES_W+TILESIZE*2 || realPosition.x < 0-TILESIZE*2 || realPosition.y > RES_H+TILESIZE*2 || realPosition.y < 0-+TILESIZE*2) {
+        if (projectile_relative_position.x > RES_W+TILESIZE*2 || projectile_relative_position.x < 0-TILESIZE*2 || projectile_relative_position.y > RES_H+TILESIZE*2 || projectile_relative_position.y < 0-+TILESIZE*2) {
 			is_finished = true;
 		}
 	}
@@ -932,7 +932,7 @@ st_size projectile::move() {
 
 void projectile::draw() {
     if ((_move_type == TRAJECTORY_BOMB || _move_type == TRAJECTORY_FALL_BOMB) && _effect_n == 1) {
-        ImageView::get_instance()->draw_explosion(realPosition);
+        ImageView::get_instance()->draw_explosion(projectile_relative_position);
 		return;
 	}
 
@@ -968,9 +968,9 @@ void projectile::draw() {
         }
         if (direction == ANIM_DIRECTION_RIGHT) {
             int show_x = _size.width - show_width;
-            ImageView::get_instance()->renderTexturePortionAt(show_x, 0, show_width, _size.height, realPosition.x + 15, realPosition.y, get_surface()->texture);
+            ImageView::get_instance()->renderTexturePortionAt(show_x, 0, show_width, _size.height, projectile_relative_position.x + 15, projectile_relative_position.y, get_surface()->texture);
         } else {
-            ImageView::get_instance()->renderTexturePortionAt(anim_pos, 0, show_width, _size.height, realPosition.x - _chain_width, realPosition.y, get_surface()->texture);
+            ImageView::get_instance()->renderTexturePortionAt(anim_pos, 0, show_width, _size.height, projectile_relative_position.x - _chain_width, projectile_relative_position.y, get_surface()->texture);
         }
         //std::cout << "CHAIN - x: " << anim_pos << ", show_width: " << show_width << std::endl;
 
@@ -978,7 +978,7 @@ void projectile::draw() {
     } else if (_move_type == TRAJECTORY_LIGHTING) {
         int y_pos = get_surface()->surface->h -_size.height;
         //std::cout << "LIGHTING::SHOW::y: " << y_pos << std::endl;
-        ImageView::get_instance()->renderTexturePortionAt(anim_pos, y_pos, show_width, _size.height, realPosition.x, realPosition.y, get_surface()->texture);
+        ImageView::get_instance()->renderTexturePortionAt(anim_pos, y_pos, show_width, _size.height, projectile_relative_position.x, projectile_relative_position.y, get_surface()->texture);
 
         if (animation_pos == _max_frames-1) {
             _effect_n++;
@@ -987,33 +987,33 @@ void projectile::draw() {
     } else if (_move_type == TRAJECTORY_LARGE_BEAM) {
         // @TODO - add animation frames
         // back
-        ImageView::get_instance()->renderTexturePortionAt(anim_pos, 0, frame_w, _size.height, realPosition.x, realPosition.y, get_surface()->texture);
+        ImageView::get_instance()->renderTexturePortionAt(anim_pos, 0, frame_w, _size.height, projectile_relative_position.x, projectile_relative_position.y, get_surface()->texture);
         // middle
         for (int i=0; i<status; i++) {
-            ImageView::get_instance()->renderTexturePortionAt(anim_pos+frame_w, 0, frame_w, _size.height, realPosition.x + (frame_w + frame_w*i), realPosition.y, get_surface()->texture);
+            ImageView::get_instance()->renderTexturePortionAt(anim_pos+frame_w, 0, frame_w, _size.height, projectile_relative_position.x + (frame_w + frame_w*i), projectile_relative_position.y, get_surface()->texture);
         }
         // point
-        ImageView::get_instance()->renderTexturePortionAt(anim_pos+frame_w*2, 0, frame_w, _size.height, realPosition.x + (frame_w + frame_w*status), realPosition.y, get_surface()->texture);
+        ImageView::get_instance()->renderTexturePortionAt(anim_pos+frame_w*2, 0, frame_w, _size.height, projectile_relative_position.x + (frame_w + frame_w*status), projectile_relative_position.y, get_surface()->texture);
 
     } else if (_move_type == TRAJECTORY_TARGET_EXACT) {
         //std::cout << "TRAJECTORY_TARGET_EXACT - w[" << rotated_surface.width << "], h[" << rotated_surface.height << "]" << std::endl;
-        ImageView::get_instance()->renderImageAt(realPosition.x, realPosition.y, rotated_surface);
+        ImageView::get_instance()->renderImageAt(projectile_relative_position.x, projectile_relative_position.y, rotated_surface);
     } else {
         //printf(">> PROJECTILE::DRAW[%d] - x[%d], y[%d], direction[%d], show_width[%d], _size.height[%d], anim_pos[%d], img.w[%d], img.h[%d] <<\n", _id, realPosition.x, realPosition.y, direction, show_width, _size.height, anim_pos, get_surface()->width, get_surface()->height);
         if (direction == ANIM_DIRECTION_UP && get_surface()->surface->h >= _size.height*2) {
-            ImageView::get_instance()->renderTexturePortionAt(anim_pos, _size.height, show_width, _size.height, realPosition.x, realPosition.y, get_surface()->texture);
+            ImageView::get_instance()->renderTexturePortionAt(anim_pos, _size.height, show_width, _size.height, projectile_relative_position.x, projectile_relative_position.y, get_surface()->texture);
         } else if (direction == ANIM_DIRECTION_DOWN && get_surface()->surface->h >= _size.height*3) {
-            ImageView::get_instance()->renderTexturePortionAt(anim_pos, _size.height*2, show_width, _size.height, realPosition.x, realPosition.y, get_surface()->texture);
+            ImageView::get_instance()->renderTexturePortionAt(anim_pos, _size.height*2, show_width, _size.height, projectile_relative_position.x, projectile_relative_position.y, get_surface()->texture);
         } else if (direction == ANIM_DIRECTION_UP_LEFT && get_surface()->surface->h >= _size.height*4) {
-            ImageView::get_instance()->renderTexturePortionAt(anim_pos, _size.height*3, show_width, _size.height, realPosition.x, realPosition.y, get_surface()->texture);
+            ImageView::get_instance()->renderTexturePortionAt(anim_pos, _size.height*3, show_width, _size.height, projectile_relative_position.x, projectile_relative_position.y, get_surface()->texture);
         } else if (direction == ANIM_DIRECTION_UP_RIGHT && get_surface()->surface->h >= _size.height*5) {
-            ImageView::get_instance()->renderTexturePortionAt(anim_pos, _size.height*4, show_width, _size.height, realPosition.x, realPosition.y, get_surface()->texture);
+            ImageView::get_instance()->renderTexturePortionAt(anim_pos, _size.height*4, show_width, _size.height, projectile_relative_position.x, projectile_relative_position.y, get_surface()->texture);
         } else if (direction == ANIM_DIRECTION_DOWN_LEFT && get_surface()->surface->h >= _size.height*6) {
-            ImageView::get_instance()->renderTexturePortionAt(anim_pos, _size.height*5, show_width, _size.height, realPosition.x, realPosition.y, get_surface()->texture);
+            ImageView::get_instance()->renderTexturePortionAt(anim_pos, _size.height*5, show_width, _size.height, projectile_relative_position.x, projectile_relative_position.y, get_surface()->texture);
         } else if (direction == ANIM_DIRECTION_DOWN_RIGHT && get_surface()->surface->h >= _size.height*7) {
-            ImageView::get_instance()->renderTexturePortionAt(anim_pos, _size.height*6, show_width, _size.height, realPosition.x, realPosition.y, get_surface()->texture);
+            ImageView::get_instance()->renderTexturePortionAt(anim_pos, _size.height*6, show_width, _size.height, projectile_relative_position.x, projectile_relative_position.y, get_surface()->texture);
         } else { // right is the default frame
-            ImageView::get_instance()->renderTexturePortionAt(anim_pos, 0, show_width, _size.height, realPosition.x, realPosition.y, get_surface()->texture);
+            ImageView::get_instance()->renderTexturePortionAt(anim_pos, 0, show_width, _size.height, projectile_relative_position.x, projectile_relative_position.y, get_surface()->texture);
         }
     }
 

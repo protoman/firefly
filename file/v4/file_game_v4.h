@@ -200,6 +200,8 @@ struct file_npc_v3_1_2 {
     int gfx_effect;                                         // can cause snow, rain, darkned roon, etc
     bool is_npc;
     int npc_dialog_id;
+    int npc_requested_item_id;
+    int npc_given_item_id;
 
 
     file_npc_v3_1_2() {
@@ -226,6 +228,8 @@ struct file_npc_v3_1_2 {
         gfx_effect = -1;
         is_npc = false;
         npc_dialog_id = -1;
+        npc_requested_item_id = -1;
+        npc_given_item_id = -1;
     }
 };
 

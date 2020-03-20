@@ -157,7 +157,7 @@ void Mediator::load_game() {
     std::string stages_extra_data_filename = "data/stages_extra_data" + fio.get_sufix() + ".dat";
 
     // convert enemy-ist to 3.1.2
-    enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "game_enemy_list_3_1_2.dat");
+    enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "game_enemy_list_3_1_2_b.dat");
     if (enemy_list.size() == 0) {
         enemy_list.push_back(file_npc_v3_1_2());
     }
@@ -335,7 +335,7 @@ void Mediator::save_game()
     std::string stages_extra_data_filename = "data/stages_extra_data" + fio.get_sufix() + ".dat";
 
 
-    fio_cmm.save_data_to_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "game_enemy_list_3_1_2.dat", enemy_list);
+    fio_cmm.save_data_to_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "game_enemy_list_3_1_2_b.dat", enemy_list);
     fio_cmm.save_data_to_disk<v6_file_object>(SharedData::get_instance()->FILEPATH + "game_object_list_v6.dat", SharedData::get_instance()->v6_object_list);
     fio_cmm.save_data_to_disk<file_artificial_inteligence>(SharedData::get_instance()->FILEPATH + "game_ai_list.dat", ai_list);
 
@@ -360,7 +360,7 @@ void Mediator::save_game()
 
     std::cout << "Mediator::save - saving map-tiles for maps[" << SharedData::get_instance()->v6_area_list.size() << "]" << std::endl;
 
-    for (int i=0; i<SharedData::get_instance()->v6_area_list.size(); i++) {
+    for (unsigned int i=0; i<SharedData::get_instance()->v6_area_list.size(); i++) {
         QString filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_tiles.dat");
         std::cout << "Mediator::save - saving map-tiles, map[" << i << "], filename[" << filename.toStdString() << "]" << std::endl;
 

@@ -80,7 +80,7 @@ std::vector<st_rectangle> artificial_inteligence::get_collision_list_boss_001() 
     res.push_back(st_rectangle(position.x+140, position.y+120, boss_image_list.at(BOSS_001_IMAGE_LEAF_RIGHT).surface->w, boss_image_list.at(BOSS_001_IMAGE_LEAF_RIGHT).surface->h));
 
     // right hand
-    res.push_back(st_rectangle(position.x+boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_X)-realPosition.x+position.x, boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_Y)-realPosition.y+position.y, boss_image_list.at(BOSS_001_IMAGE_LEAF_RIGHT).surface->w, boss_image_list.at(BOSS_001_IMAGE_LEAF_RIGHT).surface->h));
+    res.push_back(st_rectangle(position.x+boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_X), boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_Y)+position.y, boss_image_list.at(BOSS_001_IMAGE_LEAF_RIGHT).surface->w, boss_image_list.at(BOSS_001_IMAGE_LEAF_RIGHT).surface->h));
 
     //std::cout << "pos.x[" << position.x << "].y[" << position.y << "], right-hand.x[" << res.at(res.size()-1).x << "].y[" << res.at(res.size()-1).y << "].w[" << res.at(res.size()-1).w << "].h[" << res.at(res.size()-1).h << "]" << std::endl;
 
@@ -101,16 +101,16 @@ void artificial_inteligence::boss_001_show() {
     character::char_update_real_position();
 
     // BODY //
-    ImageView::get_instance()->renderTexturePortionAt(0, 0, img_boss_body.surface->w, img_boss_body.surface->h, realPosition.x, realPosition.y, img_boss_body.texture);
+    ImageView::get_instance()->renderTexturePortionAt(0, 0, img_boss_body.surface->w, img_boss_body.surface->h, relativePosition.x, relativePosition.y, img_boss_body.texture);
 
 
     // HEAD //
     st_imageData *head = &boss_sprite_image_list.at(BOSS_SPRITE_IMAGE_HEAD).at(boss_status_list.at(BOSS_STATUS_HEAD_ROTATION_VALUE));
     int adjust_x = img_boss_head.surface->w - head->surface->w;
     int adjust_y = img_boss_head.surface->h - head->surface->h;
-    ImageView::get_instance()->renderTexturePortionAt(0, 0, head->surface->w, head->surface->h, realPosition.x+adjust_x+20, realPosition.y+adjust_y-150, head->texture);
+    ImageView::get_instance()->renderTexturePortionAt(0, 0, head->surface->w, head->surface->h, relativePosition.x+adjust_x+20, relativePosition.y+adjust_y-150, head->texture);
 
-    long now_timer = TimerView::get_instance()->getTimer();
+    unsigned long now_timer = TimerView::get_instance()->getTimer();
     if (boss_status_list.at(BOSS_001_STATUS_HEAD_ROTATION_TIMER) < now_timer) {
         if (boss_status_list.at(BOSS_STATUS_HEAD_ROTATION_STATUS) == 0.0) {
             boss_status_list.at(BOSS_STATUS_HEAD_ROTATION_VALUE) += 1.0;
@@ -146,11 +146,11 @@ void artificial_inteligence::boss_001_show() {
     for (int i=0; i<4; i++) {
         int diff_x0 = ((hand1_x_inc-120)/4)*i;
         int diff_y0 = (hand1_y_inc/4)*i;
-        ImageView::get_instance()->renderTexturePortionAt(0, 0, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).surface->w, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).surface->h, realPosition.x+20+diff_x0, realPosition.y+120+diff_y0, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).texture);
+        ImageView::get_instance()->renderTexturePortionAt(0, 0, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).surface->w, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).surface->h, relativePosition.x+20+diff_x0, relativePosition.y+120+diff_y0, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).texture);
     }
 
 
-    ImageView::get_instance()->renderTexturePortionAt(0, 0, boss_image_list.at(BOSS_001_IMAGE_LEAF_LEFT).surface->w, boss_image_list.at(BOSS_001_IMAGE_LEAF_LEFT).surface->h, realPosition.x-140+hand1_x_inc, realPosition.y+120+hand1_y_inc, boss_image_list.at(BOSS_001_IMAGE_LEAF_LEFT).texture);
+    ImageView::get_instance()->renderTexturePortionAt(0, 0, boss_image_list.at(BOSS_001_IMAGE_LEAF_LEFT).surface->w, boss_image_list.at(BOSS_001_IMAGE_LEAF_LEFT).surface->h, relativePosition.x-140+hand1_x_inc, relativePosition.y+120+hand1_y_inc, boss_image_list.at(BOSS_001_IMAGE_LEAF_LEFT).texture);
 
 
 
@@ -174,7 +174,7 @@ void artificial_inteligence::boss_001_show() {
                 std::cout << ">>> LEAF.Y[" << boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_Y) << "], p.y[" << GameManager::get_instance()->get_player_center_position().y << "], dist_y[" << dist_y << "]" << std::endl;
 
                 boss_status_list.at(BOSS_STATUS_HAND_ATTACK_YINC) = ((float)dist_y/(float)dist_x)*HAND_ATTACK_SPEED;
-                boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_Y) = realPosition.y + 180;
+                boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_Y) = 180;
                 //std::cout << ">>>>>>>>>>> dist_x[" << dist_x << "], dist_y[" << dist_y << "], y_inc[" << boss_status_list.at(BOSS_STATUS_HAND_ATTACK_YINC) << "]" << std::endl;
 
             }
@@ -212,22 +212,22 @@ void artificial_inteligence::boss_001_show() {
         }
         int hand2_x_inc = HAND_ELLIPSIS_W * cos(boss_status_list.at(BOSS_001_STATUS_HAND2_POS));
         int hand2_y_inc = HAND_ELLIPSIS_H * sin(boss_status_list.at(BOSS_001_STATUS_HAND2_POS));
-        boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_X) = realPosition.x+140+hand2_x_inc;
-        boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_Y) = realPosition.y+120+hand2_y_inc;
+        boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_X) = 140+hand2_x_inc;
+        boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_Y) = 120+hand2_y_inc;
     }
 
 
     // draw segments
     for (int i=0; i<4; i++) {
-        int origin_x = realPosition.x+140;
-        int origin_y = realPosition.y+120;
+        int origin_x = 140;
+        int origin_y = 120;
         int diff_x0 = ((boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_X) - origin_x)/4)*i;
         int diff_y0 = ((boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_Y) - origin_y)/4)*i;
         //ImageView::get_instance()->renderTexturePortionAt(0, 0, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).surface->w, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).surface->h, boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_X0)+diff_x0, boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_Y0)+diff_y0, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).texture);
-        ImageView::get_instance()->renderTexturePortionAt(0, 0, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).surface->w, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).surface->h, origin_x+diff_x0, origin_y+diff_y0, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).texture);
+        ImageView::get_instance()->renderTexturePortionAt(0, 0, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).surface->w, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).surface->h, relativePosition.x+origin_x+diff_x0, relativePosition.y+origin_y+diff_y0, boss_image_list.at(BOSS_001_IMAGE_SEGMENT).texture);
     }
 
-    ImageView::get_instance()->renderTexturePortionAt(0, 0, boss_image_list.at(BOSS_001_IMAGE_LEAF_RIGHT).surface->w, boss_image_list.at(BOSS_001_IMAGE_LEAF_RIGHT).surface->h, boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_X), boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_Y), boss_image_list.at(BOSS_001_IMAGE_LEAF_RIGHT).texture);
+    ImageView::get_instance()->renderTexturePortionAt(0, 0, boss_image_list.at(BOSS_001_IMAGE_LEAF_RIGHT).surface->w, boss_image_list.at(BOSS_001_IMAGE_LEAF_RIGHT).surface->h, relativePosition.x+boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_X), relativePosition.y+boss_status_list.at(BOSS_STATUS_HAND_ATTACK_POS_Y), boss_image_list.at(BOSS_001_IMAGE_LEAF_RIGHT).texture);
 
 
 }
@@ -268,10 +268,10 @@ void artificial_inteligence::boss_001_init() {
     boss_status_list.insert(std::pair<int,float>(BOSS_STATUS_HAND_ATTACK_POS_COUNT, 0.0));
 
     character::char_update_real_position();
-    boss_status_list.insert(std::pair<int,float>(BOSS_STATUS_HAND_ATTACK_POS_X0, realPosition.x+140));
-    boss_status_list.insert(std::pair<int,float>(BOSS_STATUS_HAND_ATTACK_POS_Y0, realPosition.y+120));
-    boss_status_list.insert(std::pair<int,float>(BOSS_STATUS_HAND_ATTACK_POS_X, realPosition.x+140));
-    boss_status_list.insert(std::pair<int,float>(BOSS_STATUS_HAND_ATTACK_POS_Y, realPosition.y+120));
+    boss_status_list.insert(std::pair<int,float>(BOSS_STATUS_HAND_ATTACK_POS_X0, 140));
+    boss_status_list.insert(std::pair<int,float>(BOSS_STATUS_HAND_ATTACK_POS_Y0, 120));
+    boss_status_list.insert(std::pair<int,float>(BOSS_STATUS_HAND_ATTACK_POS_X, 140));
+    boss_status_list.insert(std::pair<int,float>(BOSS_STATUS_HAND_ATTACK_POS_Y, 120));
 
 
     boss_status_list.insert(std::pair<int,float>(BOSS_STATUS_HAND_ATTACK_STATUS, 0.0));

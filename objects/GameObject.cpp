@@ -889,7 +889,7 @@ void GameObject::move(bool paused)
 			check_player_move(0, yinc);
 			distance += abs((float)yinc);
 		} else {
-            std::cout << "WARNING: object is blocked, yinc: " << yinc << ", current-dist: " << distance << ", limit: " << limit << ", new-dist: " << (limit-distance) << std::endl;
+            //std::cout << "WARNING: object is blocked, yinc: " << yinc << ", current-dist: " << distance << ", limit: " << limit << ", new-dist: " << (limit-distance) << std::endl;
             distance = limit - distance + yinc;
             invert_direction_y();
         }

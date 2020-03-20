@@ -47,8 +47,8 @@ int main()
 {
     get_filepath();
     GameManager::get_instance()->initHardwareLayer();
-
     GameManager::get_instance()->preloadGameData();
+    //GameManager::get_instance()->introScreen();
     GameManager::get_instance()->initGame();
 
     while (SharedData::get_instance()->run_game) {

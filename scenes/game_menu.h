@@ -17,6 +17,8 @@ class game_menu
 public:
     game_menu();
 
+    void show_intro_menu();
+
     void show_extra_menu();
     short show_main_config(short stage_finished, bool called_from_game);
 

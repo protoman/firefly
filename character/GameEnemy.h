@@ -64,8 +64,9 @@ public:
     int get_parent_id();
     void reset_timers();
     bool is_static();
+    int get_id();
 
-
+    void npc_activate_request_item_tooltip();
 
 
 
@@ -105,6 +106,8 @@ protected:
     bool _screen_blinked; /**< TODO */
     int _parent_id;
     st_position static_bg_pos;
+
+    unsigned long npc_request_item_tooltip_timer = 0;
 };
 
 #endif // CLASSNPC_H

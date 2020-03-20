@@ -122,6 +122,8 @@ void object_tab::on_objectlist_combo_currentIndexChanged(int index)
     ui->frame_duration_spinbox->setValue(SharedData::get_instance()->v6_object_list.at(_current_object).frame_duration);
     ui->animation_reverse_checkbox->setChecked(SharedData::get_instance()->v6_object_list.at(_current_object).animation_reverse);
 
+    ui->object_preview_area->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/objects/")+std::string(SharedData::get_instance()->v6_object_list.at(_current_object).graphic_filename));
+    ui->object_preview_area->repaint();
 }
 
 void object_tab::on_name_textChanged(const QString &arg1)

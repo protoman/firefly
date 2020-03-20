@@ -873,7 +873,7 @@ void classPlayer::death()
     GameManager::get_instance()->remove_current_teleporter_from_list();
 
     //draw::get_instance()->add_fade_out_effect(171, 0, 19);
-    GameManager::get_instance()->draw_explosion(realPosition, false);
+    GameManager::get_instance()->draw_explosion(relativePosition, false);
     //draw::get_instance()->draw_explosion(realPosition);
     //draw::get_instance()->remove_fade_out_effect();
 

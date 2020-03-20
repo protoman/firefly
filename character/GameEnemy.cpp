@@ -15,6 +15,8 @@
 #include <android/log.h>
 #endif
 
+#define REQUEST_ITEM_TOOLTIP_DURATION 3000
+
 // ********************************************************************************************** //
 //                                                                                                //
 // ********************************************************************************************** //
@@ -160,8 +162,8 @@ void GameEnemy::build_basic_npc(int map_id, int main_id)
         //std::cout << "******** classnpc::set_file_data - npc: " << name << ", canfly: " << can_fly << std::endl;
         can_fly = true;
     }
-	realPosition.x = 0;
-	realPosition.y = 0;
+	relativePosition.x = 0;
+	relativePosition.y = 0;
 
 	max_projectiles = 1;			// hardcoded, fix this in editor
 	//move_speed = 6;					// hardcoded, fix this in editor
@@ -268,8 +270,16 @@ void GameEnemy::show()
     hitbox.x -= gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
     ImageView::get_instance()->draw_rectangle(hitbox, 0, 0, 255, 100);
 #endif
-    //std::cout << "ENEMY.SHOW[" << name << "]" << std::endl;
     artificial_inteligence::show();
+    // show tooltip, if needed
+    //std::cout << "ENEMY.SHOW[" << name << "]" << std::endl;
+    if (npc_request_item_tooltip_timer != 0 && npc_request_item_tooltip_timer > TimerView::get_instance()->getTimer()) {
+        st_position tooltip_pos = this->get_real_position();
+        tooltip_pos.x += this->get_size().width/2;
+        ImageView::get_instance()->show_item_tooltip(tooltip_pos, GameMediator::get_instance()->get_enemy(_number)->npc_requested_item_id);
+    } else if (npc_request_item_tooltip_timer != 0) {
+        npc_request_item_tooltip_timer = 0;
+    }
 }
 
 void GameEnemy::npc_set_position(st_float_position pos)
@@ -308,6 +318,17 @@ bool GameEnemy::is_static()
         return true;
     }
     return false;
+}
+
+int GameEnemy::get_id()
+{
+    return _number;
+}
+
+void GameEnemy::npc_activate_request_item_tooltip()
+{
+    npc_request_item_tooltip_timer = TimerView::get_instance()->getTimer() + REQUEST_ITEM_TOOLTIP_DURATION;
+    std::cout << "current-timer[" << TimerView::get_instance()->getTimer() << "], npc_request_item_tooltip_timer[" << npc_request_item_tooltip_timer << "]" << std::endl;
 }
 
 void GameEnemy::npc_set_hp(st_hit_points new_hp)
@@ -411,7 +432,7 @@ void GameEnemy::copy(GameEnemy *from)
 	hitPoints = from->hitPoints;
 	name = from->name;
 	position = from->position;
-	realPosition = from->realPosition;
+	relativePosition = from->relativePosition;
 	last_execute_time = 0;
 	frameSize = from->frameSize;
 	moveCommands = from->moveCommands;

@@ -877,8 +877,11 @@ void MapController::load_map_npcs()
         file_v5_map_npc& npc_ref = SharedData::get_instance()->file_v5_map_npc_map.at(SharedData::get_instance()->v6_selected_area).at(i);
 
         int npc_id = npc_ref.id_npc;
+        if (npc_id == -1) {
+            continue;
+        }
 
-        //std::cout << ">>>>>>>>>>> MapController::load_map_npcs - add NPC[" << npc_id << "]" << std::endl;
+        std::cout << ">>>>>>>>>>> MapController::load_map_npcs - add NPC.id[" << npc_id << "], name[" << GameMediator::get_instance()->get_enemy(npc_id)->name << "]" << std::endl;
 
         if (npc_id != -1) {
             GameEnemy new_npc = GameEnemy(SharedData::get_instance()->v6_selected_area, npc_id, i);
@@ -901,7 +904,7 @@ void MapController::load_map_npcs()
             }
 
             map_enemy_list.push_back(new_npc); // insert new npc at the list-end
-            //std::cout << "(A) ######### _npc_list.add, size[" << _npc_list.size() << "]" << std::endl;
+            std::cout << "(A) ######### _npc_list.add, size[" << map_enemy_list.size() << "]" << std::endl;
 
         }
 
@@ -2242,17 +2245,7 @@ GameEnemy* MapController::collision_player_npcs(character* playerObj, const shor
                 if (npc_ref->get_is_npc() == true) {
                     // NPC dialog //
                     if (InputController::get_instance()->p1_input[BTN_UP] == 1) {
-                        std::vector<std::string> message1;
-                        message1.push_back(std::string("Welcome to Corneria"));
-                        st_dialog dialog1;
-                        dialog1.msgs = message1;
-                        GameManager::get_instance()->add_queue_dialog(dialog1);
-
-                        std::vector<std::string> message2;
-                        message2.push_back(std::string("I like Swords!"));
-                        st_dialog dialog2;
-                        dialog2.msgs = message2;
-                        GameManager::get_instance()->add_queue_dialog(dialog2);
+                        GameManager::get_instance()->talk_with_npc(npc_ref->get_id());
                     } else {
                         draw::get_instance()->draw_game_button(playerObj->get_real_position().x+playerObj->get_size().width/2, playerObj->get_real_position().y-20, INPUT_IMAGES_DPAD_UP);
                     }
@@ -2354,6 +2347,21 @@ GameEnemy* MapController::find_nearest_npc(st_position pos)
         }
     }
     return min_dist_npc;
+}
+
+GameEnemy *MapController::find_npc_by_id(int npc_id)
+{
+    std::vector<GameEnemy>::iterator npc_it;
+    for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
+        GameEnemy* npc_ref = &(*npc_it);
+        if (npc_ref->get_id() == npc_id) {
+            return npc_ref;
+        }
+    }
+    char msg[512];
+    sprintf(msg, "Could not find id[%d]", npc_id);
+    exception_manager::throw_general_exception(std::string("MapController::find_npc_by_id"), std::string(msg));
+    return nullptr;
 }
 
 GameEnemy *MapController::find_nearest_npc_on_direction(st_position pos, int direction)

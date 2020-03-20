@@ -147,6 +147,8 @@ public:
 
     GameEnemy* find_nearest_npc(st_position pos);
 
+    GameEnemy* find_npc_by_id(int npc_id);
+
     GameEnemy* find_nearest_npc_on_direction(st_position pos, int direction);
 
     void clean_map_npcs_projectiles();

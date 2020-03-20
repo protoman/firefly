@@ -31,6 +31,7 @@ SOURCES += \
     character/gamenpc.cpp \
         main.cpp \
     text/i18ntext.cpp \
+    text/npc_dialog_manager.cpp \
     view/ingame_presentation.cpp \
     view/textview.cpp \
     view/imageview.cpp \
@@ -84,9 +85,11 @@ HEADERS += \
     file/v6/file_area_v6.h \
     file/v6/file_game_object_state.h \
     file/v6/file_level_v6.h \
+    file/v6/file_npc_state_v6.h \
     file/v6/file_object_v6.h \
     file/v6/file_room_v6.h \
     text/i18ntext.h \
+    text/npc_dialog_manager.h \
     view/ingame_presentation.h \
     view/textview.h \
     view/imageview.h \

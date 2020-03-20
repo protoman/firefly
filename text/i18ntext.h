@@ -31,7 +31,7 @@ private:
 
 private:
     static i18nText* _instance;
-    std::set<e_GAME_DIALOG> one_shot_game_dialogs = {                // thos dialogs will be shown just once
+    std::set<e_GAME_DIALOG> one_shot_game_dialogs = {                // these dialogs will be shown just once
         GAME_DIALOG_INTRO_STAGE_SWAMP_ARRIVAL
     };
 

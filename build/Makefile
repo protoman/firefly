@@ -58,6 +58,7 @@ SOURCES       = ../GameManager.cpp \
 		../character/gamenpc.cpp \
 		../main.cpp \
 		../text/i18ntext.cpp \
+		../text/npc_dialog_manager.cpp \
 		../view/ingame_presentation.cpp \
 		../view/textview.cpp \
 		../view/imageview.cpp \
@@ -104,6 +105,7 @@ OBJECTS       = GameManager.o \
 		gamenpc.o \
 		main.o \
 		i18ntext.o \
+		npc_dialog_manager.o \
 		ingame_presentation.o \
 		textview.o \
 		imageview.o \
@@ -338,9 +340,11 @@ DIST          = ../TODO \
 		file/v6/file_area_v6.h \
 		file/v6/file_game_object_state.h \
 		file/v6/file_level_v6.h \
+		file/v6/file_npc_state_v6.h \
 		file/v6/file_object_v6.h \
 		file/v6/file_room_v6.h \
 		text/i18ntext.h \
+		text/npc_dialog_manager.h \
 		view/ingame_presentation.h \
 		view/textview.h \
 		view/imageview.h \
@@ -400,6 +404,7 @@ DIST          = ../TODO \
 		../character/gamenpc.cpp \
 		../main.cpp \
 		../text/i18ntext.cpp \
+		../text/npc_dialog_manager.cpp \
 		../view/ingame_presentation.cpp \
 		../view/textview.cpp \
 		../view/imageview.cpp \
@@ -917,7 +922,9 @@ GameManager.o: ../GameManager.cpp ../GameManager.h \
 		../class_config.h \
 		../scenes/dialogs.h \
 		../aux_tools/fps_control.h \
+		../text/npc_dialog_manager.h \
 		../view/textview.h \
+		../file/v6/file_npc_state_v6.h \
 		../options/pausemenu.h \
 		../view/ingame_presentation.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GameManager.o ../GameManager.cpp
@@ -986,7 +993,8 @@ GameEnemy.o: ../character/GameEnemy.cpp ../character/GameEnemy.h \
 		../controller/inputcontroller.h \
 		../class_config.h \
 		../scenes/dialogs.h \
-		../aux_tools/fps_control.h
+		../aux_tools/fps_control.h \
+		../text/npc_dialog_manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GameEnemy.o ../character/GameEnemy.cpp
 
 ai_boss_001.o: ../character/custom/ai_boss_001.cpp ../character/artificial_inteligence.h \
@@ -1006,7 +1014,48 @@ ai_boss_001.o: ../character/custom/ai_boss_001.cpp ../character/artificial_intel
 		../file/v4/file_save_v4.h \
 		../file/v4/file_config_v4.h \
 		../file/v4/file_scene_v4.h \
-		../file/format/st_hitPoints.h
+		../file/format/st_hitPoints.h \
+		../view/imageview.h \
+		../data/shareddata.h \
+		../file/v4/file_anim_block.h \
+		../file/v5/struct_file_map.h \
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
+		../file/v5/struct_file_game_area_map.h \
+		../file/v5/struct_file_area_data.h \
+		../file/v6/file_level_v6.h \
+		../file/v6/file_room_v6.h \
+		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
+		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
+		../view/timerview.h \
+		../GameManager.h \
+		../character/classplayer.h \
+		../character/GameEnemy.h \
+		../file/format.h \
+		../file/file_io.h \
+		../sceneslib.h \
+		../scenes/game_menu.h \
+		../strings_map.h \
+		../file/fio_strings.h \
+		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
+		../game_mediator.h \
+		../file/fio_common.h \
+		../aux_tools/exception_manager.h \
+		../view/option_picker.h \
+		../options/key_map.h \
+		../objects/GameObject.h \
+		../controller/mapcontroller.h \
+		../view/animation.h \
+		../view/draw.h \
+		../view/soundview.h \
+		../controller/inputcontroller.h \
+		../class_config.h \
+		../scenes/dialogs.h \
+		../aux_tools/fps_control.h \
+		../text/npc_dialog_manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ai_boss_001.o ../character/custom/ai_boss_001.cpp
 
 gamenpc.o: ../character/gamenpc.cpp ../character/gamenpc.h \
@@ -1090,7 +1139,8 @@ main.o: ../main.cpp ../data/shareddata.h \
 		../controller/inputcontroller.h \
 		../class_config.h \
 		../scenes/dialogs.h \
-		../aux_tools/fps_control.h
+		../aux_tools/fps_control.h \
+		../text/npc_dialog_manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../main.cpp
 
 i18ntext.o: ../text/i18ntext.cpp ../text/i18ntext.h \
@@ -1113,6 +1163,67 @@ i18ntext.o: ../text/i18ntext.cpp ../text/i18ntext.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o i18ntext.o ../text/i18ntext.cpp
+
+npc_dialog_manager.o: ../text/npc_dialog_manager.cpp ../text/npc_dialog_manager.h \
+		../data/st_common.h \
+		../defines.h \
+		../GameManager.h \
+		../character/classplayer.h \
+		../character/character.h \
+		../file/format/st_characterState.h \
+		../file/format/st_teleporter.h \
+		../file/format/st_projectile.h \
+		../file/format/st_platform.h \
+		../projectilelib.h \
+		../aux_tools/trajectory_parabola.h \
+		../character/movement/jump.h \
+		../character/movement/inertia.h \
+		../character/character_animation.h \
+		../file/v4/file_game_v4.h \
+		../file/v4/file_save_v4.h \
+		../file/v4/file_config_v4.h \
+		../file/v4/file_scene_v4.h \
+		../file/format/st_hitPoints.h \
+		../character/GameEnemy.h \
+		../file/format.h \
+		../file/v4/file_anim_block.h \
+		../character/artificial_inteligence.h \
+		../file/file_io.h \
+		../file/v6/file_level_v6.h \
+		../file/v6/file_room_v6.h \
+		../sceneslib.h \
+		../scenes/game_menu.h \
+		../strings_map.h \
+		../file/fio_strings.h \
+		../file/v4/file_strings.h \
+		../aux_tools/json/json.h \
+		../game_mediator.h \
+		../file/fio_common.h \
+		../aux_tools/exception_manager.h \
+		../view/option_picker.h \
+		../options/key_map.h \
+		../objects/GameObject.h \
+		../controller/mapcontroller.h \
+		../data/shareddata.h \
+		../file/v5/struct_file_map.h \
+		../file/v5/struct_file_area.h \
+		../file/v5/struct_file_area_link.h \
+		../file/v5/struct_file_game_area_map.h \
+		../file/v5/struct_file_area_data.h \
+		../file/v6/file_area_v6.h \
+		../file/v6/file_object_v6.h \
+		../file/v6/file_game_object_state.h \
+		../text/i18ntext.h \
+		../view/imageview.h \
+		../view/animation.h \
+		../view/timerview.h \
+		../view/draw.h \
+		../view/soundview.h \
+		../controller/inputcontroller.h \
+		../class_config.h \
+		../scenes/dialogs.h \
+		../aux_tools/fps_control.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o npc_dialog_manager.o ../text/npc_dialog_manager.cpp
 
 ingame_presentation.o: ../view/ingame_presentation.cpp ../view/ingame_presentation.h \
 		../data/st_common.h \
@@ -1429,6 +1540,7 @@ mapcontroller.o: ../controller/mapcontroller.cpp ../view/animation.h \
 		../class_config.h \
 		../scenes/dialogs.h \
 		../aux_tools/fps_control.h \
+		../text/npc_dialog_manager.h \
 		../collision_detection.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mapcontroller.o ../controller/mapcontroller.cpp
 
@@ -1507,7 +1619,8 @@ artificial_inteligence.o: ../character/artificial_inteligence.cpp ../character/a
 		../controller/inputcontroller.h \
 		../class_config.h \
 		../scenes/dialogs.h \
-		../aux_tools/fps_control.h
+		../aux_tools/fps_control.h \
+		../text/npc_dialog_manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o artificial_inteligence.o ../character/artificial_inteligence.cpp
 
 character.o: ../character/character.cpp ../character/character.h \
@@ -1567,7 +1680,8 @@ character.o: ../character/character.cpp ../character/character.h \
 		../controller/inputcontroller.h \
 		../class_config.h \
 		../scenes/dialogs.h \
-		../aux_tools/fps_control.h
+		../aux_tools/fps_control.h \
+		../text/npc_dialog_manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o character.o ../character/character.cpp
 
 character_animation.o: ../character/character_animation.cpp ../character/character_animation.h \
@@ -1658,7 +1772,8 @@ classplayer.o: ../character/classplayer.cpp ../character/classplayer.h \
 		../options/key_map.h \
 		../class_config.h \
 		../scenes/dialogs.h \
-		../aux_tools/fps_control.h
+		../aux_tools/fps_control.h \
+		../text/npc_dialog_manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o classplayer.o ../character/classplayer.cpp
 
 draw.o: ../view/draw.cpp ../view/draw.h \
@@ -1719,6 +1834,7 @@ draw.o: ../view/draw.cpp ../view/draw.h \
 		../class_config.h \
 		../scenes/dialogs.h \
 		../aux_tools/fps_control.h \
+		../text/npc_dialog_manager.h \
 		../view/textview.h \
 		../view/ingame_presentation.h \
 		../options/pausemenu.h
@@ -1843,7 +1959,8 @@ projectilelib.o: ../projectilelib.cpp ../projectilelib.h \
 		../controller/inputcontroller.h \
 		../class_config.h \
 		../scenes/dialogs.h \
-		../aux_tools/fps_control.h
+		../aux_tools/fps_control.h \
+		../text/npc_dialog_manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o projectilelib.o ../projectilelib.cpp
 
 sceneslib.o: ../sceneslib.cpp ../sceneslib.h \
@@ -1908,6 +2025,7 @@ sceneslib.o: ../sceneslib.cpp ../sceneslib.h \
 		../class_config.h \
 		../scenes/dialogs.h \
 		../aux_tools/fps_control.h \
+		../text/npc_dialog_manager.h \
 		../ports/android/android_game_services.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sceneslib.o ../sceneslib.cpp
 
@@ -2007,7 +2125,8 @@ game_menu.o: ../scenes/game_menu.cpp ../scenes/game_menu.h \
 		../controller/mapcontroller.h \
 		../view/animation.h \
 		../class_config.h \
-		../aux_tools/fps_control.h
+		../aux_tools/fps_control.h \
+		../text/npc_dialog_manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o game_menu.o ../scenes/game_menu.cpp
 
 class_config.o: ../class_config.cpp ../class_config.h \
@@ -2162,7 +2281,8 @@ GameObject.o: ../objects/GameObject.cpp ../objects/GameObject.h \
 		../options/key_map.h \
 		../class_config.h \
 		../scenes/dialogs.h \
-		../aux_tools/fps_control.h
+		../aux_tools/fps_control.h \
+		../text/npc_dialog_manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GameObject.o ../objects/GameObject.cpp
 
 dialogs.o: ../scenes/dialogs.cpp ../scenes/dialogs.h \
@@ -2223,7 +2343,8 @@ dialogs.o: ../scenes/dialogs.cpp ../scenes/dialogs.h \
 		../view/draw.h \
 		../view/soundview.h \
 		../class_config.h \
-		../aux_tools/fps_control.h
+		../aux_tools/fps_control.h \
+		../text/npc_dialog_manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dialogs.o ../scenes/dialogs.cpp
 
 pausemenu.o: ../options/pausemenu.cpp ../options/pausemenu.h \

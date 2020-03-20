@@ -90,12 +90,12 @@ character::~character()
 // ********************************************************************************************** //
 void character::char_update_real_position() {
     if (GameManager::get_instance()->get_current_map_obj() != nullptr) {
-        realPosition.x = position.x - (int)GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
-        realPosition.y = position.y - (int)GameManager::get_instance()->get_current_map_obj()->getMapScrolling().y;
+        relativePosition.x = position.x - (int)GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
+        relativePosition.y = position.y - (int)GameManager::get_instance()->get_current_map_obj()->getMapScrolling().y;
         //std::cout << ">>>> show::char_update_real_position - realPosition.y: " << realPosition.y << ", pos.y: " << position.y << ", gameManager::get_instance()->get_current_map_obj()->getMapScrolling().y: " << GameManager::get_instance()->get_current_map_obj()->getMapScrolling().y << std::endl;
     } else {
-		realPosition.x = position.x;
-		realPosition.y = position.y;
+        relativePosition.x = position.x;
+        relativePosition.y = position.y;
     }
 }
 
@@ -159,7 +159,7 @@ void character::charMove() {
 
     int water_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position((position.x+frameSize.width/2)/TILESIZE, (position.y+6)/TILESIZE));
     if (is_player() == true && water_lock == TERRAIN_WATER) {
-        GameManager::get_instance()->get_current_map_obj()->add_bubble_animation(st_position(realPosition.x+frameSize.width/2, position.y+6));
+        GameManager::get_instance()->get_current_map_obj()->add_bubble_animation(st_position(relativePosition.x+frameSize.width/2, position.y+6));
         if (TimerView::get_instance()->getTimer() > last_water_damage_warning_sound_timer) {
             SoundView::get_instance()->play_sfx(SFX_BEAM);
             last_water_damage_warning_sound_timer = TimerView::get_instance()->getTimer() + 1200;
@@ -288,7 +288,7 @@ void character::charMove() {
                 hit_moved_back_n += temp_move_speed;
             }
             bool is_on_slope = isOnSlope(i);
-            if (is_player() == false || (realPosition.x + i + frameSize.width/2) < RES_W) {
+            if (is_player() == false || (relativePosition.x + i + frameSize.width/2) < RES_W) {
                 st_map_collision map_col = map_collision(i, 0, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
                 mapLock = map_col.block;
                 //std::cout << "### MOVE::RIGHT#2 - is_on_slope[" << is_on_slope << "] ###" << std::endl;
@@ -370,7 +370,7 @@ void character::charMove() {
                         }
                     }
                 } else {
-                    if (realPosition.x+inertia_xinc > RES_W) {
+                    if (relativePosition.x+inertia_xinc > RES_W) {
                         //std::cout << "INERTIA::STOP #2" << std::endl;
                         _inertia_obj.stop();
                     } else {
@@ -559,14 +559,14 @@ void character::check_y_scroll()
 
     if (is_player()) {
         // BOTTOM //
-        if (realPosition.y+frameSize.height > AREA_H*0.8) {
-            int diffY = realPosition.y+frameSize.height - AREA_H*0.9;
+        if (relativePosition.y+frameSize.height > AREA_H*0.8) {
+            int diffY = relativePosition.y+frameSize.height - AREA_H*0.9;
             GameManager::get_instance()->get_current_map_obj()->changeScrolling(st_float_position(0, diffY), true);
         // TOP //
-        } else if (realPosition.y < AREA_H*0.3) {
-            int diffY = AREA_H*0.3 - realPosition.y;
-            if (realPosition.y > 0 && realPosition.y < TILESIZE) {
-                diffY = realPosition.y;
+        } else if (relativePosition.y < AREA_H*0.3) {
+            int diffY = AREA_H*0.3 - relativePosition.y;
+            if (relativePosition.y > 0 && relativePosition.y < TILESIZE) {
+                diffY = relativePosition.y;
             }
             //std::cout << "character::check_y_scroll - diffY[" << diffY << "], realPosition.y[" << realPosition.y << "], AREA_H*0.3[" << (AREA_H*0.3) << "]" << std::endl;
             GameManager::get_instance()->get_current_map_obj()->changeScrolling(st_float_position(0, -diffY), true);
@@ -824,6 +824,22 @@ void character::use_game_item()
     }
 }
 
+int character::get_current_item_id_from_slot()
+{
+    return SharedData::get_instance()->game_save.game_item_list[0].obj_id;
+}
+
+void character::morph_item(int new_obj_id)
+{
+    SharedData::get_instance()->game_save.game_item_list[0].obj_id = new_obj_id;
+}
+
+void character::remove_game_item_from_slot()
+{
+    SharedData::get_instance()->game_save.game_item_list[0].obj_id = -1;
+    SharedData::get_instance()->game_save.game_item_list[0].uuid = -1;
+}
+
 /// @TODO: this must be moved to player, as character attack must be very simple
 void character::attack(bool dont_update_colors, short updown_trajectory, bool always_charged)
 {
@@ -1029,7 +1045,7 @@ void character::show() {
 
     show_previous_sprites();
 
-    show_at(realPosition);
+    show_at(relativePosition);
 
     if (is_player() && state.animation_type == ANIM_TYPE_GOT_ITEM) {
         std::cout << ">>>>>>>>>>>>>>>>>>>> ANIM_TYPE_GOT_ITEM - interrupt-timer[" << SharedData::get_instance()->get_item_timer << "], timer[" << TimerView::get_instance()->getTimer() << "]" << std::endl;
@@ -1059,7 +1075,7 @@ void character::show() {
             if (ImageView::get_instance()->get_scale() < 1.2) {
                 ImageView::get_instance()->inc_scale(0.01);
             }
-            draw::get_instance()->show_object_graphic(realPosition.x, realPosition.y+40, got_item_id);
+            draw::get_instance()->show_object_graphic(relativePosition.x, relativePosition.y+40, got_item_id);
         }
     }
 }
@@ -1822,7 +1838,7 @@ bool character::slide(st_float_position mapScrolling)
     }
 
     // check if trying to leave screen RIGHT
-    if (is_player() == true && (realPosition.x + frameSize.width/2) > RES_W) {
+    if (is_player() == true && (relativePosition.x + frameSize.width/2) > RES_W) {
         state.slide_distance = 0;
         //if (is_player()) std::cout << "CHAR::SLIDE LEAVE #1.5" << std::endl;
         return false;
@@ -2278,7 +2294,7 @@ st_map_collision character::map_collision(const float incx, const short incy, st
             } else if (!get_item(res_collision_object)) {
                 if (res_collision_object._object->get_type() == OBJ_TREASURE_CHEST) {
                     if (res_collision_object._object->is_started() == false) {
-                        draw::get_instance()->draw_game_button(realPosition.x+frameSize.width/2, realPosition.y-20, INPUT_IMAGES_DPAD_DOWN);
+                        draw::get_instance()->draw_game_button(relativePosition.x+frameSize.width/2, relativePosition.y-20, INPUT_IMAGES_DPAD_DOWN);
                         if (InputController::get_instance()->p1_input[BTN_DOWN] == 1) {
                             got_item_id = res_collision_object._object->get_ability();
                             std::cout << "character::map_collision - OPEN TREASURE CHEST, id_item[" << got_item_id << "]" << std::endl;
@@ -3313,7 +3329,7 @@ void character::set_current_hp(Uint8 inc)
 
 st_position character::get_real_position() const
 {
-	return realPosition;
+    return relativePosition;
 }
 
 void character::execute_jump_up()
@@ -3407,13 +3423,13 @@ void character::fall_to_ground()
         char_update_real_position();
         position.y++;
         if (hit_ground() == true) {
-            std::cout << "################## CHAR::fall_to_ground STOP - y[" << position.y << "]" << std::endl;
+            //std::cout << "################## CHAR::fall_to_ground STOP - y[" << position.y << "]" << std::endl;
             return;
         } else {
-            std::cout << "################## CHAR::fall_to_ground CONTINUE - y[" << position.y << "]" << std::endl;
+            //std::cout << "################## CHAR::fall_to_ground CONTINUE - y[" << position.y << "]" << std::endl;
         }
     }
-    std::cout << "################## CHAR::fall_to_ground::END y[" << position.y << "]" << std::endl;
+    //std::cout << "################## CHAR::fall_to_ground::END y[" << position.y << "]" << std::endl;
 }
 
 void character::initialize_position_to_ground()
@@ -3421,9 +3437,11 @@ void character::initialize_position_to_ground()
     if (can_fly == true) {
         return;
     }
+    //if (is_player() == false) std::cout << ">>> character::initialize_position_to_ground::START[" << name << "]" << std::endl;
     // RES_H is a good enough limit
     for (int i=0; i<RES_H; i++) {
         char_update_real_position();
+        //if (is_player() == false) std::cout << ">>> character::initialize_position_to_ground::EXECUTE[" << name << "], y[" << position.y << "], relative.y[" << relativePosition.y << "]" << std::endl;
         gravity(false);
         if (hit_ground() == true) {
             break;
@@ -3533,7 +3551,7 @@ bool character::test_change_position(short xinc, short yinc)
         return false;
     }
 
-    if (xinc > 0 && (realPosition.x - frameSize.width) > RES_W) {
+    if (xinc > 0 && (relativePosition.x - frameSize.width) > RES_W) {
         return false;
     }
 

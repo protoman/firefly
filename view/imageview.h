@@ -207,6 +207,8 @@ public:
 
     st_position calc_rotated_position(st_imageData& original, st_imageData& rotated);
 
+    void show_item_tooltip(st_position pos, int obj_id);
+
 
 private:
     ImageView();
@@ -227,6 +229,7 @@ public:
     std::vector<st_surface_with_direction> projectile_surface;
     st_imageData dash_dust;
     st_imageData water_splash;
+    st_imageData icon_bg;
 
 
 private:
@@ -236,6 +239,7 @@ private:
     std::map<std::string, st_imageData> FACES_SURFACES;
     std::vector<struct anim_tile_timer> ANIM_TILES_TIMERS;
     std::vector<struct st_imageData> ANIM_TILES_SURFACES;   // hold animated-tiles surface
+    std::map<int, struct st_imageData> object_icon_map;		// icons for objects NPCs may request/need
     // IMAGES //
     st_imageData ingame_menu;
     st_imageData config_menu;

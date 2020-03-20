@@ -167,6 +167,17 @@ void common::fill_object_combo(QComboBox *combo, OBJECT_TYPE type)
     }
 }
 
+void common::fill_object_combo_with_none(QComboBox *combo)
+{
+    combo->clear(); // delete all previous entries
+    combo->addItem(QString("[-1] None"));
+    for (int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
+        QString temp_str = QString("[") + QString::number(i) + QString("] - ") + QString(SharedData::get_instance()->v6_object_list.at(i).name);
+        combo->addItem(temp_str);
+    }
+
+}
+
 
 
 void common::fill_projectiles_combo(QComboBox *combo, bool add_empty_slot)

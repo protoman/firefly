@@ -1,3 +1,19 @@
+QUEST:
+    # está duplicando item após eel ser transformado
+    # tirar diálogos, mostrar apenas um tooltip com o item que o NPC quer
+        # como conseguir o item vai ser a diversão
+    # lista de estado de cada npc (lista, gravada junto com save-game)
+        # cada npc tem uma quest atômica, ou seja, recebe um item, dá um item em retorno
+        # o mesmo pode ser aplicado para ports/objetos
+
+EDITOR:
+    # mudar W/H quando troca gráfico
+    # isNPC true, HP = 99
+    # HP padrão 2
+    # não pode adicionar no JOGO (é, inteiro) dois npcs com mesmo id
+
+- adicionar um nível extra de charge (cor de blink e som) para super shot
+
 #######################################################################################################
 Créditos:
 #######################################################################################################

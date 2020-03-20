@@ -22,6 +22,35 @@ game_menu::game_menu()
 
 }
 
+void game_menu::show_intro_menu()
+{
+    st_imageData intro_screen_img = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->FILEPATH + "images/backgrounds/intro_screen.png");
+    int pos_y = -intro_screen_img.surface->h;
+    InputController::get_instance()->clean();
+    while (pos_y <= 0) {
+        ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
+        ImageView::get_instance()->renderImageAt(0, pos_y, intro_screen_img);
+        ImageView::get_instance()->updateRender();
+        TimerView::get_instance()->delay(2);
+        std::cout << "game_menu::show_intro_menu - pos_y[" << pos_y << "]" << std::endl;
+        pos_y += 8;
+    }
+
+    TextView::get_instance()->renderCenteredText(620, st_color(250, 250, 250), "PRESS ANY BUTTON");
+    ImageView::get_instance()->updateRender();
+
+    bool finished = false;
+    while (!finished) {
+        // animate spider
+
+
+        InputController::get_instance()->read_input();
+        if (InputController::get_instance()->p1_input[BTN_START] == 1) {
+            finished = true;
+        }
+    }
+}
+
 void game_menu::show_extra_menu()
 {
     short res = 0;
