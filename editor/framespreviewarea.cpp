@@ -13,7 +13,7 @@ framesPreviewArea::framesPreviewArea(QWidget *parent) : QWidget(parent), graphic
 
 void framesPreviewArea::set_graphicfile(std::string filename)
 {
-    std::cout << "framesPreviewArea::set_graphicfile[" << filename << "]" << std::endl;
+    //std::cout << "framesPreviewArea::set_graphicfile[" << filename << "]" << std::endl;
     graphic_filename = filename;
 }
 

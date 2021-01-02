@@ -3,13 +3,13 @@
 
 
 EditorTilePallete::EditorTilePallete(QWidget *parent) : QWidget(parent) {
-   printf("DEBUG.EditorTilePallete - constructor\n");
+   //printf("DEBUG.EditorTilePallete - constructor\n");
    selectedTileX=0;
    selectedTileY=0;
    myParent = parent;
    parent->resize(QSize(250, 200));
    ADJUSTED_SIZE = (double)SHOW_TILESIZE/TILESIZE;
-   std::cout << ">>>>>>>>>>>>>>>>>>>>>>>> ADJUSTED_SIZE[" << ADJUSTED_SIZE << "]" << std::endl;
+   //std::cout << ">>>>>>>>>>>>>>>>>>>>>>>> ADJUSTED_SIZE[" << ADJUSTED_SIZE << "]" << std::endl;
    this->show();
 }
 

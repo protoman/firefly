@@ -81,6 +81,8 @@ public:
     void setPallete(std::string filename);
 	void setPallete(char *value);
     void load_game();
+    void load_area_rooms(int area_n);
+    void save_area_rooms(int area_n);
     void save_game();
     void clean_data();                                      // any sanity data cleaning goest here
 

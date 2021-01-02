@@ -42,7 +42,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="game_tab">
        <attribute name="title">
@@ -60,7 +60,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>295</height>
+             <height>285</height>
             </rect>
            </property>
           </widget>
@@ -70,7 +70,7 @@
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
-        <string>Levels</string>
+        <string>World Map</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
@@ -84,7 +84,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>295</height>
+             <height>285</height>
             </rect>
            </property>
           </widget>
@@ -108,7 +108,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>295</height>
+             <height>285</height>
             </rect>
            </property>
           </widget>
@@ -132,7 +132,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>295</height>
+             <height>285</height>
             </rect>
            </property>
           </widget>
@@ -156,7 +156,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>295</height>
+             <height>285</height>
             </rect>
            </property>
           </widget>
@@ -180,7 +180,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>295</height>
+             <height>285</height>
             </rect>
            </property>
           </widget>
@@ -204,7 +204,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>295</height>
+             <height>285</height>
             </rect>
            </property>
           </widget>
@@ -228,7 +228,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>295</height>
+             <height>285</height>
             </rect>
            </property>
           </widget>
@@ -252,7 +252,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>295</height>
+             <height>285</height>
             </rect>
            </property>
           </widget>
@@ -276,7 +276,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>295</height>
+             <height>285</height>
             </rect>
            </property>
           </widget>
@@ -309,7 +309,7 @@
      <x>0</x>
      <y>0</y>
      <width>870</width>
-     <height>20</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFILE">

@@ -12,6 +12,8 @@ areaEditPreviewWidget::areaEditPreviewWidget(QWidget *parent) : QWidget(parent)
 
 void areaEditPreviewWidget::update_files()
 {
+    //std::cout << "current-area[" << SharedData::get_instance()->v6_selected_area << "]" << std::endl;
+    //std::cout << "area_list.size[" << SharedData::get_instance()->v6_area_list.size() << "]" << std::endl;
     std::string filename_str = SharedData::get_instance()->FILEPATH + std::string("/images/tilesets/") + SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).tileset_filename;
     if (filename_str.length() == 0) {
         tileset_image = QPixmap();

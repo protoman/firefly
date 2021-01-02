@@ -36,7 +36,11 @@ void map_tab::reload()
 
     properties_hidden = true;
     ui->editArea->update_map_data();
-    Mediator::get_instance()->setPallete(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).tileset_filename);
+    //std::cout << "area_list.size[" << SharedData::get_instance()->v6_area_list.size() << "]" << std::endl;
+    std::string pallete_filename = SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).tileset_filename;
+    if (pallete_filename.length() > 0) {
+        Mediator::get_instance()->setPallete(pallete_filename);
+    }
 
     fill_data();
 }
@@ -390,7 +394,7 @@ void map_tab::fill_map_selector()
 
 void map_tab::on_mapSelector_comboBox_currentIndexChanged(int index)
 {
-    if (_data_loading == true) { return; }
+    if (_data_loading == true || index == -1) { return; }
     SharedData::get_instance()->v6_selected_area = index;
     _data_loading = true;
     fill_data();

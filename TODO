@@ -1,7 +1,37 @@
+- refazer sistema de arquivos/areas/níveis
+    # game: mapa infinito (cresce conforme necessário) com salas
+    # area: uma lista de salas com mesmo nome e tileset e música (max 20)
+        # sala uma quantidade de tiles que preenche uma tela e pertence a uma área
+
+
+std::vector<file_v6_area> v6_area_list;
+    # lista das áreas criadas
+
+std::map<int, std::vector<file_v6_level_point>> v6_level_map;
+    # mapa que indica uma sala a uma área e posição no mapa-mundi
+
+
+
+- no editor fica assim:
+    # tem um grid, em que você seleciona uma área, e ao clicar em um quadrado, uma sala é adicionada àquela área
+    # fora a primeira sala, só pode criar salas adjacentes
+    # áreas adjascentes são ligadas automaticamente, com uma porta (virtual, faz scroll automatico)
+
+- (melhorar) joystick rumble
+
+- independência de resolução
+- diminuir tamanho dos tiles para dar mais detalhes no mapa
+- free scrolling x e y (poder subir rampas e o scroll subir junto)
+
+
+- fundos animados (feitos de tiles, não de imagem)
+- items que não são plataforma não devem parar porque estao em colisão com personagens
+- EDITOR: trocar locks de cores para generico, por objeto
+
 QUEST:
-    # está duplicando item após eel ser transformado
-    # tirar diálogos, mostrar apenas um tooltip com o item que o NPC quer
-        # como conseguir o item vai ser a diversão
+    # está duplicando item após ele ser transformado
+        # uma vez que um item tenha sido transformado, tem que indicar que ele não pode existir mais
+
     # lista de estado de cada npc (lista, gravada junto com save-game)
         # cada npc tem uma quest atômica, ou seja, recebe um item, dá um item em retorno
         # o mesmo pode ser aplicado para ports/objetos
@@ -12,7 +42,6 @@ EDITOR:
     # HP padrão 2
     # não pode adicionar no JOGO (é, inteiro) dois npcs com mesmo id
 
-- adicionar um nível extra de charge (cor de blink e som) para super shot
 
 #######################################################################################################
 Créditos:

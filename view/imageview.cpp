@@ -98,12 +98,12 @@ void ImageView::restore_render_target()
 
 }
 
-SDL_Texture *ImageView::get_game_texture_renderer()
+SDL_Texture *ImageView::get_game_texture()
 {
     return texture_render_target;
 }
 
-SDL_Texture *ImageView::get_hud_texture_renderer()
+SDL_Texture *ImageView::get_hud_texture()
 {
     return hud_texture_render_target;
 }
@@ -429,12 +429,10 @@ void ImageView::preload()
 
     // object icons
     icon_bg = imageFromFile(SharedData::get_instance()->FILEPATH + std::string("images/backgrounds/icon.png"));
-    for (unsigned int i=0; i<SharedData::get_instance()->enemy_list.size(); i++) {
-        if (SharedData::get_instance()->enemy_list.at(i).is_npc && SharedData::get_instance()->enemy_list.at(i).npc_requested_item_id != -1) {
-            // TODO: border and image size
-            std::string filename = SharedData::get_instance()->FILEPATH + std::string("images/sprites/objects/") + SharedData::get_instance()->v6_object_list.at(SharedData::get_instance()->enemy_list.at(i).npc_requested_item_id).graphic_filename;
-            object_icon_map.insert(std::pair<int, st_imageData>(SharedData::get_instance()->enemy_list.at(i).npc_requested_item_id, imageFromFile(filename)));
-        }
+    for (unsigned int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
+        // TODO: border and image size
+        std::string filename = SharedData::get_instance()->FILEPATH + std::string("images/sprites/objects/") + SharedData::get_instance()->v6_object_list.at(i).graphic_filename;
+        object_icon_map.insert(std::pair<int, st_imageData>(i, imageFromFile(filename)));
     }
 
 }
@@ -478,6 +476,24 @@ void ImageView::show_item_tooltip(st_position pos, int obj_id)
     //std::cout << ">>>>>>>>>>>>>>>>>> show_item_tooltip <<<<<<<<<<<<<<<<<<<<<" << std::endl;
     renderImageAt(pos.x-TILESIZE/2, pos.y-TILESIZE, icon_bg);
     renderImageAt(pos.x-TILESIZE/2, pos.y-TILESIZE, object_icon_map.at(obj_id));
+}
+
+void ImageView::change_render_size()
+{
+    // TODO: keep aspect ratio
+    float scaleX = (float)SharedData::get_instance()->window_size.width / RES_W;
+    float scaleY = (float)SharedData::get_instance()->window_size.height / RES_H;
+
+    std::cout << ">>>>>>>> ImageView::change_render_size - w[" << SharedData::get_instance()->window_size.width << "], h[" << SharedData::get_instance()->window_size.height << "], scaleX[" << scaleX << "], scaleY[" << scaleY << "]" << std::endl;
+
+    if (scaleX > scaleY) {
+        scaleX = scaleY;
+    } else if (scaleY > scaleX) {
+        scaleY = scaleX;
+    }
+
+    SDL_RenderSetScale(gRenderer, scaleX, scaleY);
+    SDL_SetWindowSize(SharedData::get_instance()->window, RES_W*scaleX, RES_H*scaleY);
 }
 
 

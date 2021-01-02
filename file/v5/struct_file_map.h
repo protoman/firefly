@@ -99,6 +99,10 @@ struct file_v5_map_room {
     file_v5_map_tile tiles[AREA_ROOM_W][AREA_ROOM_H];
     int area_x = -1;
     int area_y = -1;
+
+    file_v5_map_room() {
+        std::cout << ">>>>>>>>>>> file_v5_map_room" << std::endl;
+    }
 };
 
 // this is used to save/load from disk (serialized)

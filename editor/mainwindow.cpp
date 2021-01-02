@@ -505,6 +505,7 @@ void MainWindow::on_actionGRID_toggled(bool arg1)
 
 void MainWindow::on_areaEditTabWidget_currentChanged(int index)
 {
+    level_editor->reload();
     map_edit_tab->reload();
 }
 

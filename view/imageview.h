@@ -191,8 +191,8 @@ public:
     // this allow us to render at a texture, so we can copy the screen
     void change_render_target(e_RENDER_TARGET target);
     void restore_render_target();
-    SDL_Texture* get_game_texture_renderer();
-    SDL_Texture* get_hud_texture_renderer();
+    SDL_Texture* get_game_texture();
+    SDL_Texture* get_hud_texture();
     e_RENDER_TARGET get_current_target();
 
     void set_fullscreen(bool mode);
@@ -208,6 +208,8 @@ public:
     st_position calc_rotated_position(st_imageData& original, st_imageData& rotated);
 
     void show_item_tooltip(st_position pos, int obj_id);
+
+    void change_render_size();
 
 
 private:

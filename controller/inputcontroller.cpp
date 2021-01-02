@@ -53,12 +53,29 @@ void InputController::init()
     SDL_JoystickEventState(SDL_ENABLE);
     joystick1 = SDL_JoystickOpen(SharedData::get_instance()->game_config.selected_input_device);
     printf("Opened Joystick [%s]\n", SDL_JoystickName(joystick1));
+
+    // open haptic
+    joystick1_haptic = SDL_HapticOpenFromJoystick(joystick1);
+    if(joystick1_haptic == NULL) {
+        printf( "Warning: Controller does not support haptics! SDL Error: %s\n", SDL_GetError() );
+    } else {
+        //Get initialize rumble
+        if (SDL_HapticRumbleInit(joystick1_haptic) < 0) {
+            printf( "Warning: Unable to initialize rumble! SDL Error: %s\n", SDL_GetError() );
+        }
+    }
 }
 
 void InputController::change_joystick()
 {
-    SDL_JoystickClose(joystick1);
+    close_joystick();
     joystick1 = SDL_JoystickOpen(SharedData::get_instance()->game_config.selected_input_device);
+}
+
+void InputController::close_joystick()
+{
+    SDL_HapticClose(joystick1_haptic);
+    SDL_JoystickClose(joystick1);
 }
 
 // ********************************************************************************************** //
@@ -118,6 +135,16 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
     }
 
     while (SDL_PollEvent(&SharedData::get_instance()->event)) {
+
+        if (SharedData::get_instance()->event.type == SDL_WINDOWEVENT) {
+            SDL_Event event = SharedData::get_instance()->event;
+            //std::cout << "WINDOW-EVENT[" << (int)SharedData::get_instance()->event.window.event << "], SDL_WINDOWEVENT_RESIZED[" << (int)SDL_WINDOWEVENT_RESIZED << "], SDL_WINDOWEVENT_SIZE_CHANGED[" << (int)SDL_WINDOWEVENT_SIZE_CHANGED << "]" << std::endl;
+            if (SharedData::get_instance()->event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                SDL_Log("Window %d resized to %dx%d", event.window.windowID, event.window.data1, event.window.data2);
+                SharedData::get_instance()->window_size = st_size(SharedData::get_instance()->event.window.data1, SharedData::get_instance()->event.window.data2);
+                SharedData::get_instance()->window_size_changed = true;
+            }
+        }
 
 
         if (_show_btn_debug == false) {
@@ -393,6 +420,14 @@ void InputController::clean_event_queue()
 {
     while (SDL_PollEvent(&SharedData::get_instance()->event)) {
         SDL_PumpEvents();
+    }
+}
+
+void InputController::test_erumble()
+{
+    //Play rumble at 75% strenght for 500 milliseconds
+    if(SDL_HapticRumblePlay(joystick1_haptic, 0.75, 50 ) != 0 ) {
+        printf( "Warning: Unable to play rumble! %s\n", SDL_GetError() );
     }
 }
 

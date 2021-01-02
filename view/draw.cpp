@@ -246,11 +246,11 @@ void draw::update_screen()
 
     ImageView::get_instance()->change_render_target(RENDER_TARGET_DIRECT_SCREEN);
     // show game-texture
-    ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W*ImageView::get_instance()->get_scale(), AREA_H*ImageView::get_instance()->get_scale(), RES_W-(RES_W*ImageView::get_instance()->get_scale()), AREA_H-(AREA_H*ImageView::get_instance()->get_scale()), ImageView::get_instance()->get_game_texture_renderer());
+    ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W*ImageView::get_instance()->get_scale(), AREA_H*ImageView::get_instance()->get_scale(), RES_W-(RES_W*ImageView::get_instance()->get_scale()), AREA_H-(AREA_H*ImageView::get_instance()->get_scale()), ImageView::get_instance()->get_game_texture());
 
     // show hud-texture
     if (GameManager::get_instance()->is_paused() == false) {
-        ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, HUD_H, 0, AREA_H, ImageView::get_instance()->get_hud_texture_renderer());
+        ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, HUD_H, 0, AREA_H, ImageView::get_instance()->get_hud_texture());
     }
 
 
@@ -759,12 +759,12 @@ void draw::fade_screen(int r, int g, int b, int total_delay, bool reverse)
     for (float i=0; i<=20; i++) {
         if (reverse == false) {
             //std::cout << "LOOP.DIRECT[" << i << "]" << std::endl;
-            ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, AREA_H, 0, 0, ImageView::get_instance()->get_game_texture_renderer());
+            ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, AREA_H, 0, 0, ImageView::get_instance()->get_game_texture());
             ImageView::get_instance()->set_surface_alpha(alpha_n, transparent_area);
             ImageView::get_instance()->renderImageAt(0, 0, transparent_area);
         } else {
             //std::cout << "LOOP.REVERSE[" << i << "]" << std::endl;
-            ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, AREA_H, 0, 0, ImageView::get_instance()->get_game_texture_renderer());
+            ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, AREA_H, 0, 0, ImageView::get_instance()->get_game_texture());
             ImageView::get_instance()->set_surface_alpha(255-alpha_n, transparent_area);
             ImageView::get_instance()->renderImageAt(0, 0, transparent_area);
         }
@@ -1020,11 +1020,12 @@ void draw::draw_in_game_menu_animation()
 
 void draw::draw_in_game_menu_map()
 {
-    std::cout << "DRAW::draw_in_game_menu_map - visited_level_list.size[" << SharedData::get_instance()->visited_level_list.size() << "]" << std::endl;
+    //std::cout << "DRAW::draw_in_game_menu_map - visited_level_list.size[" << SharedData::get_instance()->visited_level_list.size() << "]" << std::endl;
     int MAP_ROOM_SIZE_W = 24;
     int MAP_ROOM_SIZE_H = 16;
     int adjust_x = 280;
     int adjust_y = 190;
+    /*
     for (int i=0; i<SharedData::get_instance()->visited_level_list.size(); i++) {
         // @TODO: support for multiple areas //
         if (i != 0) {
@@ -1052,6 +1053,7 @@ void draw::draw_in_game_menu_map()
             ImageView::get_instance()->clearScreenArea(adjust_x, y*MAP_ROOM_SIZE_H+adjust_y, FILE_AREA_W*MAP_ROOM_SIZE_W, 1, 255, 255, 255);
         }
     }
+    */
 }
 
 void draw::draw_game_button(int x, int y, e_INPUT_IMAGES button)
@@ -1253,6 +1255,7 @@ void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weap
             }
         }
     }
+    show_hud_items();
     if (timer_hud_center_show == true) {
         ImageView::get_instance()->clearScreenArea(HUD_GRID_CENTER_X+4, HUD_GRID_CENTER_Y+7, 13, 12, 227, 179, 2); // TODO: blink
     }
@@ -1265,7 +1268,19 @@ void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weap
 
     //ImageView::get_instance()->clearScreenArea(100, 10, RES_W, AREA_H, 227, 2, 2);
     //renderTexturePortionAt(0, 0, RES_W, HUD_H, 0, AREA_H-50, hud_texture_render_target);
-    ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, HUD_H, 0, AREA_H, ImageView::get_instance()->get_hud_texture_renderer());
+    ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, HUD_H, 0, AREA_H, ImageView::get_instance()->get_hud_texture());
+}
+
+void draw::show_hud_items()
+{
+    for (int i=0; i<GAME_ITEM_SLOTS; i++) {
+        if (SharedData::get_instance()->game_save.game_item_list[i].uuid != -1) {
+            //std::cout << "picked item in slot[" << i << "]" << std::endl;
+            //SharedData::get_instance()->game_save.game_item_list[i].obj_id = obj_info.get_id();
+            //SharedData::get_instance()->game_save.game_item_list[i].uuid = obj_info.get_uuid();
+            ImageView::get_instance()->show_item_tooltip(st_position(580+(i*TILESIZE)+i*6, 72), SharedData::get_instance()->game_save.game_item_list[i].obj_id);
+        }
+    }
 }
 
 void draw::draw_enery_bars(int value, int x_pos, int y_pos, int type)

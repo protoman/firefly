@@ -70,7 +70,6 @@ void artificial_inteligence_tab::on_ai_selector_currentIndexChanged(int index)
     // REACTIONS //
     int action_n = Mediator::get_instance()->ai_list.at(index).reactions[0].action;
     ui->aiReactionAction_comboBox->setCurrentIndex(action_n+1); // plus 1 because of "none"
-    std::cout << ">> #1 action_n[" << action_n << "]" << std::endl;
     common::fill_ai_options_combo(action_n, ui->aiReactionParam_comboBox); // plus one because of "none" option
     ui->aiReactionParam_comboBox->setCurrentIndex(Mediator::get_instance()->ai_list.at(index).reactions[0].extra_parameter);
 

@@ -59,11 +59,8 @@ int main(int argc, char *argv[])
 	#endif
 
 	std::string argvString = std::string(argv[0]);
-
-
     SharedData::get_instance()->GAMEPATH = argvString.substr(0, argvString.size()-EXEC_NAME.size());
     std::cout << " *** EXEC_NAME: " << EXEC_NAME << ", FILEPATH: " << SharedData::get_instance()->FILEPATH << ", SAVEPATH: " << SharedData::get_instance()->SAVEPATH << " ***" << std::endl;
-
     SharedData::get_instance()->FILEPATH = "";
 
     init_enum_names();

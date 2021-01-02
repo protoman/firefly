@@ -3,7 +3,7 @@
 # -------------------------------------------------
 
 #CONFIG += win32
-#CONFIG += linux
+CONFIG += linux
 #CONFIG += macosx
 
 QT += widgets
@@ -35,8 +35,8 @@ macosx {
 }
 
 linux {
-    QMAKE_CCFLAGS += -std=c++0x -g
-    QMAKE_CXXFLAGS += -std=c++0x -g
+    QMAKE_CXXFLAGS += -std=c++0x -g -I/usr/include/SDL2
+    INCLUDES = -I/usr/include/SDL2
     CONFIG += console
 }
 
@@ -124,7 +124,7 @@ SOURCES += main.cpp \
     widgets/areaeditpreviewwidget.cpp \
     widgets/slopepreviewwidget.cpp \
     widgets/slopepickerwidget.cpp \
-    widgets/areaseditorarea.cpp
+    widgets/worldmapeditorArea.cpp
 
 HEADERS += mainwindow.h \
     ../aux_tools/ability_name.h \
@@ -219,7 +219,7 @@ HEADERS += mainwindow.h \
     widgets/areaeditpreviewwidget.h \
     widgets/slopepreviewwidget.h \
     widgets/slopepickerwidget.h \
-    widgets/areaseditorarea.h
+    widgets/worldmapeditorArea.h
 
 FORMS += mainwindow.ui \
     addwizard.ui \

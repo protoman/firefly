@@ -30,12 +30,14 @@ struct file_v5_level_screen_data {
     file_v5_map_tile tiles[AREA_ROOM_W][AREA_ROOM_H];
 
     file_v5_level_screen_data() {
+        std::cout << ">>>>>>>>>>> file_v5_level_screen_data" << std::endl;
         for (int i=0; i<WALL_DIRECTION_COUNT; i++) {
             walls[i] = false;
         }
     }
 
     void reset() {
+        std::cout << ">>>>>>>>>>> file_v5_level_screen_data::reset" << std::endl;
         groupmap_id = -1;
         visited = false;
         for (int i=0; i<WALL_DIRECTION_COUNT; i++) {

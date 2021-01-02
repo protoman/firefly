@@ -23,11 +23,14 @@ AreaEditTab::~AreaEditTab()
 
 void AreaEditTab::on_currentAreaComboBox_currentIndexChanged(int index)
 {
+    if (index == -1) {
+        return;
+    }
     SharedData::get_instance()->v6_selected_area = index;
+    Mediator::get_instance()->load_area_rooms(SharedData::get_instance()->v6_selected_area);
     set_data();
     ui->areaEditPreviewWidgetObj->update_files();
     ui->areaEditPreviewWidgetObj->repaint();
-
 }
 
 void AreaEditTab::reload()

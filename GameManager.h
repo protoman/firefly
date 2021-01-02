@@ -148,6 +148,7 @@ private:
     void show_player_teleport(int pos_x, int pos_y);
 
     void loadGameData();
+    void loadAreaRooms(int area_n);
     void loadEnemyStateData();
     void loadMapData();
     void loadAreaListSize();
@@ -171,6 +172,8 @@ private:
 
     void init_map_and_player_to_bottom();
 
+
+public:
     st_size calc_area_tile_size(int area_n);
 
 

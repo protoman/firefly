@@ -73,6 +73,10 @@ private:
   int total_editarea_w = 0;
   int total_editarea_h = 0;
 
+  int topmost_point = 99999;
+  int bottommost_point = -1;
+  int leftmost_point = 99999;
+  int rightmost_point = -1;
 
 protected:
     // methods
@@ -117,10 +121,6 @@ protected:
     std::map<int, QPixmap> slope_image_list;
 
     QPixmap layer_pixmap_list[LAYERS_COUNT];
-    int leftmost_room = FILE_AREA_W;
-    int rightmost_room = 0;
-    int topmost_room = FILE_AREA_H;
-    int bottommost_room = 0;
 
     v6_map_object* obj_ref = nullptr;
 

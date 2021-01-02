@@ -37,6 +37,9 @@ private:
     SharedData(SharedData const&){};             // copy constructor is private
     SharedData& operator=(SharedData const&){ return *this; };  // assignment operator is private
 
+public:
+    void add_missing_area_rooms(int area_n);
+
 
 private:
     static SharedData* _instance;
@@ -103,20 +106,15 @@ public:
 
 
     // FILE-V6 //
-    std::vector<file_v6_level> v6_level_list;
-    std::vector<file_v6_area> v6_area_list;
-    std::vector<st_size> v6_area_list_size;
+    std::vector<file_v6_area> v6_area_list; // list of areas
+    std::map<int, std::vector<file_v6_level_point>> v6_level_map; // map a room to a position in the world-map and area-number
+    std::map<st_position, file_v6_room> v6_area_room_list; // list of rooms for a given area mapped by their position on world-map
+
     int v6_selected_area = 0;
     int v6_selected_level = 0;
-    file_v6_level v6_current_level_data;
     std::vector<v6_file_object> v6_object_list;
-
-    int leftmost_room = FILE_AREA_W;
-    int rightmost_room = 0;
-    int topmost_room = FILE_AREA_H;
-    int bottommost_room = 0;
     std::vector<st_position> area_room_list;
-    std::vector<file_v6_level_visited> visited_level_list;
+
     st_position current_room_pos;
 
     int level_count = 0;
@@ -133,6 +131,21 @@ public:
     std::map<int, v6_file_game_object_state> game_object_state_map; // key x for area-id, y for area-object-n
     int current_player = 1;
     std::set<e_GAME_DIALOG> used_game_dialogs;                       // once added in this list, dialog will return empty, so won't repeat again
+
+    st_size window_size;
+    bool window_size_changed = false;
+
+    // resolution related vars //
+    //st_size screen_resolution = st_size(1280, 720);
+    //int screen_resolution_tilesize = 36;
+
+    int topmost_room = 99999;
+    int bottommost_room = -1;
+    int leftmost_room = 99999;
+    int rightmost_room = -1;
+    int total_editarea_w = 0;
+    int total_editarea_h = 0;
+
 
 };
 

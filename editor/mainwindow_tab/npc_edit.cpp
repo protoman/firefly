@@ -53,7 +53,7 @@ void npc_edit::fill_data()
         ui->npc_edit_tab_graphiccombo->setCurrentIndex(ui->npc_edit_tab_graphiccombo->findText(QString(Mediator::get_instance()->enemy_list.at(0).graphic_filename)));
         ui->npc_edit_tab_previewarea->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/")+std::string(Mediator::get_instance()->enemy_list.at(0).graphic_filename));
         // BACKGROUND //
-        std::cout << ">>>>> BACKGROUND[" << Mediator::get_instance()->enemy_list.at(0).bg_graphic_filename << "]" << std::endl;
+        //std::cout << ">>>>> BACKGROUND[" << Mediator::get_instance()->enemy_list.at(0).bg_graphic_filename << "]" << std::endl;
         ui->backgroundFileComboBox->setCurrentIndex(ui->backgroundFileComboBox->findText(QString(Mediator::get_instance()->enemy_list.at(0).bg_graphic_filename)));
         ui->npc_edit_tab_previewarea->set_bg_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+std::string(Mediator::get_instance()->enemy_list.at(0).bg_graphic_filename));
         ui->sprite_pos_x->setValue(Mediator::get_instance()->enemy_list.at(0).sprites_pos_bg.x);
@@ -100,6 +100,11 @@ void npc_edit::fill_data()
         ui->npc_requestedItem_comboBox->setCurrentIndex(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_requested_item_id+1);
         ui->npc_givenItem_comboBox->setCurrentIndex(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_given_item_id+1);
     }
+
+    ui->npcDialogId_comboBox->setEnabled(ui->isNPC_checkBox->isChecked());
+    ui->npc_requestedItem_comboBox->setEnabled(ui->isNPC_checkBox->isChecked());
+    ui->npc_givenItem_comboBox->setEnabled(ui->isNPC_checkBox->isChecked());
+
 
 }
 
@@ -200,6 +205,12 @@ void npc_edit::on_npc_edit_tab_selectnpccombo_currentIndexChanged(int index)
 
     ui->isNPC_checkBox->setChecked(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc);
 
+    ui->npc_requestedItem_comboBox->setCurrentIndex(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_requested_item_id+1);
+    ui->npc_givenItem_comboBox->setCurrentIndex(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_given_item_id+1);
+
+    ui->npcDialogId_comboBox->setEnabled(ui->isNPC_checkBox->isChecked());
+    ui->npc_requestedItem_comboBox->setEnabled(ui->isNPC_checkBox->isChecked());
+    ui->npc_givenItem_comboBox->setEnabled(ui->isNPC_checkBox->isChecked());
 
 	_data_loading = false;
 }
@@ -762,6 +773,9 @@ void npc_edit::on_isNPC_checkBox_toggled(bool checked)
         Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_dialog_id = -1;
     }
     Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc = checked;
+    ui->npcDialogId_comboBox->setEnabled(checked);
+    ui->npc_requestedItem_comboBox->setEnabled(checked);
+    ui->npc_givenItem_comboBox->setEnabled(checked);
     // disable NPC fields when checkbox is set to disabled
 }
 

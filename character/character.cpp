@@ -811,6 +811,20 @@ void character::pick_game_item(GameObject &obj_info)
 
 void character::use_game_item()
 {
+    // if still have an empty slot, the player
+    // can't use an item on another one, will try to pick instead
+    if (is_on_game_item_area == true) {
+        bool has_slot = false;
+        for (int i=0; i<GAME_ITEM_SLOTS; i++) {
+            if (SharedData::get_instance()->game_save.game_item_list[i].uuid == -1) {
+                has_slot = true;
+            }
+        }
+        if (has_slot == true) {
+            return;
+        }
+    }
+
     std::cout << "character::use_game_item::START" << std::endl;
     if (SharedData::get_instance()->game_save.game_item_list[0].uuid != -1) {
         std::cout << "picked_item[FALSE]" << std::endl;
@@ -838,6 +852,11 @@ void character::remove_game_item_from_slot()
 {
     SharedData::get_instance()->game_save.game_item_list[0].obj_id = -1;
     SharedData::get_instance()->game_save.game_item_list[0].uuid = -1;
+}
+
+void character::set_is_on_game_item_area(bool state)
+{
+    is_on_game_item_area = state;
 }
 
 /// @TODO: this must be moved to player, as character attack must be very simple
@@ -2005,6 +2024,7 @@ bool character::jump(int jumpCommandStage, st_float_position mapScrolling)
             }
         }
         if (jump_speed != 0 && jump_moved == false) {
+            InputController::get_instance()->test_erumble();
             //std::cout << "chat::jump - must interrupt because a collision happened" << std::endl;
             if (jump_speed < 0) {
                 _obj_jump.interrupt();
@@ -2774,12 +2794,14 @@ st_rectangle character::get_hitbox(int anim_type)
         h = col_rect.h;
         if (w <= 0 || h <= 0) {
             file_npc_v3_1_2* npc_ref = GameMediator::get_instance()->get_enemy(_number);
+            /*
             std::cout << "#### CHAR::GET_HITBOX name[" << name << "], x[" << x << "], y[" << y << "], w[" << w << "], h[" << h << "], animation_state[" << anim_n << "], animation_type[" << anim_type << "]" << std::endl;
             if (GameMediator::get_instance()->get_enemy(_number)->sprites[anim_type][anim_n].used == true) {
                 std::cout << "###### using sprite collision rect" << std::endl;
             } else {
                 std::cout << "###### using npc basic info for rect" << std::endl;
             }
+            */
         }
     }
 

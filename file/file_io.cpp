@@ -49,11 +49,13 @@ void file_io::write_game(file_game& data_in) {
 
 
 void file_io::read_game(file_game& data_out) {
+    std::cout << ">>>>>>>>>>>> file_io::read_game" << std::endl;
     FILE *fp;
     std::string filename = "";
 
 
     filename = get_game_properties_filename();
+    /*
     fp = fopen(filename.c_str(), "rb");
     if (!fp) {
         std::cout << ">>file_io::read_game - file '" << filename << "' not found." << std::endl;
@@ -67,6 +69,7 @@ void file_io::read_game(file_game& data_out) {
         exception_manager::throw_general_exception(std::string("file_io::read_game - Error reading data from file."), filename);
     }
     fclose(fp);
+    */
     return;
 
 
@@ -298,9 +301,7 @@ void file_io::load_game_object_state()
     std::vector<v6_file_game_object_state> list = fio_cmm.load_from_disk<v6_file_game_object_state>(get_object_state_filename());
 
     for (int i=0; i<list.size(); i++) {
-
-        std::cout << "OBJ-STATE, id[" << list.at(i).uuid << "], area[" << list.at(i).area_n << "], x[" << list.at(i).x << "], y[" << list.at(i).y << "]" << std::endl;
-
+        //std::cout << "OBJ-STATE, id[" << list.at(i).uuid << "], area[" << list.at(i).area_n << "], x[" << list.at(i).x << "], y[" << list.at(i).y << "]" << std::endl;
         SharedData::get_instance()->game_object_state_map.insert(std::pair<int, v6_file_game_object_state>(list.at(i).uuid, list.at(i)));
     }
 }

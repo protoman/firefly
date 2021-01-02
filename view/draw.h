@@ -77,7 +77,11 @@ public:
     void set_dynamic_bg_alpha(std::string filename, int alpha);
     st_imageData* get_dynamic_background(std::string filename);
     st_imageData* get_dynamic_foreground(std::string filename);
+
     void show_hud(int hp, int player_n, int selected_weapon, int selected_weapon_value, int room_n_x, int room_n_y);
+    void show_hud_items();
+
+
     void draw_enery_bars(int value, int x_pos, int y_pos, int type);
     void set_boss_hp(int hp);
     void show_boss_intro_bg();

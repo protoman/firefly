@@ -3,14 +3,15 @@
 
 #include <QObject>
 #include <QWidget>
+#include <QMessageBox>
 #include "defines.h"
 #include "data/st_common.h"
 
-class areasEditorArea : public QWidget
+class worldMapEditorArea : public QWidget
 {
     Q_OBJECT
 public:
-    explicit areasEditorArea(QWidget *parent = nullptr);
+    explicit worldMapEditorArea(QWidget *parent = nullptr);
     void setCurrentArea(int area_n);
     void setCurrentMap(int map_n);
     void set_edit_mode(e_AREA_EDIT_MODE mode);

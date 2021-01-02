@@ -1,4 +1,4 @@
-#include "areaseditorarea.h"
+#include "worldmapeditorArea.h"
 
 #include <QApplication>
 #include <QPainter>
@@ -11,7 +11,7 @@
 
 #define TILE_SHOW_SIZE 16
 
-areasEditorArea::areasEditorArea(QWidget *parent) : QWidget(parent)
+worldMapEditorArea::worldMapEditorArea(QWidget *parent) : QWidget(parent)
 {
     QString terrainIcon;
     QResource::registerResource("resources/icons/icons.qrc");
@@ -29,17 +29,17 @@ areasEditorArea::areasEditorArea(QWidget *parent) : QWidget(parent)
 
 }
 
-void areasEditorArea::setCurrentArea(int area_n)
+void worldMapEditorArea::setCurrentArea(int area_n)
 {
     currentArea = area_n;
 }
 
-void areasEditorArea::setCurrentMap(int map_n)
+void worldMapEditorArea::setCurrentMap(int map_n)
 {
     currentMap = map_n;
 }
 
-void areasEditorArea::set_edit_mode(e_AREA_EDIT_MODE mode)
+void worldMapEditorArea::set_edit_mode(e_AREA_EDIT_MODE mode)
 {
     edit_mode = mode;
     if (edit_mode == AREA_EDIT_MODE_HLINK) {
@@ -51,13 +51,14 @@ void areasEditorArea::set_edit_mode(e_AREA_EDIT_MODE mode)
     }
 }
 
-void areasEditorArea::paintEvent(QPaintEvent *event)
+void worldMapEditorArea::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     QPen pen(QColor(160, 160, 160), 1, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
     QPen pen_red(QColor(180, 50, 50), 2, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin);
     QLineF line;
 
+    /*
     // draw map points
     for (int i=0; i<FILE_AREA_W; i++) {
         for (int j=0; j<FILE_AREA_H; j++) {
@@ -127,34 +128,143 @@ void areasEditorArea::paintEvent(QPaintEvent *event)
     } else {
         std::cout << "MAP-LINKS #3"<< std::endl;
     }
+    */
+
+    for(std::map<int, std::vector<file_v6_level_point>>::iterator it = SharedData::get_instance()->v6_level_map.begin(); it != SharedData::get_instance()->v6_level_map.end(); ++it) {
+        std::cout << "paintEvent - Key[" << it->first << "], list-size[" << SharedData::get_instance()->v6_level_map.at(it->first).size() << "]" << std::endl;
+    }
 
 
+    // draw areas-points
+    int area_quantity = SharedData::get_instance()->v6_area_list.size();
+    for (unsigned int area_n=0; area_n<SharedData::get_instance()->v6_area_list.size(); area_n++) {
+        if (SharedData::get_instance()->v6_level_map.find(area_n) != SharedData::get_instance()->v6_level_map.end()) {
+            for (unsigned int i=0; i<SharedData::get_instance()->v6_level_map.at(area_n).size(); i++) {
 
+                //std::cout << "area_n[" << area_n << "], i[" << i << "]" << std::endl;
+
+                //std::cout << ">>>>>>>> room[" << i << "][" << SharedData::get_instance()->v6_level_map.at(area_n).at(i).x << "][" << SharedData::get_instance()->v6_level_map.at(area_n).at(i).y << "].area[" << SharedData::get_instance()->v6_level_map.at(area_n).at(i).area_number << "]" << std::endl;
+                if (SharedData::get_instance()->v6_level_map.at(area_n).at(i).area_number == currentArea) {
+                    painter.setBrush(QColor(0, 0, 255, 180));
+                    painter.setPen(QColor(0, 0, 180, 255));
+                } else {
+                    painter.setBrush(QColor(99, 173, 230, 180));
+                    painter.setPen(QColor(99, 117, 230, 255));
+                }
+                painter.drawRect(SharedData::get_instance()->v6_level_map.at(area_n).at(i).x*TILE_SHOW_SIZE, SharedData::get_instance()->v6_level_map.at(area_n).at(i).y*TILE_SHOW_SIZE, TILE_SHOW_SIZE, TILE_SHOW_SIZE);
+            }
+        }
+    }
+
+
+    // draw grid //
     painter.setPen(pen);
-    for (int i=0; i<=FILE_AREA_H; i++) {
-        line = QLineF(0, i*TILE_SHOW_SIZE, FILE_AREA_W*TILE_SHOW_SIZE, i*TILE_SHOW_SIZE);
+    int rows = this->height()/TILE_SHOW_SIZE;
+    int cols = this->width()/TILE_SHOW_SIZE;
+    for (int i=0; i<=rows; i++) {
+        line = QLineF(0, i*TILE_SHOW_SIZE, cols*TILE_SHOW_SIZE, i*TILE_SHOW_SIZE);
         painter.drawLine(line);
     }
 
-    for (int i=0; i<=FILE_AREA_W; i++) {
-        line = QLineF(i*TILE_SHOW_SIZE, 0, i*TILE_SHOW_SIZE, FILE_AREA_H*TILE_SHOW_SIZE);
+    for (int i=0; i<=cols; i++) {
+        line = QLineF(i*TILE_SHOW_SIZE, 0, i*TILE_SHOW_SIZE, rows*TILE_SHOW_SIZE);
         painter.drawLine(line);
     }
-
 }
 
-void areasEditorArea::mousePressEvent(QMouseEvent *event)
+void worldMapEditorArea::mousePressEvent(QMouseEvent *event)
 {
     QPoint pnt = event->pos();
     editor_selectedTileX = pnt.x()/TILE_SHOW_SIZE;
     editor_selectedTileY = pnt.y()/TILE_SHOW_SIZE;
-    std::cout << "SET MAP AT [" << editor_selectedTileX << "][" << editor_selectedTileY << "]" << std::endl;
+    //std::cout << "SET MAP AT [" << editor_selectedTileX << "][" << editor_selectedTileY << "]" << std::endl;
 
     // can't change area-zero minimal parts //
     if (currentArea == 0 && editor_selectedTileY == 0 && editor_selectedTileX >= 10 && editor_selectedTileX < 20) {
         return;
     }
 
+    // search area-list to check if point is already used
+    int point_already_used = -1;
+    int current_area_rooms_count = 0;
+    bool is_adjascent_point_to_same_area = false;
+    bool is_adjascent_point = false;
+    for (unsigned int area_n=0; area_n<SharedData::get_instance()->v6_area_list.size(); area_n++) {
+        for (unsigned int i=0; i<SharedData::get_instance()->v6_level_map.at(area_n).size(); i++) {
+            std::cout << "CLICK - area_n[" << area_n << "], i[" << i << "]" << std::endl;
+            std::cout << "CLICK - area.size[" << SharedData::get_instance()->v6_level_map.at(area_n).size() << "]" << std::endl;
+            if (SharedData::get_instance()->v6_level_map.at(area_n).at(i).x == editor_selectedTileX && SharedData::get_instance()->v6_level_map.at(area_n).at(i).y == editor_selectedTileY) {
+                point_already_used = i;
+            }
+            bool is_next_to_room = false;
+            // up
+            if (editor_selectedTileX == SharedData::get_instance()->v6_level_map.at(area_n).at(i).x && editor_selectedTileY == SharedData::get_instance()->v6_level_map.at(area_n).at(i).y-1) {
+                is_next_to_room = true;
+            }
+            // down
+            if (editor_selectedTileX == SharedData::get_instance()->v6_level_map.at(area_n).at(i).x && editor_selectedTileY == SharedData::get_instance()->v6_level_map.at(area_n).at(i).y+1) {
+                is_next_to_room = true;
+            }
+            // left
+            if (editor_selectedTileX == SharedData::get_instance()->v6_level_map.at(area_n).at(i).x-1 && editor_selectedTileY == SharedData::get_instance()->v6_level_map.at(area_n).at(i).y) {
+                is_next_to_room = true;
+            }
+            // right
+            if (editor_selectedTileX == SharedData::get_instance()->v6_level_map.at(area_n).at(i).x+1 && editor_selectedTileY == SharedData::get_instance()->v6_level_map.at(area_n).at(i).y) {
+                is_next_to_room = true;
+            }
+            if (SharedData::get_instance()->v6_level_map.at(area_n).at(i).area_number == currentArea) {
+                current_area_rooms_count++;
+                if (is_next_to_room == true) {
+                    is_adjascent_point_to_same_area = true;
+                }
+            } else {
+                if (is_next_to_room == true) {
+                    is_adjascent_point = true;
+                }
+            }
+        }
+    }
+
+    if (current_area_rooms_count >= AREA_ROOM_NUMBER) {
+        QMessageBox msgBox;
+        msgBox.setText("You reached the maximum number of rooms for this area");
+        msgBox.exec();
+        return;
+    }
+
+    //std::cout << "point_already_used[" << point_already_used << "] at [" << editor_selectedTileX << "][" << editor_selectedTileY << "]" << std::endl;
+    if (point_already_used == -1) {
+        // only accept adjascent points
+        if (current_area_rooms_count > 0 && is_adjascent_point_to_same_area == false) {
+            QMessageBox msgBox;
+            msgBox.setText("You can only add points next to existing ones from same area");
+            msgBox.exec();
+            return;
+        } else if (currentArea != 0 && current_area_rooms_count == 0 && is_adjascent_point == false) {
+            QMessageBox msgBox;
+            msgBox.setText("The first point of an area needs to be next to one from another area");
+            msgBox.exec();
+            return;
+        }
+
+        file_v6_level_point point;
+        point.x = editor_selectedTileX;
+        point.y = editor_selectedTileY;
+        point.area_number = currentArea;
+        SharedData::get_instance()->v6_level_map.at(currentArea).push_back(point);
+        SharedData::get_instance()->add_missing_area_rooms(currentArea);
+        std::cout << "point added area[" << currentArea << "], list_size[" << SharedData::get_instance()->v6_level_map.size() << "]" << std::endl;
+    } else {
+        std::cout << "ERROR: point already taken" << std::endl;
+        /// @TODO: remove element from list, remove room, etc
+        //SharedData::get_instance()->v6_level_list.at(point_already_used).x = -1;
+    }
+
+    repaint();
+
+
+/*
     if (edit_mode == AREA_EDIT_MODE_NORMAL) {
         if (SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY].area_n == -1) {
             // add only if first piece or have another piece in the neighboor horizontal or vertical axis
@@ -209,10 +319,12 @@ void areasEditorArea::mousePressEvent(QMouseEvent *event)
             }
         }
     }
+*/
 }
 
-bool areasEditorArea::is_first_area_pieces()
+bool worldMapEditorArea::is_first_area_pieces()
 {
+    /*
     for (int x=0; x<FILE_AREA_W; x++) {
         for (int y=0; y<FILE_AREA_H; y++) {
             if (SharedData::get_instance()->v6_level_list.at(currentArea).rooms[x][y].area_n == currentMap) {
@@ -220,11 +332,13 @@ bool areasEditorArea::is_first_area_pieces()
             }
         }
     }
+    */
     return true;
 }
 
-bool areasEditorArea::have_adjacent_same_area_piece()
+bool worldMapEditorArea::have_adjacent_same_area_piece()
 {
+    /*
     if (editor_selectedTileX > 0 && SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX-1][editor_selectedTileY].area_n == currentMap) {
         return true;
     }
@@ -238,6 +352,7 @@ bool areasEditorArea::have_adjacent_same_area_piece()
     if (editor_selectedTileY < FILE_AREA_H-2 && SharedData::get_instance()->v6_level_list.at(currentArea).rooms[editor_selectedTileX][editor_selectedTileY+1].area_n == currentMap) {
         return true;
     }
+    */
 
     return false;
 }

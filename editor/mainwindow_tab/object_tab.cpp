@@ -48,7 +48,7 @@ void object_tab::fill_ability_data()
 
     int obj_type = SharedData::get_instance()->v6_object_list.at(_current_object).type;
 
-    std::cout << "object_tab::fill_ability_data - _current_object[" << _current_object << "], obj_type[" << obj_type << "], OBJ_ABILITY_ITEM[" << (int)OBJ_ABILITY_ITEM << "]" << std::endl;
+    //std::cout << "object_tab::fill_ability_data - _current_object[" << _current_object << "], obj_type[" << obj_type << "], OBJ_ABILITY_ITEM[" << (int)OBJ_ABILITY_ITEM << "]" << std::endl;
 
     if (obj_type == OBJ_TREASURE_CHEST) {
         ui->givenAbility_label->setText("Given Item");
@@ -142,7 +142,7 @@ void object_tab::on_type_combo_currentIndexChanged(int index)
     if (SharedData::get_instance()->v6_object_list.size() > 0) {
         SharedData::get_instance()->v6_object_list.at(_current_object).type = index;
     }
-    if (SharedData::get_instance()->v6_object_list.size() > 0 && (index == OBJ_ABILITY_ITEM || index == OBJ_TREASURE_CHEST)) {
+    if (SharedData::get_instance()->v6_object_list.size() > 0 && (index == OBJ_ABILITY_ITEM || index == OBJ_TREASURE_CHEST || index == OBJ_DOOR_LOCKED)) {
         ui->key_comboBox->setEnabled(true);
     } else {
         ui->key_comboBox->setEnabled(false);

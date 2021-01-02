@@ -480,8 +480,8 @@ void classPlayer::initFrames()
     char filename[512];
     sprintf(filename, "%s/images/sprites/p%d.png", SharedData::get_instance()->FILEPATH.c_str(), _number+1);
 
-    std::cout << "FILEPATH[" << SharedData::get_instance()->FILEPATH << "]" << std::endl;
-    std::cout << "p1.filename[" << filename << "]" << std::endl;
+    //std::cout << "FILEPATH[" << SharedData::get_instance()->FILEPATH << "]" << std::endl;
+    //std::cout << "p1.filename[" << filename << "]" << std::endl;
 
     playerSpriteSurface = ImageView::get_instance()->imageFromFile(filename);
     if (playerSpriteSurface.surface == nullptr) {

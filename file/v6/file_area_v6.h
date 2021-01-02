@@ -3,6 +3,7 @@
 
 #include "defines.h"
 #include "data/st_common.h"
+#include "file_room_v6.h"
 
 
 #define BG_LAYER_MAX 5
@@ -48,6 +49,7 @@ struct file_v6_area {
     file_v6_area_layer layers[LAYERS_COUNT];
     char tileset_filename[FS_CHAR_FILENAME_SIZE];
     char music_filename[FS_CHAR_FILENAME_SIZE];
+    file_v6_room rooms[AREA_ROOM_NUMBER];
 
     file_v6_area() {
         sprintf(map_name, "%s", "");

@@ -226,6 +226,7 @@ public:
     int get_current_item_id_from_slot();
     void morph_item(int new_obj_id);
     void remove_game_item_from_slot();
+    void set_is_on_game_item_area(bool state);
 
 
 private:
@@ -393,6 +394,8 @@ protected:
     long last_water_damage_warning_sound_timer = 0;
 
     st_imageData rotated_graphic_frame;
+
+    bool is_on_game_item_area = false;
 };
 
 #endif // CHARACTER_H

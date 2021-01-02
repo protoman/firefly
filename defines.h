@@ -1,17 +1,36 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+// RESOLUTION-RELATED //
 #define RES_W 1280
 #define RES_H 720
 #define VIDEO_MODE_COLORS 32
 #define HUD_H 80
-#define TILESIZE 64
+#define TILESIZE 32
 #define AREA_H (RES_H-HUD_H)
 #define HUD_GRID_SIZE 21
 #define HUD_GRID_BORDER 2
 #define HUD_GRID_CENTER_X 1207
 #define HUD_GRID_CENTER_Y 28
+// resoluções suportadas:
+// 852x480, 1280×720, 1920×1080
+// tilesizes (20 na vertical): 24, 36, 54
 
+
+#define LEVEL_ROOMS_W 6
+#define LEVEL_ROOMS_H 6
+#define AREA_ROOM_W 40
+#define AREA_ROOM_H 20
+#define AREA_ROOM_NUMBER 20
+
+
+#define GAME_AREA_SIZE 30
+#define GAME_AREA_W 20
+#define GAME_AREA_H 10
+
+// this is the size of a single room
+#define AREA_ROOM_W 40
+#define AREA_ROOM_H 20
 
 // INPUT //
 #define DOUBLE_TAP_DELTA 500
@@ -148,12 +167,6 @@
 #define PLAYER_INITIAL_X_POS 144 // half-screen
 
 #define SLOPE_MAX_TILES 6
-
-#define GAME_AREA_SIZE 30
-#define GAME_AREA_W 20
-#define GAME_AREA_H 10
-#define AREA_ROOM_W 20
-#define AREA_ROOM_H 10
 
 // SAVE/ITEMS //
 #define HEART_PIECES 30

@@ -8,7 +8,7 @@
 
 animTitle::animTitle(QWidget *parent) : QWidget(parent)
 {
-    std::cout << "animTitle::CONSTRUCTOR" << std::endl;
+    //std::cout << "animTitle::CONSTRUCTOR" << std::endl;
     myParent = parent;
     _timer = new QTimer(this);
     _sprite_n = 0;

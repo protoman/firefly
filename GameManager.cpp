@@ -79,11 +79,11 @@ GameManager *GameManager::get_instance()
 
 void GameManager::initHardwareLayer()
 {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO | SDL_INIT_HAPTIC) < 0) {
         std::cout << "SDL could not initialize! SDL_Error[" << SDL_GetError() << "]" << std::endl;
         exit(EXIT_FAILURE);
     }
-    SharedData::get_instance()->window = SDL_CreateWindow( "Project Firefly BETA v0.0.1", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, RES_W, RES_H, SDL_WINDOW_SHOWN );
+    SharedData::get_instance()->window = SDL_CreateWindow( "Project Firefly BETA v0.0.1", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, RES_W, RES_H, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL );
     if (SharedData::get_instance()->window == nullptr) {
         std::cout << "Window could not be created! SDL_Error[" << SDL_GetError() << "]" << std::endl;
         exit(EXIT_FAILURE);
@@ -96,6 +96,7 @@ void GameManager::initHardwareLayer()
     }
 
 
+    InputController::get_instance()->init();
     ImageView::get_instance()->init();
     TextView::get_instance()->init();
     SoundView::get_instance()->init();
@@ -125,20 +126,16 @@ void GameManager::introScreen()
 void GameManager::loadGameData()
 {
 
-    std::cout << "loadGameData - FILEPATH[" << SharedData::get_instance()->FILEPATH << "]" << std::endl;
+    //std::cout << "loadGameData - FILEPATH[" << SharedData::get_instance()->FILEPATH << "]" << std::endl;
 
     fio.read_game(SharedData::get_instance()->game_data);
 
-    // VISITED LEVEL LIST DATA //
-    SharedData::get_instance()->level_count = fio_cmm.get_list_size<file_v6_level>(SharedData::get_instance()->FILEPATH + "/" + FILE_V6_LEVEL_LIST);
-    SharedData::get_instance()->visited_level_list = fio_cmm.load_from_disk<file_v6_level_visited>(SharedData::get_instance()->FILEPATH + "/" + FILE_V6_VISITED_LEVEL_LIST);
-    if (SharedData::get_instance()->visited_level_list.size() == 0 && SharedData::get_instance()->level_count > 0) {
-        for (int i=0; i<SharedData::get_instance()->level_count; i++) {
-            SharedData::get_instance()->visited_level_list.push_back(file_v6_level_visited());
-        }
-    }
-    // CURRENT LEVEL DATA //
-    SharedData::get_instance()->v6_current_level_data = fio_cmm.load_single_object_from_list<file_v6_level>(SharedData::get_instance()->FILEPATH + "/" + FILE_V6_LEVEL_LIST, SharedData::get_instance()->v6_selected_level);
+    // CURRENT AREA DATA //
+    char level_filename[512];
+    sprintf(level_filename, "%s/data/v6_level_list_%d.dat", SharedData::get_instance()->FILEPATH.c_str(), SharedData::get_instance()->v6_selected_area);
+    std::vector<file_v6_level_point> point_list = fio_cmm.load_from_disk<file_v6_level_point>(level_filename);
+    // CURRENT AREA-ROOMS
+    loadAreaRooms(SharedData::get_instance()->v6_selected_area);
 
     // ENEMIES LIST
     SharedData::get_instance()->enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "/game_enemy_list_3_1_2_b.dat");
@@ -173,6 +170,20 @@ void GameManager::loadGameData()
     }
 
     SharedData::get_instance()->slope_list = fio_cmm.load_from_disk<file_v5_slope_tile>(SharedData::get_instance()->FILEPATH+FILE_V5_MAP_SLOPE_LIST);
+}
+
+void GameManager::loadAreaRooms(int area_n)
+{
+    char area_rooms_filename[512];
+    sprintf(area_rooms_filename, "%s/data/v6_area_rooms_%d.dat", SharedData::get_instance()->FILEPATH.c_str(), area_n);
+    if (fio.file_exists(area_rooms_filename)) {
+        std::vector<file_v6_room> room_list = fio_cmm.load_from_disk<file_v6_room>(area_rooms_filename);
+        // convert to a map based upon the world-map position, so we can get all rooms easily
+        SharedData::get_instance()->v6_area_room_list.clear();
+        for (unsigned int i=0; i<room_list.size(); i++) {
+            SharedData::get_instance()->v6_area_room_list.insert(std::pair<st_position, file_v6_room>(room_list.at(i).position, room_list.at(i)));
+        }
+    }
 }
 
 void GameManager::loadEnemyStateData()
@@ -244,12 +255,16 @@ int GameManager::mapNumberFromAreaPosition(int area_n, int x, int y)
 {
     // @TODO: optimize and store links number on loading //
     int res = -1;
+    /*
     if (area_n == SharedData::get_instance()->v6_selected_area) {
         res = SharedData::get_instance()->v6_current_level_data.rooms[x][y].area_n;
     } else {
-        file_v6_level new_level_data = fio_cmm.load_single_object_from_list<file_v6_level>(SharedData::get_instance()->FILEPATH + "/" + FILE_V6_LEVEL_LIST, area_n);
+        file_v6_level_point new_level_data = fio_cmm.load_single_object_from_list<file_v6_level_point>(SharedData::get_instance()->FILEPATH + "/" + FILE_V6_LEVEL_LIST, area_n);
         res = new_level_data.rooms[x][y].area_n;
     }
+    */
+    // DEBUG //
+    res = 0;
     std::cout << "gameManager::mapNumberFromAreaPosition - area[" << area_n << "], x[" << x << "], y[" << y << "], res[" << res << "]" << std::endl;
     return res;
 }
@@ -457,6 +472,7 @@ void GameManager::show_hud(bool update_room)
     //std::cout << "### area_room_x[" << area_room_x << "], area_room_y[" << area_room_y << "], area_scroll_x[" << SharedData::get_instance()->area_scroll_x << "], area_scroll_y[" << SharedData::get_instance()->area_scroll_y << "]" << std::endl;
 
     draw::get_instance()->show_hud(player1.get_current_hp(), 1, 0, 0, area_room_x, area_room_y);
+
 
 }
 
@@ -674,6 +690,10 @@ void GameManager::build_screen_area_lists()
 // ********************************************************************************************** //
 void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
 {
+    if (SharedData::get_instance()->window_size_changed == true) {
+        ImageView::get_instance()->change_render_size();
+        SharedData::get_instance()->window_size_changed = false;
+    }
     ImageView::get_instance()->change_render_target(RENDER_TARGET_GAME_TEXTURE);
 
     SharedData::get_instance()->lightpoint_list.clear();
@@ -825,6 +845,16 @@ st_float_position GameManager::checkScrolling()
     if (mapScroll.x + move.x < 0 || mapScroll.x + move.x > mapController.get_size().width*TILESIZE) {
         move.x = 0;
 	}
+
+    move.y += (p1Pos.y - mapScroll.y) - RES_H/2;
+
+    std::cout << "checkScrolling - p1Pos.y[" << p1Pos.y << "], mapScroll.y[" << mapScroll.y << "], move.y[" << move.y<< "], map.h[" << mapController.get_size().height << "]" << std::endl;
+
+    if (mapScroll.y + move.y < 0 || mapScroll.y + move.y > mapController.get_size().height*TILESIZE) {
+        std::cout << "checkScrolling - RESET move_y" << std::endl;
+        move.y = 0;
+    }
+
 
 	return move;
 }
@@ -2098,47 +2128,41 @@ void GameManager::init_map_and_player_to_bottom()
 
 
     int bottom_y = bottom_tile_y*TILESIZE-player1.get_size().height+TILESIZE+1;
-    std::cout << "### bottom_y[" << bottom_y << "], bottom_tile.y[" << bottom_tile_y << "], player_h[" << player1.get_hitbox(ANIM_TYPE_STAND).h << "]" << std::endl;
+    //std::cout << "### bottom_y[" << bottom_y << "], bottom_tile.y[" << bottom_tile_y << "], player_h[" << player1.get_hitbox(ANIM_TYPE_STAND).h << "]" << std::endl;
 
 
-    std::cout << "@@@@@@@@@@@@@@@@@@@ player_initial_x[" << player_initial_x << "]" << std::endl;
+    //std::cout << "@@@@@@@@@@@@@@@@@@@ player_initial_x[" << player_initial_x << "]" << std::endl;
     player1.set_position(st_position(player_initial_x, bottom_y));
     player1.set_animation_type(ANIM_TYPE_STAND);
 }
 
 st_size GameManager::calc_area_tile_size(int area_n)
 {
-    file_v6_level new_level_data = fio_cmm.load_single_object_from_list<file_v6_level>(SharedData::get_instance()->FILEPATH + "/" + FILE_V6_LEVEL_LIST, area_n);
+    //file_v6_level_point new_level_data = fio_cmm.load_single_object_from_list<file_v6_level_point>(SharedData::get_instance()->FILEPATH + "/" + FILE_V6_LEVEL_LIST, area_n);
 
-    int leftmost_room = FILE_AREA_W;
-    int rightmost_room = 0;
-    int topmost_room = FILE_AREA_H;
-    int bottommost_room = 0;
-
-    for (int i=0; i<FILE_AREA_W; i++) {
-        for (int j=0; j<FILE_AREA_H; j++) {
-            //std::cout << "room[" << i << "][" << j << "].area_n[" << v6_current_level_data.rooms[i][j].area_n << "]" << std::endl;
-            if (new_level_data.rooms[i][j].area_n == area_n) {
-                if (i < leftmost_room) {
-                    leftmost_room = i;
-                }
-                if (i > rightmost_room) {
-                    rightmost_room = i;
-                }
-                if (j > bottommost_room) {
-                    bottommost_room = j;
-                }
-                if (j < topmost_room) {
-                    topmost_room = j;
-                }
-            }
+    SharedData::get_instance()->topmost_room = 99999;
+    SharedData::get_instance()->bottommost_room = -1;
+    SharedData::get_instance()->leftmost_room = 99999;
+    SharedData::get_instance()->rightmost_room = -1;
+    for (std::map<st_position, file_v6_room>::iterator it = SharedData::get_instance()->v6_area_room_list.begin(); it != SharedData::get_instance()->v6_area_room_list.end(); ++it) {
+        if (it->first.x > SharedData::get_instance()->rightmost_room) {
+            SharedData::get_instance()->rightmost_room = it->first.x;
+        }
+        if (it->first.x < SharedData::get_instance()->leftmost_room) {
+            SharedData::get_instance()->leftmost_room = it->first.x;
+        }
+        if (it->first.y > SharedData::get_instance()->bottommost_room) {
+            SharedData::get_instance()->bottommost_room = it->first.y;
+        }
+        if (it->first.y < SharedData::get_instance()->topmost_room) {
+            SharedData::get_instance()->topmost_room = it->first.y;
         }
     }
+    SharedData::get_instance()->total_editarea_w = (SharedData::get_instance()->rightmost_room - SharedData::get_instance()->leftmost_room) + 1; // plus 1 because we start the count in zero
+    SharedData::get_instance()->total_editarea_h = (SharedData::get_instance()->bottommost_room - SharedData::get_instance()->topmost_room) +1;
 
-    int map_tiles_w = (rightmost_room-leftmost_room+1)*AREA_ROOM_W;
-    int map_tiles_h = (bottommost_room-topmost_room+1)*AREA_ROOM_H;
 
-    return st_size(map_tiles_w, map_tiles_h);
+    return st_size(SharedData::get_instance()->total_editarea_w, SharedData::get_instance()->total_editarea_h);
 
 }
 

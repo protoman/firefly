@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_joystick.h>
+#include <SDL2/SDL_haptic.h>
 #include <iostream>
 #include <vector>
 
@@ -32,6 +33,7 @@ public:
     static InputController* get_instance();
     void init();
     void change_joystick();
+    void close_joystick();
     int wait_scape_time(int);
     int clean_and_wait_scape_time(int);
     void clean();
@@ -54,6 +56,7 @@ public:
     bool is_check_input_reset_command_activated();
     bool is_check_input_cheat_command_activated();
     void clean_event_queue();
+    void test_erumble();
 
 private:
     InputController();
@@ -70,6 +73,7 @@ public:
 private:
     static InputController* _instance;
     SDL_Joystick *joystick1;
+    SDL_Haptic *joystick1_haptic;
     bool _used_keyboard;
     bool _show_btn_debug;
     int held_button_count;

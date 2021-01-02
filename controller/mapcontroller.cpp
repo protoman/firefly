@@ -27,33 +27,7 @@ void MapController::loadMap()
     }
 
 
-    // determine rooms of the area //
-    SharedData::get_instance()->leftmost_room = FILE_AREA_W;
-    SharedData::get_instance()->rightmost_room = 0;
-    SharedData::get_instance()->topmost_room = FILE_AREA_H;
-    SharedData::get_instance()->bottommost_room = 0;
-    SharedData::get_instance()->area_room_list.clear();
-    for (int i=0; i<FILE_AREA_W; i++) {
-        for (int j=0; j<FILE_AREA_H; j++) {
-            //std::cout << "room[" << i << "][" << j << "].area_n[" << SharedData::get_instance()->v6_current_level_data.rooms[i][j].area_n << "]" << std::endl;
-            if (SharedData::get_instance()->v6_current_level_data.rooms[i][j].area_n == SharedData::get_instance()->v6_selected_area) {
-                //std::cout << "@@@@@@@ MapController::loadMap - room[" << i << "][" << j << "].area_n[" << SharedData::get_instance()->v6_current_level_data.rooms[i][j].area_n << "]" << std::endl;
-                SharedData::get_instance()->area_room_list.push_back(st_position(i, j));
-                if (i < SharedData::get_instance()->leftmost_room) {
-                    SharedData::get_instance()->leftmost_room = i;
-                }
-                if (i > SharedData::get_instance()->rightmost_room) {
-                    SharedData::get_instance()->rightmost_room = i;
-                }
-                if (j > SharedData::get_instance()->bottommost_room) {
-                    SharedData::get_instance()->bottommost_room = j;
-                }
-                if (j < SharedData::get_instance()->topmost_room) {
-                    SharedData::get_instance()->topmost_room = j;
-                }
-            }
-        }
-    }
+    GameManager::get_instance()->calc_area_tile_size(mapNumber);
 
     map_tiles_w = (SharedData::get_instance()->rightmost_room-SharedData::get_instance()->leftmost_room+1)*AREA_ROOM_W;
     map_tiles_h = (SharedData::get_instance()->bottommost_room-SharedData::get_instance()->topmost_room+1)*AREA_ROOM_H;
@@ -67,20 +41,21 @@ void MapController::loadMap()
     for (int i=SharedData::get_instance()->leftmost_room; i<=SharedData::get_instance()->rightmost_room; i++) {
         int j_count = 0;
         for (int j=SharedData::get_instance()->topmost_room; j<=SharedData::get_instance()->bottommost_room; j++) {
-            if (SharedData::get_instance()->v6_current_level_data.rooms[i][j].area_n == SharedData::get_instance()->v6_selected_area) {
+            st_position index = st_position(i, j);
+            if (SharedData::get_instance()->v6_area_room_list.find(index) != SharedData::get_instance()->v6_area_room_list.end()) {
                 for (int m=0; m<AREA_ROOM_W; m++) {
                     for (int n=0; n<AREA_ROOM_H; n++) {
                         int tile_x = m + i_count*AREA_ROOM_W;
                         int tile_y = n + j_count*AREA_ROOM_H;
-                        int tile_type = SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n].locked;
-                        area_tile_map.insert(std::pair<st_position, file_v6_room_tile>(st_position(tile_x, tile_y), SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n]));
+                        int tile_type = SharedData::get_instance()->v6_area_room_list.at(index).tiles[m][n].locked;
+                        area_tile_map.insert(std::pair<st_position, file_v6_room_tile>(st_position(tile_x, tile_y), SharedData::get_instance()->v6_area_room_list.at(index).tiles[m][n]));
                         //if (tile_type != 0) { std::cout << "tile[" << i << "][" << j << "].type[" << tile_type << "]" << std::endl; }
                         if (tile_type == TERRAIN_WATER) {
                             level3_water_tiles.push_back(st_position(tile_x, tile_y));
                         }
 
-                        int overlay_x = SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n].tile_overlay.x;
-                        int overlay_y = SharedData::get_instance()->v6_current_level_data.rooms[i][j].tiles[m][n].tile_overlay.y;
+                        int overlay_x = SharedData::get_instance()->v6_area_room_list.at(index).tiles[m][n].tile_overlay.x;
+                        int overlay_y = SharedData::get_instance()->v6_area_room_list.at(index).tiles[m][n].tile_overlay.y;
                         if (overlay_x != -1 && overlay_y != -1) {
                             struct st_level3_tile temp_tile(st_position(overlay_x, overlay_y), st_position(tile_x, tile_y));
                             level3_tiles.push_back(temp_tile);
@@ -193,14 +168,20 @@ void MapController::updated_visited_room()
 
     //std::cout << "MapController::updated_visited_room - room_x[" << SharedData::get_instance()->current_room_pos.y << "], room_y[" << SharedData::get_instance()->current_room_pos.y << "]" << std::endl;
 
+    /*
     if (SharedData::get_instance()->visited_level_list.at(SharedData::get_instance()->v6_selected_level).visited[SharedData::get_instance()->current_room_pos.x][SharedData::get_instance()->current_room_pos.y] == false) {
         SharedData::get_instance()->visited_level_list.at(SharedData::get_instance()->v6_selected_level).visited[SharedData::get_instance()->current_room_pos.x][SharedData::get_instance()->current_room_pos.y] = true;
     }
+    */
 }
 
 int MapController::get_level_from_room(int x, int y)
 {
-    return SharedData::get_instance()->v6_current_level_data.rooms[x][y].area_n;
+    st_position index = st_position(x, y);
+    if (SharedData::get_instance()->v6_area_room_list.find(index) == SharedData::get_instance()->v6_area_room_list.end()) {
+        return -1;
+    }
+    return SharedData::get_instance()->v6_area_room_list.at(index).area_n;
 }
 
 void MapController::addLayer(unsigned int n, bool isFg)
@@ -384,27 +365,23 @@ void MapController::init_animated_tiles()
         //std::cout << "@#### MapController::init_animated_tiles - map_x[" << map_x << "]" << std::endl;
         for (int map_y=SharedData::get_instance()->topmost_room; map_y<=SharedData::get_instance()->bottommost_room; map_y++) {
             //std::cout << "@#### MapController::init_animated_tiles - map_y[" << map_y << "]" << std::endl;
+            st_position index = st_position(map_x, map_y);
+            if (SharedData::get_instance()->v6_area_room_list.find(index) == SharedData::get_instance()->v6_area_room_list.end()) {
+                continue;
+            }
             for (int i=0; i<AREA_ROOM_W; i++) {
                 for (int j=0; j<AREA_ROOM_H; j++) {
-                    file_v6_tile_piece underlay_tile = SharedData::get_instance()->v6_current_level_data.rooms[map_x][map_y].tiles[i][j].tile_underlay;
+                    file_v6_tile_piece underlay_tile = SharedData::get_instance()->v6_area_room_list.at(index).tiles[i][j].tile_underlay;
                     // @TODO: overlay //
                     //file_v6_tile_piece overlay_tile = SharedData::get_instance()->v6_current_level_data.rooms[map_x][map_y].tiles[i][j].tile_overlay;
-                    if (underlay_tile.type == TILE_TYPE_ANIM &&  SharedData::get_instance()->v6_current_level_data.rooms[map_x][map_y].area_n == SharedData::get_instance()->v6_selected_area) {
-
-
+                    if (underlay_tile.type == TILE_TYPE_ANIM) {
                         pos_origin.x = underlay_tile.x;
                         pos_origin.y = underlay_tile.y;
-
-                        //std::cout << "FOUND-ANIM-TYPE - underlay_tile[" << underlay_tile.x << "][" << underlay_tile.y << "]" << std::endl;
-
-
                         int anim_tile_id = pos_origin.x;
                         pos_destiny.y = j*TILESIZE + map_y*AREA_ROOM_H;
                         pos_destiny.x = i*TILESIZE + map_x*AREA_ROOM_W;
                         //std::cout << "MAP::showMap::place_anim_tile - pos_destiny[" << pos_destiny.x << "][" << pos_destiny.x << "]" << std::endl;
                         anim_tile_list.push_back(anim_tile_desc(anim_tile_id, pos_destiny));
-
-
                     }
 
                 }
@@ -649,10 +626,14 @@ int MapController::get_first_bottom_lock(int initialY)
 
 bool MapController::isEdgeRowLocked(int incY, bool first)
 {
+
+
     int y = (scroll.y+AREA_H-TILESIZE)/TILESIZE;
     if (first == true) {
         y = (scroll.y-TILESIZE+TILESIZE)/TILESIZE;
     }
+
+    //std::cout << "MapController::isEdgeRowLocked - y[" << y << "], scroll.y[" << scroll.y << "]" << std::endl;
 
     if (y < 0) {
         //std::cout << "MapController::isEdgeRowLocked - OUT OF SCREEN" << std::endl;
@@ -676,7 +657,7 @@ bool MapController::isEdgeRowLocked(int incY, bool first)
     }
 
 
-    //std::cout << "########### MapController::isEdgeRowLocked - first[" << first << "], incY[" << incY << "], scroll.y[" << scroll.y << "], y[" << y << "]" << std::endl;
+    //std::cout << "########### MapController::isEdgeRowLocked[" << isLockedY <<"] - first[" << first << "], incY[" << incY << "], scroll.y[" << scroll.y << "], y[" << y << "]" << std::endl;
     return isLockedY;
 }
 
@@ -762,17 +743,17 @@ void MapController::changeScrolling(st_float_position pos, bool check_lock)
 
     // TODO: adjust layers position for vertical scrolling //
     if (pos.y != 0) {
-        //std::cout << "$$$$$$$$$$$$$$$ pos.y[" << pos.y << "]" << std::endl;
+        std::cout << "#1.1 MapController::changeScrolling - pos.y[" << pos.y << "]" << std::endl;
         if (pos.y > 0) {
             bool locked = isEdgeRowLocked(pos.y, false);
-            //std::cout << "MapController::changeScrolling #1 - check_lock[" << check_lock << "], locked[" << locked << "], pos.y[" << pos.y << "]" << std::endl;
+            std::cout << "#1.2 MapController::changeScrolling #1 - check_lock[" << check_lock << "], locked[" << locked << "], pos.y[" << pos.y << "]" << std::endl;
             if (check_lock == false || locked == false) {
                 incScrollValue(0, pos.y);
             }
         } else {
-            //std::cout << "%%%%%%%%%%%%%% CHECK-TOP" << std::endl;
+            std::cout << "#2.1 - CHECK-TOP" << std::endl;
             bool locked = isEdgeRowLocked(pos.y, true);
-            //std::cout << "MapController::changeScrolling #2 - check_lock[" << check_lock << "], locked[" << locked << "], pos.y[" << pos.y << "]" << std::endl;
+            std::cout << "#2.2 - MapController::changeScrolling #2 - check_lock[" << check_lock << "], locked[" << locked << "], pos.y[" << pos.y << "]" << std::endl;
             if (check_lock == false || locked == false) {
                 incScrollValue(0, pos.y);
             }
@@ -1781,6 +1762,7 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
     GameObject* res_obj = nullptr;
 
     //if (y_inc < 0) std::cout << "MAP::collision_player_object - y_inc: " << y_inc << std::endl;
+    charObj->set_is_on_game_item_area(false);
 
     // ignore collision if teleporting
     if (charObj->get_anim_type() == ANIM_TYPE_TELEPORT) {
@@ -1933,7 +1915,9 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
                     //std::cout << "%%%%%%%%%%%%%%%%%%%%%%%%% OBJ_DOOR_LOCKED" << std::endl;
                     // @TODO //
                 } else if (charObj->is_player() == true && temp_obj.get_type() == OBJ_GAME_ITEM_PICKEABLE) {
+                    //std::cout << "CHAR::collision_char_object - pickeable object[" << temp_obj.get_name() << "], BTN_ITEM<[" << (int)InputController::get_instance()->p1_input[BTN_ITEM] << "]" << std::endl;
                     temp_blocked = BLOCK_UNBLOCKED;
+                    charObj->set_is_on_game_item_area(true);
                     if (InputController::get_instance()->p1_input[BTN_ITEM] == 1) {
                         charObj->pick_game_item(temp_obj);
                         return;
