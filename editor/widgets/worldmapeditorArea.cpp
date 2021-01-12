@@ -130,11 +130,6 @@ void worldMapEditorArea::paintEvent(QPaintEvent *event)
     }
     */
 
-    for(std::map<int, std::vector<file_v6_level_point>>::iterator it = SharedData::get_instance()->v6_level_map.begin(); it != SharedData::get_instance()->v6_level_map.end(); ++it) {
-        std::cout << "paintEvent - Key[" << it->first << "], list-size[" << SharedData::get_instance()->v6_level_map.at(it->first).size() << "]" << std::endl;
-    }
-
-
     // draw areas-points
     int area_quantity = SharedData::get_instance()->v6_area_list.size();
     for (unsigned int area_n=0; area_n<SharedData::get_instance()->v6_area_list.size(); area_n++) {

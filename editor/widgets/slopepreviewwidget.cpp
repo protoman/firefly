@@ -1,6 +1,6 @@
 #include "slopepreviewwidget.h"
 
-#define SHOW_TILESIZE 128
+#define SHOW_TILESIZE 64
 
 SlopePreviewWidget::SlopePreviewWidget(QWidget *parent) : QWidget(parent)
 {

@@ -806,6 +806,12 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
             fps_manager.fps_count();
         }
         fps_manager.limit();
+
+
+        //std::cout << "$$$ clear_point_x[" << SharedData::get_instance()->clear_point_x << "], clear_point_y[" << SharedData::get_instance()->clear_point_y << "]" << std::endl;
+        //ImageView::get_instance()->clearScreenArea(SharedData::get_instance()->clear_point_x, SharedData::get_instance()->clear_point_y, 1, 1, 255, 0, 0);
+
+
     } else {
         _is_paused = true;
         fps_manager.limit();
@@ -845,16 +851,6 @@ st_float_position GameManager::checkScrolling()
     if (mapScroll.x + move.x < 0 || mapScroll.x + move.x > mapController.get_size().width*TILESIZE) {
         move.x = 0;
 	}
-
-    move.y += (p1Pos.y - mapScroll.y) - RES_H/2;
-
-    std::cout << "checkScrolling - p1Pos.y[" << p1Pos.y << "], mapScroll.y[" << mapScroll.y << "], move.y[" << move.y<< "], map.h[" << mapController.get_size().height << "]" << std::endl;
-
-    if (mapScroll.y + move.y < 0 || mapScroll.y + move.y > mapController.get_size().height*TILESIZE) {
-        std::cout << "checkScrolling - RESET move_y" << std::endl;
-        move.y = 0;
-    }
-
 
 	return move;
 }

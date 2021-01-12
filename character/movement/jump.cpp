@@ -13,7 +13,7 @@
 classjump::classjump() : started(false)
 {
     JUMP_ACCELERATION = 0.96;
-    JUMP_LIMIT = (TILESIZE*3)+6;
+    JUMP_LIMIT = (TILESIZE*6)+6;
     state = NOJUMP;
     jumps_number = 0;
     start_terrain_type = TERRAIN_UNBLOCKED;

@@ -15,8 +15,8 @@
 #include "game_mediator.h"
 #include "GameManager.h"
 
-#define PLAYER_MOVE_SPEED 6.00 // higher is faster
-//#define PLAYER_MOVE_SPEED 1 // higher is faster
+//#define PLAYER_MOVE_SPEED 6.00 // higher is faster
+#define PLAYER_MOVE_SPEED 1 // higher is faster
 #include "file/file_io.h"
 
 

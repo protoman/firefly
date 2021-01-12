@@ -558,18 +558,23 @@ void character::check_y_scroll()
 {
 
     if (is_player()) {
+        //std::cout << "relativePosition.y[" << relativePosition.y << "], pos.y[" << position.y << "]" << std::endl;
         // BOTTOM //
         if (relativePosition.y+frameSize.height > AREA_H*0.8) {
-            int diffY = relativePosition.y+frameSize.height - AREA_H*0.9;
-            GameManager::get_instance()->get_current_map_obj()->changeScrolling(st_float_position(0, diffY), true);
+            int diff_y = relativePosition.y+frameSize.height - AREA_H*0.9;
+            if (diff_y > 0) {
+                GameManager::get_instance()->get_current_map_obj()->changeScrolling(st_float_position(0, diff_y), true);
+            }
         // TOP //
         } else if (relativePosition.y < AREA_H*0.3) {
-            int diffY = AREA_H*0.3 - relativePosition.y;
+            int diff_y = AREA_H*0.3 - relativePosition.y;
             if (relativePosition.y > 0 && relativePosition.y < TILESIZE) {
-                diffY = relativePosition.y;
+                diff_y = relativePosition.y;
             }
-            //std::cout << "character::check_y_scroll - diffY[" << diffY << "], realPosition.y[" << realPosition.y << "], AREA_H*0.3[" << (AREA_H*0.3) << "]" << std::endl;
-            GameManager::get_instance()->get_current_map_obj()->changeScrolling(st_float_position(0, -diffY), true);
+            if (diff_y > 0) {
+                //std::cout << "character::check_y_scroll - diffY[" << diffY << "], realPosition.y[" << realPosition.y << "], AREA_H*0.3[" << (AREA_H*0.3) << "]" << std::endl;
+                GameManager::get_instance()->get_current_map_obj()->changeScrolling(st_float_position(0, -diff_y), true);
+            }
         }
     }
 }
@@ -717,39 +722,93 @@ void character::check_charging_colors(bool always_charged)
 
 bool character::isOnSlope(int xinc)
 {
-    for (int i=6; i>-4; i-=3) {
-        int map_pos_y = (position.y + frameSize.height - i)/TILESIZE;
-        st_rectangle hitbox = get_hitbox(state.animation_type);
-        file_v6_room_tile tile_left = GameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc)/TILESIZE, map_pos_y);
-        if (tile_left.tile_underlay.type == TILE_TYPE_SLOPE) {
-            adjust_slope_y(xinc, 0, st_position((hitbox.x+xinc)/TILESIZE, map_pos_y));
-            was_on_slope = true;
-            return true;
-        }
-        file_v6_room_tile tile_center = GameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc+hitbox.w/2)/TILESIZE, map_pos_y);
+    // tiles a serem testados: no pé, cima/baixo, esquerda/direita, diagonal cima/baixo
+
+
+    // TODO: adicionar variação do y para pegar entrada no slope
+
+
+
+    st_rectangle hitbox = get_hitbox(state.animation_type);
+    file_v6_room_tile tile_center;
+    int test_point_x = (hitbox.x + xinc + hitbox.w/2);
+
+    bool found_slope = false;
+    for (int i=-2; i<=2; i++) {
+        int test_point_y = (hitbox.y + hitbox.h - i);
+        int map_pos_x = test_point_x/TILESIZE;
+        int map_pos_y = test_point_y/TILESIZE;
+        // DEBUG - draw testr point //
+
+        SharedData::get_instance()->clear_point_x = test_point_x - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
+        SharedData::get_instance()->clear_point_y = test_point_y - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().y;
+
+        std::cout << "### #1 - CHAR::isOnSlope::CENTER.CHECK - test_point_x[" << test_point_x << "], test_point_y[" << test_point_y << "], map_pos_y[" << map_pos_y << "], map_pos_x_center[" << map_pos_x << "]" << std::endl;
+        tile_center = GameManager::get_instance()->get_current_map_obj()->getTileFromPosition(map_pos_x, map_pos_y);
+
+        // this exists to prevent irregular movement when we reach the single-pixel space between slope tiles
+
         if (tile_center.tile_underlay.type == TILE_TYPE_SLOPE) {
-            adjust_slope_y(xinc, 0, st_position((hitbox.x+xinc+hitbox.w/2)/TILESIZE, map_pos_y));
-            was_on_slope = true;
-            return true;
-        }
-
-        //std::cout << "CHAR::isOnSlope::RIGHT.TEST - tile.x[" << (hitbox.x+xinc+hitbox.w)/TILESIZE << "], tile.y[" << map_pos_y << "]" << std::endl;
-
-        file_v6_room_tile tile_right = GameManager::get_instance()->get_current_map_obj()->getTileFromPosition((hitbox.x+xinc+hitbox.w)/TILESIZE, map_pos_y);
-        if (tile_right.tile_underlay.type == TILE_TYPE_SLOPE) {
-            adjust_slope_y(xinc, 0, st_position((hitbox.x+xinc+hitbox.w)/TILESIZE, map_pos_y));
-            //std::cout << "CHAR::isOnSlope::RIGHT.TEST - TRUE" << std::endl;
-            was_on_slope = true;
-            return true;
+            //std::cout << ">>> #1 - CHAR::isOnSlope::CENTER.TEST_OK - ADJUST-X - hitbox.x [" << hitbox.x  << "], xinc[" << xinc << "], hitbox.w[" << hitbox.w << "], map_pos_y[" << map_pos_y << "], map_pos_x[" << map_pos_x << "]" << std::endl;
+            calc_slope_diff_h(st_position(map_pos_x, map_pos_y));
+            found_slope = true;
+            break;
         }
     }
 
-    if (was_on_slope == true && _obj_jump.is_started() == false) {
-        position.y -= TILESIZE-3;
-        fall_to_ground();
+
+    if (found_slope == false && was_on_slope == true && current_slope_step != 0 && isOutOfSlopes(xinc)) {
+        std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>> CHAR::isOnSlope::FALSE - hitbox.x[" << hitbox.x << "],map_pos_y[" << (hitbox.y + hitbox.h)/TILESIZE << "]" << std::endl;
+        current_slope_step = 0;
+        was_on_slope = false;
+        position.y -= 2;
+        return false;
     }
-    was_on_slope = false;
-    return false;
+
+    std::cout << "### CHAR::isOnSlope - xinc[" << xinc << "], current_slope_step[" << current_slope_step << "]" << std::endl;
+    if (state.direction == ANIM_DIRECTION_LEFT) {
+        position.y += xinc * current_slope_step;
+    } else {
+        position.y -= xinc * current_slope_step;
+    }
+    was_on_slope = true;
+    return true;
+
+
+    //was_on_slope = false;
+    //std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>> CHAR::isOnSlope::FALSE - hitbox.x[" << hitbox.x << "],map_pos_y[" << (hitbox.y + hitbox.h)/TILESIZE << "]" << std::endl;
+    //return false;
+}
+
+bool character::isOutOfSlopes(int xinc)
+{
+    st_rectangle hitbox = get_hitbox(state.animation_type);
+    int test_point_x = (hitbox.x + xinc + hitbox.w/2);
+    int test_point_y = (hitbox.y + hitbox.h - 1);
+
+    // check all diagonals from the player feet
+    std::vector<st_position> point_list;
+    int dist_x = 1;
+    int dist_y = 4;
+    point_list.push_back(st_position(test_point_x-dist_x, test_point_y+dist_y)); // left down
+    point_list.push_back(st_position(test_point_x-dist_x, test_point_y-dist_y)); // left up
+    point_list.push_back(st_position(test_point_x+dist_x, test_point_y+dist_y)); // right down
+    point_list.push_back(st_position(test_point_x+dist_x, test_point_y-dist_y)); // right up
+    point_list.push_back(st_position(test_point_x+dist_x, test_point_y)); // right
+    point_list.push_back(st_position(test_point_x+dist_x, test_point_y)); // left
+    point_list.push_back(st_position(test_point_x, test_point_y+dist_y)); // down
+    point_list.push_back(st_position(test_point_x, test_point_y-dist_y)); // up
+
+    for (unsigned int i=0; i<point_list.size(); i++) {
+        file_v6_room_tile tile_test = GameManager::get_instance()->get_current_map_obj()->getTileFromPosition(point_list.at(i).x/TILESIZE, point_list.at(i).y/TILESIZE);
+        std::cout << "CHAR::isOutOfSlopes - type[" << tile_test.tile_underlay.type << "], test.x[" << point_list.at(i).x << "], test.y[" << point_list.at(i).y << "]" << std::endl;
+        if (tile_test.tile_underlay.type == TILE_TYPE_SLOPE) {
+            return false;
+        }
+    }
+
+    // checks player ground for any slopes around
+    return true;
 }
 
 st_position character::get_attack_position()
@@ -2112,18 +2171,42 @@ void character::check_map_collision_point(int &map_block, int &new_map_lock, int
     //std::cout << "check_map_collision_point.map_block[" << map_block << "]" << std::endl;
 }
 
-int character::adjust_slope_y(int incx, int incy, st_position map_pos)
+void character::calc_slope_diff_h(st_position map_pos)
+{
+
+    file_v6_room_tile tile = GameManager::get_instance()->get_current_map_obj()->getTileFromPosition(map_pos.x, map_pos.y);
+
+    if (tile.tile_underlay.x == -1 || tile.tile_underlay.y == -1) {
+        std::cout << "character::adjust_slope_y - LEAVE #1" << std::endl;
+        return;
+    }
+    if (tile.tile_underlay.type != TILE_TYPE_SLOPE) {
+        std::cout << "character::adjust_slope_y - LEAVE #2" << std::endl;
+        return;
+    }
+    slope_data data = SharedData::get_instance()->slope_list.at(tile.tile_underlay.x).slope[tile.tile_underlay.y];
+
+
+    int left = TILESIZE - data.left;
+    int right = TILESIZE - data.right;
+
+    double diff_h = (double)(right-left);
+    current_slope_step = diff_h/TILESIZE; // represents how much changes for x for each x pixel in the slope
+
+}
+
+int character::adjust_slope_y(int xinc, int incy, st_position map_pos)
 {
     st_rectangle hitbox = get_hitbox(state.animation_type);
 
-    int map_pos_x = (position.x + frameSize.width/2)/TILESIZE;
-
-    file_v6_room_tile tile = GameManager::get_instance()->get_current_map_obj()->getTileFromPosition(map_pos_x, map_pos.y);
+    file_v6_room_tile tile = GameManager::get_instance()->get_current_map_obj()->getTileFromPosition(map_pos.x, map_pos.y);
 
     if (tile.tile_underlay.x == -1 || tile.tile_underlay.y == -1) {
+        std::cout << "character::adjust_slope_y - LEAVE #1" << std::endl;
         return BLOCK_UNBLOCKED;
     }
     if (tile.tile_underlay.type != TILE_TYPE_SLOPE) {
+        std::cout << "character::adjust_slope_y - LEAVE #2" << std::endl;
         return BLOCK_UNBLOCKED;
     }
     slope_data data = SharedData::get_instance()->slope_list.at(tile.tile_underlay.x).slope[tile.tile_underlay.y];
@@ -2132,20 +2215,24 @@ int character::adjust_slope_y(int incx, int incy, st_position map_pos)
     int left = TILESIZE - data.left;
     int right = TILESIZE - data.right;
 
-    int diff_x = position.x+frameSize.width/2 - map_pos_x*TILESIZE;
+    int diff_x = position.x+frameSize.width/2 - map_pos.x*TILESIZE;
+    if (diff_x >= TILESIZE) {
+        diff_x = TILESIZE-1;
+    }
     double diff_h = (double)(right-left);
 
 
-    double step_x_diff = diff_h/TILESIZE;
+    double step_x_diff = abs(diff_h/TILESIZE);
     double calc_diff_y = abs(diff_x*step_x_diff);
     int plus_y = std::min(left, right);
     if (left > right) {
         calc_diff_y = abs((TILESIZE-diff_x)*step_x_diff);
     }
 
-
     int new_y = (map_pos.y+1)*TILESIZE - frameSize.height - calc_diff_y - plus_y + 1;
 
+
+    // novo cálculo - test //
     if (state.animation_type == ANIM_TYPE_JUMP && position.y < new_y) {
         return BLOCK_UNBLOCKED;
     }
@@ -2165,7 +2252,6 @@ bool character::process_special_map_points(int map_lock, int incx, int incy, st_
     if (incx > 0) {
         direction = ANIM_DIRECTION_RIGHT;
     }
-    int check_y = get_hitbox().y;
     if (incx != 0 && map_lock == TERRAIN_HSCROLL_LOCK) {
         std::cout << "##### DEBUG #931 - incx[" << incx << "] #####" << std::endl;
         int temp_xinc = TILESIZE+6;
@@ -2455,7 +2541,7 @@ st_map_collision character::map_collision(const float incx, const short incy, st
     map_point.x = px_left/TILESIZE;
     int new_map_lock = TERRAIN_UNBLOCKED;
     if (incx > 0) {
-            map_point.x = px_right/TILESIZE;
+        map_point.x = px_right/TILESIZE;
     }
 
     /// @TODO - use a array-of-array for poijts in order to having a cleaner code

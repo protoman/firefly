@@ -743,17 +743,17 @@ void MapController::changeScrolling(st_float_position pos, bool check_lock)
 
     // TODO: adjust layers position for vertical scrolling //
     if (pos.y != 0) {
-        std::cout << "#1.1 MapController::changeScrolling - pos.y[" << pos.y << "]" << std::endl;
+        //std::cout << "#1.1 MapController::changeScrolling - pos.y[" << pos.y << "]" << std::endl;
         if (pos.y > 0) {
             bool locked = isEdgeRowLocked(pos.y, false);
-            std::cout << "#1.2 MapController::changeScrolling #1 - check_lock[" << check_lock << "], locked[" << locked << "], pos.y[" << pos.y << "]" << std::endl;
+            //std::cout << "#1.2 MapController::changeScrolling #1 - check_lock[" << check_lock << "], locked[" << locked << "], pos.y[" << pos.y << "]" << std::endl;
             if (check_lock == false || locked == false) {
                 incScrollValue(0, pos.y);
             }
         } else {
-            std::cout << "#2.1 - CHECK-TOP" << std::endl;
+            //std::cout << "#2.1 - CHECK-TOP" << std::endl;
             bool locked = isEdgeRowLocked(pos.y, true);
-            std::cout << "#2.2 - MapController::changeScrolling #2 - check_lock[" << check_lock << "], locked[" << locked << "], pos.y[" << pos.y << "]" << std::endl;
+            //std::cout << "#2.2 - MapController::changeScrolling #2 - check_lock[" << check_lock << "], locked[" << locked << "], pos.y[" << pos.y << "]" << std::endl;
             if (check_lock == false || locked == false) {
                 incScrollValue(0, pos.y);
             }
@@ -809,7 +809,7 @@ void MapController::set_scrolling(st_float_position pos)
     scrolled = pos;
     scroll.x = pos.x;
     scroll.y = pos.y;
-    //std::cout << "------- MapController::set_scrolling - map: " << SharedData::get_instance()->v6_selected_area << ", pos.x: " << pos.x << "-------" << std::endl;
+    std::cout << "------- MapController::set_scrolling - map: " << SharedData::get_instance()->v6_selected_area << ", pos.x: " << pos.x << "-------" << std::endl;
 }
 
 void MapController::reset_scrolling()

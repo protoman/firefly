@@ -153,7 +153,7 @@ template <class T> std::vector<T> fio_scenes::load_from_disk(std::string file)
 template <class T> void fio_scenes::save_data_to_disk(std::string file, std::vector<T> data)
 {
     std::string filename = std::string(SharedData::get_instance()->FILEPATH) + "scenes/" + file;
-    std::cout << ">> file_io::save_data_to_disk - filename: '" << filename << "'." << std::endl;
+    //std::cout << ">> file_io::save_data_to_disk - filename: '" << filename << "'." << std::endl;
     FILE *fp = fopen(filename.c_str(), "wb");
     if (!fp) {
         std::cout << ">> file_io::save_data_to_disk - file '" << filename << "' not found." << std::endl;

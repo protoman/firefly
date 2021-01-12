@@ -147,6 +147,9 @@ public:
     int total_editarea_h = 0;
 
 
+    int clear_point_x = 0;
+    int clear_point_y = 0;
+
 };
 
 #endif // SHAREDDATA_H

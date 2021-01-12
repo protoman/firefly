@@ -1,28 +1,26 @@
-- refazer sistema de arquivos/areas/níveis
-    # game: mapa infinito (cresce conforme necessário) com salas
-    # area: uma lista de salas com mesmo nome e tileset e música (max 20)
-        # sala uma quantidade de tiles que preenche uma tela e pertence a uma área
+########################################################
+                        SLOPES
+########################################################
+- ao entrar no slope, guarda o ângulo dele
+- todo o movimento esquerda/direita usa esse ângulo do slope até que
+    # saia totalmente do slope (fazer um método que vascula direitinho todo o chão abaixo do player, só pode ter não-slopes)
+    # entrou em um slope com ângulo diferente
+    # assim, se tiver um ponto sem slope no meio do caminho, não importa, ele continua como se estivesse no slope até sair 100% dele
 
 
-std::vector<file_v6_area> v6_area_list;
-    # lista das áreas criadas
-
-std::map<int, std::vector<file_v6_level_point>> v6_level_map;
-    # mapa que indica uma sala a uma área e posição no mapa-mundi
+########################################################
 
 
 
-- no editor fica assim:
-    # tem um grid, em que você seleciona uma área, e ao clicar em um quadrado, uma sala é adicionada àquela área
-    # fora a primeira sala, só pode criar salas adjacentes
-    # áreas adjascentes são ligadas automaticamente, com uma porta (virtual, faz scroll automatico)
+
+- fazer link entra áreas
+
+- corrigir slopes (quando descendo ele "quica" nos solid q tem entre-meios)
 
 - (melhorar) joystick rumble
 
 - independência de resolução
-- diminuir tamanho dos tiles para dar mais detalhes no mapa
-- free scrolling x e y (poder subir rampas e o scroll subir junto)
-
+    # ter assets 1080p, 720p e 480p
 
 - fundos animados (feitos de tiles, não de imagem)
 - items que não são plataforma não devem parar porque estao em colisão com personagens

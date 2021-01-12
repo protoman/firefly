@@ -68,7 +68,7 @@ template <class T> T fio_common::load_struct_data(std::string filename) {
 
 template <class T> void fio_common::save_data_to_disk(std::string filename, std::vector<T> data)
 {
-    std::cout << ">> file_io::save_data_to_disk - filename: '" << filename << "'." << std::endl;
+    //std::cout << ">> file_io::save_data_to_disk - filename: '" << filename << "'." << std::endl;
     FILE *fp = fopen(filename.c_str(), "wb");
     if (!fp) {
         std::cout << ">> file_io::save_data_to_disk - file '" << filename << "' not found." << std::endl;

@@ -37,6 +37,15 @@ enum ATTACK_TYPES {
     ATTACK_TYPE_COUNT
 };
 
+enum SLOPE_STATE {
+    SLOPE_STATE_LEFT_DOWN,
+    SLOPE_STATE_LEFT_UP,
+    SLOPE_STATE_RIGHT_DOWN,
+    SLOPE_STATE_RIGHT_UP,
+    SLOPE_STATE_NO_SLOPE,
+    SLOPE_STATE_COUNT
+};
+
 class MapController;		// advance declaration
 struct object_collision;
 
@@ -233,6 +242,7 @@ private:
     ATTACK_TYPES check_must_attack(bool always_charged);
     void check_charging_colors(bool always_charged);
     bool isOnSlope(int xinc);
+    bool isOutOfSlopes(int xinc);
 
 protected:
     // updown_trajectory: updown -1 is down, 0 is none, 1 is up
@@ -244,7 +254,8 @@ protected:
     bool is_on_teleporter_capsulse(GameObject* GameObject);
     bool is_on_teleport_platform(GameObject* GameObject);
     void check_map_collision_point(int &map_block, int &new_map_lock, int mode_xy, st_position map_pos);
-    int adjust_slope_y(int incx, int incy, st_position map_pos);
+    void calc_slope_diff_h(st_position map_pos);
+    int adjust_slope_y(int xinc, int incy, st_position map_pos);
     bool process_special_map_points(int map_lock, int incx, int incy, st_position map_pos);
     void check_platform_move(short map_lock);
     void add_graphic();
@@ -388,6 +399,11 @@ protected:
     bool must_show_dash_effect;
     st_imageData dash_effect_shadow_surface_frame;
     bool was_on_slope = false;
+
+
+    float current_slope_step = 0.0;
+
+
 
     int got_item_id = -1;
 
