@@ -103,6 +103,10 @@ public:
 
     void draw_water_tile_overlay(int x, int y);
 
+    void draw_player_death(st_position center_point, int frame_n);
+    int get_death_animation_frames_n();
+
+
 
 
 private:
@@ -224,6 +228,10 @@ private:
 
     int water_animation_pos = 0;
     long water_animation_timer = 0;
+
+    st_imageData _death_animation;
+    int _death_animation_frames_n = 0;
+
 
 };
 

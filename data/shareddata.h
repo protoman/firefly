@@ -149,6 +149,9 @@ public:
 
     int clear_point_x = 0;
     int clear_point_y = 0;
+    bool is_showing_boss_intro = false;
+
+    int current_language = LANGUAGE_AUTODETECT;
 
 };
 

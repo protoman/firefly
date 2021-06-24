@@ -355,6 +355,7 @@ void EditorArea::drawTileset(QPainter *painter)
                     painter->drawRect(map_pos_x*TILESIZE*Mediator::get_instance()->zoom, map_pos_y*TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
                 }
                 if (Mediator::get_instance()->show_fg_layer == true && tileItem.tile_overlay.x >= 0 && tileItem.tile_overlay.y >= 0) {
+                    /// @TODO ///
                     std::cout << ">>>>>>>>>>>>>>>>>> overlay.draw[" << map_pos_x << "][" << map_pos_y << "]" << std::endl;
                 }
             }

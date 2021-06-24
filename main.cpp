@@ -13,7 +13,7 @@
 
 #include "data/shareddata.h"
 #include "GameManager.h"
-
+#include "aux_tools/stringutils.h"
 
 SDL_Renderer* gRenderer;
 
@@ -43,9 +43,38 @@ void get_filepath()
 
 }
 
+void detect_language() {
+    std::cout << "CONFIG.LANGUAGE[" << (int)SharedData::get_instance()->current_language << "]" << std::endl;
+    if (SharedData::get_instance()->current_language == LANGUAGE_AUTODETECT) {
+        // try to get language from the env, if set
+        if (const char* env_lang = std::getenv("LANGUAGE")) {
+            std::string lang_str(env_lang);
+            std::string language = "en";
+            if (std::string::npos != lang_str.find(":")) {
+                std::vector<std::string> lang_list = StringUtils::split(lang_str, ":");
+                if (lang_list.size() > 0) {
+                    language = lang_list.at(0);
+                }
+            } else {
+                language = lang_str;
+            }
+            if (language == "pt_BR") {
+                SharedData::get_instance()->current_language = LANGUAGE_PORTUGUESE;
+            } else { // default fallback
+                SharedData::get_instance()->current_language = LANGUAGE_ENGLISH;
+            }
+        } else { // default fallback
+            SharedData::get_instance()->current_language = LANGUAGE_ENGLISH;
+        }
+    } else {
+        SharedData::get_instance()->current_language = SharedData::get_instance()->current_language;
+    }
+}
+
 int main()
 {
     get_filepath();
+    detect_language();
     GameManager::get_instance()->initHardwareLayer();
     GameManager::get_instance()->preloadGameData();
     //GameManager::get_instance()->introScreen();

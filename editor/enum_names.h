@@ -15,6 +15,7 @@ std::vector<std::string> AI_ACTION_TELEPORT_OPTIONS;
 std::vector<std::string> AI_ACTION_DASH_OPTIONS;
 std::vector<std::string> AI_ACTION_GRAB_WALL_OPTIONS;
 std::vector<std::string> ANIMATION_TYPE_LIST;
+std::vector<std::string> AI_ACTION_SFX_OPTION_NAMES;
 
 void init_enum_names() {
     PROJECTILE_TRAJECTORIES_NAMES.push_back("LINEAR");
@@ -118,7 +119,7 @@ void init_enum_names() {
     AI_ACTION_JUMP_OPTIONS.push_back("TO PLAYER");
     AI_ACTION_JUMP_OPTIONS.push_back("TO ROOT");
     AI_ACTION_JUMP_OPTIONS.push_back("TO SAVED POINT");
-    AI_ACTION_JUMP_OPTIONS.push_back("JUMP ONCE AHEAD");
+    AI_ACTION_JUMP_OPTIONS.push_back("TO PLAYER DIRECTION");
     // -------------------------------------------------------------- //
     AI_ACTION_AIR_WALK_OPTIONS.push_back("LEFT");
     AI_ACTION_AIR_WALK_OPTIONS.push_back("RIGHT");
@@ -172,6 +173,9 @@ void init_enum_names() {
     ANIMATION_TYPE_LIST.push_back("LOOK UP");
     ANIMATION_TYPE_LIST.push_back("GRAB WALL");
     ANIMATION_TYPE_LIST.push_back("FLY");
+
+    // -------------------------------------------------------------- //
+    AI_ACTION_SFX_OPTION_NAMES.push_back("DINOSSAUR GROWL");
 }
 
 

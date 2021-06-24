@@ -200,6 +200,11 @@ void draw::preload()
     filename = SharedData::get_instance()->GAMEPATH + "/shared/images/water_animation.png";
     water_tile_overlay = ImageView::get_instance()->imageFromFile(filename);
     ImageView::get_instance()->set_surface_alpha(160, water_tile_overlay);
+
+    filename = SharedData::get_instance()->GAMEPATH + "shared/images/death_animation.png";
+    _death_animation = ImageView::get_instance()->imageFromFile(filename);
+    _death_animation_frames_n = _death_animation.surface->w/_death_animation.surface->h;
+
 }
 
 void draw::show_gfx()
@@ -1143,6 +1148,17 @@ void draw::draw_water_tile_overlay(int x, int y)
             water_animation_pos = 0;
         }
     }
+}
+
+void draw::draw_player_death(st_position center_point, int frame_n)
+{
+    int frame_size = _death_animation.surface->h;
+    ImageView::get_instance()->renderTexturePortionAt(frame_n*frame_size, 0, frame_size, frame_size, center_point.x-frame_size/2, center_point.y-frame_size/2, _death_animation.texture);
+}
+
+int draw::get_death_animation_frames_n()
+{
+    return _death_animation_frames_n;
 }
 
 void draw::draw_explosion(st_position center_point, int radius, int angle_inc)

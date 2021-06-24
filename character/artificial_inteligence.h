@@ -258,9 +258,9 @@ protected:
      * @param can_pass_walls the NPC can cross walls like a ghost or not
      * @return bool true -> point reached
      */
-    bool move_to_point(st_float_position dest_point, float speed_x, float speed_y, bool can_pass_walls);
+    bool move_to_point(st_float_position dest_point, float speed_x, float speed_y, bool can_pass_walls, bool must_walk_along_wall);
 
-    can_move_struct check_can_move_to_point(st_float_position dest_point, float speed_x, float speed_y, bool can_pass_walls);
+    can_move_struct check_can_move_to_point(st_float_position dest_point, float speed_x, float speed_y, bool can_pass_walls, bool must_walk_along_wall);
 
 
     void randomize_x_point(int max_adjust);
@@ -282,7 +282,11 @@ protected:
 
     void invert_left_right_direction();
 
+    void execute_play_sfx();
 
+    void execute_ai_wall_walk();
+
+    bool check_moving_along_wall(int xinc, int yinc);
 
     // =============================================================================================================== //
     //                             CUSTOM AI FILES DECLARED IN EXTERNAL CPP                                            //
@@ -336,6 +340,15 @@ protected:
     int radius;
     short int jump_attack_type;                               // used by jump attack to store attack-type, if any. otherwise, it is set as -1
     bool did_hit_player;                                 // when player collides with this enemy, it will set this flag as on, so the enemy knows it
+    bool is_shooter = false;
+
+    double shooter_timer = 0;
+    short shoot_direction = ANIM_DIRECTION_LEFT;
+    bool shot_success = false;
+
+    unsigned long execution_timer = 0;                  // used to timeout an operation if the enemy got stuck into something
+    unsigned int move_to_point_tries = 0;               // used to check if an enemy can't move to a point several times to interrupt AI
+
     int rotated_graphic_total = 0;
     int rotated_graphic_target = 0;
     long rotated_timer = 0;

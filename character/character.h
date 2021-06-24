@@ -108,6 +108,7 @@ public:
     void advance_frameset(); // changes the state for the next (or previous) frame
     void show();
     void show_previous_sprites();
+    void reset_dash_effect();
     void show_at(st_position pos);
     void show_sprite();
     void reset_sprite_animation_timer();
@@ -152,6 +153,7 @@ public:
     void reset_gravity_speed();
     bool gravity(bool boss_demo_mode);							// returns true if finished (reached ground)
     bool hit_ground();
+    bool is_on_last_animation_frame();
     /**
      * @brief
      *
@@ -236,6 +238,7 @@ public:
     void morph_item(int new_obj_id);
     void remove_game_item_from_slot();
     void set_is_on_game_item_area(bool state);
+    bool have_frame_graphic(int direction, int type, int pos);  // indicates if the given frame graphic exits
 
 
 private:
@@ -262,7 +265,6 @@ protected:
     virtual void death() = 0;
     bool have_frame_graphics();
     bool have_background_graphics();
-    bool have_frame_graphic(int direction, int type, int pos);  // indicates if the given frame graphic exits
     bool is_in_stairs_frame() const; // indicates if the character is on some of the STAIRS animation types
     bool is_on_attack_frame();
     virtual void recharge(e_energy_types _en_type, int value);
@@ -343,7 +345,7 @@ protected:
     float hit_moved_back_n;
 	// external members
 
-    GameObject* _platform; // used to move player when object moves
+    GameObject* _platform = nullptr; // used to move player when object moves
 
     bool dead;
 
@@ -390,7 +392,7 @@ protected:
     bool _dashed_jump;                                      // adds horizontal acceleration fo X movement if jump was made during a dash (not slide) until player reaches ground again
     bool _can_execute_airdash;                                 // prevents dashing multiple-times in middle-air
     bool _player_must_reset_colors;                         // inform the player class that he must get back into default-weapon colors
-    int _stairs_falling_timer;                              // controls time when player can again grab the staircase
+    long _stairs_falling_timer;                              // controls time when player can again grab the staircase
     bool is_ghost;                                          // if can shoot or not /**< TODO */
     st_rectangle vulnerable_area_box;                       // hitarea, set by classnpc
     character_animation animation_obj;

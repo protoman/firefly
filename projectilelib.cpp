@@ -722,7 +722,8 @@ st_size projectile::move() {
             position.y += get_speed();
             // check if hit ground
             int point_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(position.x/TILESIZE, position.y/TILESIZE));
-            if (point_lock != TERRAIN_WATER && point_lock != TERRAIN_UNBLOCKED) { // hit ground, lets change to explosion
+            int first_bottom_lock = GameManager::get_instance()->get_current_map_obj()->get_first_lock_on_bottom(position.x + get_size().width/2, -1);
+            if ((position.y > first_bottom_lock*TILESIZE || position.y > RES_H-TILESIZE) && point_lock != TERRAIN_WATER && point_lock != TERRAIN_UNBLOCKED) { // hit ground, lets change to explosion
                 //std::cout << "BOMB - TRANSFORM into explosion" << std::endl;
                 /// morph into a bigger explosion
                 _points = 5000;

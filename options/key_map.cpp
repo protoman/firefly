@@ -20,13 +20,13 @@
 
 key_map::key_map()
 {
-    _keys_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_jump, SharedData::get_instance()->game_config.selected_language) + std::string(": "));
-    _keys_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_fire, SharedData::get_instance()->game_config.selected_language) + std::string(": "));
-    _keys_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_dash, SharedData::get_instance()->game_config.selected_language) + std::string(": "));
-    _keys_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_shield, SharedData::get_instance()->game_config.selected_language) + std::string(": "));
-    _keys_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_keyl, SharedData::get_instance()->game_config.selected_language) + std::string(": "));
-    _keys_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_keyr, SharedData::get_instance()->game_config.selected_language) + std::string(": "));
-    _keys_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_start, SharedData::get_instance()->game_config.selected_language) + std::string(": "));
+    _keys_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_jump, SharedData::get_instance()->current_language) + std::string(": "));
+    _keys_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_fire, SharedData::get_instance()->current_language) + std::string(": "));
+    _keys_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_dash, SharedData::get_instance()->current_language) + std::string(": "));
+    _keys_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_shield, SharedData::get_instance()->current_language) + std::string(": "));
+    _keys_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_keyl, SharedData::get_instance()->current_language) + std::string(": "));
+    _keys_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_keyr, SharedData::get_instance()->current_language) + std::string(": "));
+    _keys_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_start, SharedData::get_instance()->current_language) + std::string(": "));
 }
 
 
@@ -50,7 +50,7 @@ void key_map::draw_screen()
         TextView::get_instance()->renderText(config_text_pos.x, config_text_pos.y + i*CURSOR_SPACING, _keys_list[i].c_str());
         redraw_line(i);
     }
-    TextView::get_instance()->renderText(config_text_pos.x, config_text_pos.y + _keys_list.size()*CURSOR_SPACING, strings_map::get_instance()->get_ingame_string(strings_config_return, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderText(config_text_pos.x, config_text_pos.y + _keys_list.size()*CURSOR_SPACING, strings_map::get_instance()->get_ingame_string(strings_config_return, SharedData::get_instance()->current_language));
     draw::get_instance()->update_screen();
 
     ImageView::get_instance()->drawCursor(st_position(cursor_pos.x-CURSOR_SPACING, cursor_pos.y+(_pick_pos*CURSOR_SPACING)));
@@ -61,7 +61,7 @@ void key_map::draw_screen()
             if (_pick_pos == (short)_keys_list.size()) {
                 finished = true;
             } else {
-                TextView::get_instance()->renderText(config_text_pos.x, config_text_pos.y + _keys_list.size()*CURSOR_SPACING+CURSOR_SPACING*2, strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_pressnew, SharedData::get_instance()->game_config.selected_language)); //input code (number)
+                TextView::get_instance()->renderText(config_text_pos.x, config_text_pos.y + _keys_list.size()*CURSOR_SPACING+CURSOR_SPACING*2, strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_pressnew, SharedData::get_instance()->current_language)); //input code (number)
                 draw::get_instance()->update_screen();
                 ImageView::get_instance()->clearScreenArea(config_text_pos.x, config_text_pos.y + _keys_list.size()*CURSOR_SPACING+CURSOR_SPACING*2-1, 180,  CURSOR_SPACING+1, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
                 ///@TODO - key_config[_pick_pos].key_type = new_key.key_type;
@@ -123,11 +123,11 @@ Sint8 key_map::draw_config_input(short current_selection) const
 
     ImageView::get_instance()->show_config_bg();
     std::vector<std::string> options;
-    options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_input_buttons, SharedData::get_instance()->game_config.selected_language));
+    options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_input_buttons, SharedData::get_instance()->current_language));
     if (SharedData::get_instance()->game_config.input_mode == INPUT_MODE_DIGITAL) {
-        options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_directional, SharedData::get_instance()->game_config.selected_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_directional_digital, SharedData::get_instance()->game_config.selected_language));
+        options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_directional, SharedData::get_instance()->current_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_directional_digital, SharedData::get_instance()->current_language));
     } else {
-        options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_directional, SharedData::get_instance()->game_config.selected_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_directional_analog, SharedData::get_instance()->game_config.selected_language));
+        options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_directional, SharedData::get_instance()->current_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_directional_analog, SharedData::get_instance()->current_language));
     }
 
     char temp_char[2]; // lets hope no crazy guy with 100 joysticks connect appear...
@@ -139,19 +139,19 @@ Sint8 key_map::draw_config_input(short current_selection) const
     std::string max_joystick_str(temp_char);
 
     // turbo mode //
-    std::string turbo_mode_string = strings_map::get_instance()->get_ingame_string(strings_ingame_config_input_turbo_mode, SharedData::get_instance()->game_config.selected_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_ingame_config_off, SharedData::get_instance()->game_config.selected_language);
+    std::string turbo_mode_string = strings_map::get_instance()->get_ingame_string(strings_ingame_config_input_turbo_mode, SharedData::get_instance()->current_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_ingame_config_off, SharedData::get_instance()->current_language);
     if (SharedData::get_instance()->game_config.turbo_mode == true) {
-        turbo_mode_string = strings_map::get_instance()->get_ingame_string(strings_ingame_config_input_turbo_mode, SharedData::get_instance()->game_config.selected_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_ingame_config_on, SharedData::get_instance()->game_config.selected_language);
+        turbo_mode_string = strings_map::get_instance()->get_ingame_string(strings_ingame_config_input_turbo_mode, SharedData::get_instance()->current_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_ingame_config_on, SharedData::get_instance()->current_language);
     }
     options.push_back(turbo_mode_string);
     // auto-charge mode //
-    std::string autocharge_mode_string = strings_map::get_instance()->get_ingame_string(strings_ingame_config_input_autocharge_mode, SharedData::get_instance()->game_config.selected_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_ingame_config_off, SharedData::get_instance()->game_config.selected_language);
+    std::string autocharge_mode_string = strings_map::get_instance()->get_ingame_string(strings_ingame_config_input_autocharge_mode, SharedData::get_instance()->current_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_ingame_config_off, SharedData::get_instance()->current_language);
     if (SharedData::get_instance()->game_config.auto_charge_mode == true) {
-        autocharge_mode_string = strings_map::get_instance()->get_ingame_string(strings_ingame_config_input_autocharge_mode, SharedData::get_instance()->game_config.selected_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_ingame_config_on, SharedData::get_instance()->game_config.selected_language);
+        autocharge_mode_string = strings_map::get_instance()->get_ingame_string(strings_ingame_config_input_autocharge_mode, SharedData::get_instance()->current_language) + std::string(": ") + strings_map::get_instance()->get_ingame_string(strings_ingame_config_on, SharedData::get_instance()->current_language);
     }
     options.push_back(autocharge_mode_string);
 
-    options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_input_selected_joystick, SharedData::get_instance()->game_config.selected_language) + std::string(": ") + selected_joystick_str + std::string("/") + max_joystick_str);
+    options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_input_selected_joystick, SharedData::get_instance()->current_language) + std::string(": ") + selected_joystick_str + std::string("/") + max_joystick_str);
 
     Sint8 selected_option = -1;
     option_picker main_config_picker(false, st_position(CONFIG_MENU_LEFT_SPACING, CONFIG_MENU_TOP_SPACING), options, true);
@@ -183,7 +183,7 @@ Sint8 key_map::pick_joystick()
 std::string key_map::build_button_config_line(std::string prefix, std::string sufix)
 {
     int total_space = 24;
-    prefix = strings_map::get_instance()->get_ingame_string(strings_ingame_config_set, SharedData::get_instance()->game_config.selected_language) + std::string(" ") + prefix;
+    prefix = strings_map::get_instance()->get_ingame_string(strings_ingame_config_set, SharedData::get_instance()->current_language) + std::string(" ") + prefix;
     int spaces_to_add = total_space - prefix.length() - sufix.length();
     std::string spaces = "";
     for (int i=0; i<spaces_to_add; i++) {
@@ -245,18 +245,18 @@ Sint8 key_map::draw_config_buttons(st_game_config& game_config_copy)
     sprintf(btn_codes[BTN_LEFT], "[%d]", game_config_copy.button_codes[BTN_LEFT].value);
     sprintf(btn_codes[BTN_RIGHT], "[%d]", game_config_copy.button_codes[BTN_RIGHT].value);
 #endif
-    options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_reset, SharedData::get_instance()->game_config.selected_language));
-    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_jump, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_JUMP])));
-    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_fire, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_ATTACK])));
-    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_dash, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_DASH])));
-    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_shield, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_ITEM])));
-    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_keyl, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_L])));
-    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_keyr, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_R])));
-    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_start, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_START])));
-    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_up, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_UP])));
-    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_down, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_DOWN])));
-    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_left, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_LEFT])));
-    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_right, SharedData::get_instance()->game_config.selected_language), std::string(btn_codes[BTN_RIGHT])));
+    options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_reset, SharedData::get_instance()->current_language));
+    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_jump, SharedData::get_instance()->current_language), std::string(btn_codes[BTN_JUMP])));
+    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_fire, SharedData::get_instance()->current_language), std::string(btn_codes[BTN_ATTACK])));
+    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_dash, SharedData::get_instance()->current_language), std::string(btn_codes[BTN_DASH])));
+    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_shield, SharedData::get_instance()->current_language), std::string(btn_codes[BTN_ITEM])));
+    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_keyl, SharedData::get_instance()->current_language), std::string(btn_codes[BTN_L])));
+    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_keyr, SharedData::get_instance()->current_language), std::string(btn_codes[BTN_R])));
+    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_start, SharedData::get_instance()->current_language), std::string(btn_codes[BTN_START])));
+    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_up, SharedData::get_instance()->current_language), std::string(btn_codes[BTN_UP])));
+    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_down, SharedData::get_instance()->current_language), std::string(btn_codes[BTN_DOWN])));
+    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_left, SharedData::get_instance()->current_language), std::string(btn_codes[BTN_LEFT])));
+    options.push_back(build_button_config_line(strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_right, SharedData::get_instance()->current_language), std::string(btn_codes[BTN_RIGHT])));
 
     Sint8 selected_option = 0;
     option_picker main_config_picker(false, config_text_pos, options, true);
@@ -341,7 +341,7 @@ void key_map::config_buttons()
             }
 
             ImageView::get_instance()->clearScreenArea(menu_pos.x, menu_pos.y, 195,  180, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
-            TextView::get_instance()->renderText(menu_pos.x, menu_pos.y, strings_map::get_instance()->get_ingame_string(strings_ingame_pressanykey, SharedData::get_instance()->game_config.selected_language));
+            TextView::get_instance()->renderText(menu_pos.x, menu_pos.y, strings_map::get_instance()->get_ingame_string(strings_ingame_pressanykey, SharedData::get_instance()->current_language));
             draw::get_instance()->update_screen();
             InputController::get_instance()->clean();
             TimerView::get_instance()->delay(200);
@@ -363,21 +363,21 @@ std::cout << "### INPUT::config_buttons::FINISHED @1 ###" << std::endl;
 
 
             if (is_key_set(BTN_JUMP, game_config_copy) == false) {
-                std::string line = strings_map::get_instance()->get_ingame_string(strings_config_keys_unet, SharedData::get_instance()->game_config.selected_language) + std::string(" JUMP KEY");
+                std::string line = strings_map::get_instance()->get_ingame_string(strings_config_keys_unet, SharedData::get_instance()->current_language) + std::string(" JUMP KEY");
                 TextView::get_instance()->renderText(menu_pos.x, RES_H-40, st_color(180, 0, 0), false, line);
                 draw::get_instance()->update_screen();
                 TimerView::get_instance()->delay(1000);
                 InputController::get_instance()->clean_all();
                 selected_option = 0;
             } else if (is_key_set(BTN_ATTACK, game_config_copy) == false) {
-                std::string line = strings_map::get_instance()->get_ingame_string(strings_config_keys_unet, SharedData::get_instance()->game_config.selected_language) + std::string(" ATTACK KEY");
+                std::string line = strings_map::get_instance()->get_ingame_string(strings_config_keys_unet, SharedData::get_instance()->current_language) + std::string(" ATTACK KEY");
                 TextView::get_instance()->renderText(menu_pos.x, RES_H-40, st_color(180, 0, 0), false, line);
                 draw::get_instance()->update_screen();
                 TimerView::get_instance()->delay(1000);
                 InputController::get_instance()->clean_all();
                 selected_option = 0;
             } else if (is_key_set(BTN_START, game_config_copy) == false) {
-                std::string line = strings_map::get_instance()->get_ingame_string(strings_config_keys_unet, SharedData::get_instance()->game_config.selected_language) + std::string(" START KEY");
+                std::string line = strings_map::get_instance()->get_ingame_string(strings_config_keys_unet, SharedData::get_instance()->current_language) + std::string(" START KEY");
                 TextView::get_instance()->renderText(menu_pos.x, RES_H-40, st_color(180, 0, 0), false, line);
                 TimerView::get_instance()->delay(1000);
                 draw::get_instance()->update_screen();

@@ -50,6 +50,7 @@ public:
     void quick_load_game();
     void set_player_direction(ANIM_DIRECTION dir);
     void show_player_at(int x, int y);
+    void draw_player_death(st_position center);
     void update_stage_scrolling();
 
     void build_screen_area_lists();
@@ -135,6 +136,8 @@ public:
     void morph_player_object(int new_obj_id);
     void remove_player_object();
 
+    bool boss_show_intro_sprites(GameEnemy *npc_ref);
+
 
 private:
     GameManager();
@@ -178,11 +181,6 @@ public:
 
 
 
-public:
-    bool is_showing_boss_intro;
-
-
-
 private:
     static GameManager* _instance;
     file_io fio;
@@ -200,7 +198,7 @@ private:
     float _frame_duration;
     std::map<short, bool> _last_stage_used_teleporters; // list of used teleportes (they do not work anymore after added to this list)
     used_teleporter _player_teleporter;
-    bool _show_boss_hp; // after set to true, will keep showing the boss HP bar on screen right side
+    bool _show_boss_hp = false; // after set to true, will keep showing the boss HP bar on screen right side
 
     short _drop_item_list[DROP_ITEM_COUNT];
     bool invencible_old_value; // used to store flag value in order we don't loose it when setting to true due to temporary "got weapon" invencibility

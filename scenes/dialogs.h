@@ -20,6 +20,11 @@ public:
 
     void show_timed_dialog(std::string face_file, bool is_left, std::string lines[3], short int timer, bool show_btn);
 
+    void show_centered_dialog(std::vector<std::string> lines);
+
+    void show_boss_dialog(int stage_n);
+
+
 private:
     void draw_dialog_bg();
 

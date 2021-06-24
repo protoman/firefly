@@ -116,6 +116,19 @@ void MapController::reset_map()
     */
 }
 
+void MapController::remove_player_objects()
+{
+    /*
+    for (std::vector<object>::iterator it=object_list.begin(); it!=object_list.end(); it++) {
+        object& temp_obj = (*it);
+        int item_id = temp_obj.get_id();
+        if (item_id == game_data.player_items[0] || item_id == game_data.player_items[1]) {
+            temp_obj.set_finished(true);
+        }
+    }
+    */
+}
+
 void MapController::set_scroll_to_bottom()
 {
     //scroll.y = gameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE-AREA_H;
@@ -1429,7 +1442,11 @@ void MapController::reset_objects()
     //std::cout << ">>>>>> MAP::reset_objects - object_list.size: " << object_list.size() << std::endl;
     std::vector<GameObject>::iterator object_it;
     for (object_it = object_list.begin(); object_it != object_list.end(); object_it++) {
-        (*object_it).reset();
+        //if ((*object_it).get_id() == game_data.player_items[0] || (*object_it).get_id() == game_data.player_items[1]) {
+            //(*object_it).set_finished(true);
+        //} else {
+            (*object_it).reset();
+        //}
     }
 }
 
@@ -1877,7 +1894,7 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
                     SharedData::get_instance()->checkpoint.y = (charObj->getPosition().y+charObj->get_size().height-1);
                     SharedData::get_instance()->checkpoint.map = SharedData::get_instance()->v6_selected_area;
                     SharedData::get_instance()->checkpoint.map_scroll_x = GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
-                    return;
+                    continue;
                 } else if (temp_obj.get_type() == OBJ_BOSS_DOOR) {
                     if (temp_obj.is_started() == false && subboss_alive_on_left(temp_obj.get_position().x/TILESIZE) == false) {
                         // check for sub-boss alive on the left
@@ -2743,6 +2760,18 @@ GameEnemy *MapController::get_near_boss()
 void MapController::reset_map_npcs()
 {
     load_map_npcs();
+}
+
+bool MapController::is_boss_on_extended_screen()
+{
+    std::vector<GameEnemy>::iterator npc_it;
+    for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
+        GameEnemy* npc_ref = &(*npc_it);
+        if (npc_ref->is_boss() == true && npc_ref->is_on_screen() == true && !npc_ref->is_dead()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 

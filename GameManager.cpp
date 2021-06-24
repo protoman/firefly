@@ -29,6 +29,8 @@
 
 GameManager* GameManager::_instance = nullptr;
 
+#define DEATH_ANIMATION_DELAY 120
+
 // ********************************************************************************************** //
 // class constructor                                                                              //
 // ********************************************************************************************** //
@@ -37,7 +39,7 @@ GameManager::GameManager() : _show_boss_hp(false), player1(0)
 	_frame_duration = 1000/80; // each frame must use this share of time
     invencible_old_value = false;
     _dark_mode = false;
-    is_showing_boss_intro = false;
+    SharedData::get_instance()->is_showing_boss_intro = false;
     current_save_slot = 0;
     show_fps_enabled = true;
 
@@ -1200,7 +1202,7 @@ int GameManager::get_current_area()
 
 void GameManager::map_present_boss(bool show_dialog, bool is_static_boss)
 {
-	is_showing_boss_intro = true;
+    SharedData::get_instance()->is_showing_boss_intro = true;
 
     SoundView::get_instance()->stop_music();
     SoundView::get_instance()->unload_music();
@@ -1240,7 +1242,32 @@ void GameManager::map_present_boss(bool show_dialog, bool is_static_boss)
         } else {
             // TODO //
         }
+    } else {
+        return;
     }
+
+    TimerView::get_instance()->delay(5000);
+
+        // 4. show boss intro sprites animation
+    loop_run = true;
+    while (loop_run == true) {
+        std::cout << "### GAME::map_present_boss #4::LOOP" << std::endl;
+        if (boss_show_intro_sprites(boss_ref) == true) {
+            loop_run = false;
+            show_stage(0, false);
+        } else {
+            show_stage(0, true);
+        }
+    }
+
+    std::cout << "### GAME::map_present_boss #5" << std::endl;
+    TimerView::get_instance()->delay(5000);
+
+
+    // 5. show boss dialog
+    dialogs boss_dialog;
+    //boss_dialog.show_boss_dialog(loaded_stage.get_number());
+
     show_stage(8, false);
 
 
@@ -1249,7 +1276,7 @@ void GameManager::map_present_boss(bool show_dialog, bool is_static_boss)
     TimerView::get_instance()->delay(100);
 
 	_show_boss_hp = true;
-	is_showing_boss_intro = false;
+    SharedData::get_instance()->is_showing_boss_intro = false;
 
 }
 
@@ -1269,7 +1296,7 @@ void GameManager::check_player_return_teleport()
 
 bool GameManager::must_show_boss_hp()
 {
-	return _show_boss_hp;
+    return (_show_boss_hp && get_current_map_obj()->is_boss_on_extended_screen());
 }
 
 
@@ -1612,7 +1639,6 @@ void GameManager::vertical_screen_move(short direction, bool is_door, short tile
 
 void GameManager::show_door_animation()
 {
-    int steps = 50;
     remove_players_slide();
 
     TimerView::get_instance()->delay(6);
@@ -1749,7 +1775,6 @@ void GameManager::quick_load_game()
 
     start_stage();
 
-    //got_weapon();
 }
 
 void GameManager::set_player_direction(ANIM_DIRECTION dir)
@@ -1848,7 +1873,30 @@ void GameManager::show_player_at(int x, int y)
         __android_log_print(ANDROID_LOG_INFO, "###ROCKDROID2###", "### GAME::show_player_at[%d, %d] ###", x, y);
 #endif
     //std::cout << "show_player_at[" << x << ", " << y << "]" << std::endl;
-    player1.show_at(st_position(x, y));
+        player1.show_at(st_position(x, y));
+}
+
+void GameManager::draw_player_death(st_position center)
+{
+    center.x += 29/2;
+    center.y += 29/2;
+
+    for (int i=0; i<draw::get_instance()->get_death_animation_frames_n(); i++) {
+        show_stage(0, false);
+        draw::get_instance()->draw_player_death(center, i);
+        draw::get_instance()->update_screen();
+        TimerView::get_instance()->delay(DEATH_ANIMATION_DELAY);
+        if (i == 5) {
+            show_stage(0, false);
+            draw::get_instance()->draw_player_death(center, i-1);
+            draw::get_instance()->update_screen();
+            TimerView::get_instance()->delay(DEATH_ANIMATION_DELAY);
+            show_stage(0, false);
+            draw::get_instance()->draw_player_death(center, i);
+            draw::get_instance()->update_screen();
+            TimerView::get_instance()->delay(DEATH_ANIMATION_DELAY);
+        }
+    }
 }
 
 st_position GameManager::get_player_position()
@@ -2204,6 +2252,26 @@ void GameManager::morph_player_object(int new_obj_id)
 void GameManager::remove_player_object()
 {
     player1.remove_game_item_from_slot();
+}
+
+bool GameManager::boss_show_intro_sprites(GameEnemy *npc_ref)
+{
+    if (npc_ref->have_frame_graphic(npc_ref->get_direction(), ANIM_TYPE_INTRO, 0) == false) {
+        return true;
+    }
+    if (npc_ref->get_anim_type() != ANIM_TYPE_INTRO) {
+        npc_ref->set_animation_type(ANIM_TYPE_INTRO);
+        return false;
+    }
+    if (!npc_ref->is_on_last_animation_frame()) {
+        return false;
+    }
+    if (npc_ref->get_can_fly() == true) {
+        npc_ref->set_animation_type(ANIM_TYPE_WALK_AIR);
+    } else {
+        npc_ref->set_animation_type(ANIM_TYPE_STAND);
+    }
+    return true;
 }
 
 st_dialog_status *GameManager::get_dialog_status()

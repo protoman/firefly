@@ -167,6 +167,8 @@ public:
 
     void reset_map();
 
+    void remove_player_objects();
+
     void set_scroll_to_bottom();
 
     void add_animation(ANIMATION_TYPES pos_type, st_imageData* surface, const st_float_position &pos, st_position adjust_pos, unsigned int frame_time, unsigned int repeat_times, int direction, st_size framesize);
@@ -201,6 +203,8 @@ public:
     GameEnemy* get_near_boss();
 
     void reset_map_npcs();
+
+    bool is_boss_on_extended_screen();
 
     void draw_dynamic_backgrounds_into_surface(st_imageData &surface);
 

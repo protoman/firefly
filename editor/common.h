@@ -47,6 +47,8 @@ public:
 
     static void fill_abilities_combo(QComboBox *combo);
 
+    static void show_directory_error_message(std::string directory);
+
 private:
 
 

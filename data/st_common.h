@@ -64,38 +64,24 @@ struct st_position {
 struct st_float_position {
     float x;
     float y;
+
     st_float_position() {
         x = 0.0;
         y = 0.0;
     }
-/**
- * @brief
- *
- * @param setX
- * @param setY
- */
+
     st_float_position (float setX, float setY) {
         x = setX;
         y = setY;
     }
-    /**
-     * @brief
-     *
-     * @param set_pt
-     * @return st_position &operator
-     */
+
     st_float_position& operator=(const st_position &set_pt)
     {
         x = set_pt.x;
         y = set_pt.y;
         return *this;
     }
-    /**
-     * @brief
-     *
-     * @param comp_pt
-     * @return bool operator
-     */
+
     bool operator==(const st_position &comp_pt) const
     {
         if (x == comp_pt.x && y == comp_pt.y) {
@@ -103,24 +89,14 @@ struct st_float_position {
         }
         return false;
     }
-    /**
-     * @brief
-     *
-     * @param set_pt
-     * @return st_position &operator
-     */
+
     st_float_position& operator=(const st_float_position &set_pt)
     {
         x = set_pt.x;
         y = set_pt.y;
         return *this;
     }
-    /**
-     * @brief
-     *
-     * @param comp_pt
-     * @return bool operator
-     */
+
     bool operator==(const st_float_position &comp_pt) const
     {
         if (x == comp_pt.x && y == comp_pt.y) {
@@ -130,24 +106,16 @@ struct st_float_position {
     }
 };
 
-/**
- * @brief
- *
- */
 struct st_size {
     int width;
     int height;
+
 	st_size()
 	{
             width = 0;
             height = 0;
 	}
-/**
- * @brief
- *
- * @param w
- * @param h
- */
+
     st_size(int w, int h)
 	{
 		width = w;
@@ -194,14 +162,13 @@ struct st_rectangle {
     }
     bool operator!=(const st_rectangle &comp_pt) const
     {
-        if (x != comp_pt.x || y != comp_pt.y || w != comp_pt.w || h != comp_pt.h) {
+        if (x != comp_pt.x || y != comp_pt.y || (w != comp_pt.w && h != comp_pt.h)) {
             return true;
         }
         return false;
     }
 
     bool contains(int x_test, int y_test) {
-        std::cout << ">>>>>>>> contains - x_test[" << x_test << "], y_test[" << y_test << "], x[" << x << "], y[" << y << "], w[" << w << "], h[" << h << "]" << std::endl;
         if (x_test >= x && x_test < x+w && y_test >= y && y_test < y+h) {
             return true;
         }

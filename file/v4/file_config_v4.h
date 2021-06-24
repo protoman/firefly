@@ -123,7 +123,7 @@ struct st_game_config {
         platform = get_current_platform();
         // Note: do not change game_finished when resetting
         selected_input_device = 0;
-        selected_language = 0;
+        selected_language = LANGUAGE_AUTODETECT;
         turbo_mode = false;
         auto_charge_mode = false;
         volume_sfx = 90;

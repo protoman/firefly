@@ -7,11 +7,15 @@
     # entrou em um slope com ângulo diferente
     # assim, se tiver um ponto sem slope no meio do caminho, não importa, ele continua como se estivesse no slope até sair 100% dele
 
-
+ v723987estr-01
 ########################################################
 
+- importar correções do Rockbot
+    # data último merge (página 2): Sep 3, 2020
 
-
+- EDITOR:
+    # desenhar overlay (como transparente)
+    # opção para não mostrar overlay
 
 - fazer link entra áreas
 
@@ -21,6 +25,7 @@
 
 - independência de resolução
     # ter assets 1080p, 720p e 480p
+    # tilesize ajustável de acordo
 
 - fundos animados (feitos de tiles, não de imagem)
 - items que não são plataforma não devem parar porque estao em colisão com personagens

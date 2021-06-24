@@ -109,6 +109,18 @@ void GameObject::reset()
     frame = 0;
     //show_teleport = false;
     reset_timer();
+
+    // execute gravity until out of screen or stops moving
+    int pos_y_before = position.y;
+    int n = 0;
+    while (true) {
+        gravity();
+        if (pos_y_before == position.y || position.y > RES_H+TILESIZE || n > RES_H+TILESIZE) {
+            break;
+        }
+        pos_y_before = position.y;
+        n++;
+    }
 }
 
 void GameObject::reset_timer()
@@ -220,11 +232,9 @@ bool GameObject::test_change_position(short xinc, short yinc)
                 _finished = true;
                 return false;
             } else {
-                std::cout << ">>>>>>>>>>>>>>>>>> object out of screen #1, fall" << std::endl;
                 return true; // fall platform can move out of screen
             }
         } else {
-            std::cout << ">>>>>>>>>>>>>>>>>> object out of screen #2, fall" << std::endl;
             return true; // too much out of the screen, can't move more
         }
     }
@@ -232,23 +242,17 @@ bool GameObject::test_change_position(short xinc, short yinc)
     if (is_consumable() == false) {
         // collision against player when player is not using a platform
         int blocked = map->collision_rect_player_obj(GameManager::get_instance()->get_player()->get_hitbox(), this, 0, 0, xinc, yinc);
-        //if (blocked != 0) std::cout << "obj.blocked: " << blocked << std::endl;
-        /// @TODO - consumable items should not stop if blocked by player
-        ///
-        if (GameManager::get_instance()->get_player_platform() != this && blocked != 0 && is_teleporting() == false && !(type == OBJ_ITEM_JUMP && yinc > 0) && is_consumable() == false) {
-            //std::cout << "OBJ::test_change_position - can't move, BLOCKED by player" << std::endl;
+        if (GameManager::get_instance()->get_player_platform() != this && blocked != 0 && is_teleporting() == false && !(type == OBJ_ITEM_JUMP && yinc > 0) && is_consumable() == false && type != OBJ_CHECKPOINT) {
             return false;
         }
     }
 
     if (position.y+yinc+framesize_h-2 > map->get_size().height*TILESIZE) { // falling out of the screen
-        std::cout << ">>>>>>>>>>>>>>>>>> object out of screen #3, fall" << std::endl;
         return true;
     }
 
 	short p1 = map->getMapPointLock(st_position((position.x+2+xinc)/TILESIZE, (position.y+yinc+framesize_h-2)/TILESIZE));
 	short p2 = map->getMapPointLock(st_position((position.x+framesize_w-2+xinc)/TILESIZE, (position.y+yinc+framesize_h-2)/TILESIZE));
-    //std::cout << "object::test_change_position[" << name << "] - p1: " << p1 << ", p2: " << p2 << std::endl;
 
     if (type != OBJ_FALL_PLATFORM && type != OBJ_MOVING_PLATFORM_UPDOWN) {
         if (p1 == TERRAIN_SPIKE && p2 == TERRAIN_SPIKE) {
@@ -265,7 +269,7 @@ bool GameObject::test_change_position(short xinc, short yinc)
 	return false;
 }
 
-void GameObject::check_player_move(int xinc, int yinc) const
+void GameObject::check_player_move(int xinc, int yinc)
 {
 	//std::cout << "object::check_player_move::START - p.platform: " << gameManager::get_instance()->get_player_platform() << ", this: " << this << std::endl;
 	if (xinc == 0 && yinc == 0) {
@@ -281,6 +285,9 @@ void GameObject::check_player_move(int xinc, int yinc) const
     if (GameManager::get_instance()->get_player_platform() == this) {
         //std::cout << "************* object::check_player_move - MOVE xinc: " << xinc << ", yinc: " << yinc << " **************" << std::endl;
         GameManager::get_instance()->change_player_position(xinc, yinc);
+        if (!item_jet_started) {
+            item_jet_started = true;
+        }
     }
 }
 
@@ -985,13 +992,15 @@ void GameObject::move(bool paused)
 		if (_command_down == true) {
             yinc = speed;
 		}
-		position.x += xinc;
-		position.y += yinc;
         //std::cout << "OBJ FLY STARTED - move - xinc: " << xinc << ", position.x: " << position.x << std::endl;
 		check_player_move(xinc, yinc); // @TODO - player can move up/down
-		distance += abs((float)xinc);
-		_command_up = false;
-		_command_down = false;
+        if (item_jet_started == true) {
+            position.x += xinc;
+            position.y += yinc;
+            distance += abs((float)xinc);
+            _command_up = false;
+            _command_down = false;
+        }
     } else if (type == OBJ_DISAPPEARING_BLOCK) { // 1500 is visible time and 2000 is hidden time. initial delay is defined by obj_timer
         /// @TODO - this must be "static" for all objects of this type
         if (_timer_limit < TimerView::get_instance()->getTimer()) {

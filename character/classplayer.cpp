@@ -851,8 +851,8 @@ void classPlayer::death()
 {
     SoundView::get_instance()->stop_music();
     SoundView::get_instance()->play_sfx(SFX_PLAYER_DEATH);
+    GameManager::get_instance()->draw_player_death(relativePosition);
 
-    //std::cout << "PLAYER::death, x: " << position.x << std::endl;
     GameManager::get_instance()->get_current_map_obj()->print_objects_number();
     reset_charging_shot();
     GameManager::get_instance()->get_current_map_obj()->clear_animations();
@@ -872,12 +872,8 @@ void classPlayer::death()
 	state.direction = ANIM_DIRECTION_RIGHT;
     GameManager::get_instance()->remove_current_teleporter_from_list();
 
-    //draw::get_instance()->add_fade_out_effect(171, 0, 19);
     GameManager::get_instance()->draw_explosion(relativePosition, false);
-    //draw::get_instance()->draw_explosion(realPosition);
-    //draw::get_instance()->remove_fade_out_effect();
 
-    std::cout << "PLAYER::DEATH::DONE" << std::endl;
 }
 
 void classPlayer::reset_hp()

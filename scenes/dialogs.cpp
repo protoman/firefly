@@ -61,7 +61,7 @@ void dialogs::show_dialog(std::string face_file, bool top_side, std::string line
 bool dialogs::show_leave_game_dialog()
 {
     std::string lines[3];
-    lines[0] = strings_map::get_instance()->get_ingame_string(strings_ingame_quitgame, SharedData::get_instance()->game_config.selected_language);
+    lines[0] = strings_map::get_instance()->get_ingame_string(strings_ingame_quitgame, SharedData::get_instance()->current_language);
     return show_yes_no_dialog(lines);
 }
 
@@ -89,8 +89,8 @@ bool dialogs::show_yes_no_dialog(std::string lines[3])
 
     std::vector<std::string> item_list;
 
-    item_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_yes, SharedData::get_instance()->game_config.selected_language));
-    item_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_no, SharedData::get_instance()->game_config.selected_language));
+    item_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_yes, SharedData::get_instance()->current_language));
+    item_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_no, SharedData::get_instance()->current_language));
     option_picker main_picker(false, st_position(dialog_pos.x+40, dialog_pos.y+16+11), item_list, false);
     draw::get_instance()->update_screen();
     while (repeat_menu == true) {
@@ -148,6 +148,16 @@ void dialogs::show_timed_dialog(std::string face_file, bool is_left, std::string
 
     TimerView::get_instance()->delay(delay);
     GameManager::get_instance()->game_unpause();
+}
+
+void dialogs::show_centered_dialog(std::vector<std::string> lines)
+{
+    /// TODO ///
+}
+
+void dialogs::show_boss_dialog(int stage_n)
+{
+    /// TODO ///
 }
 
 

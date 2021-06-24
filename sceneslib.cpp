@@ -68,7 +68,7 @@ void scenesLib::draw_main()
 
     TextView::get_instance()->renderText(8, 8, VERSION_NUMBER);
 
-    TextView::get_instance()->renderText(40, (RES_H-35), strings_map::get_instance()->get_ingame_string(strings_ingame_copyrightline, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderText(40, (RES_H-35), strings_map::get_instance()->get_ingame_string(strings_ingame_copyrightline, SharedData::get_instance()->current_language));
     TextView::get_instance()->renderCenteredText(220, "http://rockbot.upperland.net");
 
 }
@@ -89,14 +89,14 @@ void scenesLib::main_screen()
 	draw_main();
 
     std::vector<st_menu_option> options;
-    options.push_back(st_menu_option(strings_map::get_instance()->get_ingame_string(strings_ingame_newgame, SharedData::get_instance()->game_config.selected_language)));
+    options.push_back(st_menu_option(strings_map::get_instance()->get_ingame_string(strings_ingame_newgame, SharedData::get_instance()->current_language)));
     if (fio.have_one_save_file() == true) {
-        options.push_back(st_menu_option(strings_map::get_instance()->get_ingame_string(strings_ingame_loadgame, SharedData::get_instance()->game_config.selected_language)));
+        options.push_back(st_menu_option(strings_map::get_instance()->get_ingame_string(strings_ingame_loadgame, SharedData::get_instance()->current_language)));
     } else {
-        options.push_back(st_menu_option(strings_map::get_instance()->get_ingame_string(strings_ingame_loadgame, SharedData::get_instance()->game_config.selected_language), true));
+        options.push_back(st_menu_option(strings_map::get_instance()->get_ingame_string(strings_ingame_loadgame, SharedData::get_instance()->current_language), true));
     }
-    options.push_back(st_menu_option(strings_map::get_instance()->get_ingame_string(strings_ingame_config, SharedData::get_instance()->game_config.selected_language)));
-    options.push_back(st_menu_option(strings_map::get_instance()->get_ingame_string(strings_ingame_about,SharedData::get_instance()-> game_config.selected_language)));
+    options.push_back(st_menu_option(strings_map::get_instance()->get_ingame_string(strings_ingame_config, SharedData::get_instance()->current_language)));
+    options.push_back(st_menu_option(strings_map::get_instance()->get_ingame_string(strings_ingame_about, SharedData::get_instance()->current_language)));
 
     option_picker main_picker(false, st_position(20, (RES_H*0.5)), options, false);
 
@@ -236,14 +236,14 @@ Uint8 scenesLib::select_difficulty()
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(300);
 
-    options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_difficulty_easy, SharedData::get_instance()->game_config.selected_language));
-    options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_difficulty_normal, SharedData::get_instance()->game_config.selected_language));
-    options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_difficulty_hard, SharedData::get_instance()->game_config.selected_language));
+    options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_difficulty_easy, SharedData::get_instance()->current_language));
+    options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_difficulty_normal, SharedData::get_instance()->current_language));
+    options.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_difficulty_hard, SharedData::get_instance()->current_language));
 
     config_text_pos.x = ImageView::get_instance()->get_config_menu_pos().x + 24;
     config_text_pos.y = ImageView::get_instance()->get_config_menu_pos().y + 60;
 
-    TextView::get_instance()->renderText(config_text_pos.x, ImageView::get_instance()->get_config_menu_pos().y+40, strings_map::get_instance()->get_ingame_string(strings_ingame_difficulty_select, SharedData::get_instance()->game_config.selected_language).c_str());
+    TextView::get_instance()->renderText(config_text_pos.x, ImageView::get_instance()->get_config_menu_pos().y+40, strings_map::get_instance()->get_ingame_string(strings_ingame_difficulty_select, SharedData::get_instance()->current_language).c_str());
 
     short selected_option = -2;
     while (selected_option == -2) {
