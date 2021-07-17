@@ -32,7 +32,7 @@ public:
     void show_config_warning_android_play_services();
     void show_config_warning_android_cloud_save();
     void show_config_warning_android_hide_controls();
-    void config_int_value(Uint8 &value_ref, int min, int max);
+    void config_int_value(int initial_value, int min, int max);
 
 
 private:

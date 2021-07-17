@@ -6,6 +6,7 @@ extern std::vector<std::string> AI_ACTION_WALK_OPTIONS;
 extern std::vector<std::string> AI_ACTION_SHOT_OPTIONS;
 extern std::vector<std::string> AI_ACTION_FLY_OPTIONS;
 extern std::vector<std::string> AI_ACTION_JUMP_OPTIONS;
+extern std::vector<std::string> AI_ACTION_WALL_WALK_OPTIONS;
 extern std::vector<std::string> AI_ACTION_AIR_WALK_OPTIONS;
 extern std::vector<std::string> AI_ACTION_TELEPORT_OPTIONS;
 extern std::vector<std::string> AI_ACTION_DASH_OPTIONS;
@@ -238,7 +239,9 @@ void common::fill_ai_options_combo(int action, QComboBox *combo)
 		list = AI_ACTION_WALK_OPTIONS;
 	} else if (action == AI_ACTION_FLY) {
 		list = AI_ACTION_FLY_OPTIONS;
-	} else if (action == AI_ACTION_JUMP) {
+    } else if (action == AI_ACTION_WALL_WALK || action == AI_ACTION_WALL_WALK_SHOOT) {
+        list = AI_ACTION_WALL_WALK_OPTIONS;
+    } else if (action == AI_ACTION_JUMP) {
 		list = AI_ACTION_JUMP_OPTIONS;
 	} else if (action == AI_ACTION_AIR_WALK) {
 		list = AI_ACTION_AIR_WALK_OPTIONS;
@@ -504,6 +507,15 @@ void common::show_directory_error_message(std::string directory)
     msgBox.exec();
     // create directory now
     QDir().mkdir(directory.c_str());
+}
+
+void common::fill_direction_combo(QComboBox *combo)
+{
+    combo->clear();
+    combo->addItem(QString("LEFT"));
+    combo->addItem(QString("RIGHT"));
+    combo->addItem(QString("UP"));
+    combo->addItem(QString("DOWN"));
 }
 
 

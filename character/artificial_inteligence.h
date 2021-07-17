@@ -355,6 +355,9 @@ protected:
 
     int special_ai_status = 0;
 
+    double started_action_timer = 0;
+    double shot_timer = 0; // used to check if we need to keep the enemy in animation for a given period
+
     // =============================================================================================================== //
     //                             CUSTOM MEMBERS USED ONLY BY BOSSES CLASSES                                          //
     // =============================================================================================================== //

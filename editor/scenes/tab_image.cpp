@@ -94,6 +94,12 @@ void tab_image::set_fields(int index)
 
     //ui->select_comboBox->setCurrentIndex(ScenesMediator::get_instance()->image_list.at(index).loop_mode);
 
+    ui->image_preview_widget->set_x(ScenesMediator::get_instance()->image_list.at(index).copy_area.x);
+    ui->image_preview_widget->set_y(ScenesMediator::get_instance()->image_list.at(index).copy_area.y);
+    ui->image_preview_widget->set_w(ScenesMediator::get_instance()->image_list.at(index).copy_area.w);
+    ui->image_preview_widget->set_h(ScenesMediator::get_instance()->image_list.at(index).copy_area.h);
+    ui->image_preview_widget->repaint();
+
     update_preview_image(ui->select_comboBox->currentIndex());
 
 }
@@ -121,7 +127,9 @@ void tab_image::on_add_Button_clicked()
 void tab_image::on_select_comboBox_currentIndexChanged(int index)
 {
     if (data_loading) { return; }
+    data_loading = true;
     set_fields(index);
+    data_loading = false;
 }
 
 void tab_image::on_destx_spinBox_valueChanged(int arg1)

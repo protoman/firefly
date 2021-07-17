@@ -38,7 +38,7 @@ public:
 private:
     file_io fio;
     st_position _position; /**< TODO */
-    std::vector<st_menu_option> _items; /**< TODO */
+    std::vector<st_menu_option> picker_item_list; /**< TODO */
     bool _draw_border; /**< TODO */
     Uint8 _pick_pos; /**< TODO */
     bool _show_return;

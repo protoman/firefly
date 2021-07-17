@@ -27,6 +27,17 @@ struct st_game_config {
     Uint8 android_touch_controls_size;                  // for android, size of the on-screen controls 0 = small, 1 = normal, 2 = big
     Uint8 graphics_performance_mode;                    // 0 => lowend, 1=> normal, 2 => highend
     bool first_run;
+    // FOR FUTURE USAGE
+    Sint8 CONFIG_PLACEHOLDER_001 = 0;
+    Sint8 CONFIG_PLACEHOLDER_002 = 0;
+    Sint8 CONFIG_PLACEHOLDER_003 = 0;
+    Sint8 CONFIG_PLACEHOLDER_004 = 0;
+    Sint8 CONFIG_PLACEHOLDER_005 = 0;
+    Sint8 CONFIG_PLACEHOLDER_006 = 0;
+    Sint8 CONFIG_PLACEHOLDER_007 = 0;
+    Sint8 CONFIG_PLACEHOLDER_008 = 0;
+    Sint8 CONFIG_PLACEHOLDER_009 = 0;
+    Sint8 CONFIG_PLACEHOLDER_010 = 0;
 
     void get_default_keys(int (&keys_codes_copy)[BTN_COUNT]) {
     keys_codes_copy[BTN_ATTACK] = SDLK_a;
@@ -132,6 +143,16 @@ struct st_game_config {
         android_touch_controls_hide = false;
         android_touch_controls_size = 1;
         graphics_performance_mode = PERFORMANCE_MODE_HIGH;
+        CONFIG_PLACEHOLDER_001 = 0;
+        CONFIG_PLACEHOLDER_002 = 0;
+        CONFIG_PLACEHOLDER_003 = 0;
+        CONFIG_PLACEHOLDER_004 = 0;
+        CONFIG_PLACEHOLDER_005 = 0;
+        CONFIG_PLACEHOLDER_006 = 0;
+        CONFIG_PLACEHOLDER_007 = 0;
+        CONFIG_PLACEHOLDER_008 = 0;
+        CONFIG_PLACEHOLDER_008 = 0;
+        CONFIG_PLACEHOLDER_010 = 0;
     }
 
 

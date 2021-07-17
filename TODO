@@ -1,17 +1,34 @@
 ########################################################
+                    FEATURES NOVAS
+########################################################
+- fundos animados
+    # opção de frames X e frames Y
+    # por padrão é 1x1, se aumentar, divide a tela em partes horizontais ou verticais
+
+========================================================
+- independência de resolução
+    # ter assets 1080p, 720p e 480p
+    # tilesize ajustável de acordo
+    # multiplicador de movimento (em sharedData)
+    # tamanho da fonte de acordo
+    # suporte a diferentes proporções de tela (?)
+
+########################################################
                         SLOPES
 ########################################################
-- ao entrar no slope, guarda o ângulo dele
-- todo o movimento esquerda/direita usa esse ângulo do slope até que
-    # saia totalmente do slope (fazer um método que vascula direitinho todo o chão abaixo do player, só pode ter não-slopes)
-    # entrou em um slope com ângulo diferente
-    # assim, se tiver um ponto sem slope no meio do caminho, não importa, ele continua como se estivesse no slope até sair 100% dele
+- está ficando em algum tipo de animação inválido após pular ou entrar em slopes
 
- v723987estr-01
+- ao entrar no slope, guarda o ângulo dele
+    # todo o movimento esquerda/direita usa esse ângulo do slope até que
+        # saia totalmente do slope (fazer um método que vascula direitinho todo o chão abaixo do player, só pode ter não-slopes)
+        # entrou em um slope com ângulo diferente
+        # assim, se tiver um ponto sem slope no meio do caminho, não importa, ele continua como se estivesse no slope até sair 100% dele
+
 ########################################################
 
-- importar correções do Rockbot
-    # data último merge (página 2): Sep 3, 2020
+- limpar editor:
+    # tirar tudo de scenes, já que vai ser tudo hard-coded de agora em diante.
+    # tirar coisas de scenes do file-format tb (file_scene*)
 
 - EDITOR:
     # desenhar overlay (como transparente)
@@ -23,12 +40,8 @@
 
 - (melhorar) joystick rumble
 
-- independência de resolução
-    # ter assets 1080p, 720p e 480p
-    # tilesize ajustável de acordo
-
-- fundos animados (feitos de tiles, não de imagem)
 - items que não são plataforma não devem parar porque estao em colisão com personagens
+
 - EDITOR: trocar locks de cores para generico, por objeto
 
 QUEST:
@@ -56,6 +69,7 @@ HUD: https://opengameart.org/content/golden-ui-bigger-than-ever-edition
 #######################################################################################################
 i18n:
 #######################################################################################################
+ver se tem alguma lib ou esquema de SDL para ajudar
 fazer totalmente hardcoded, sem arquivo separado.
 adicionar suporte a level no arquivo de save de posição de objetos
 adicionar método que, ao usar um game-item, se tem um objeto no local, pode dar trigger nele

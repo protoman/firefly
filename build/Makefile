@@ -1140,7 +1140,8 @@ main.o: ../main.cpp ../data/shareddata.h \
 		../class_config.h \
 		../scenes/dialogs.h \
 		../aux_tools/fps_control.h \
-		../text/npc_dialog_manager.h
+		../text/npc_dialog_manager.h \
+		../aux_tools/stringutils.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../main.cpp
 
 i18ntext.o: ../text/i18ntext.cpp ../text/i18ntext.h \

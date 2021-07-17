@@ -9,6 +9,7 @@ std::vector<std::string> AI_ACTION_NAMES;
 std::vector<std::string> AI_ACTION_SHOT_OPTIONS;
 std::vector<std::string> AI_ACTION_WALK_OPTIONS;
 std::vector<std::string> AI_ACTION_FLY_OPTIONS;
+std::vector<std::string> AI_ACTION_WALL_WALK_OPTIONS;
 std::vector<std::string> AI_ACTION_JUMP_OPTIONS;
 std::vector<std::string> AI_ACTION_AIR_WALK_OPTIONS;
 std::vector<std::string> AI_ACTION_TELEPORT_OPTIONS;
@@ -49,7 +50,8 @@ void init_enum_names() {
     PROJECTILE_TRAJECTORIES_NAMES.push_back("LARGE BEAM");
     PROJECTILE_TRAJECTORIES_NAMES.push_back("PULL");
     PROJECTILE_TRAJECTORIES_NAMES.push_back("SLASH");
-
+    PROJECTILE_TRAJECTORIES_NAMES.push_back("UP");
+    PROJECTILE_TRAJECTORIES_NAMES.push_back("DOWN");
 
     // -------------------------------------------------------------- //
     AI_ACTION_NAMES.push_back("WALK");
@@ -76,6 +78,8 @@ void init_enum_names() {
     AI_ACTION_NAMES.push_back("MORPH INTO");
     AI_ACTION_NAMES.push_back("PLAY SOUND EFFECT");
     AI_ACTION_NAMES.push_back("ROTATE GRAPHIC");
+    AI_ACTION_NAMES.push_back("WALL-WALK");
+    AI_ACTION_NAMES.push_back("WALL-WALK-SHOOT");
 
     // -------------------------------------------------------------- //
     AI_ACTION_SHOT_OPTIONS.push_back("FACE PLAYER");
@@ -176,6 +180,13 @@ void init_enum_names() {
 
     // -------------------------------------------------------------- //
     AI_ACTION_SFX_OPTION_NAMES.push_back("DINOSSAUR GROWL");
+
+    // -------------------------------------------------------------- //
+
+    AI_ACTION_WALL_WALK_OPTIONS.push_back("LEFT");
+    AI_ACTION_WALL_WALK_OPTIONS.push_back("RIGHT");
+    AI_ACTION_WALL_WALK_OPTIONS.push_back("UP");
+    AI_ACTION_WALL_WALK_OPTIONS.push_back("DOWN");
 }
 
 

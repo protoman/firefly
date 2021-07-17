@@ -675,6 +675,8 @@ enum PROJECTILE_TRAJECTORIES {
     TRAJECTORY_LARGE_BEAM,
     TRAJECTORY_PULL,                            // pull player or enemies into shooter
     TRAJECTORY_SLASH,                           // stay in place, runs until animation finishes
+    TRAJECTORY_UP,
+    TRAJECTORY_DOWN,
     PROJECTILE_TRAJECTORIES_COUNT
 };
 
@@ -969,6 +971,8 @@ enum AI_ACTION_LIST {
     AI_ACTION_MORPH_INTO_NPC,                       // instead of a new enemy with full hp and such, just morph into a new one
     AI_ACTION_PLAY_SFX,                             // play a sound-effect
     AI_ACTION_ROTATE_GRAPHIC,
+    AI_ACTION_WALL_WALK,
+    AI_ACTION_WALL_WALK_SHOOT,
     AI_ACTION_LIST_SIZE
 };
 

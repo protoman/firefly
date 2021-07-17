@@ -22,7 +22,7 @@
 #include "GameManager.h"
 #define JUMP_ROOF_MIN_SPEED 3
 #define MAX_NPC_SPAWN 3
-
+#define SHOOTER_DELAY 1000
 
 std::vector<character*> *artificial_inteligence::player_list=nullptr;
 
@@ -208,10 +208,21 @@ void artificial_inteligence::check_ai_reaction()
 
 void artificial_inteligence::define_ai_next_step()
 {
-    if (_initialized == 0 || GameMediator::get_instance()->ai_list.at(_number).states[_ai_chain_n].go_to == AI_ACTION_GOTO_CHANCE) { // CHANCE
+    bool must_ignore_next = (shot_success == false && _current_ai_type == AI_ACTION_SHOT_PROJECTILE_AHEAD);
+        if (must_ignore_next == false && (_initialized == 0 || GameMediator::get_instance()->ai_list.at(_number).states[_ai_chain_n].go_to == AI_ACTION_GOTO_CHANCE)) { // CHANCE
         _initialized = 1;
         int rand_n = rand() % 100;
 
+        /// TODO: use some kind of type instead of name ///
+        if (name.find("WALLSHOOTER") != std::string::npos) {
+            is_shooter = true;
+            shoot_direction = state.direction;
+            if (name.find("WALLSHOOTER TOP") != std::string::npos) {
+                shoot_direction = ANIM_DIRECTION_DOWN;
+            } else if (name.find("WALLSHOOTER BOTTOM") != std::string::npos) {
+                shoot_direction = ANIM_DIRECTION_UP;
+            }
+        }
 
         //std::cout << "AI::define_ai_next_step - CHANCE - rand_n: " << rand_n << std::endl;
 
@@ -331,6 +342,13 @@ void artificial_inteligence::execute_ai_step()
         std::cout << "********** AI::UNKNOWN - number[" << _number << "], pos[" << _ai_chain_n << "], _current_ai_type[" << (int)_current_ai_type << "] - NOT IMPLEMENTED *******" << std::endl;
         _current_ai_type = 0;
         _ai_chain_n = 0;
+    }
+
+    if (is_shooter) {
+        if (shooter_timer < TimerView::get_instance()->getTimer()) {
+            throw_projectile(0, false);
+            shooter_timer = TimerView::get_instance()->getTimer() + SHOOTER_DELAY;
+        }
     }
 }
 
@@ -504,9 +522,9 @@ void artificial_inteligence::ia_action_jump_to_point(st_position point)
             //std::cout << "AI::ia_action_jump_to_point - jump_dist: " << jump_dist << std::endl;
         }
         if (position.x < point.x) {
-            state.direction = ANIM_DIRECTION_RIGHT;
+            set_direction(ANIM_DIRECTION_RIGHT);
         } else {
-            state.direction = ANIM_DIRECTION_LEFT;
+            set_direction(ANIM_DIRECTION_LEFT);
         }
         if (xinc <= 0) {
             _trajectory_parabola = new trajectory_parabola(position.x - point.x);
@@ -935,9 +953,9 @@ void artificial_inteligence::ia_set_destiny_point(st_position dest_point)
 	_ai_state.secondary_position.x = dest_point.x;
 	_ai_state.secondary_position.y = dest_point.y;
 	if (_ai_state.secondary_position.x < _ai_state.initial_position.x) {
-		state.direction = ANIM_DIRECTION_LEFT;
+        set_direction(ANIM_DIRECTION_LEFT);
 	} else {
-		state.direction = ANIM_DIRECTION_RIGHT;
+        set_direction(ANIM_DIRECTION_RIGHT);
 	}
 }
 
@@ -1093,7 +1111,7 @@ void artificial_inteligence::execute_ai_step_walk()
                     _dest_point.x = position.x + frameSize.width/2 + walk_range;
                 }
             } else if (move_type == AI_ACTION_WALK_OPTION_TO_RANDOM_DIRECTION) {
-                state.direction = rand() % 2;
+                set_direction(rand() % 2);
                 if (name == "KURUPIRA BOT") std::cout << "AI_ACTION_WALK_OPTION_TO_RANDOM_DIRECTION, direction: " << (int)state.direction << std::endl;
                 if (state.direction == ANIM_DIRECTION_LEFT) {
                     _dest_point.x = position.x - frameSize.width/2 - walk_range;
@@ -1102,10 +1120,10 @@ void artificial_inteligence::execute_ai_step_walk()
                 }
             } else if (move_type == AI_ACTION_WALK_OPTION_TO_OPPOSITE_DIRECTION) {
                 if (relativePosition.x > RES_W/2) {
-                    state.direction = ANIM_DIRECTION_LEFT;
+                    set_direction(ANIM_DIRECTION_LEFT);
                     _dest_point.x = position.x - walk_range;
                 } else {
-                    state.direction = ANIM_DIRECTION_RIGHT;
+                    set_direction(ANIM_DIRECTION_RIGHT);
                     _dest_point.x = position.x + walk_range;
                 }
                 //std::cout << "AI::AI_ACTION_WALK_OPTION_TO_OPPOSITE_DIRECTION - dest.x: " << _dest_point.x << ", dest.y: " << _dest_point.y << ", pos.x: " << position.x << ", pos.y: " << position.y << std::endl;
@@ -1122,9 +1140,9 @@ void artificial_inteligence::execute_ai_step_walk()
             if (_is_last_frame == true) { // finished turn animation
                 //std::cout << "AI::execute_ai_step_walk::exec - TURN - last frame - direction: " << state.direction << std::endl;
                 if (state.direction == ANIM_DIRECTION_LEFT) {
-                    state.direction = ANIM_DIRECTION_RIGHT; /// @TODO - turn if not facing the given direction
+                    set_direction(ANIM_DIRECTION_RIGHT); /// @TODO - turn if not facing the given direction
                 } else {
-                    state.direction = ANIM_DIRECTION_LEFT;
+                    set_direction(ANIM_DIRECTION_LEFT);
                 }
                 set_animation_type(ANIM_TYPE_WALK);
                 _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
@@ -1133,9 +1151,9 @@ void artificial_inteligence::execute_ai_step_walk()
             //std::cout << "AI_ACTION_WALK_OPTION_TURN_TO_PLAYER::EXEC" << std::endl;
             struct_player_dist dist_players = dist_npc_players();
             if (dist_players.pObj->getPosition().x > position.x) {
-                state.direction = ANIM_DIRECTION_RIGHT;
+                set_direction(ANIM_DIRECTION_RIGHT);
             } else {
-                state.direction = ANIM_DIRECTION_LEFT;
+                set_direction(ANIM_DIRECTION_LEFT);
             }
             set_animation_type(ANIM_TYPE_WALK);
             _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
@@ -1180,9 +1198,9 @@ void artificial_inteligence::execute_ai_action_trow_projectile(unsigned short n,
             //std::cout << "AI::execute_ai_action_trow_projectile - face player, walk_range: " << walk_range << std::endl;
             struct_player_dist dist_players = dist_npc_players();
             if (dist_players.pObj->getPosition().x > position.x) {
-                state.direction = ANIM_DIRECTION_RIGHT;
+                set_direction(ANIM_DIRECTION_RIGHT);
             } else {
-                state.direction = ANIM_DIRECTION_LEFT;
+                set_direction(ANIM_DIRECTION_LEFT);
             }
         }
 		state.animation_state = 0;
@@ -1192,7 +1210,7 @@ void artificial_inteligence::execute_ai_action_trow_projectile(unsigned short n,
 	} else {
         if (_was_animation_reset == true && _did_shot == true) {
             //std::cout << "AI::execute_ai_action_trow_projectile - FINISH" << std::endl;
-			_ai_state.sub_status = IA_ACTION_STATE_FINISHED;
+            _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
             _did_shot = false;
             if (state.animation_type == ANIM_TYPE_WALK_AIR || state.animation_type == ANIM_TYPE_JUMP || state.animation_type == ANIM_TYPE_JUMP_ATTACK) {
                 set_animation_type(ANIM_TYPE_JUMP);
@@ -1201,9 +1219,9 @@ void artificial_inteligence::execute_ai_action_trow_projectile(unsigned short n,
                 set_animation_type(ANIM_TYPE_STAND);
             }
         } else if ((_is_attack_frame == true || _is_last_frame == true) && _did_shot == false) { // only shoot when reached the last frame in animation attack
-            //std::cout << "AI::execute_ai_action_trow_projectile - SHHHHHHHHHHHOOOOOOOOOOOT" << std::endl;
-            throw_projectile(_parameter, invert_direction);
+            shot_success = throw_projectile(_parameter, invert_direction);
             _did_shot = true;
+            shot_timer = TimerView::get_instance()->getTimer();
         }
     }
 }
@@ -1241,6 +1259,9 @@ bool artificial_inteligence::throw_projectile(int projectile_type, bool invert_d
     int proj_direction = state.direction;
     if (invert_direction == true) {
         proj_direction = !proj_direction;
+    }
+    if (is_shooter) {
+        proj_direction = shoot_direction;
     }
 
     projectile_list.push_back(projectile(projectile_type, proj_direction, get_attack_position(), is_player()));
@@ -1330,10 +1351,10 @@ void artificial_inteligence::execute_ai_step_fly()
         } else if (_parameter == AI_ACTION_FLY_OPTION_PLAYER_DIRECTION) {
             struct_player_dist dist_players = dist_npc_players();
             if (dist_players.pObj->getPosition().x < position.x) {
-                state.direction = ANIM_DIRECTION_LEFT;
+                set_direction(ANIM_DIRECTION_LEFT);
                 _dest_point.x = position.x - walk_range;
             } else {
-                state.direction = ANIM_DIRECTION_RIGHT;
+                set_direction(ANIM_DIRECTION_RIGHT);
                 _dest_point.x = position.x + walk_range;
             }
             _dest_point.y = position.y;
@@ -1341,10 +1362,10 @@ void artificial_inteligence::execute_ai_step_fly()
 
         } else if (_parameter == AI_ACTION_FLY_OPTION_OPOSITE_WALL) {
             if (relativePosition.x > RES_W/2) {
-                state.direction = ANIM_DIRECTION_LEFT;
+                set_direction(ANIM_DIRECTION_LEFT);
                 _dest_point.x = position.x - walk_range;
             } else {
-                state.direction = ANIM_DIRECTION_RIGHT;
+                set_direction(ANIM_DIRECTION_RIGHT);
                 _dest_point.x = position.x + walk_range;
             }
             _dest_point.y = position.y;
@@ -1352,10 +1373,10 @@ void artificial_inteligence::execute_ai_step_fly()
             _origin_point.x = position.x;
         } else if (_parameter == AI_ACTION_FLY_OPTION_OPOSITE_SHOOT_1) {
             if (relativePosition.x + frameSize.width/2 > RES_W/2) {
-                state.direction = ANIM_DIRECTION_LEFT;
+                set_direction(ANIM_DIRECTION_LEFT);
                 _dest_point.x = position.x - walk_range;
             } else {
-                state.direction = ANIM_DIRECTION_RIGHT;
+                set_direction(ANIM_DIRECTION_RIGHT);
                 _dest_point.x = position.x + walk_range;
             }
             _dest_point.y = position.y;
@@ -1364,9 +1385,9 @@ void artificial_inteligence::execute_ai_step_fly()
         } else if (_parameter == AI_ACTION_FLY_OPTION_TO_PLAYER_X) {
             struct_player_dist dist_players = dist_npc_players();
             if (dist_players.pObj->getPosition().x < position.x) {
-                state.direction = ANIM_DIRECTION_LEFT;
+                set_direction(ANIM_DIRECTION_LEFT);
             } else {
-                state.direction = ANIM_DIRECTION_RIGHT;
+                set_direction(ANIM_DIRECTION_RIGHT);
             }
             _dest_point.x = dist_players.pObj->getPosition().x;
             std::cout << "AI_ACTION_FLY_OPTION_TO_PLAYER_X::x: " << _dest_point.x << std::endl;
@@ -1398,7 +1419,7 @@ void artificial_inteligence::execute_ai_step_fly()
             //std::cout << "*************** artificial_inteligence::execute_ai_step_fly - reached last turn frame, reset to stand" << std::endl;
             if (_show_reset_stand) std::cout << "AI::RESET_TO_STAND #9" << std::endl;
             set_animation_type(ANIM_TYPE_STAND);
-            state.direction = !state.direction;
+            set_direction(!state.direction);
 			_ai_state.sub_status = IA_ACTION_STATE_FINISHED;
 			return;
 		}
@@ -1414,7 +1435,7 @@ void artificial_inteligence::execute_ai_step_fly()
                 if (name == "Giant Fly") std::cout << "artificial_inteligence::execute_ai_step_fly - HORIZONTAL TURN" << std::endl;
                 if (have_frame_graphic(state.direction, ANIM_TYPE_TURN, 0) == false) {
                     if (name == "Giant Fly") std::cout << "#1 - NO TURN GRAPHIC, direction: " << state.direction << std::endl;
-                    state.direction = !state.direction;
+                    set_direction(!state.direction);
                     if (name == "Giant Fly") std::cout << "#2 - NO TURN GRAPHIC, direction: " << state.direction << std::endl;
                     _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
                 } else {
@@ -1547,9 +1568,9 @@ void artificial_inteligence::execute_ai_step_fly()
 
             _dest_point.x = dist_players.pObj->getPosition().x;
             if (dist_players.pObj->getPosition().x < position.x) {
-                state.direction = ANIM_DIRECTION_LEFT;
+                set_direction(ANIM_DIRECTION_LEFT);
             } else {
-                state.direction = ANIM_DIRECTION_RIGHT;
+                set_direction(ANIM_DIRECTION_RIGHT);
             }
 
             //std::cout << "AI_ACTION_FLY_OPTION_TO_PLAYER_X - is_ghost[" << is_ghost << "], x: " << position.x << ", p.x: " << dist_players.pObj->getPosition().x << std::endl;
@@ -1576,7 +1597,7 @@ void artificial_inteligence::execute_ai_step_fly()
             int pos_x_before = position.x;
 
             if (move_to_point(_dest_point, move_speed, 2, is_ghost, false) == true || (move_speed != 0 && pos_x_before == position.x)) {
-                state.direction = !state.direction;
+                set_direction(!state.direction);
                 if (state.direction == ANIM_DIRECTION_LEFT) {
                     _dest_point.x = position.x - frameSize.width/2 - walk_range;
                 } else {
@@ -1658,14 +1679,14 @@ void artificial_inteligence::execute_ai_step_dash()
                 std::cout << "#### can_move_left.result[" << (int)can_move_left.result << "], xinc[" << can_move_left.xinc << "], can_move_x[" << can_move_left.can_move_x << "]" << std::endl;
                 if (can_move_left.result != CAN_MOVE_SUCESS || can_move_left.xinc == 0 || can_move_left.can_move_x == false) {
                     std::cout << "DASH::INVERT #1" << std::endl;
-                    state.direction = ANIM_DIRECTION_RIGHT;
+                    set_direction(ANIM_DIRECTION_RIGHT);
                 }
             } else if (state.direction == ANIM_DIRECTION_RIGHT) {
                 can_move_struct can_move_right = check_can_move_to_point(st_float_position(position.x+move_speed*4, position.y), move_speed*2, 0, is_ghost, false);
                 std::cout << "#### can_move_right.result[" << (int)can_move_right.result << "], xinc[" << can_move_right.xinc << "], can_move_x[" << can_move_right.can_move_x << "]" << std::endl;
                 if (can_move_right.result != CAN_MOVE_SUCESS || can_move_right.xinc == 0 || can_move_right.can_move_x == false) {
                     std::cout << "DASH::INVERT #2" << std::endl;
-                    state.direction = ANIM_DIRECTION_LEFT;
+                    set_direction(ANIM_DIRECTION_LEFT);
                 }
             }
             std::cout << "DASH::INVERT DEFINE" << std::endl;
@@ -1677,20 +1698,20 @@ void artificial_inteligence::execute_ai_step_dash()
             }
         } else if (_parameter == AI_ACTION_DASH_OPTION_LEFT) {
             _dest_point.x = position.x + frameSize.width/2 - walk_range;
-            state.direction = ANIM_DIRECTION_LEFT;
+            set_direction(ANIM_DIRECTION_LEFT);
         } else if (_parameter == AI_ACTION_DASH_OPTION_RIGHT) {
             _dest_point.x = position.x + frameSize.width/2 + walk_range;
-            state.direction = ANIM_DIRECTION_RIGHT;
+            set_direction(ANIM_DIRECTION_RIGHT);
         } else if (_parameter == AI_ACTION_DASH_OPTION_TO_PLAYER) {
             struct_player_dist dist_players = dist_npc_players();
 
             //std::cout << "AI::DASH::TO_PLAYER::dist: " << dist_players.dist << std::endl;
 
             if (dist_players.pObj->getPosition().x > (position.x  + frameSize.width/2)) {
-                state.direction = ANIM_DIRECTION_RIGHT;
+                set_direction(ANIM_DIRECTION_RIGHT);
                 _dest_point.x = position.x + frameSize.width/2 + walk_range;
             } else {
-                state.direction = ANIM_DIRECTION_LEFT;
+                set_direction(ANIM_DIRECTION_LEFT);
                 _dest_point.x = position.x + frameSize.width/2 - walk_range;
             }
             //_dest_point.x = dist_players.pObj->getPosition().x;
@@ -1698,10 +1719,10 @@ void artificial_inteligence::execute_ai_step_dash()
             //std::cout << ">>>>>>>>> AI::DASH::INIT - dest_point.x: " << _dest_point.x << ", walk_range: " << walk_range << ", position.x: " << position.x << std::endl;
         } else if (_parameter == AI_ACTION_DASH_OPTION_OPPOSITE_DIRECTION) {
             if (relativePosition.x > RES_W/2) {
-                state.direction = ANIM_DIRECTION_LEFT;
+                set_direction(ANIM_DIRECTION_LEFT);
                 _dest_point.x = position.x - walk_range;
             } else {
-                state.direction = ANIM_DIRECTION_RIGHT;
+                set_direction(ANIM_DIRECTION_RIGHT);
                 _dest_point.x = position.x + walk_range;
             }
             //std::cout << "AI::AI_ACTION_DASH_OPTION_OPPOSITE_DIRECTION - dest.x: " << _dest_point.x << ", dest.y: " << _dest_point.y << ", pos.x: " << position.x << ", pos.y: " << position.y << std::endl;
@@ -1736,10 +1757,11 @@ void artificial_inteligence::execute_ai_step_change_animation_type()
         set_animation_type(static_cast<ANIM_TYPE>(_parameter));
         _ai_state.sub_status = IA_ACTION_STATE_EXECUTING;
     } else if (_ai_state.sub_status == IA_ACTION_STATE_EXECUTING) {
-        //std::cout << "$$$$$$$$ execute_ai_step_change_animation_type[" << name << "][EXEC]" << std::endl;
-        if (_is_last_frame == true) {
-            _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
-            //std::cout << "$$$$$$$$ execute_ai_step_change_animation_type[" << name << "][FINISH]" << std::endl;
+        if (started_action_timer <= TimerView::get_instance()->getTimer()) {
+            if (_is_last_frame == true) {
+                _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
+                //std::cout << "$$$$$$$$ execute_ai_step_change_animation_type[" << name << "][" << (int)_parameter << "][FINISH]" << std::endl;
+            }
         }
     }
 }
@@ -1888,11 +1910,11 @@ can_move_struct artificial_inteligence::check_can_move_to_point(st_float_positio
     float yinc = 0;
 
     // invert direction if needed
-    if (position.x > dest_point.x && state.direction != ANIM_DIRECTION_LEFT) {
-        state.direction = ANIM_DIRECTION_LEFT;
+    if (xinc != 0 && position.x > dest_point.x && state.direction != ANIM_DIRECTION_LEFT) {
+        set_direction(ANIM_DIRECTION_LEFT);
     }
-    if (position.x < dest_point.x && state.direction != ANIM_DIRECTION_RIGHT) {
-        state.direction = ANIM_DIRECTION_RIGHT;
+    if (xinc != 0 && position.x < dest_point.x && state.direction != ANIM_DIRECTION_RIGHT) {
+        set_direction(ANIM_DIRECTION_RIGHT);
     }
 
     if (abs(dest_point.x - position.x) < speed_x) {
@@ -1989,10 +2011,16 @@ can_move_struct artificial_inteligence::check_can_move_to_point(st_float_positio
             if (state.direction == ANIM_DIRECTION_RIGHT) {
                 map_point.x = (position.x + frameSize.width)/TILESIZE;
             }
+            st_position current_map_point((position.x + frameSize.width/2)/TILESIZE, (position.y + frameSize.height + 3)/TILESIZE);
             int map_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(map_point);
-            //if (!is_player()) std::cout << "AI::move_to_point[" << name << "] - HOLE check: " << map_lock << " - direction: " << (int)state.direction << std::endl;
+            int current_map_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(current_map_point);
+            if (map_lock != current_map_lock) {
+                if (map_lock == TERRAIN_UNBLOCKED || map_lock == TERRAIN_WATER) {
+                    return can_move_struct(0, 0, false, false, CAN_MOVE_LEAVE_TRUE);
+                }
+            }
+
             if (map_lock == TERRAIN_UNBLOCKED || map_lock == TERRAIN_WATER) {
-                //if (!is_player()) std::cout << "AI::move_to_point[" << name << "] - HOLE AHEAD - direction: " << (int)state.direction << std::endl;
                 return can_move_struct(0, 0, false, false, CAN_MOVE_LEAVE_TRUE);
             }
         }
@@ -2162,10 +2190,10 @@ void artificial_inteligence::execute_ai_step_jump_to_wall()
         struct_player_dist dist_players = dist_npc_players();
         if (dist_players.pObj->getPosition().x > position.x) {
             std::cout << "AI::execute_ai_step_jump_to_wall - face RIGHT" << std::endl;
-            state.direction = ANIM_DIRECTION_RIGHT;
+            set_direction(ANIM_DIRECTION_RIGHT);
         } else {
             std::cout << "AI::execute_ai_step_jump_to_wall - face LEFT" << std::endl;
-            state.direction = ANIM_DIRECTION_LEFT;
+            set_direction(ANIM_DIRECTION_LEFT);
         }
         int pos_x = find_wall(position.x, state.direction);
         if (pos_x == -1) { // no wall found to grab
@@ -2193,7 +2221,7 @@ void artificial_inteligence::execute_ai_step_jump_to_wall()
             state.animation_state = 0;
             set_animation_type(ANIM_TYPE_WALK_AIR);
             _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
-            state.direction = !state.direction;
+            set_direction(!state.direction);
         }
     }
 }
@@ -2312,10 +2340,10 @@ void artificial_inteligence::execute_ai_circle_player()
         _target_point.y = dist_players.pObj->getPosition().y + dist_players.pObj->get_size().height / 2;
 
         if (dist_players.pObj->getPosition().x > position.x) {
-            state.direction = ANIM_DIRECTION_RIGHT;
+            set_direction(ANIM_DIRECTION_RIGHT);
             _dest_point.x = dist_players.pObj->getPosition().x - (_parameter * TILESIZE) - (frameSize.width *2);
         } else {
-            state.direction = ANIM_DIRECTION_LEFT;
+            set_direction(ANIM_DIRECTION_LEFT);
             _dest_point.x = dist_players.pObj->getPosition().x + (_parameter * TILESIZE) + (frameSize.width * 2);
         }
 
@@ -2518,6 +2546,14 @@ void artificial_inteligence::ia_action_teleport()
 int artificial_inteligence::get_ai_type() {
     int type = -1;
 
+    // check for error
+    if (_number < 0 || _number >= GameMediator::get_instance()->ai_list.size()) {
+        return 0;
+    }
+    if (_reaction_type < 0 || _reaction_type >= MAX_AI_REACTIONS) {
+        return 0;
+    }
+
     if (_reaction_state == 0 || GameMediator::get_instance()->ai_list.at(_number).reactions[_reaction_type].action == -1) {
         type = GameMediator::get_instance()->ai_list.at(_number).states[_ai_chain_n].action;
         _parameter = GameMediator::get_instance()->ai_list.at(_number).states[_ai_chain_n].extra_parameter;
@@ -2563,9 +2599,9 @@ bool artificial_inteligence::uses_fly_fall()
 void artificial_inteligence::invert_left_right_direction()
 {
     if (state.direction == ANIM_DIRECTION_LEFT) {
-        state.direction = ANIM_DIRECTION_RIGHT;
+        set_direction(ANIM_DIRECTION_RIGHT);
     } else if (state.direction == ANIM_DIRECTION_RIGHT) {
-        state.direction = ANIM_DIRECTION_LEFT;
+        set_direction(ANIM_DIRECTION_LEFT);
     }
 }
 

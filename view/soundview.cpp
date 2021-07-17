@@ -24,11 +24,10 @@ SoundView::~SoundView()
 
 void SoundView::init()
 {
-    if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
+    int bitrate = MIX_DEFAULT_FREQUENCY;
+    int channels = 2;
+    if (Mix_OpenAudio(bitrate, MIX_DEFAULT_FORMAT, channels, 4096) < 0) {
         std::cout << "Couldn't open audio. Error: " << SDL_GetError() << std::endl;
-#ifdef ANDROID
-        __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT2###", "### SOUNDLIB[Couldn't open audio.] ###");
-#endif
     }
     load_all_sfx();
 }

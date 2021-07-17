@@ -1091,20 +1091,20 @@ void GameManager::show_free_version_warning()
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(100);
 
-    TextView::get_instance()->renderText(0, 10, st_color(255, 130, 0), true, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning_title, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(30, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning1, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(45, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning2, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(60, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning3, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(75, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning4, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(90, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning5, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(105, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning6, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(130, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning7, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(145, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning8, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(160, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning9, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(175, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning10, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderText(0, 10, st_color(255, 130, 0), true, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning_title, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(30, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning1, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(45, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning2, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(60, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning3, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(75, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning4, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(90, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning5, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(105, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning6, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(130, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning7, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(145, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning8, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(160, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning9, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(175, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning10, SharedData::get_instance()->current_language));
 
-    TextView::get_instance()->renderCenteredText(205, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning11, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(220, strings_map::get_instance()->get_ingame_string(string_press_key_or_button, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderCenteredText(205, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning11, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(220, strings_map::get_instance()->get_ingame_string(string_press_key_or_button, SharedData::get_instance()->current_language));
     draw::get_instance()->update_screen();
     InputController::get_instance()->wait_keypress();
 }
@@ -1120,8 +1120,8 @@ void GameManager::show_notice()
     st_position logo_pos(RES_W/2 - (upperland_surface.surface->w/6)/2, RES_H/2 - upperland_surface.surface->h/2);
 
 
-    TextView::get_instance()->renderText(0, logo_pos.y + upperland_surface.surface->h + 7, st_color(199, 215, 255), true, strings_map::get_instance()->get_ingame_string(string_intro_upperland_studios, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderText(0, logo_pos.y + upperland_surface.surface->h + 19, st_color(199, 215, 255), true, strings_map::get_instance()->get_ingame_string(string_intro_presents, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderText(0, logo_pos.y + upperland_surface.surface->h + 7, st_color(199, 215, 255), true, strings_map::get_instance()->get_ingame_string(string_intro_upperland_studios, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderText(0, logo_pos.y + upperland_surface.surface->h + 19, st_color(199, 215, 255), true, strings_map::get_instance()->get_ingame_string(string_intro_presents, SharedData::get_instance()->current_language));
 
 
     //std::cout << ">> logo_pos.x: " << logo_pos.x << ", logo_pos.y: " << logo_pos.y << std::endl;
@@ -1144,14 +1144,14 @@ void GameManager::show_notice()
 
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
 
-    TextView::get_instance()->renderText(0, 10, st_color(199, 215, 255), true, strings_map::get_instance()->get_ingame_string(string_intro_engine1, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(30, strings_map::get_instance()->get_ingame_string(string_intro_engine2, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(50, strings_map::get_instance()->get_ingame_string(string_intro_engine3, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(70, strings_map::get_instance()->get_ingame_string(string_intro_engine4, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(90, strings_map::get_instance()->get_ingame_string(string_intro_engine5, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(110, strings_map::get_instance()->get_ingame_string(string_intro_engine6, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(130, strings_map::get_instance()->get_ingame_string(string_intro_engine7, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(150, strings_map::get_instance()->get_ingame_string(string_intro_engine8, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderText(0, 10, st_color(199, 215, 255), true, strings_map::get_instance()->get_ingame_string(string_intro_engine1, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(30, strings_map::get_instance()->get_ingame_string(string_intro_engine2, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(50, strings_map::get_instance()->get_ingame_string(string_intro_engine3, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(70, strings_map::get_instance()->get_ingame_string(string_intro_engine4, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(90, strings_map::get_instance()->get_ingame_string(string_intro_engine5, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(110, strings_map::get_instance()->get_ingame_string(string_intro_engine6, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(130, strings_map::get_instance()->get_ingame_string(string_intro_engine7, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(150, strings_map::get_instance()->get_ingame_string(string_intro_engine8, SharedData::get_instance()->current_language));
 
     draw::get_instance()->update_screen();
 
@@ -1159,17 +1159,17 @@ void GameManager::show_notice()
 
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
 
-    TextView::get_instance()->renderText(0, 10, st_color(199, 215, 255), true, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning_title, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(30, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning1, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(50, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning2, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(70, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning3, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(90, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning4, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(110, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning5, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(130, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning6, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(150, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning7, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(170, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning8, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(200, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning9, SharedData::get_instance()->game_config.selected_language));
-    TextView::get_instance()->renderCenteredText(220, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning10, SharedData::get_instance()->game_config.selected_language));
+    TextView::get_instance()->renderText(0, 10, st_color(199, 215, 255), true, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning_title, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(30, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning1, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(50, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning2, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(70, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning3, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(90, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning4, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(110, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning5, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(130, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning6, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(150, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning7, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(170, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning8, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(200, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning9, SharedData::get_instance()->current_language));
+    TextView::get_instance()->renderCenteredText(220, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning10, SharedData::get_instance()->current_language));
 
     draw::get_instance()->update_screen();
     TimerView::get_instance()->delay(10000);
@@ -2340,9 +2340,9 @@ bool GameManager::show_config(short finished_stage)
 void GameManager::show_savegame_error()
 {
     std::vector<std::string> msgs;
-    msgs.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_savegameerror1, SharedData::get_instance()->game_config.selected_language));
-    msgs.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_savegameerror2, SharedData::get_instance()->game_config.selected_language));
-    msgs.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_savegameerror3, SharedData::get_instance()->game_config.selected_language));
+    msgs.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_savegameerror1, SharedData::get_instance()->current_language));
+    msgs.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_savegameerror2, SharedData::get_instance()->current_language));
+    msgs.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_savegameerror3, SharedData::get_instance()->current_language));
     st_dialog dialog;
     dialog.msgs = msgs;
     draw::get_instance()->show_ingame_warning(dialog);

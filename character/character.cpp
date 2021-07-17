@@ -215,7 +215,7 @@ void character::charMove() {
 	if (moveCommands.left == 1 && position.x > 0 && state.animation_type != ANIM_TYPE_SLIDE && is_in_stairs_frame() == false) {
         // check inverting direction
         if (state.animation_type != ANIM_TYPE_HIT && state.direction != ANIM_DIRECTION_LEFT) {
-            state.direction = ANIM_DIRECTION_LEFT;
+            set_direction(ANIM_DIRECTION_LEFT);
             return;
         }
 
@@ -244,7 +244,7 @@ void character::charMove() {
                         position.x -= PLAYER_RIGHT_TO_LEFT_DIFF;
                         moved_dist.x -= PLAYER_RIGHT_TO_LEFT_DIFF;
                     }
-					state.direction = ANIM_DIRECTION_LEFT;
+                    set_direction(ANIM_DIRECTION_LEFT);
 				} else {
                     gravity(false);
                     return;
@@ -268,14 +268,14 @@ void character::charMove() {
             position.x -= PLAYER_RIGHT_TO_LEFT_DIFF;
             moved_dist.x -= PLAYER_RIGHT_TO_LEFT_DIFF;
         }
-        state.direction = ANIM_DIRECTION_LEFT;
+        set_direction(ANIM_DIRECTION_LEFT);
     }
 
 
     if (moveCommands.left != 1 && moveCommands.right == 1 && state.animation_type != ANIM_TYPE_SLIDE && is_in_stairs_frame() == false) {
 
         if (state.animation_type != ANIM_TYPE_HIT && state.direction != ANIM_DIRECTION_RIGHT) {
-            state.direction = ANIM_DIRECTION_RIGHT;
+            set_direction(ANIM_DIRECTION_RIGHT);
             return;
         }
         if (state.animation_type == ANIM_TYPE_HIT) {
@@ -320,7 +320,7 @@ void character::charMove() {
                             position.x += PLAYER_RIGHT_TO_LEFT_DIFF;
                             moved_dist.x += PLAYER_RIGHT_TO_LEFT_DIFF;
                         }
-                        state.direction = ANIM_DIRECTION_RIGHT;
+                        set_direction(ANIM_DIRECTION_RIGHT);
                     } else {
                         gravity(false);
                         return;
@@ -345,7 +345,7 @@ void character::charMove() {
             position.x += PLAYER_RIGHT_TO_LEFT_DIFF;
             moved_dist.x += PLAYER_RIGHT_TO_LEFT_DIFF;
         }
-        state.direction = ANIM_DIRECTION_RIGHT;
+        set_direction(ANIM_DIRECTION_RIGHT);
     }
 
 
@@ -758,7 +758,7 @@ bool character::isOnSlope(int xinc)
         SharedData::get_instance()->clear_point_x = test_point_x - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
         SharedData::get_instance()->clear_point_y = test_point_y - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().y;
 
-        std::cout << "### #1 - CHAR::isOnSlope::CENTER.CHECK - test_point_x[" << test_point_x << "], test_point_y[" << test_point_y << "], map_pos_y[" << map_pos_y << "], map_pos_x_center[" << map_pos_x << "]" << std::endl;
+        //std::cout << "### #1 - CHAR::isOnSlope::CENTER.CHECK - test_point_x[" << test_point_x << "], test_point_y[" << test_point_y << "], map_pos_y[" << map_pos_y << "], map_pos_x_center[" << map_pos_x << "]" << std::endl;
         tile_center = GameManager::get_instance()->get_current_map_obj()->getTileFromPosition(map_pos_x, map_pos_y);
 
         // this exists to prevent irregular movement when we reach the single-pixel space between slope tiles
@@ -774,19 +774,23 @@ bool character::isOnSlope(int xinc)
 
     if (found_slope == false && was_on_slope == true && current_slope_step != 0 && isOutOfSlopes(xinc)) {
         std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>> CHAR::isOnSlope::FALSE - hitbox.x[" << hitbox.x << "],map_pos_y[" << (hitbox.y + hitbox.h)/TILESIZE << "]" << std::endl;
+        if (current_slope_step > 0) {
+            position.y -= 2;
+        }
         current_slope_step = 0;
         was_on_slope = false;
-        position.y -= 2;
         return false;
     }
 
-    std::cout << "### CHAR::isOnSlope - xinc[" << xinc << "], current_slope_step[" << current_slope_step << "]" << std::endl;
+    std::cout << "### CHAR::isOnSlope[TRUE] - xinc[" << xinc << "], current_slope_step[" << current_slope_step << "]" << std::endl;
     if (state.direction == ANIM_DIRECTION_LEFT) {
         position.y += xinc * current_slope_step;
     } else {
         position.y -= xinc * current_slope_step;
     }
-    was_on_slope = true;
+    if (current_slope_step != 0) {
+        was_on_slope = true;
+    }
     return true;
 
 
@@ -816,13 +820,14 @@ bool character::isOutOfSlopes(int xinc)
 
     for (unsigned int i=0; i<point_list.size(); i++) {
         file_v6_room_tile tile_test = GameManager::get_instance()->get_current_map_obj()->getTileFromPosition(point_list.at(i).x/TILESIZE, point_list.at(i).y/TILESIZE);
-        std::cout << "CHAR::isOutOfSlopes - type[" << tile_test.tile_underlay.type << "], test.x[" << point_list.at(i).x << "], test.y[" << point_list.at(i).y << "]" << std::endl;
+        //std::cout << "CHAR::isOutOfSlopes - type[" << tile_test.tile_underlay.type << "], test.x[" << point_list.at(i).x << "], test.y[" << point_list.at(i).y << "]" << std::endl;
         if (tile_test.tile_underlay.type == TILE_TYPE_SLOPE) {
             return false;
         }
     }
 
     // checks player ground for any slopes around
+    std::cout << "CHAR::isOutOfSlopes[TRUE]" << std::endl;
     return true;
 }
 
@@ -1064,7 +1069,7 @@ void character::advance_frameset()
     //[CHAR_ANIM_DIRECTION_COUNT][ANIM_TYPE_COUNT][ANIM_FRAMES_COUNT]
     if (state.direction > CHAR_ANIM_DIRECTION_COUNT) {
         //if (is_player()) std::cout << "WARNING - character::show - (" << name << ") error, direction value " << state.direction << " is invalid" << std::endl;
-		state.direction = ANIM_DIRECTION_LEFT;
+        set_direction(ANIM_DIRECTION_LEFT);
 		return;
 	}
     if (state.animation_type > ANIM_TYPE_COUNT) {
@@ -1281,9 +1286,9 @@ void character::show_sprite()
         } else {
             if (state.animation_type == ANIM_TYPE_VERTICAL_TURN) {
 				if (state.direction == ANIM_DIRECTION_LEFT) {
-					state.direction = ANIM_DIRECTION_RIGHT;
+                    set_direction(ANIM_DIRECTION_RIGHT);
 				} else {
-					state.direction = ANIM_DIRECTION_LEFT;
+                    set_direction(ANIM_DIRECTION_LEFT);
 				}
                 if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #F" << std::endl;
                 set_animation_type(ANIM_TYPE_STAND);
@@ -1321,7 +1326,18 @@ void character::reset_sprite_animation_timer()
         state.animation_timer = TimerView::get_instance()->getTimer() + 180;
     } else {
         short direction = ANIM_DIRECTION_RIGHT;
-        int delay = (ImageView::get_instance()->character_graphics_list.find(name)->second).frames[direction][state.animation_type][state.animation_state].delay;
+
+        int delay = 100;
+        if (ImageView::get_instance()->character_graphics_list.find(name) != ImageView::get_instance()->character_graphics_list.end()) {
+            if (direction < CHAR_ANIM_DIRECTION_COUNT) {
+                if (state.animation_type < ANIM_TYPE_COUNT) {
+                    if (state.animation_state < ANIM_FRAMES_COUNT) {
+                        delay = (ImageView::get_instance()->character_graphics_list.find(name)->second).frames[direction][state.animation_type][state.animation_state].delay;
+                    }
+                }
+            }
+        }
+
         state.animation_timer = TimerView::get_instance()->getTimer() + delay;
     }
 }
@@ -1379,7 +1395,7 @@ st_imageData *character::get_current_frame_surface(short direction, short type, 
 {
 
     if (frame_n < 0) {
-        std::cout << "ERROR::haracter::get_current_frame_surface - negative frame-n" << std::endl;
+        std::cout << "ERROR::character::get_current_frame_surface - negative frame-n" << std::endl;
         frame_n = 0;
     }
 
@@ -1388,6 +1404,11 @@ st_imageData *character::get_current_frame_surface(short direction, short type, 
     if (it_graphic == ImageView::get_instance()->character_graphics_list.end()) {
         std::cout << "ERROR: #1 character::show_sprite_graphic - Could not find graphic for NPC [" << name << "]" << std::endl;
         return nullptr;
+    }
+    // for non left-right directions, use the original facing direction for NPCs
+    if (is_player() == false && direction != ANIM_DIRECTION_LEFT && direction != ANIM_DIRECTION_RIGHT) {
+        std::cout << "%%%% character::show_sprite_graphic(" << name << ") invalid sprite direction[" << direction << "], use[" << facing << "] instead" << std::endl;
+        direction = facing;
     }
     if (have_frame_graphic(direction, type, frame_n) == false) { // check if we can find the graphic with the given N position
         if (frame_n == 0) {
@@ -2149,14 +2170,8 @@ bool character::jump(int jumpCommandStage, st_float_position mapScrolling)
 
 
 
-void character::check_map_collision_point(int &map_block, int &new_map_lock, int mode_xy, st_position map_pos) // mode_xy 0 is x, 1 is y
+void character::check_map_collision_point(int &map_block, int &new_map_lock, int &old_map_lock, int mode_xy) // mode_xy 0 is x, 1 is y
 {
-
-
-    int old_map_lock = GameManager::get_instance()->getMapPointLock(st_position((position.x+frameSize.width/2)/TILESIZE, (position.y+frameSize.height/2)/TILESIZE));
-
-    //std::cout << "check_map_collision_point, map_pos.x[" << map_pos.x << "], map_pos.y[" << map_pos.y << "], old_map_lock[" << old_map_lock << "], new_map_lock[" << new_map_lock << "]" << std::endl;
-
     if (map_block == BLOCK_UNBLOCKED && new_map_lock == TERRAIN_WATER) {
         map_block = BLOCK_WATER;
     }
@@ -2399,18 +2414,18 @@ st_map_collision character::map_collision(const float incx, const short incy, st
 
             if (res_collision_object._object->get_type() == OBJ_BOSS_TELEPORTER || (res_collision_object._object->get_type() == OBJ_FINAL_BOSS_TELEPORTER && res_collision_object._object->is_started() == true)) {
                 if (is_on_teleporter_capsulse(res_collision_object._object) == true) {
-                    state.direction = ANIM_DIRECTION_RIGHT;
+                    set_direction(ANIM_DIRECTION_RIGHT);
                     GameManager::get_instance()->object_teleport_boss(res_collision_object._object->get_boss_teleporter_dest(), res_collision_object._object->get_boss_teleport_map_dest(), res_collision_object._object->get_obj_map_id(), true);
                 }
             } else if (res_collision_object._object->get_type() == OBJ_STAGE_BOSS_TELEPORTER) {
                 //std::cout << "character::map_collision - OBJ_STAGE_BOSS_TELEPORTER" << std::endl;
                 if (is_on_teleporter_capsulse(res_collision_object._object) == true) {
-                    state.direction = ANIM_DIRECTION_RIGHT;
+                    set_direction(ANIM_DIRECTION_RIGHT);
                     GameManager::get_instance()->object_teleport_boss(res_collision_object._object->get_boss_teleporter_dest(), res_collision_object._object->get_boss_teleport_map_dest(), res_collision_object._object->get_obj_map_id(), false);
                 }
             // platform teleporter is just a base where player can step in to teleport
             } else if (res_collision_object._object->get_type() == OBJ_PLATFORM_TELEPORTER && is_on_teleport_platform(res_collision_object._object) == true) {
-                state.direction = ANIM_DIRECTION_RIGHT;
+                set_direction(ANIM_DIRECTION_RIGHT);
                 SoundView::get_instance()->play_sfx(SFX_TELEPORT);
                 GameManager::get_instance()->object_teleport_boss(res_collision_object._object->get_boss_teleporter_dest(), res_collision_object._object->get_boss_teleport_map_dest(), res_collision_object._object->get_obj_map_id(), false);
             // ignore block
@@ -2551,6 +2566,7 @@ st_map_collision character::map_collision(const float incx, const short incy, st
     /// @TODO - use collision rect for the current frame. Until there, use 3 points check
     int py_top, py_middle, py_bottom;
     int px_left, px_center, px_right;
+    int old_px_left, old_px_center, old_px_right;
     st_rectangle rect_hitbox = get_hitbox(hitbox_anim_type);
 
     py_top = rect_hitbox.y + incy + py_adjust;
@@ -2562,6 +2578,9 @@ st_map_collision character::map_collision(const float incx, const short incy, st
     px_left = rect_hitbox.x + incx;
     px_right = rect_hitbox.x + incx + rect_hitbox.w;
 
+    old_px_left = rect_hitbox.x;
+    old_px_right = rect_hitbox.x + rect_hitbox.w;
+
     if (incx == 0 && incy != 0) {
         px_right--;
     }
@@ -2570,15 +2589,23 @@ st_map_collision character::map_collision(const float incx, const short incy, st
     //std::cout << "st_map_collision character::map_collision::py_bottom: " << py_bottom << std::endl;
 
     st_position map_point;
+    st_position old_map_point;
     map_point.x = px_left/TILESIZE;
+    old_map_point.x = old_px_left/TILESIZE;
     int new_map_lock = TERRAIN_UNBLOCKED;
+    int old_map_lock = TERRAIN_UNBLOCKED;
     if (incx > 0) {
         map_point.x = px_right/TILESIZE;
+        old_map_point.x = old_px_right/TILESIZE;
     }
 
     /// @TODO - use a array-of-array for poijts in order to having a cleaner code
 
     int map_x_points[3];
+    if (incx == 0 && incy != 0) {
+        px_left++;
+        px_right--;
+    }
     map_x_points[0] = px_left/TILESIZE;
     map_x_points[1] = px_center/TILESIZE;
     map_x_points[2] = px_right/TILESIZE;
@@ -2596,11 +2623,11 @@ st_map_collision character::map_collision(const float incx, const short incy, st
             } else {
                 map_point.y = map_y_points[i];
             }
-            //std::cout << "map_point.x[" << map_point.y << "], map_point.y[" << map_point.y << "]" << std::endl;
+            old_map_point.y = map_point.y;
+            old_map_lock = GameManager::get_instance()->getMapPointLock(old_map_point);
             new_map_lock = GameManager::get_instance()->getMapPointLock(map_point);
 
-            check_map_collision_point(map_block, new_map_lock, 0, map_point);
-
+            check_map_collision_point(map_block, new_map_lock, old_map_lock, 0);
 
             // SLOPE //
             if (map_block != BLOCK_UNBLOCKED && new_map_lock == TERRAIN_SLOPE) {
@@ -2626,9 +2653,12 @@ st_map_collision character::map_collision(const float incx, const short incy, st
     if (incy != 0) {
         for (int i=0; i<3; i++) {
             map_point.x = map_x_points[i];
+            old_map_point.x = map_x_points[i];
+
+            old_map_lock = GameManager::get_instance()->getMapPointLock(old_map_point);
             new_map_lock = GameManager::get_instance()->getMapPointLock(map_point);
             //py_top = rect_hitbox.y + incy + py_adjust;
-            check_map_collision_point(map_block, new_map_lock, 1, map_point);
+            check_map_collision_point(map_block, new_map_lock, old_map_lock, 1);
 
             //std::cout << "check_map_collision_point #2, map_block[" << map_block << "], pos.y[" << position.y << "], py_bottom[" << py_bottom << "], rect_hitbox.h[" << rect_hitbox.h << "], py_top[" << py_top << "], rect_hitbox.y[" << rect_hitbox.y << "], py_adjust[" << py_adjust << "], incy[" << incy << "]" << std::endl;
 
@@ -2902,8 +2932,11 @@ st_rectangle character::get_hitbox(int anim_type)
                                     GameMediator::get_instance()->get_enemy(_number)->frame_size.height);
         }
 
+        // IURI: removed this adjust because it was blocking enemies when it should not, like moving up/down
+        // I don't know the original reason for this anymore, let's look for it and test if removing is OK
         if (state.direction == ANIM_DIRECTION_LEFT) {
-            x = position.x - (frameSize.width - col_rect.w) + col_rect.x + 2;
+            //x = position.x - (frameSize.width - col_rect.w) + col_rect.x + 2;
+            x = position.x - (frameSize.width - col_rect.w) + col_rect.x;
         } else {
             x += col_rect.x - 2;
         }
@@ -3643,7 +3676,7 @@ void character::change_position_x(short xinc)
                 moved_dist.x += i*WATER_SPEED_MULT - GameManager::get_instance()->get_current_map_obj()->get_last_scrolled().x;
             }
             if (state.animation_type != ANIM_TYPE_HIT) {
-                state.direction = ANIM_DIRECTION_RIGHT;
+                set_direction(ANIM_DIRECTION_RIGHT);
             } else {
                 gravity(false);
                 return;
@@ -3814,7 +3847,10 @@ void character::inc_effect_weapon_status()
 
 void character::set_animation_type(ANIM_TYPE type)
 {
-    //std::cout << "character::set_animation_type type[" << type << "]" << std::endl;
+    std::cout << "character::set_animation_type type[" << type << "]" << std::endl;
+    if (type == 2) {
+        std::cout << "character::set_animation_type type[JUMP]" << std::endl;
+    }
     // if is hit, finish jumping
     if (state.animation_type != type && type == ANIM_TYPE_HIT) {
         _obj_jump.finish();
@@ -3822,7 +3858,7 @@ void character::set_animation_type(ANIM_TYPE type)
 
     if (type != state.animation_type) {
         //std::cout << "### RESET-FRAME-N #6 ###" << std::endl;
-        state.animation_type = ANIM_TYPE_STAND;
+        //state.animation_type = ANIM_TYPE_STAND;
 
         if (is_in_stairs_frame() && type == ANIM_TYPE_HIT) {
             if (state.direction == ANIM_DIRECTION_RIGHT) {
@@ -3853,7 +3889,7 @@ void character::set_animation_type(ANIM_TYPE type)
     int frame_delay = 20;
     if (ImageView::get_instance()->character_graphics_list.find(name) != ImageView::get_instance()->character_graphics_list.end()) {
         if (state.direction >= CHAR_ANIM_DIRECTION_COUNT) {
-            state.direction = 0;
+            set_direction(0);
         }
         if (state.animation_type >= ANIM_TYPE_COUNT) {
             state.animation_type = 0;

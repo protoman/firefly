@@ -41,9 +41,10 @@ GameEnemy::GameEnemy() : graphic_filename(), first_run(true), _is_player_friend(
 
 GameEnemy::GameEnemy(int map_id, int main_id, int id) : _is_player_friend(false) // map-loaded npc
 {
+    is_ghost = false;
     build_basic_npc(map_id, main_id);
     facing = SharedData::get_instance()->file_v5_map_npc_map.at(map_id).at(id).direction;
-    state.direction = facing;
+    set_direction(facing);
 
     fflush(stdout);
 
@@ -72,10 +73,11 @@ GameEnemy::GameEnemy(int map_id, int main_id, int id) : _is_player_friend(false)
 
 GameEnemy::GameEnemy(int map_id, int main_id, st_position npc_pos, short int direction, bool player_friend) // spawned npc
 {
+    is_ghost = false;
     build_basic_npc(map_id, main_id);
     _is_player_friend = player_friend;
     facing = direction;
-    state.direction = direction;
+    set_direction(direction);
     start_point.x = npc_pos.x;
     start_point.y = npc_pos.y;
     static_bg_pos = st_position(npc_pos.x * TILESIZE, npc_pos.y * TILESIZE);
@@ -137,7 +139,7 @@ void GameEnemy::build_basic_npc(int map_id, int main_id)
 	hitPoints.current = hitPoints.total;
 
     if (state.direction > CHAR_ANIM_DIRECTION_COUNT) {
-		state.direction = ANIM_DIRECTION_RIGHT;
+        set_direction(ANIM_DIRECTION_RIGHT);
 	}
 
     move_speed = GameMediator::get_instance()->get_enemy(main_id)->speed;
@@ -215,7 +217,7 @@ void GameEnemy::build_basic_npc(int map_id, int main_id)
 
     // can't have ghosts that don't fly
     if (is_ghost == true && can_fly == false) {
-        is_ghost = false;
+        can_fly = true;
     }
     if (is_static()) {
         can_fly = true;
@@ -282,6 +284,11 @@ void GameEnemy::show()
     }
 }
 
+bool GameEnemy::npc_is_ghost()
+{
+    return is_ghost;
+}
+
 void GameEnemy::npc_set_position(st_float_position pos)
 {
     position = pos;
@@ -289,7 +296,7 @@ void GameEnemy::npc_set_position(st_float_position pos)
 
 void GameEnemy::npc_set_direction(short dir)
 {
-    state.direction = dir;
+    set_direction(dir);
 }
 
 void GameEnemy::npc_set_initialized(short init)
@@ -309,7 +316,7 @@ int GameEnemy::get_parent_id()
 
 void GameEnemy::reset_timers()
 {
-    reset_sprite_animation_timer();
+    character::reset_sprite_animation_timer();
 }
 
 bool GameEnemy::is_static()
@@ -393,6 +400,7 @@ void GameEnemy::boss_move()
         return;
     } else if (is_entirely_on_screen() == false && is_on_screen() == true &&  _initialized == 0 && _is_boss == true) {
         fall_to_ground();
+        _initialized = 1;
         return;
     } else if (_initialized == 1 && _is_boss == true && is_static_boss == false) {
         if (position.x > RES_H/3 && gravity(true) == false) {
@@ -542,7 +550,7 @@ void GameEnemy::show_projectiles()
 // executes the NPC sub-IA behavior
 void GameEnemy::move() {
     if (state.direction > CHAR_ANIM_DIRECTION_COUNT-1) {
-        state.direction = ANIM_DIRECTION_LEFT;
+        set_direction(ANIM_DIRECTION_LEFT);
     }
 
 	/// @TODO: this check must be placed in game.cpp and npc must have a set_frozen() method, for individual effect
@@ -678,9 +686,9 @@ void GameEnemy::revive()
 void GameEnemy::invert_direction()
 {
 	if (state.direction == ANIM_DIRECTION_LEFT) {
-		state.direction = ANIM_DIRECTION_RIGHT;
+        set_direction(ANIM_DIRECTION_RIGHT);
 	} else {
-		state.direction = ANIM_DIRECTION_LEFT;
+        set_direction(ANIM_DIRECTION_LEFT);
 	}
     _ai_state.main_status = IA_STAND;
 }

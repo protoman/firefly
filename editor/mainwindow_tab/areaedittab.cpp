@@ -167,6 +167,7 @@ void AreaEditTab::on_gfxModeComboBox_currentIndexChanged(int index)
 
 void AreaEditTab::on_layerSelectorComboBox_currentIndexChanged(int index)
 {
+    ui->areaEditPreviewWidgetObj->current_layer = index;
     set_data();
 }
 

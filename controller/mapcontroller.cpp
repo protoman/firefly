@@ -150,6 +150,7 @@ void MapController::show()
         draw::get_instance()->show_gfx();
     }
 
+    show_ghost_npcs();
     //std::cout << "_show_map_pos_y[" << _show_map_pos_y << "], scroll.y[" << scroll.y << "]" << std::endl;
 
     // redraw screen, if needed
@@ -171,6 +172,10 @@ void MapController::show()
     if (get_map_gfx_mode() == SCREEN_GFX_MODE_FULLMAP) {
         draw::get_instance()->show_gfx();
     }
+
+    show_objects();
+    show_npcs();
+
     updated_visited_room();
 }
 
@@ -1882,7 +1887,7 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
             //if (charObj->is_player()) std::cout << "### obj[" << temp_obj.get_name() << "] - CHECK #2 - temp_blocked[" << temp_blocked << "], is_platform[" << temp_obj.is_platform() << "] ###" << std::endl;
 
             // to enter platform, player.x+player.h must not be much higher than obj.y
-            if (temp_blocked != 0 && temp_obj.is_platform() == false) {
+            if (temp_blocked != 0) {
 
                 //std::cout << "COLLISION WITH OBJECT, Type[" << (int)temp_obj.get_type() << "]" << std::endl;
 
@@ -1895,7 +1900,7 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
                     SharedData::get_instance()->checkpoint.map = SharedData::get_instance()->v6_selected_area;
                     SharedData::get_instance()->checkpoint.map_scroll_x = GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
                     continue;
-                } else if (temp_obj.get_type() == OBJ_BOSS_DOOR) {
+                } else if (temp_obj.get_type() == OBJ_BOSS_DOOR && charObj->is_player()) {
                     if (temp_obj.is_started() == false && subboss_alive_on_left(temp_obj.get_position().x/TILESIZE) == false) {
                         // check for sub-boss alive on the left
                         temp_obj.start();
@@ -2595,8 +2600,9 @@ void MapController::show_npcs() /// @TODO - check out of screen
     for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
         GameEnemy* npc_ref = &(*npc_it);
 
-        //std::cout << "%%%%%%%%% MapController::show_npcs - show[" << npc_ref->get_name() << "], dead[" << npc_ref->is_dead() << "]" << std::endl;
-
+        if (npc_ref->npc_is_ghost()) {
+            continue;
+        }
 
         if (GameManager::get_instance()->must_show_boss_hp() && npc_ref->is_boss() && npc_ref->is_on_visible_screen() == true) {
             has_boss = true;
@@ -2624,6 +2630,29 @@ void MapController::show_npcs_to_left(int x)
         npc_ref->show_projectiles();
     }
     draw::get_instance()->set_boss_hp(-99);
+}
+
+void MapController::show_ghost_npcs()
+{
+    bool has_boss = false;
+    std::vector<GameEnemy>::iterator npc_it;
+    for (npc_it = map_enemy_list.begin(); npc_it != map_enemy_list.end(); npc_it++) {
+        GameEnemy* npc_ref = &(*npc_it);
+        if (!npc_ref->npc_is_ghost()) {
+            continue;
+        }
+        if (GameManager::get_instance()->must_show_boss_hp() && npc_ref->is_boss() && npc_ref->is_on_visible_screen() == true) {
+            has_boss = true;
+            draw::get_instance()->set_boss_hp(npc_ref->get_current_hp());
+        }
+        if (npc_ref->is_dead() == false) {
+            npc_ref->show();
+        }
+        npc_ref->show_projectiles();
+    }
+    if (has_boss == false) {
+        draw::get_instance()->set_boss_hp(-99);
+    }
 }
 
 

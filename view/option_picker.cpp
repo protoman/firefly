@@ -22,11 +22,11 @@ option_picker::option_picker(bool draw_border, st_position pos, std::vector<st_m
         _position.x += 12 + CURSOR_SPACING;
         _position.y += 12;
     }
-    _items = options;
+    picker_item_list = options;
     _show_return = show_return;
     if (_show_return == true) {
 
-        _items.insert(_items.begin(), st_menu_option(strings_map::get_instance()->get_ingame_string(strings_config_return, SharedData::get_instance()->current_language)));
+        picker_item_list.insert(picker_item_list.begin(), st_menu_option(strings_map::get_instance()->get_ingame_string(strings_config_return, SharedData::get_instance()->current_language)));
     }
 
     _pick_pos = 0;
@@ -54,10 +54,10 @@ option_picker::option_picker(bool draw_border, st_position pos, std::vector<std:
         _position.x += 12 + CURSOR_SPACING;
         _position.y += 12;
     }
-    _items = option_list;
+    picker_item_list = option_list;
     _show_return = show_return;
     if (_show_return == true) {
-        _items.insert(_items.begin(), st_menu_option(strings_map::get_instance()->get_ingame_string(strings_config_return, SharedData::get_instance()->current_language)));
+        picker_item_list.insert(picker_item_list.begin(), st_menu_option(strings_map::get_instance()->get_ingame_string(strings_config_return, SharedData::get_instance()->current_language)));
     }
 
     check_input_reset_command = false;
@@ -70,8 +70,8 @@ option_picker::option_picker(bool draw_border, st_position pos, std::vector<std:
 
 void option_picker::change_option_label(int n, std::string label)
 {
-    if (n >= 0 && n < _items.size()) {
-        _items.at(n).text = label;
+    if (n >= 0 && n < picker_item_list.size()) {
+        picker_item_list.at(n).text = label;
     }
 }
 
@@ -82,8 +82,11 @@ Sint8 option_picker::pick(int initial_pick_pos)
     TimerView::get_instance()->delay(100);
     _pick_pos = initial_pick_pos;
 
-    if (_pick_pos < 0 || _pick_pos >= _items.size()) {
+    if (_pick_pos < 0 || _pick_pos >= picker_item_list.size()) {
         _pick_pos = 0;
+    }
+    if (picker_item_list.size() == 0) {
+        return 0;
     }
 
 	ImageView::get_instance()->drawCursor(st_position(_position.x-CURSOR_SPACING, _position.y+(_pick_pos*CURSOR_SPACING)));
@@ -99,7 +102,7 @@ Sint8 option_picker::pick(int initial_pick_pos)
         }
 
         if (InputController::get_instance()->p1_input[BTN_START] || InputController::get_instance()->p1_input[BTN_JUMP]) {
-            if (_items.at(_pick_pos).disabled == true) {
+            if (picker_item_list.at(_pick_pos).disabled == true) {
                 SoundView::get_instance()->play_sfx(SFX_NPC_HIT);
             } else {
                 //std::cout << "option_picker::option_picker::END #1" << std::endl;
@@ -116,7 +119,7 @@ Sint8 option_picker::pick(int initial_pick_pos)
             SoundView::get_instance()->play_sfx(SFX_CURSOR);
             ImageView::get_instance()->eraseCursor(st_position(_position.x-CURSOR_SPACING, _position.y+(_pick_pos*CURSOR_SPACING)));
             _pick_pos++;
-            if (_pick_pos >= (short)_items.size()) {
+            if (_pick_pos >= picker_item_list.size()) {
                 _pick_pos = 0;
             }
             ImageView::get_instance()->drawCursor(st_position(_position.x-CURSOR_SPACING, _position.y+(_pick_pos*CURSOR_SPACING)));
@@ -126,7 +129,7 @@ Sint8 option_picker::pick(int initial_pick_pos)
             SoundView::get_instance()->play_sfx(SFX_CURSOR);
             ImageView::get_instance()->eraseCursor(st_position(_position.x-CURSOR_SPACING, _position.y+(_pick_pos*CURSOR_SPACING)));
             if (_pick_pos == 0) {
-                _pick_pos = _items.size()-1;
+                _pick_pos = picker_item_list.size()-1;
             } else {
                 _pick_pos--;
             }
@@ -137,13 +140,20 @@ Sint8 option_picker::pick(int initial_pick_pos)
             //std::cout << "option_picker::option_picker::END #2" << std::endl;
             return -1;
         }
+        if (_pick_pos < 0 || _pick_pos >= picker_item_list.size()) {
+            _pick_pos = 0;
+        }
         InputController::get_instance()->clean();
         TimerView::get_instance()->delay(10);
         draw::get_instance()->update_screen();
     }
+    if (_pick_pos < 0 || _pick_pos >= picker_item_list.size()) {
+        _pick_pos = 0;
+    }
 	ImageView::get_instance()->eraseCursor(st_position(_position.x-CURSOR_SPACING, _position.y+(_pick_pos*CURSOR_SPACING)));
     TimerView::get_instance()->delay(10);
     draw::get_instance()->update_screen();
+
 
     if (_show_return == true) {
         _pick_pos--;
@@ -208,7 +218,7 @@ void option_picker::wait_release_reset_config()
 
 void option_picker::add_option_item(st_menu_option item)
 {
-    _items.push_back(item);
+    picker_item_list.push_back(item);
 }
 
 
@@ -217,8 +227,8 @@ void option_picker::draw()
 {
 
     text_max_len = 0;
-    for (int i=0; i<_items.size(); i++) {
-        std::string line = _items.at(i).text;
+    for (int i=0; i<picker_item_list.size(); i++) {
+        std::string line = picker_item_list.at(i).text;
         int line_len = line.length();
         //std::cout << "line_len[" << i << "]: " << line_len << std::endl;
         if (line_len > text_max_len) {
@@ -228,9 +238,9 @@ void option_picker::draw()
 
     //std::cout << "OPTION_PICKER::text_max_len: " << text_max_len << std::endl;
 
-    ImageView::get_instance()->clearScreenArea(_position.x, _position.y, text_max_len*8, _items.size()*12, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
-	for (unsigned int i=0; i<_items.size(); i++) {
-        st_menu_option menu_item = _items.at(i);
+    ImageView::get_instance()->clearScreenArea(_position.x, _position.y, text_max_len*8, picker_item_list.size()*12, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
+    for (unsigned int i=0; i<picker_item_list.size(); i++) {
+        st_menu_option menu_item = picker_item_list.at(i);
 
         //std::cout << "menu_item: " << menu_item.text << std::endl;
         if (menu_item.disabled == true) {

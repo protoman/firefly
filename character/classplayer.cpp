@@ -185,6 +185,7 @@ bool classPlayer::shoryuken()
         std::cout << ">>>>>>>>>>>>>>>>>>>> SHORYUKEN::START" << std::endl;
         SoundView::get_instance()->play_sfx(SFX_SHORYUKEN_GIRL);
         _obj_jump.start(true, TERRAIN_UNBLOCKED);
+        _can_execute_airdash = false;
         return true;
     // is executing
     } else if (state.animation_type == ANIM_TYPE_SPECIAL_ATTACK) {
@@ -561,6 +562,8 @@ void classPlayer::initFrames()
     addSpriteFrame(ANIM_TYPE_GOT_WEAPON, 26, playerSpriteSurface, 200);
     addSpriteFrame(ANIM_TYPE_GOT_WEAPON, 27, playerSpriteSurface, 200);
 
+    addSpriteFrame(ANIM_TYPE_SPECIAL_ATTACK, 29, playerSpriteSurface, 200);
+
     addSpriteFrame(ANIM_TYPE_GOT_ITEM, 33, playerSpriteSurface, 60);
     addSpriteFrame(ANIM_TYPE_GOT_ITEM, 34, playerSpriteSurface, 60);
     addSpriteFrame(ANIM_TYPE_GOT_ITEM, 35, playerSpriteSurface, 60);
@@ -869,7 +872,7 @@ void classPlayer::death()
     _inertia_obj.stop();
     clear_move_commands();
     InputController::get_instance()->clean();
-	state.direction = ANIM_DIRECTION_RIGHT;
+    set_direction(ANIM_DIRECTION_RIGHT);
     GameManager::get_instance()->remove_current_teleporter_from_list();
 
     GameManager::get_instance()->draw_explosion(relativePosition, false);

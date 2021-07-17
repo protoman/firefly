@@ -4,6 +4,7 @@
 
 
 #include <QPainter>
+#include <QBitmap>
 
 areaEditPreviewWidget::areaEditPreviewWidget(QWidget *parent) : QWidget(parent)
 {
@@ -38,6 +39,12 @@ void areaEditPreviewWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
 
+    // DRAW BORDER //
+    painter.setPen(Qt::black);
+    painter.drawRect(QRect(0, 0, RES_W*Mediator::get_instance()->zoom, RES_H*Mediator::get_instance()->zoom));
+
+    painter.setPen(QColor(0, 0, 200));
+
     if (Mediator::get_instance()->show_background_color == true) {
         st_color bg_color = SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).background_color;
         QColor qbg_color = QColor(bg_color.r, bg_color.g, bg_color.b, 255);
@@ -58,9 +65,19 @@ void areaEditPreviewWidget::paintEvent(QPaintEvent *event)
             }
         }
     }
-    // DRAW BORDER //
-    painter.setPen(Qt::black);
-    QRect rect = QRect(0, 0, RES_W*Mediator::get_instance()->zoom, AREA_H*Mediator::get_instance()->zoom);
-    painter.drawRect(rect);
+    // draw borders
+    if (!layer_pixmap_list[current_layer].isNull()) {
+        //std::cout << ">>>>>>>>>> paintEvent.show_layer[" << i << "]" << std::endl;
+        int bg_pos_y =SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).layers[current_layer].adjust_y;
+        int max_repeat = 2;
+        for (int k=0; k<max_repeat; k++) {
+            QRectF pos_source(QPoint(0, 0), QSize(layer_pixmap_list[current_layer].width(), layer_pixmap_list[current_layer].height()));
+            QRectF pos_dest(QPoint(k*layer_pixmap_list[current_layer].width()*Mediator::get_instance()->zoom, bg_pos_y*Mediator::get_instance()->zoom), QSize(layer_pixmap_list[current_layer].width()*Mediator::get_instance()->zoom, layer_pixmap_list[current_layer].height()*Mediator::get_instance()->zoom));
+            painter.drawRect(QRectF(
+                                 QPoint(k*layer_pixmap_list[current_layer].width()*Mediator::get_instance()->zoom+1, bg_pos_y*Mediator::get_instance()->zoom+1),
+                                 QSize(layer_pixmap_list[current_layer].width()*Mediator::get_instance()->zoom-4, layer_pixmap_list[current_layer].height()*Mediator::get_instance()->zoom-2))
+                             );
+        }
+    }
 }
 

@@ -220,7 +220,13 @@ st_size projectile::get_size() const
 
 void projectile::move_ahead(st_size &moved)
 {
-    if (direction == ANIM_DIRECTION_LEFT) {
+    if (direction == ANIM_DIRECTION_UP) {
+        position.y -= get_speed();
+        moved.height -= get_speed();
+    } else if (direction == ANIM_DIRECTION_DOWN) {
+        position.y += get_speed();
+        moved.height += get_speed();
+    } else if (direction == ANIM_DIRECTION_LEFT || direction == ANIM_DIRECTION_DOWN_LEFT || direction == ANIM_DIRECTION_UP_LEFT) {
         position.x -= get_speed();
         moved.width -= get_speed();
     } else if (direction == ANIM_DIRECTION_UP) {
@@ -406,9 +412,8 @@ void projectile::set_target_position(st_float_position *pos)
 
 
         // calculate angle and set image
-        angle = atan2(abs(dist_y), abs(dist_x));
+        angle = (float) atan2(abs(dist_y), (float) abs(dist_x));
         angle = (360*angle)/6.28;
-        std::cout << ">>>>>>>>>>>>> ANGLE[" << angle << "], w[" << get_surface()->surface->w << "]" << std::endl;
         //angle = 55;
         // TODO: generate an image from the region, not the whole picture
         // TARGET to the LEFT
