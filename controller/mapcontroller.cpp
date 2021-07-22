@@ -16,7 +16,6 @@ void MapController::loadMap()
     imageLayerMap.clear();
     layerScrollMap.clear();
     object_list.clear();
-    SharedData::get_instance()->current_area_link_list.clear();
     map_was_reloaded = true;
     reset_scrolled();
 
@@ -29,8 +28,8 @@ void MapController::loadMap()
 
     GameManager::get_instance()->calc_area_tile_size(mapNumber);
 
-    map_tiles_w = (SharedData::get_instance()->rightmost_room-SharedData::get_instance()->leftmost_room+1)*AREA_ROOM_W;
-    map_tiles_h = (SharedData::get_instance()->bottommost_room-SharedData::get_instance()->topmost_room+1)*AREA_ROOM_H;
+    map_tiles_w = (SharedData::get_instance()->rightmost_room-SharedData::get_instance()->leftmost_room+1)*AREA_ROOM_TILES_W;
+    map_tiles_h = (SharedData::get_instance()->bottommost_room-SharedData::get_instance()->topmost_room+1)*AREA_ROOM_TILES_H;
 
     //std::cout << "MapController::loadMap - v6_selected_area[" << SharedData::get_instance()->v6_selected_area << "], rightmost_room[" << SharedData::get_instance()->rightmost_room << "], leftmost_room[" << SharedData::get_instance()->leftmost_room << "], bottommost_room[" << SharedData::get_instance()->bottommost_room << "], topmost_room[" << SharedData::get_instance()->topmost_room << "], map_tiles_w[" << map_tiles_w << "], map_tiles_h[" << map_tiles_h << "]" << std::endl;
 
@@ -43,10 +42,10 @@ void MapController::loadMap()
         for (int j=SharedData::get_instance()->topmost_room; j<=SharedData::get_instance()->bottommost_room; j++) {
             st_position index = st_position(i, j);
             if (SharedData::get_instance()->v6_area_room_list.find(index) != SharedData::get_instance()->v6_area_room_list.end()) {
-                for (int m=0; m<AREA_ROOM_W; m++) {
-                    for (int n=0; n<AREA_ROOM_H; n++) {
-                        int tile_x = m + i_count*AREA_ROOM_W;
-                        int tile_y = n + j_count*AREA_ROOM_H;
+                for (int m=0; m<AREA_ROOM_TILES_W; m++) {
+                    for (int n=0; n<AREA_ROOM_TILES_H; n++) {
+                        int tile_x = m + i_count*AREA_ROOM_TILES_W;
+                        int tile_y = n + j_count*AREA_ROOM_TILES_H;
                         int tile_type = SharedData::get_instance()->v6_area_room_list.at(index).tiles[m][n].locked;
                         area_tile_map.insert(std::pair<st_position, file_v6_room_tile>(st_position(tile_x, tile_y), SharedData::get_instance()->v6_area_room_list.at(index).tiles[m][n]));
                         //if (tile_type != 0) { std::cout << "tile[" << i << "][" << j << "].type[" << tile_type << "]" << std::endl; }
@@ -67,21 +66,6 @@ void MapController::loadMap()
         }
         i_count++;
     }
-
-    // load area-links for this area //
-    //std::map<unsigned int, std::vector<struct_file_v5_area_link>> file_v5_area_link_map;
-    //SharedData::get_instance()->current_area_link_list
-    for (auto const& item : SharedData::get_instance()->file_v5_area_link_map) {
-        for (int i=0; i<item.second.size(); i++) {
-            int p_area_n1 = get_level_from_room(item.second.at(i).p1.x, item.second.at(i).p1.y);
-            int p_area_n2 = get_level_from_room(item.second.at(i).p2.x, item.second.at(i).p2.y);
-            if (p_area_n1 == mapNumber || p_area_n2 == mapNumber) {
-                SharedData::get_instance()->current_area_link_list.push_back(item.second.at(i));
-            }
-        }
-    }
-
-
 
     load_map_npcs();
     load_map_objects();
@@ -181,8 +165,8 @@ void MapController::show()
 
 void MapController::updated_visited_room()
 {
-    SharedData::get_instance()->current_room_pos.x = SharedData::get_instance()->leftmost_room + (scroll.x+RES_W/2)/(AREA_ROOM_W*TILESIZE);
-    SharedData::get_instance()->current_room_pos.y = SharedData::get_instance()->topmost_room + (scroll.y+AREA_H/2)/(AREA_ROOM_H*TILESIZE);
+    SharedData::get_instance()->current_room_pos.x = SharedData::get_instance()->leftmost_room + (scroll.x+RES_W/2)/(AREA_ROOM_TILES_W*TILESIZE);
+    SharedData::get_instance()->current_room_pos.y = SharedData::get_instance()->topmost_room + (scroll.y+AREA_H/2)/(AREA_ROOM_TILES_H*TILESIZE);
 
     //std::cout << "MapController::updated_visited_room - room_x[" << SharedData::get_instance()->current_room_pos.y << "], room_y[" << SharedData::get_instance()->current_room_pos.y << "]" << std::endl;
 
@@ -387,8 +371,8 @@ void MapController::init_animated_tiles()
             if (SharedData::get_instance()->v6_area_room_list.find(index) == SharedData::get_instance()->v6_area_room_list.end()) {
                 continue;
             }
-            for (int i=0; i<AREA_ROOM_W; i++) {
-                for (int j=0; j<AREA_ROOM_H; j++) {
+            for (int i=0; i<AREA_ROOM_TILES_W; i++) {
+                for (int j=0; j<AREA_ROOM_TILES_H; j++) {
                     file_v6_tile_piece underlay_tile = SharedData::get_instance()->v6_area_room_list.at(index).tiles[i][j].tile_underlay;
                     // @TODO: overlay //
                     //file_v6_tile_piece overlay_tile = SharedData::get_instance()->v6_current_level_data.rooms[map_x][map_y].tiles[i][j].tile_overlay;
@@ -396,8 +380,8 @@ void MapController::init_animated_tiles()
                         pos_origin.x = underlay_tile.x;
                         pos_origin.y = underlay_tile.y;
                         int anim_tile_id = pos_origin.x;
-                        pos_destiny.y = j*TILESIZE + map_y*AREA_ROOM_H;
-                        pos_destiny.x = i*TILESIZE + map_x*AREA_ROOM_W;
+                        pos_destiny.y = j*TILESIZE + map_y*AREA_ROOM_TILES_H;
+                        pos_destiny.x = i*TILESIZE + map_x*AREA_ROOM_TILES_W;
                         //std::cout << "MAP::showMap::place_anim_tile - pos_destiny[" << pos_destiny.x << "][" << pos_destiny.x << "]" << std::endl;
                         anim_tile_list.push_back(anim_tile_desc(anim_tile_id, pos_destiny));
                     }
@@ -621,9 +605,9 @@ int MapController::get_first_bottom_lock(int initialY)
     }
 
     //std::cout << "########## MapController::get_first_bottom_lock - initX[" << initX << "], endX[" << endX << "], initY[" << initY << "], endY[" << endY << "]" << std::endl;
-    for (int y=SharedData::get_instance()->topmost_room*AREA_ROOM_H; y<=SharedData::get_instance()->bottommost_room*AREA_ROOM_H; y++) {
+    for (int y=SharedData::get_instance()->topmost_room*AREA_ROOM_TILES_H; y<=SharedData::get_instance()->bottommost_room*AREA_ROOM_TILES_H; y++) {
         isLockedY = true;
-        for (int x=SharedData::get_instance()->leftmost_room*AREA_ROOM_W; x<SharedData::get_instance()->rightmost_room*AREA_ROOM_W; x++) {
+        for (int x=SharedData::get_instance()->leftmost_room*AREA_ROOM_TILES_W; x<SharedData::get_instance()->rightmost_room*AREA_ROOM_TILES_W; x++) {
             file_v6_room_tile tile = getTileFromPosition(x, y);
             //std::cout << "x[" << x << "], y[" << y << "], locked[" << tile.locked << "]" << std::endl;
             if (tile.locked == TERRAIN_UNBLOCKED || tile.locked == TERRAIN_WATER) {
@@ -689,7 +673,7 @@ bool MapController::isEdgeColumnLocked(int incX, bool first)
         tileX = (scroll.x + incX)/TILESIZE + 1;
     }
 
-    if (tileX < 0 || tileX > SharedData::get_instance()->rightmost_room*AREA_ROOM_W) {
+    if (tileX < 0 || tileX > SharedData::get_instance()->rightmost_room*AREA_ROOM_TILES_W) {
         //std::cout << "## MapController::isEdgeColumnLocked - TRUE #1" << std::endl;
         return true;
     }
@@ -827,7 +811,7 @@ void MapController::set_scrolling(st_float_position pos)
     scrolled = pos;
     scroll.x = pos.x;
     scroll.y = pos.y;
-    std::cout << "------- MapController::set_scrolling - map: " << SharedData::get_instance()->v6_selected_area << ", pos.x: " << pos.x << "-------" << std::endl;
+    //std::cout << "------- MapController::set_scrolling - map: " << SharedData::get_instance()->v6_selected_area << ", pos.x: " << pos.x << "-------" << std::endl;
 }
 
 void MapController::reset_scrolling()

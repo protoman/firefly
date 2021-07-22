@@ -60,31 +60,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>285</height>
-            </rect>
-           </property>
-          </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>World Map</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QScrollArea" name="levelEditScrollArea">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="levelEditScrollAreaContents">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>828</width>
-             <height>285</height>
+             <height>275</height>
             </rect>
            </property>
           </widget>
@@ -108,7 +84,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>285</height>
+             <height>275</height>
             </rect>
            </property>
           </widget>
@@ -132,7 +108,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>285</height>
+             <height>275</height>
             </rect>
            </property>
           </widget>
@@ -156,7 +132,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>285</height>
+             <height>275</height>
             </rect>
            </property>
           </widget>
@@ -180,7 +156,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>285</height>
+             <height>275</height>
             </rect>
            </property>
           </widget>
@@ -204,7 +180,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>285</height>
+             <height>275</height>
             </rect>
            </property>
           </widget>
@@ -228,7 +204,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>285</height>
+             <height>275</height>
             </rect>
            </property>
           </widget>
@@ -252,7 +228,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>285</height>
+             <height>275</height>
             </rect>
            </property>
           </widget>
@@ -276,7 +252,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>285</height>
+             <height>275</height>
             </rect>
            </property>
           </widget>
@@ -309,7 +285,7 @@
      <x>0</x>
      <y>0</y>
      <width>870</width>
-     <height>24</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFILE">

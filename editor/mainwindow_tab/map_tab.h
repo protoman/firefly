@@ -46,7 +46,6 @@ private slots:
 
     void on_paste_toolButton_clicked();
 
-    void on_addMap_pushButton_clicked();
     void fill_map_selector();
 
     void on_mapSelector_comboBox_currentIndexChanged(int index);

@@ -80,7 +80,6 @@ HEADERS += \
     character/custom/ai_boss_001.h \
     character/gamenpc.h \
     file/v4/file_save_v4.h \
-    file/v5/struct_file_area_data.h \
     file/v5/struct_file_game_area_map.h \
     file/v6/file_area_v6.h \
     file/v6/file_game_object_state.h \
@@ -139,9 +138,7 @@ HEADERS += \
     objects/GameObject.h \
     scenes/dialogs.h \
     options/pausemenu.h \
-    file/v5/struct_file_map.h \
-    file/v5/struct_file_area.h \
-    file/v5/struct_file_area_link.h
+    file/v5/struct_file_map.h
 
 DISTFILES += \
     TODO

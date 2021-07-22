@@ -17,20 +17,12 @@
 // tilesizes (20 na vertical): 24, 36, 54
 
 
-#define LEVEL_ROOMS_W 6
-#define LEVEL_ROOMS_H 6
-#define AREA_ROOM_W 40
-#define AREA_ROOM_H 20
-#define AREA_ROOM_NUMBER 20
-
-
-#define GAME_AREA_SIZE 30
-#define GAME_AREA_W 20
-#define GAME_AREA_H 10
-
 // this is the size of a single room
-#define AREA_ROOM_W 40
-#define AREA_ROOM_H 20
+#define AREA_ROOM_TILES_W 40
+#define AREA_ROOM_TILES_H 20
+// max number of rooms an area can contain
+#define AREA_ROOM_MAX_NUMBER 100
+
 
 // INPUT //
 #define DOUBLE_TAP_DELTA 500

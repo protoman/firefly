@@ -16,7 +16,7 @@
 #include "GameManager.h"
 
 //#define PLAYER_MOVE_SPEED 6.00 // higher is faster
-#define PLAYER_MOVE_SPEED 1 // higher is faster
+#define PLAYER_MOVE_SPEED 3.00 // higher is faster
 #include "file/file_io.h"
 
 
@@ -32,7 +32,7 @@ classPlayer::classPlayer(int playerNumber) : teleporter_n(-1), selected_weapon(-
 
     _number = playerNumber;
     position.y = 0;
-    position.x = TILESIZE*AREA_ROOM_W*1.5;
+    position.x = TILESIZE*AREA_ROOM_TILES_W*1.5;
     hit_duration = 2000;
     hitPoints.total = PLAYER_INITIAL_HP;
 	hitPoints.current = hitPoints.total;

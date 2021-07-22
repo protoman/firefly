@@ -205,7 +205,7 @@ std::string file_io::get_save_filename(short save_n)
     std::string filename = std::string(SharedData::get_instance()->SAVEPATH) + std::string("/") + SharedData::get_instance()->GAMENAME + std::string(numbered_file) + std::string(".sav");
     filename = StringUtils::clean_filename(filename);
 
-    std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>> string file_io::get_save_filename[" << filename << "]" << std::endl;
+    //std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>> string file_io::get_save_filename[" << filename << "]" << std::endl;
     return filename;
 }
 

@@ -372,15 +372,6 @@ void map_tab::on_editModeSlope_Button_clicked()
 }
 
 
-void map_tab::on_addMap_pushButton_clicked()
-{
-    SharedData::get_instance()->v6_area_list.push_back(file_v6_area());
-    _data_loading = true;
-    fill_map_selector();
-    fill_data();
-    _data_loading = false;
-}
-
 void map_tab::fill_map_selector()
 {
     ui->mapSelector_comboBox->clear();

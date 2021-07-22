@@ -116,11 +116,9 @@ public:
 
     bool check_map_link(int xinc, int yinc);
 
-    void transition_map(int new_map_n, st_position link_pos, e_transition_types transition_type);
     void show_at_texture_renderer();
 
     void show_hud(bool update_room);
-    void build_game_area_map(int x, int y, int map_tile_x, int map_tile_y);
 
     // QUEUE HANDLERS //
     void consume_dialogs_from_queue();

@@ -1231,46 +1231,9 @@ void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weap
     draw_enery_bars(hp_percent, 113, AREA_H+43, 1); // MP
 
 
+    /// @TODO: show map ///
 
-    for (int x=-2; x<=2; x++) {
-        for (int y=-1; y<=1; y++) {
-            int map_x = room_n_x+x;
-            int map_y = room_n_y+y;
-            if (map_x < 0 || map_y < 0 || x >= GAME_AREA_SIZE || y >= GAME_AREA_SIZE) {
-                continue;
-            }
-            //std::cout << "x[" << x << "], y[" << y << "], map_x[" << map_x << "], map_y[" << map_y << "], left[" << SharedData::get_instance()->area_map[map_x][map_y].wall_left << "]" << std::endl;
-            if (SharedData::get_instance()->area_map[map_x][map_y].visited == true) {
-                ImageView::get_instance()->clearScreenArea(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x, HUD_GRID_CENTER_Y+(HUD_GRID_SIZE+HUD_GRID_BORDER)*y+2, HUD_GRID_SIZE, HUD_GRID_SIZE, 7, 65, 150);
-            }
 
-            // TODO: é mais rápido usar imagens para as portas que desenhar 3 linhas //
-            if (SharedData::get_instance()->area_map[map_x][map_y].wall_left == MAP_WALL_TYPE_LOCKED) {
-                //std::cout << "wall-left-lock x[" << map_x << "], y[" << map_y << "]" << std::endl;
-                ImageView::get_instance()->clearScreenArea(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x-HUD_GRID_BORDER, HUD_GRID_CENTER_Y+HUD_GRID_SIZE*y, 2, HUD_GRID_SIZE, 255, 255, 255);
-            } else if (SharedData::get_instance()->area_map[map_x][map_y].wall_left == MAP_WALL_TYPE_DOOR) {
-                ImageView::get_instance()->renderImageAt(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x-HUD_GRID_BORDER, HUD_GRID_CENTER_Y+HUD_GRID_SIZE*y, door_h);
-            }
-
-            if (SharedData::get_instance()->area_map[map_x][map_y].wall_right == MAP_WALL_TYPE_LOCKED) {
-                ImageView::get_instance()->clearScreenArea(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x+HUD_GRID_SIZE, HUD_GRID_CENTER_Y+HUD_GRID_SIZE*y, 2, HUD_GRID_SIZE, 255, 255, 255);
-            } else if (SharedData::get_instance()->area_map[map_x][map_y].wall_right == MAP_WALL_TYPE_DOOR) {
-                ImageView::get_instance()->renderImageAt(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x+HUD_GRID_SIZE, HUD_GRID_CENTER_Y+HUD_GRID_SIZE*y, door_h);
-            }
-
-            if (SharedData::get_instance()->area_map[map_x][map_y].wall_top == MAP_WALL_TYPE_LOCKED) {
-                ImageView::get_instance()->clearScreenArea(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x, HUD_GRID_CENTER_Y+(HUD_GRID_SIZE+HUD_GRID_BORDER)*y, HUD_GRID_SIZE, 2, 255, 255, 255);
-            } else if (SharedData::get_instance()->area_map[map_x][map_y].wall_top == MAP_WALL_TYPE_DOOR) {
-                ImageView::get_instance()->renderImageAt(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x, HUD_GRID_CENTER_Y+(HUD_GRID_SIZE+HUD_GRID_BORDER)*y, door_v);
-            }
-
-            if (SharedData::get_instance()->area_map[map_x][map_y].wall_bottom == MAP_WALL_TYPE_LOCKED) {
-                ImageView::get_instance()->clearScreenArea(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x, HUD_GRID_CENTER_Y+HUD_GRID_SIZE+HUD_GRID_BORDER+(HUD_GRID_SIZE+HUD_GRID_BORDER)*y, HUD_GRID_SIZE, 2, 255, 255, 255);
-            } else if (SharedData::get_instance()->area_map[map_x][map_y].wall_bottom == MAP_WALL_TYPE_DOOR) {
-                ImageView::get_instance()->renderImageAt(HUD_GRID_CENTER_X+(HUD_GRID_SIZE+HUD_GRID_BORDER)*x, HUD_GRID_CENTER_Y+HUD_GRID_SIZE+HUD_GRID_BORDER+(HUD_GRID_SIZE+HUD_GRID_BORDER)*y, door_v);
-            }
-        }
-    }
     show_hud_items();
     if (timer_hud_center_show == true) {
         ImageView::get_instance()->clearScreenArea(HUD_GRID_CENTER_X+4, HUD_GRID_CENTER_Y+7, 13, 12, 227, 179, 2); // TODO: blink

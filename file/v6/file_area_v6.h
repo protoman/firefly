@@ -49,7 +49,9 @@ struct file_v6_area {
     file_v6_area_layer layers[LAYERS_COUNT];
     char tileset_filename[FS_CHAR_FILENAME_SIZE];
     char music_filename[FS_CHAR_FILENAME_SIZE];
-    file_v6_room rooms[AREA_ROOM_NUMBER];
+    file_v6_room rooms[AREA_ROOM_MAX_NUMBER];
+    st_color bg_color;
+
 
     file_v6_area() {
         sprintf(map_name, "%s", "");

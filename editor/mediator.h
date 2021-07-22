@@ -7,7 +7,6 @@
 #include "file/fio_strings.h"
 #include "file/v5/struct_file_map.h"
 #include "file/fio_common.h"
-#include "file/v5/struct_file_area.h"
 #include "scenes/scenesmediator.h"
 
 #include "file/v6/file_level_v6.h"

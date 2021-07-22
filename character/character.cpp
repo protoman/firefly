@@ -738,11 +738,7 @@ void character::check_charging_colors(bool always_charged)
 bool character::isOnSlope(int xinc)
 {
     // tiles a serem testados: no pé, cima/baixo, esquerda/direita, diagonal cima/baixo
-
-
     // TODO: adicionar variação do y para pegar entrada no slope
-
-
 
     st_rectangle hitbox = get_hitbox(state.animation_type);
     file_v6_room_tile tile_center;
@@ -1507,8 +1503,6 @@ bool character::gravity(bool boss_demo_mode=false)
                 limit_speed = 1;
             }
 
-
-
 			for (int i=limit_speed; i>0; i--) {
                 bool res_test_move = test_change_position(0, i);
                 if ((boss_demo_mode == true && position.y <= TILESIZE*2) || res_test_move == true) {
@@ -1524,15 +1518,6 @@ bool character::gravity(bool boss_demo_mode=false)
 	}
 
 	// ------------ PLAYER gravity --------------------- //
-    if (is_player() && position.y > RES_H+TILESIZE) {
-        //std::cout << "**** gravity - LEAVE (death)" << std::endl;
-        //hitPoints.current = 0;
-        //death();
-        //reset_gravity_speed();
-        //return false;
-	}
-
-
     if (is_in_stairs_frame() && (get_anim_type() == ANIM_TYPE_HIT || get_anim_type() == ANIM_TYPE_HIT_SPECIAL)) {
         reset_gravity_speed();
         return false;
@@ -1558,8 +1543,6 @@ bool character::gravity(bool boss_demo_mode=false)
         if (adjusted_speed < 1) {
             adjusted_speed = 1;
         }
-
-
 
 		if (state.animation_type == ANIM_TYPE_TELEPORT) {
 
@@ -1617,11 +1600,11 @@ bool character::gravity(bool boss_demo_mode=false)
 		}
 
 		if (was_moved == false && (state.animation_type == ANIM_TYPE_JUMP || state.animation_type == ANIM_TYPE_JUMP_ATTACK) && state.animation_type != ANIM_TYPE_SLIDE) {
-            //if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #H" << std::endl;
+            if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #H" << std::endl;
             set_animation_type(ANIM_TYPE_STAND);
 			return true;
         } else if (was_moved == false && state.animation_type == ANIM_TYPE_TELEPORT && position.y >= RES_H/3) {
-            //if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #I" << std::endl;
+            if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #I" << std::endl;
             set_animation_type(ANIM_TYPE_STAND);
 			return true;
 		}
@@ -2129,11 +2112,13 @@ bool character::jump(int jumpCommandStage, st_float_position mapScrolling)
                 position.y += speed_y;
                 jump_moved = true;
                 break;
+            } else {
+                std::cout << "chat::jump - collision, map_lock[" << map_lock << "]" << std::endl;
             }
         }
         if (jump_speed != 0 && jump_moved == false) {
             InputController::get_instance()->test_erumble();
-            //std::cout << "chat::jump - must interrupt because a collision happened" << std::endl;
+            std::cout << "chat::jump - must interrupt because a collision happened" << std::endl;
             if (jump_speed < 0) {
                 _obj_jump.interrupt();
             } else {
@@ -2281,10 +2266,11 @@ int character::adjust_slope_y(int xinc, int incy, st_position map_pos)
 
     // novo cálculo - test //
     if (state.animation_type == ANIM_TYPE_JUMP && position.y < new_y) {
+        std::cout << "character::adjust_slope_y - LEAVE #3" << std::endl;
         return BLOCK_UNBLOCKED;
     }
 
-    //std::cout << "CHAR::ADJUST_SLOPE_Y - current_y[" << position.y << "], new_y[" << new_y << "], map_pos.y[" << map_pos.y << "], frameSize.height[" << frameSize.height << "], calc_diff_y[" << calc_diff_y << "], plus_y[" << plus_y << "]" << std::endl;
+    std::cout << "CHAR::ADJUST_SLOPE_Y - current_y[" << position.y << "], new_y[" << new_y << "], map_pos.y[" << map_pos.y << "], frameSize.height[" << frameSize.height << "], calc_diff_y[" << calc_diff_y << "], plus_y[" << plus_y << "]" << std::endl;
 
     position.y =  new_y;
     if (state.animation_type == ANIM_TYPE_JUMP) {
@@ -2648,9 +2634,37 @@ st_map_collision character::map_collision(const float incx, const short incy, st
         map_point.y = py_bottom/TILESIZE;
     }
 
+    // Search fro slope in the middle X point first
+    bool hit_slope = false;
+    if ((state.animation_type == ANIM_TYPE_JUMP || state.animation_type == ANIM_TYPE_JUMP_ATTACK) && incy != 0) {
+        int slope_map_x_points[3];
+        slope_map_x_points[0] = (px_center-4)/TILESIZE;
+        slope_map_x_points[1] = px_center/TILESIZE;
+        slope_map_x_points[2] = (px_center+4)/TILESIZE;
+        for (int i=0; i<3; i++) {
+            int test_x = slope_map_x_points[i];
+            int test_y = (py_bottom)/TILESIZE;
+
+            file_v6_room_tile tile_center = GameManager::get_instance()->get_current_map_obj()->getTileFromPosition(test_x, test_y);
+
+            // this exists to prevent irregular movement when we reach the single-pixel space between slope tiles
+
+            if (tile_center.tile_underlay.type == TILE_TYPE_SLOPE) {
+                hit_slope = true;
+                //std::cout << ">>>>>>>>>>>>> fall on slope" << std::endl;
+                map_block = adjust_slope_y(0, incy, st_position(test_x, test_y));
+                return st_map_collision(map_block, terrain_type);
+            }
+
+            //std::cout << "check_map_collision_point #2, map_block[" << map_block << "], pos.y[" << position.y << "], py_bottom[" << py_bottom << "], rect_hitbox.h[" << rect_hitbox.h << "], py_top[" << py_top << "], rect_hitbox.y[" << rect_hitbox.y << "], py_adjust[" << py_adjust << "], incy[" << incy << "]" << std::endl;
+            //std::cout << "CHAR::GRAVITY - CHECK-SLOPE - tile.type[" << tile_center.tile_underlay.type << "], map.x[" << test_x << "], map.y[" << test_y << "], py_bottom[" << py_bottom << "]" << std::endl;
+        }
+
+    }
+
     //if (is_player() == false) std::cout << "CHAR::MAP_COLLISION[" << name << "], map_point.y: " << map_point.y << std::endl;
 
-    if (incy != 0) {
+    if (incy != 0 && hit_slope == false) {
         for (int i=0; i<3; i++) {
             map_point.x = map_x_points[i];
             old_map_point.x = map_x_points[i];
@@ -2663,6 +2677,7 @@ st_map_collision character::map_collision(const float incx, const short incy, st
             //std::cout << "check_map_collision_point #2, map_block[" << map_block << "], pos.y[" << position.y << "], py_bottom[" << py_bottom << "], rect_hitbox.h[" << rect_hitbox.h << "], py_top[" << py_top << "], rect_hitbox.y[" << rect_hitbox.y << "], py_adjust[" << py_adjust << "], incy[" << incy << "]" << std::endl;
 
             if (new_map_lock != TERRAIN_UNBLOCKED) {
+                //std::cout << "CHAR::GRAVITY - new_map_lock[" << new_map_lock << "], map.x[" << map_point.x << "], map.y[" << map_point.y << "], py_bottom[" << py_bottom << "]" << std::endl;
                 terrain_type = new_map_lock;
             }
 
@@ -2672,6 +2687,7 @@ st_map_collision character::map_collision(const float incx, const short incy, st
             }
             // SLOPE //
             if (map_block != BLOCK_UNBLOCKED && new_map_lock == TERRAIN_SLOPE) {
+                std::cout << ">>>>>>>>>>>>>>>> ADJUST TO SLOPE" << std::endl;
                 map_block = adjust_slope_y(0, incy, map_point);
             }
             // STAIRS //
@@ -3847,10 +3863,7 @@ void character::inc_effect_weapon_status()
 
 void character::set_animation_type(ANIM_TYPE type)
 {
-    std::cout << "character::set_animation_type type[" << type << "]" << std::endl;
-    if (type == 2) {
-        std::cout << "character::set_animation_type type[JUMP]" << std::endl;
-    }
+    //std::cout << "character::set_animation_type type[" << type << "]" << std::endl;
     // if is hit, finish jumping
     if (state.animation_type != type && type == ANIM_TYPE_HIT) {
         _obj_jump.finish();

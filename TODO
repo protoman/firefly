@@ -1,6 +1,24 @@
 ########################################################
+                        BUGS
+########################################################
+- colisão ao mover esquerda/direita não esta bloqueando avanço
+
+
+########################################################
                     FEATURES NOVAS
 ########################################################
+- não precisa ter um mapa geral
+    # tem apenas o mapa de área
+    # pode selecionar as áreas já visitadas para ver o mapa
+    # link entre salas sempre é do tipo teleport
+        # remover do editor os demais
+    # gerador de mapa deve saber onde tem itens do tipo teleport, save-point, etc
+        # editor não deve permitir ter dois itens do tipo na mesma sala
+    # ao carregar tileset de salas, deve criar uma mapa apenas com os tiles que tenham tile ou terrain
+
+=> procurar /// @TODO
+    # tem várias coisas de map-links que removi
+
 - fundos animados
     # opção de frames X e frames Y
     # por padrão é 1x1, se aumentar, divide a tela em partes horizontais ou verticais
@@ -16,7 +34,11 @@
 ########################################################
                         SLOPES
 ########################################################
-- está ficando em algum tipo de animação inválido após pular ou entrar em slopes
+- pequenos bugs
+    # às vezes não entra no slope
+    # ao pular sobre o slope, às vezes para antes
+    # em slope grande, provavelmente o ajuste começa a dar diferença (por ser float) e eventualmente entra na parede
+    # ainda tem problemas com slopes de ângulo 45º ou não entra direito no slope de ângulo bem suave
 
 - ao entrar no slope, guarda o ângulo dele
     # todo o movimento esquerda/direita usa esse ângulo do slope até que

@@ -96,7 +96,7 @@ struct file_v5_map_header {
 };
 
 struct file_v5_map_room {
-    file_v5_map_tile tiles[AREA_ROOM_W][AREA_ROOM_H];
+    file_v5_map_tile tiles[AREA_ROOM_TILES_W][AREA_ROOM_TILES_H];
     int area_x = -1;
     int area_y = -1;
 

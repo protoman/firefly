@@ -31,6 +31,10 @@ void AreaEditTab::on_currentAreaComboBox_currentIndexChanged(int index)
     set_data();
     ui->areaEditPreviewWidgetObj->update_files();
     ui->areaEditPreviewWidgetObj->repaint();
+
+    ui->area_rooms->setCurrentArea(index);
+    ui->area_rooms->repaint();
+
 }
 
 void AreaEditTab::reload()

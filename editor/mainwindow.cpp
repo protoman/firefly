@@ -57,9 +57,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     slope_edit_tab = new SlopeEditTab;
     ui->SlopeEditScrollArea->setWidget(slope_edit_tab);
 
-    level_editor = new LevelEditor;
-    ui->levelEditScrollArea->setWidget(level_editor);
-
     //areaEditScrollArea
     area_edit_tab = new AreaEditTab;
     ui->areaEditScrollArea->setWidget(area_edit_tab);
@@ -150,7 +147,6 @@ void MainWindow::reload()
     map_edit_tab->reload();
     anim_tiles_edit_tab->reload();
     slope_edit_tab->reload();
-    level_editor->reload();
     area_edit_tab->reload();
     this->show();
 }
@@ -505,7 +501,6 @@ void MainWindow::on_actionGRID_toggled(bool arg1)
 
 void MainWindow::on_areaEditTabWidget_currentChanged(int index)
 {
-    level_editor->reload();
     map_edit_tab->reload();
 }
 

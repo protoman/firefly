@@ -86,7 +86,7 @@ void common::fill_graphicfiles_listwidget(std::string directory, QListWidget* li
     dir.setSorting(QDir::Size | QDir::Reversed);
     QFileInfoList list = dir.entryInfoList();
 
-    for (int i = 0; i < list.size(); ++i) {
+    for (unsigned int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
         if (fileInfo.fileName().length() > 30) {
             std::cout << "ERROR: file '" << fileInfo.fileName().toStdString() << "' surpasses the maximum number of file-characters (" << FS_CHAR_NAME_SIZE << ")" << std::endl;
@@ -122,7 +122,7 @@ void common::fill_graphicfiles_combobox(std::string directory, QComboBox *comboW
     dir.setSorting(QDir::Size | QDir::Reversed);
     QFileInfoList list = dir.entryInfoList();
 
-    for (int i = 0; i < list.size(); ++i) {
+    for (unsigned int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
         if (fileInfo.fileName().length() > 30) {
             std::cout << "ERROR: file '" << fileInfo.fileName().toStdString() << "' surpasses the maximum number of file-characters (" << FS_CHAR_NAME_SIZE << ")" << std::endl;
@@ -140,7 +140,7 @@ void common::fill_npc_combo(QComboBox* combo)
 {
     combo->clear(); // delete all previous entries
 
-    for (int i=0; i<Mediator::get_instance()->enemy_list.size(); i++) {
+    for (unsigned int i=0; i<Mediator::get_instance()->enemy_list.size(); i++) {
         QString temp_str = QString("[");
         if (i < 10) {
             temp_str += "0";
@@ -154,7 +154,7 @@ void common::fill_object_combo(QComboBox* combo)
 {
     combo->clear(); // delete all previous entries
 
-    for (int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
+    for (unsigned int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
         QString temp_str = QString("[") + QString::number(i) + QString("] - ") + QString(SharedData::get_instance()->v6_object_list.at(i).name);
         combo->addItem(temp_str);
     }
@@ -164,7 +164,7 @@ void common::fill_object_combo(QComboBox *combo, OBJECT_TYPE type)
 {
     combo->clear(); // delete all previous entries
 
-    for (int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
+    for (unsigned int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
         std::cout << "%%%%%%%%% obj[" << SharedData::get_instance()->v6_object_list.at(i).name << "], type[" << SharedData::get_instance()->v6_object_list.at(i).type << "], expected[" << (int)type << "]" << std::endl;
         if (SharedData::get_instance()->v6_object_list.at(i).type == type) {
             QString temp_str = QString("[") + QString::number(i) + QString("] - ") + QString(SharedData::get_instance()->v6_object_list.at(i).name);
@@ -193,7 +193,7 @@ void common::fill_projectiles_combo(QComboBox *combo, bool add_empty_slot)
     if (add_empty_slot) {
         combo->addItem(QString(""));
     }
-    for (int i=0; i<Mediator::get_instance()->projectile_list_v3.size(); i++) {
+    for (unsigned int i=0; i<Mediator::get_instance()->projectile_list_v3.size(); i++) {
         QString temp_str = QString("[") + QString::number(i) + QString("] - ") + QString(Mediator::get_instance()->projectile_list_v3.at(i).name);
         combo->addItem(temp_str);
     }
@@ -219,7 +219,7 @@ void common::fill_ai_actions_combo(QComboBox *combo, bool include_null)
         combo->addItem(temp_null_str);
     }
 
-    for (int i=0; i<AI_ACTION_NAMES.size(); i++) {
+    for (unsigned int i=0; i<AI_ACTION_NAMES.size(); i++) {
 		std::string temp = AI_ACTION_NAMES[i];
 		QString temp_str = QString("[") + QString::number(i) + QString("] - ") + QString(temp.c_str());
 		combo->addItem(temp_str);
@@ -297,7 +297,7 @@ void common::fill_ai_options_combo(int action, QComboBox *combo)
 
 	// add options
     combo->clear(); // delete all previous entries
-	for (int i=0; i<list.size(); i++) {
+    for (unsigned int i=0; i<list.size(); i++) {
 		std::string temp = list[i];
 		QString temp_str = QString("[") + QString::number(i) + QString("] - ") + QString(temp.c_str());
 		combo->addItem(temp_str);
@@ -307,7 +307,7 @@ void common::fill_ai_options_combo(int action, QComboBox *combo)
 void common::fill_ai_list(QComboBox *combo)
 {
     combo->clear(); // delete all previous entries
-    for (int i=0; i<Mediator::get_instance()->ai_list.size(); i++) {
+    for (unsigned int i=0; i<Mediator::get_instance()->ai_list.size(); i++) {
         QString temp_str = QString("[") + QString::number(i) + QString("] - ") + QString(Mediator::get_instance()->ai_list.at(i).name);
 		combo->addItem(temp_str);
     }
@@ -316,7 +316,7 @@ void common::fill_ai_list(QComboBox *combo)
 void common::fill_players_combo(QComboBox* combo)
 {
     combo->clear(); // delete all previous entries
-    for (int i=0; i<FS_MAX_PLAYERS; i++) {
+    for (unsigned int i=0; i<FS_MAX_PLAYERS; i++) {
         combo->addItem(QString::number(i+1)+QString(" [")+QString(Mediator::get_instance()->player_list_v3_1[i].name)+QString("]"));
     }
 }
@@ -325,7 +325,7 @@ void common::fill_players_combo(QComboBox* combo)
 void common::fill_map_list_combo(QComboBox *combo)
 {
     combo->clear(); // delete all previous entries
-    for (int i=0; i<3; i++) {
+    for (unsigned int i=0; i<3; i++) {
         char buffer[512];
         Mediator::get_instance()->centNumberFormat(i);
         sprintf(buffer, "%s", Mediator::get_instance()->centNumber);
@@ -340,7 +340,7 @@ void common::fill_npc_listwidget(QListWidget *listWidget)
 
     listWidget->clear();
 
-    for (int i=0; i<Mediator::get_instance()->enemy_list.size(); i++) {
+    for (unsigned int i=0; i<Mediator::get_instance()->enemy_list.size(); i++) {
         item = new QListWidgetItem;
         QString temp_str = QString("[");
         if (i < 10) {
@@ -367,7 +367,7 @@ void common::fill_object_listWidget(QListWidget *listWidget)
 
     listWidget->clear();
 
-    for (int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
+    for (unsigned int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
         item = new QListWidgetItem;
         QString temp_str = QString("[");
         if (i < 10) {
@@ -395,7 +395,7 @@ void common::fill_scenes_combo(QComboBox *combo)
     combo->clear();
     // add empty item to be used to unset scene
     combo->addItem(QString(""));
-    for (int i=0; i<Mediator::get_instance()->scene_list.size(); i++) {
+    for (unsigned int i=0; i<Mediator::get_instance()->scene_list.size(); i++) {
         QString temp_str = QString("[") + QString::number(i) + QString("] - ") + QString(Mediator::get_instance()->scene_list.at(i).name);
         combo->addItem(temp_str);
     }
@@ -414,6 +414,7 @@ void common::fill_languages_combo(QComboBox *combo)
 
 void common::fill_numbered_combo(QComboBox *combo, int start, int end)
 {
+    combo->clear();
     for (int i=start; i<=end; i++) {
         combo->addItem(QString::number(i));
     }
@@ -422,7 +423,7 @@ void common::fill_numbered_combo(QComboBox *combo, int start, int end)
 std::vector<std::string> common::get_npc_names_list()
 {
     std::vector<std::string> res;
-    for (int i=0; i<Mediator::get_instance()->enemy_list.size(); i++) {
+    for (unsigned int i=0; i<Mediator::get_instance()->enemy_list.size(); i++) {
         res.push_back(std::string(Mediator::get_instance()->enemy_list.at(i).name));
     }
     return res;
@@ -431,7 +432,7 @@ std::vector<std::string> common::get_npc_names_list()
 std::vector<std::string> common::get_weapon_names_list()
 {
     std::vector<std::string> res;
-    for (int i=0; i<Mediator::get_instance()->projectile_list_v3.size(); i++) {
+    for (unsigned int i=0; i<Mediator::get_instance()->projectile_list_v3.size(); i++) {
         res.push_back(std::string(Mediator::get_instance()->projectile_list_v3.at(i).name));
     }
     return res;
@@ -494,7 +495,7 @@ void common::fill_abilities_combo(QComboBox *combo)
 {
     combo->clear();
     combo->addItem(QString("None"));
-    for (int i=0; i<PROPERTY_NAME_COUNT; i++) {
+    for (unsigned int i=0; i<PROPERTY_NAME_COUNT; i++) {
         combo->addItem(QString(AbilityName::get_instance()->get_name_from_number(i).c_str()));
     }
 }
