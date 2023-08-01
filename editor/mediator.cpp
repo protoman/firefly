@@ -200,23 +200,36 @@ void Mediator::load_game() {
         SharedData::get_instance()->v6_area_list = fio_cmm.load_from_disk<file_v6_area>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST);
     }
     SharedData::get_instance()->v6_level_map.clear();
-    std::cout << "AREAS.SIZE[" << SharedData::get_instance()->v6_area_list.size() << "]" << std::endl;
-    for (int i=0; i<SharedData::get_instance()->v6_area_list.size(); i++) {
+    unsigned int area_size = SharedData::get_instance()->v6_area_list.size();
+    std::cout << "AREAS.SIZE[" << area_size << "]" << std::endl;
+    for (unsigned int area_n=0; area_n<area_size; area_n++) {
         char level_filename[512];
-        sprintf(level_filename, "%s/data/v6_level_list_%d.dat", SharedData::get_instance()->FILEPATH.c_str(), i);
-
+        sprintf(level_filename, "%s/data/v6_level_list_%d.dat", SharedData::get_instance()->FILEPATH.c_str(), area_n);
         std::cout << "level_filename[" << level_filename << "]" << std::endl;
 
         if (fio.file_exists(level_filename)) {
-            std::vector<file_v6_level_point> point_list = fio_cmm.load_from_disk<file_v6_level_point>(level_filename);
-            std::cout << "LOADED area[" << i << "] with size[" << point_list.size() << "]" << std::endl;
-            SharedData::get_instance()->v6_level_map.insert(std::pair<int, std::vector<file_v6_level_point>>(i, point_list));
-            if (SharedData::get_instance()->v6_level_map.at(i).size() == 0) {
+            std::vector<file_v6_level_point> temp_point_list = fio_cmm.load_from_disk<file_v6_level_point>(level_filename);
+            std::vector<file_v6_level_point> point_list;
+            // avoid invalid points (fix for changing versions)
+            for (unsigned int point_n=0; point_n<temp_point_list.size(); point_n++) {
+                if (temp_point_list.at(point_n).area_number == area_n) {
+                    point_list.push_back(temp_point_list.at(point_n));
+                } else {
+                    std::cout << "WARNING: Invalid area_number[" << temp_point_list.at(area_n).area_number << "] in point for area[" << area_n << "] data file." << std::endl;
+                }
+            }
+
+
+            std::cout << "LOADED area[" << area_n << "] with size[" << point_list.size() << "]" << std::endl;
+
+            SharedData::get_instance()->v6_level_map.insert(std::pair<int, std::vector<file_v6_level_point>>(area_n, point_list));
+            // Add single point to avoid empty area for first one
+            if (area_n == 0 && SharedData::get_instance()->v6_level_map.at(area_n).size() == 0) {
                 file_v6_level_point new_point;
                 new_point.area_number = 0;
                 new_point.x = 0;
                 new_point.y = 0;
-                SharedData::get_instance()->v6_level_map.at(i).push_back(new_point);
+                SharedData::get_instance()->v6_level_map.at(area_n).push_back(new_point);
             }
         } else {
             std::cout << "level_filename[" << level_filename << "] FILE NOT FOUND" << std::endl;
@@ -268,19 +281,20 @@ void Mediator::load_game() {
 
 }
 
+
 void Mediator::load_area_rooms(int area_n)
 {
     char area_rooms_filename[512];
     sprintf(area_rooms_filename, "%s/data/v6_area_rooms_%d.dat", SharedData::get_instance()->FILEPATH.c_str(), area_n);
+    SharedData::get_instance()->v6_area_room_list.clear();
     if (fio.file_exists(area_rooms_filename)) {
         std::vector<file_v6_room> room_list = fio_cmm.load_from_disk<file_v6_room>(area_rooms_filename);
         // convert to a map based upon the world-map position, so we can get all rooms easily
-        SharedData::get_instance()->v6_area_room_list.clear();
-        for (int i=0; i<room_list.size(); i++) {
+        for (unsigned int i=0; i<room_list.size(); i++) {
+            std::cout << "MEDIATOR::load_area_rooms[" << area_n << "], pos[" << room_list.at(i).position.x << "][" << room_list.at(i).position.y << "]" << std::endl;
             SharedData::get_instance()->v6_area_room_list.insert(std::pair<st_position, file_v6_room>(room_list.at(i).position, room_list.at(i)));
         }
     }
-
 }
 
 void Mediator::save_area_rooms(int area_n)
@@ -377,10 +391,10 @@ void Mediator::save_game()
 
     save_area_rooms(SharedData::get_instance()->v6_selected_area);
     // FILE-V6 //
-    for (int i=0; i<SharedData::get_instance()->v6_area_list.size(); i++) {
+    for (unsigned int i=0; i<SharedData::get_instance()->v6_area_list.size(); i++) {
         char level_filename_char[512];
         sprintf(level_filename_char, "%s/data/v6_level_list_%d.dat", SharedData::get_instance()->FILEPATH.c_str(), i);
-        if (SharedData::get_instance()->v6_level_map.find(i) == SharedData::get_instance()->v6_level_map.end()) {
+        if (i == 0 && SharedData::get_instance()->v6_level_map.find(i) == SharedData::get_instance()->v6_level_map.end()) {
             std::vector<file_v6_level_point> point_list;
             SharedData::get_instance()->v6_level_map.insert(std::pair<int, std::vector<file_v6_level_point>>(i, point_list));
             file_v6_level_point new_point;

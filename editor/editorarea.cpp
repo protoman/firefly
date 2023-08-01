@@ -57,7 +57,6 @@ void EditorArea::update_files()
         return;
     }
 
-
     std::string filename_str = SharedData::get_instance()->FILEPATH + "images/tilesets/blocks/easymode.png";
     easy_mode_tile = QPixmap(QString(filename_str.c_str()));
 
@@ -78,24 +77,17 @@ void EditorArea::update_files()
         } else {
             std::string filename_str = SharedData::get_instance()->FILEPATH + std::string("/images/map_backgrounds/") + SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).layers[i].filename;
             filename_str = StringUtils::clean_filename(filename_str);
-            //std::cout << ">>>>>>>> update_files.filename-bg[" << i << "]: [" << filename_str << "]" << std::endl;
             layer_pixmap_list[i] = QPixmap(filename_str.c_str());
         }
     }
-
     preload_slope_images();
-
 }
 
 void EditorArea::update_map_data()
 {
-    if (SharedData::get_instance()->v6_level_map.size() <= SharedData::get_instance()->v6_selected_level) {
-        return;
-    }
     if (SharedData::get_instance()->v6_area_list.size() <= SharedData::get_instance()->v6_selected_area) {
         return;
     }
-    std::cout << "########### EditorArea::update_map_data - level[" << SharedData::get_instance()->v6_selected_level << "], area[" << SharedData::get_instance()->v6_selected_area << "]" << std::endl;
 
     topmost_point = 99999;
     bottommost_point = -1;
@@ -149,36 +141,9 @@ void EditorArea::paintEvent(QPaintEvent *)
 
 
 
-    // draw backgrounds
+    /// @TODO:  draw backgrounds ///
     if (Mediator::get_instance()->show_bg1 == true) {
-/*
-        //std::cout << "############# EditorArea::paintEvent - LOOP" << std::endl;
-        for (int room_y=topmost_room; room_y<=bottommost_room; room_y++) {
-            for (int room_x=leftmost_room; room_x<=rightmost_room; room_x++) {
-                //std::cout << "############# EditorArea::paintEvent - level[" << SharedData::get_instance()->v6_selected_level << "], room[" << room_x << "][" << room_y << "].area_n[" << SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[room_x][room_y].area_n << "], current_area_n[" << SharedData::get_instance()->v6_selected_area << "]" << std::endl;
-                if (SharedData::get_instance()->v6_level_list.at(SharedData::get_instance()->v6_selected_level).rooms[room_x][room_y].area_n == SharedData::get_instance()->v6_selected_area) {
-                    for (int i=0; i<LAYERS_COUNT; i++) {
-                        if (!layer_pixmap_list[i].isNull()) {
-                            int k = room_x-leftmost_room;
-                            int l = room_y-topmost_room;
-                            int bg_pos_y = AREA_H*l+ SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).layers[i].adjust_y;
-                            /// @TODO: repeat backgrounds in X and Y axis, if set in mode and smaller than RES_W and AREA_H //
 
-                            int origin_h = layer_pixmap_list[i].height();
-                            if ((layer_pixmap_list[i].height() + bg_pos_y) > AREA_H) {
-                                origin_h -= AREA_H - (layer_pixmap_list[i].height() + bg_pos_y);
-                            }
-
-                            QRectF pos_source(QPoint(0, 0), QSize(layer_pixmap_list[i].width(), origin_h));
-                            QRectF pos_dest(QPoint(k*RES_W*Mediator::get_instance()->zoom, bg_pos_y*Mediator::get_instance()->zoom), QSize(layer_pixmap_list[i].width()*Mediator::get_instance()->zoom, origin_h*Mediator::get_instance()->zoom));
-                            //std::cout << "BG[" << i << "].total_h[" << (pos_dest.y() + pos_dest.height()) << "]" << std::endl;
-                            painter.drawPixmap(pos_dest, layer_pixmap_list[i], pos_source);
-                        }
-                    }
-                }
-            }
-        }
-*/
     }
 
 
@@ -311,13 +276,13 @@ void EditorArea::drawTileset(QPainter *painter)
                     int dest_y = map_pos_y + y*TILESIZE*Mediator::get_instance()->zoom;
 
 
-                    std::cout << "TILE AT [" << x << "][" << y << "], with x[" << tileItem.tile_underlay.x << "], y[" << tileItem.tile_underlay.y << "] type is [" << tileItem.tile_underlay.type << "]" << std::endl;
+                    //std::cout << "TILE AT [" << x << "][" << y << "], with x[" << tileItem.tile_underlay.x << "], y[" << tileItem.tile_underlay.y << "] type is [" << tileItem.tile_underlay.type << "]" << std::endl;
                     if (tileItem.tile_underlay.type == TILE_TYPE_SOLID) {
                         QRectF target(QPoint(dest_x, dest_y), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
                         QRectF source(QPoint((tileItem.tile_underlay.x*TILESIZE), (tileItem.tile_underlay.y*TILESIZE)), QSize(TILESIZE, TILESIZE));
                         painter->drawPixmap(target, tileset_image, source);
                     } else if (tileItem.tile_underlay.type == TILE_TYPE_SLOPE) {
-                        std::cout << "FOUND SLOPE_TILE AT [" << x << "][" << y << "], with x[" << tileItem.tile_underlay.x << "], y[" << tileItem.tile_underlay.y << "]" << std::endl;
+                        //std::cout << "FOUND SLOPE_TILE AT [" << x << "][" << y << "], with x[" << tileItem.tile_underlay.x << "], y[" << tileItem.tile_underlay.y << "]" << std::endl;
                         draw_slope_tile(tileItem.tile_underlay.x, tileItem.tile_underlay.y, dest_x, dest_y, painter);
                     } else if (tileItem.tile_underlay.type == TILE_TYPE_ANIM) {
                         int anim_tile_id = tileItem.tile_underlay.x;

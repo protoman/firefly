@@ -64,13 +64,11 @@ void worldMapEditorArea::paintEvent(QPaintEvent *event)
     for (unsigned int area_n=0; area_n<SharedData::get_instance()->v6_area_list.size(); area_n++) {
         if (SharedData::get_instance()->v6_level_map.find(area_n) != SharedData::get_instance()->v6_level_map.end()) {
             for (unsigned int i=0; i<SharedData::get_instance()->v6_level_map.at(area_n).size(); i++) {
-
-                //std::cout << "area_n[" << area_n << "], i[" << i << "]" << std::endl;
-
-                //std::cout << ">>>>>>>> room[" << i << "][" << SharedData::get_instance()->v6_level_map.at(area_n).at(i).x << "][" << SharedData::get_instance()->v6_level_map.at(area_n).at(i).y << "].area[" << SharedData::get_instance()->v6_level_map.at(area_n).at(i).area_number << "]" << std::endl;
                 if (SharedData::get_instance()->v6_level_map.at(area_n).at(i).area_number == currentArea) {
                     painter.setBrush(QColor(0, 0, 255, 180));
                     painter.setPen(QColor(0, 0, 180, 255));
+                } else {
+                    std::cout << ">>>>>>>>>> invalid area number[" << SharedData::get_instance()->v6_level_map.at(area_n).at(i).area_number << "] in area[" << currentArea << "] data file" << std::endl;
                 }
                 painter.drawRect(SharedData::get_instance()->v6_level_map.at(area_n).at(i).x*TILE_SHOW_SIZE, SharedData::get_instance()->v6_level_map.at(area_n).at(i).y*TILE_SHOW_SIZE, TILE_SHOW_SIZE, TILE_SHOW_SIZE);
             }
@@ -109,6 +107,12 @@ void worldMapEditorArea::mousePressEvent(QMouseEvent *event)
     bool is_adjascent_point_to_same_area = false;
     bool is_adjascent_point = false;
     for (unsigned int area_n=0; area_n<SharedData::get_instance()->v6_area_list.size(); area_n++) {
+
+        if (SharedData::get_instance()->v6_level_map.find(area_n) == SharedData::get_instance()->v6_level_map.end()) {
+            std::vector<file_v6_level_point> point_list;
+            SharedData::get_instance()->v6_level_map.insert(std::pair<int, std::vector<file_v6_level_point>>(area_n, point_list));
+        }
+
         for (unsigned int i=0; i<SharedData::get_instance()->v6_level_map.at(area_n).size(); i++) {
             std::cout << "CLICK - area_n[" << area_n << "], i[" << i << "]" << std::endl;
             std::cout << "CLICK - area.size[" << SharedData::get_instance()->v6_level_map.at(area_n).size() << "]" << std::endl;

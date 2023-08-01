@@ -129,6 +129,7 @@ void MapController::set_scroll_to_bottom()
 
 void MapController::show()
 {
+    //std::cout << "MAP::show - scroll.x[" << scroll.x << "]" << std::endl;
     drawLayers(false);
     if (get_map_gfx_mode() == SCREEN_GFX_MODE_BACKGROUND) {
         draw::get_instance()->show_gfx();
@@ -167,14 +168,6 @@ void MapController::updated_visited_room()
 {
     SharedData::get_instance()->current_room_pos.x = SharedData::get_instance()->leftmost_room + (scroll.x+RES_W/2)/(AREA_ROOM_TILES_W*TILESIZE);
     SharedData::get_instance()->current_room_pos.y = SharedData::get_instance()->topmost_room + (scroll.y+AREA_H/2)/(AREA_ROOM_TILES_H*TILESIZE);
-
-    //std::cout << "MapController::updated_visited_room - room_x[" << SharedData::get_instance()->current_room_pos.y << "], room_y[" << SharedData::get_instance()->current_room_pos.y << "]" << std::endl;
-
-    /*
-    if (SharedData::get_instance()->visited_level_list.at(SharedData::get_instance()->v6_selected_level).visited[SharedData::get_instance()->current_room_pos.x][SharedData::get_instance()->current_room_pos.y] == false) {
-        SharedData::get_instance()->visited_level_list.at(SharedData::get_instance()->v6_selected_level).visited[SharedData::get_instance()->current_room_pos.x][SharedData::get_instance()->current_room_pos.y] = true;
-    }
-    */
 }
 
 int MapController::get_level_from_room(int x, int y)
@@ -808,6 +801,12 @@ void MapController::changeLayerScroll(int x_change, int y_change)
 // ********************************************************************************************** //
 void MapController::set_scrolling(st_float_position pos)
 {
+    if (pos.x < 0) {
+        pos.x = 0;
+    }
+    if (pos.y < 0) {
+        pos.y = 0;
+    }
     scrolled = pos;
     scroll.x = pos.x;
     scroll.y = pos.y;

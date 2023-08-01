@@ -1110,4 +1110,10 @@ enum e_GAME_QUEST {
     GAME_QUEST_COUNT
 };
 
+enum E_JUMP_STATE {
+    NOJUMP,
+    JUMPUP,
+    JUMPDOWN
+};
+
 #endif // DEFINES_H

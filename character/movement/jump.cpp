@@ -140,3 +140,8 @@ void classjump::set_jump_limit(int value)
 {
     JUMP_LIMIT = value;
 }
+
+E_JUMP_STATE classjump::get_state()
+{
+    return state;
+}

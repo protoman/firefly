@@ -275,7 +275,6 @@ bool file_io::read_save(st_save& data_out, short save_n)
 std::string file_io::get_object_state_filename()
 {
     char filenamechar[512];
-    sprintf(filenamechar, "level_%d_object_state.dat", SharedData::get_instance()->v6_selected_level);
     return SharedData::get_instance()->SAVEPATH + std::string("/") + std::string(filenamechar);
 }
 
@@ -289,7 +288,7 @@ void file_io::write_game_object_state()
         list.push_back(it->second);
     }
 
-    for (int i=0; i<list.size(); i++) {
+    for (unsigned int i=0; i<list.size(); i++) {
         fio_cmm.save_data_to_disk<v6_file_game_object_state>(get_object_state_filename(), list);
     }
 

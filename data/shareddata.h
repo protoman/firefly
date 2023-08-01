@@ -95,11 +95,14 @@ public:
 
     // FILE-V6 //
     std::vector<file_v6_area> v6_area_list; // list of areas
-    std::map<int, std::vector<file_v6_level_point>> v6_level_map; // map a room to a position in the world-map and area-number
-    std::map<st_position, file_v6_room> v6_area_room_list; // list of rooms for a given area mapped by their position on world-map
+
+    // map a room to a position in the world-map and area-number
+    std::map<int, std::vector<file_v6_level_point>> v6_level_map;
+
+    // list of rooms for a given area mapped by their position on world-map
+    std::map<st_position, file_v6_room> v6_area_room_list;
 
     int v6_selected_area = 0;
-    int v6_selected_level = 0;
     std::vector<v6_file_object> v6_object_list;
     std::vector<st_position> area_room_list;
 

@@ -30,13 +30,11 @@ map_tab::~map_tab()
 
 void map_tab::reload()
 {
-    ui->gridLayout_6->setGeometry(QRect(0, 0, 100, 200));
     ui->animTilePaletteWidget->reload();
     ui->editArea->update_files();
 
     properties_hidden = true;
     ui->editArea->update_map_data();
-    //std::cout << "area_list.size[" << SharedData::get_instance()->v6_area_list.size() << "]" << std::endl;
     std::string pallete_filename = SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).tileset_filename;
     if (pallete_filename.length() > 0) {
         Mediator::get_instance()->setPallete(pallete_filename);
@@ -388,6 +386,7 @@ void map_tab::on_mapSelector_comboBox_currentIndexChanged(int index)
     if (_data_loading == true || index == -1) { return; }
     SharedData::get_instance()->v6_selected_area = index;
     _data_loading = true;
+    Mediator::get_instance()->load_area_rooms(SharedData::get_instance()->v6_selected_area);
     fill_data();
     ui->editArea->update_map_data();
     Mediator::get_instance()->setPallete(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).tileset_filename);

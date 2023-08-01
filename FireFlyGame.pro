@@ -29,6 +29,7 @@ SOURCES += \
     character/GameEnemy.cpp \
     character/custom/ai_boss_001.cpp \
     character/gamenpc.cpp \
+    character/movement/moveslopes.cpp \
         main.cpp \
     text/i18ntext.cpp \
     text/npc_dialog_manager.cpp \
@@ -79,6 +80,7 @@ HEADERS += \
     character/GameEnemy.h \
     character/custom/ai_boss_001.h \
     character/gamenpc.h \
+    character/movement/moveslopes.h \
     file/v4/file_save_v4.h \
     file/v5/struct_file_game_area_map.h \
     file/v6/file_area_v6.h \

@@ -11,6 +11,7 @@
 #include "projectilelib.h"
 #include "character/movement/jump.h"
 #include "character/movement/inertia.h"
+#include "character/movement/moveslopes.h"
 #include "character/character_animation.h"
 #include "file/format/st_hitPoints.h"
 
@@ -37,14 +38,7 @@ enum ATTACK_TYPES {
     ATTACK_TYPE_COUNT
 };
 
-enum SLOPE_STATE {
-    SLOPE_STATE_LEFT_DOWN,
-    SLOPE_STATE_LEFT_UP,
-    SLOPE_STATE_RIGHT_DOWN,
-    SLOPE_STATE_RIGHT_UP,
-    SLOPE_STATE_NO_SLOPE,
-    SLOPE_STATE_COUNT
-};
+
 
 class MapController;		// advance declaration
 struct object_collision;
@@ -239,13 +233,12 @@ public:
     void remove_game_item_from_slot();
     void set_is_on_game_item_area(bool state);
     bool have_frame_graphic(int direction, int type, int pos);  // indicates if the given frame graphic exits
+    void reset_animation_type();
 
 
 private:
     ATTACK_TYPES check_must_attack(bool always_charged);
     void check_charging_colors(bool always_charged);
-    bool isOnSlope(int xinc);
-    bool isOutOfSlopes(int xinc);
 
 protected:
     // updown_trajectory: updown -1 is down, 0 is none, 1 is up
@@ -257,8 +250,6 @@ protected:
     bool is_on_teleporter_capsulse(GameObject* GameObject);
     bool is_on_teleport_platform(GameObject* GameObject);
     void check_map_collision_point(int &map_block, int &new_map_lock, int &old_map_lock, int mode_xy);
-    void calc_slope_diff_h(st_position map_pos);
-    int adjust_slope_y(int xinc, int incy, st_position map_pos);
     bool process_special_map_points(int map_lock, int incx, int incy, st_position map_pos);
     void check_platform_move(short map_lock);
     void add_graphic();
@@ -276,6 +267,7 @@ protected:
     void check_reset_stand();
     virtual bool can_air_dash();
     Uint8 get_projectile_max_shots(bool always_charged);
+    bool executeCheckSlope(int xinc, int yinc);
 
 
 
@@ -401,10 +393,6 @@ protected:
     bool must_show_dash_effect;
     st_imageData dash_effect_shadow_surface_frame;
     short int facing = ANIM_DIRECTION_LEFT; // defines the side npc is facing before start moving (also used by LINEWALK behavior) /**< TODO */
-    bool was_on_slope = false;
-
-
-    float current_slope_step = 0.0;
 
 
 
@@ -415,6 +403,8 @@ protected:
     st_imageData rotated_graphic_frame;
 
     bool is_on_game_item_area = false;
+
+    moveSlopes slopesManager;
 };
 
 #endif // CHARACTER_H

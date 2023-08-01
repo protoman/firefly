@@ -240,7 +240,7 @@ void GameManager::loadMapData()
         SharedData::get_instance()->file_v5_map_npc_map.insert(std::pair<unsigned int, std::vector<file_v5_map_npc>>(i, std::vector<file_v5_map_npc>()));
         if (fio.file_exists(SharedData::get_instance()->FILEPATH+map_enemies_name)) {
             SharedData::get_instance()->file_v5_map_npc_map.at(i) = fio_cmm.load_from_disk<file_v5_map_npc>(SharedData::get_instance()->FILEPATH+map_enemies_name);
-            std::cout << ">> FOUND AREA-ENEMIES FILE, size[" <<  SharedData::get_instance()->file_v5_map_npc_map.at(i).size() << "] <<" << std::endl;
+            //std::cout << ">> FOUND AREA-ENEMIES FILE, size[" <<  SharedData::get_instance()->file_v5_map_npc_map.at(i).size() << "] <<" << std::endl;
         }
 
     }
@@ -377,8 +377,8 @@ void GameManager::initGame()
     InGamePresentation::get_instance()->start_show_ready();
 
 
+    /*
     std::vector<st_dialog> dialog_list = InGamePresentation::get_instance()->get_game_dialog(GAME_DIALOG_INTRO_STAGE_SWAMP_ARRIVAL);
-
 
     if (dialog_list.size() > 0) {
 
@@ -390,6 +390,7 @@ void GameManager::initGame()
             dialog_queue.at(0).face_name = SharedData::get_instance()->get_player_face_file();
         }
     }
+    */
 }
 
 void GameManager::start_stage_music()
@@ -2066,7 +2067,7 @@ void GameManager::show_savegame_error()
     draw::get_instance()->show_ingame_warning(dialog);
 
     InputController::get_instance()->clean();
-    InputController::get_instance()->wait_keypress();
+    //InputController::get_instance()->wait_keypress();
 
 }
 
