@@ -35,7 +35,8 @@ private:
     SharedData& operator=(SharedData const&){ return *this; };  // assignment operator is private
 
 public:
-    void add_missing_area_rooms(int area_n);
+    void add_missing_area_rooms(int stage_n, int area_n);
+    void add_missing_areas();
 
 
 private:
@@ -60,14 +61,14 @@ public:
 
     // GAME-DATA //
     file_game game_data;
-    std::vector<file_npc_v3_1_2> enemy_list;
+    std::vector<file_enemy_v3_1_2> enemy_list;
     std::vector<file_projectilev3> projectile_list_v3;
     std::vector<file_scene_list> scene_list;
     std::vector<file_anim_block> anim_block_list;
     std::vector<file_player_v3_1_1> player_list_v3_1;
     std::vector<file_artificial_inteligence> ai_list;
     std::vector<file_v5_slope_tile> slope_list;
-    //std::vector<struct_file_v5_area> area_list;
+    std::vector<file_npc_v3_1_2> npc_list;
 
     st_save game_save;
     st_checkpoint checkpoint;
@@ -76,12 +77,12 @@ public:
     // MAPS DATA //
     std::vector<file_v5_map_link> file_v5_map_link_list;
 
-    std::map<unsigned int, std::vector<v6_map_object>>  file_v6_map_object_map; // map objects
+    std::map<unsigned int, std::vector<v6_stage_object>>  file_v6_stage_objects_map; // map objects
 
     std::map<int, short> enemy_state_map;
 
 
-    std::map<unsigned int, std::vector<file_v5_map_npc>>  file_v5_map_npc_map; // map enemies
+    std::map<unsigned int, std::vector<file_v5_map_npc>>  file_v5_stage_enemy_map; // map enemies
     unsigned int file_v5_selected_area = 0;
     unsigned int file_v5_selected_layer = 0;
     unsigned int file_v5_selected_slope = 0;
@@ -94,7 +95,10 @@ public:
 
 
     // FILE-V6 //
-    std::vector<file_v6_area> v6_area_list; // list of areas
+    std::vector<file_v6_stage> v6_stage_list;                           // list of stages
+    std::map<int, std::vector<file_v6_area>> v6_area_map;               // map of areas, that are a sub-parts of the stage rooms that share same style
+    std::vector<file_v6_style> v6_style_list;                           // list of styles
+    std::vector<st_position> selected_rooms;                            // list of selected room in the edit-area, used to define area
 
     // map a room to a position in the world-map and area-number
     std::map<int, std::vector<file_v6_level_point>> v6_level_map;
@@ -102,7 +106,8 @@ public:
     // list of rooms for a given area mapped by their position on world-map
     std::map<st_position, file_v6_room> v6_area_room_list;
 
-    int v6_selected_area = 0;
+    unsigned int v6_selected_stage = 0;
+    unsigned int v6_selected_area = 0;
     std::vector<v6_file_object> v6_object_list;
     std::vector<st_position> area_room_list;
 
@@ -143,6 +148,12 @@ public:
     bool is_showing_boss_intro = false;
 
     int current_language = LANGUAGE_AUTODETECT;
+
+    unsigned int room_style_selected_style = 0;
+    unsigned int room_style_selected_layer = 0;
+
+    unsigned int selected_npc = 0;
+
 
 };
 

@@ -65,6 +65,10 @@ public:
     void horizontal_screen_move(short direction, bool is_door, short tileX, short tileY);
     void vertical_screen_move(short direction, bool is_door, short tileX);
 
+    void transition_area_horizontal(short direction, short tileX, short tileY);
+    void transition_area_vertical(short direction, short tileX);
+    void update_current_area_number();
+
     void show_door_animation();
     void leave_stage();
     void return_to_intro_screen();
@@ -161,16 +165,11 @@ private:
     int get_current_area();
     void walk_character_to_screen_point_x(character* char_obj, short pos_x); // keeps walking (and jumping obstacles) until reaching a given point in screen (not in map, that should have its own function for that)
     void set_player_teleporter(short set_teleport_n, st_position set_player_pos, bool is_object);
-
     void finish_player_teleporter();
-
     void show_stage(int wait_time, bool move_npcs);
-
     bool subboss_alive_on_left(short tileX);
-
     void show_mem_debug(int n);
     void change_map_scroll(st_float_position pos, bool check_lock);
-
     void init_map_and_player_to_bottom();
 
 

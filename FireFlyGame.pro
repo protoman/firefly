@@ -89,6 +89,7 @@ HEADERS += \
     file/v6/file_npc_state_v6.h \
     file/v6/file_object_v6.h \
     file/v6/file_room_v6.h \
+    file/v6/file_style_v6.h \
     text/i18ntext.h \
     text/npc_dialog_manager.h \
     view/ingame_presentation.h \
@@ -143,4 +144,6 @@ HEADERS += \
     file/v5/struct_file_map.h
 
 DISTFILES += \
-    TODO
+    docs/TODO \
+    docs/planning_characters.txt \
+    docs/planning_objects.txt

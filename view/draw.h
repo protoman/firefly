@@ -124,6 +124,7 @@ private:
     void show_shadow_top_effect();
     void show_inferno_effect();
     void show_dark_effect();
+    void show_tint_screen_effect();
     void free_inferno_surface();
     st_float_position get_radius_point(st_position center_point, int radius, float angle);
     //void create_dynamic_background_surface(st_imageData& dest_surface, st_imageData& image_surface, int auto_scroll_mode);
@@ -134,7 +135,7 @@ private:
     static draw* _instance;
     st_imageData boss_intro_bg;
     st_imageData rain_obj;
-    st_imageData dark_effect_mask;
+    st_imageData dark_effect_light_source_mask;
     st_imageData yellow_light_mask;
     st_imageData red_light_mask;
     unsigned int _effect_timer = 0;
@@ -232,7 +233,9 @@ private:
     st_imageData _death_animation;
     int _death_animation_frames_n = 0;
 
-
+    unsigned long flame_light_timer = 0;
+    int flame_light_state = 0;
+    bool flame_light_expanding = true;
 };
 
 #endif // DRAW_H

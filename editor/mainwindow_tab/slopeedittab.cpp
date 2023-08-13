@@ -57,6 +57,15 @@ void SlopeEditTab::on_addSlopePushButton_clicked()
 void SlopeEditTab::on_currentSlopeComboBox_currentIndexChanged(int index)
 {
     if (data_loading) { return; }
+    currentSlopePos = index;
+    ui->slopePreviewWidget->setRight(SharedData::get_instance()->slope_list.at(currentSlopePos).slope[selectedSlopePos].right);
+    ui->slopePreviewWidget->setLeft(SharedData::get_instance()->slope_list.at(currentSlopePos).slope[selectedSlopePos].left);
+    data_loading = true;
+    ui->left_spinBox->setValue(SharedData::get_instance()->slope_list.at(currentSlopePos).slope[selectedSlopePos].left);
+    ui->right_spinBox->setValue(SharedData::get_instance()->slope_list.at(currentSlopePos).slope[selectedSlopePos].right);
+    data_loading = false;
+    ui->slopePreviewWidget->repaint();
+
     ui->imageComboBox->setCurrentIndex(ui->imageComboBox->findText(SharedData::get_instance()->slope_list.at(ui->currentSlopeComboBox->currentIndex()).filename));
 }
 
@@ -79,8 +88,7 @@ void SlopeEditTab::on_imageComboBox_currentIndexChanged(const QString &arg1)
 void SlopeEditTab::on_left_spinBox_valueChanged(int arg1)
 {
     if (data_loading) { return; }
-    int currentPos = ui->slopePreviewWidget->getCurrentPos();
-    SharedData::get_instance()->slope_list.at(ui->currentSlopeComboBox->currentIndex()).slope[currentPos].left = arg1;
+    SharedData::get_instance()->slope_list.at(currentSlopePos).slope[selectedSlopePos].left = arg1;
 
     ui->slopePreviewWidget->setLeft(arg1);
     ui->slopePreviewWidget->repaint();
@@ -89,8 +97,7 @@ void SlopeEditTab::on_left_spinBox_valueChanged(int arg1)
 void SlopeEditTab::on_right_spinBox_valueChanged(int arg1)
 {
     if (data_loading) { return; }
-    int currentPos = ui->slopePreviewWidget->getCurrentPos();
-    SharedData::get_instance()->slope_list.at(ui->currentSlopeComboBox->currentIndex()).slope[currentPos].right = arg1;
+    SharedData::get_instance()->slope_list.at(currentSlopePos).slope[selectedSlopePos].right = arg1;
 
     ui->slopePreviewWidget->setRight(arg1);
     ui->slopePreviewWidget->repaint();
@@ -99,11 +106,12 @@ void SlopeEditTab::on_right_spinBox_valueChanged(int arg1)
 void SlopeEditTab::currentPosChanged(int pos)
 {
     if (data_loading) { return; }
-    ui->left_spinBox->setValue(SharedData::get_instance()->slope_list.at(ui->currentSlopeComboBox->currentIndex()).slope[pos].left);
-    ui->right_spinBox->setValue(SharedData::get_instance()->slope_list.at(ui->currentSlopeComboBox->currentIndex()).slope[pos].right);
+    selectedSlopePos = pos;
+    ui->left_spinBox->setValue(SharedData::get_instance()->slope_list.at(currentSlopePos).slope[selectedSlopePos].left);
+    ui->right_spinBox->setValue(SharedData::get_instance()->slope_list.at(currentSlopePos).slope[selectedSlopePos].right);
 
 
-    ui->slopePreviewWidget->setLeft(SharedData::get_instance()->slope_list.at(ui->currentSlopeComboBox->currentIndex()).slope[pos].left);
-    ui->slopePreviewWidget->setRight(SharedData::get_instance()->slope_list.at(ui->currentSlopeComboBox->currentIndex()).slope[pos].right);
+    ui->slopePreviewWidget->setLeft(SharedData::get_instance()->slope_list.at(currentSlopePos).slope[selectedSlopePos].left);
+    ui->slopePreviewWidget->setRight(SharedData::get_instance()->slope_list.at(currentSlopePos).slope[selectedSlopePos].right);
     ui->slopePreviewWidget->repaint();
 }

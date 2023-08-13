@@ -53,8 +53,11 @@ private slots:
     void on_editModeSlope_Button_clicked();
 
 
+    void on_areaSelector_comboBox_currentIndexChanged(int index);
+
 private:
     void fill_data();
+    void fill_area_combo();
     
 private:
     Ui::map_tab *ui;

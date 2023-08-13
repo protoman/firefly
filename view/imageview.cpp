@@ -86,6 +86,11 @@ void ImageView::change_render_target(e_RENDER_TARGET target)
     game_render_target = target;
 }
 
+void ImageView::set_render_target(SDL_Texture* target)
+{
+    SDL_SetRenderTarget(gRenderer, target);
+}
+
 void ImageView::restore_render_target()
 {
     if (game_render_target == RENDER_TARGET_DIRECT_SCREEN) {
@@ -126,12 +131,17 @@ void ImageView::set_fullscreen(bool mode)
 
 void ImageView::blend_images(st_imageData &source, st_imageData &dest, int x, int y)
 {
+    blend_images(source, dest, x, y, source.surface->w, source.surface->h);
+}
+
+void ImageView::blend_images(st_imageData &source, st_imageData &dest, int x, int y, int w, int h)
+{
 
     SDL_SetRenderTarget(gRenderer, dest.texture);
 
     SDL_SetTextureBlendMode(source.texture, SDL_BLENDMODE_ADD);
     SDL_Rect origin = {0, 0, source.surface->w, source.surface->h};
-    SDL_Rect destiny  = {x, y, source.surface->w, source.surface->h};
+    SDL_Rect destiny  = {x, y, w, h};
     SDL_RenderCopy(gRenderer, source.texture, &origin, &destiny);
 
     restore_render_target();
@@ -619,6 +629,8 @@ void ImageView::clear_texture_area(short x, short y, short w, short h, Uint8 r, 
     SDL_SetRenderDrawColor(gRenderer, r, g, b, alpha);
     SDL_SetTextureBlendMode(image.texture, SDL_BLENDMODE_BLEND);
     SDL_RenderFillRect(gRenderer, &dest);
+    //SDL_SetRenderDrawColor(gRenderer, r, g, b, alpha);
+    //SDL_RenderFillRect(gRenderer, nullptr);
     restore_render_target();
 }
 

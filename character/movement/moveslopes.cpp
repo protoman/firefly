@@ -26,7 +26,7 @@ int moveSlopes::checkSlope(int xinc, int yinc, st_rectangle hitbox)
     } else {
         if (is_on_slope == true) {
             is_on_slope = false;
-            std::cout << ">>>>>>> CHAR::searchSlopeTile - left slopes, x-center[" << (hitbox.x + xinc) + hitbox.w/2 << "], y[" << hitbox.y + hitbox.h << "], tyle-x[" << ((hitbox.x + xinc) + hitbox.w/2)/TILESIZE <<"], tile-y[" << (hitbox.y + hitbox.h)/TILESIZE << "]" << std::endl;
+            //std::cout << ">>>>>>> CHAR::searchSlopeTile - left slopes, x-center[" << (hitbox.x + xinc) + hitbox.w/2 << "], y[" << hitbox.y + hitbox.h << "], tyle-x[" << ((hitbox.x + xinc) + hitbox.w/2)/TILESIZE <<"], tile-y[" << (hitbox.y + hitbox.h)/TILESIZE << "]" << std::endl;
             return hitbox.y - ADJUST_Y; // ensure the player is set on the right y-pos to he won't fall nor get inside block
         }
         is_on_slope = false;
@@ -87,22 +87,29 @@ int moveSlopes::calcExpectedVericalPosForSlope(int xinc, int yinc, st_rectangle 
     int left = TILESIZE - data.left;
     int right = TILESIZE - data.right;
 
-    int smaller_y = left;;
+    bool is_left_smaller = true;
+    int smaller_y = left;
+    int bigger_y = right;
     if (right < left) {
         smaller_y = right;
+        bigger_y = left;
+        is_left_smaller = false;
     }
     double diff_h = (double)(right-left);
     current_slope_step = diff_h/TILESIZE; // represents how much changes for x for each x pixel in the slope
     int center_x = hitbox.x + xinc + hitbox.w/2;
 
-    std::cout << "MOVESLOPES::calcExpectedVericalPosForSlope - tileY[" << tile_info.y << "], hitbox.y[" << hitbox.y << "], hitbox.h[" << hitbox.h << "], yinc[" << yinc << "]" << std::endl;
+    //std::cout << "MOVESLOPES::calcExpectedVericalPosForSlope - tileY[" << tile_info.y << "], hitbox.y[" << hitbox.y << "], hitbox.h[" << hitbox.h << "], yinc[" << yinc << "]" << std::endl;
 
     int diff_x = center_x - tile_info.x*TILESIZE;
     int y_adjust = smaller_y + diff_x*current_slope_step;
     int pos_y = (tile_info.y+1)*TILESIZE;
 
     int calc_y = pos_y - y_adjust - ADJUST_Y;
-    //std::cout << "MOVESLOPES::calcExpectedVericalPosForSlope - y_adjust[" << y_adjust << "], calc_y[" << calc_y << "], tileY[" << tileY << "]" << std::endl;
+    if (!is_left_smaller) {
+        calc_y -= bigger_y;
+    }
+    //std::cout << "MOVESLOPES::calcExpectedVericalPosForSlope - tileY[" << tile_info.y << "], y_adjust[" << y_adjust << "], calc_y[" << calc_y << "]" << std::endl;
 
     return calc_y;
 

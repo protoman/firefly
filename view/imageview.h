@@ -190,6 +190,7 @@ public:
 
     // this allow us to render at a texture, so we can copy the screen
     void change_render_target(e_RENDER_TARGET target);
+    void set_render_target(SDL_Texture *target);
     void restore_render_target();
     SDL_Texture* get_game_texture();
     SDL_Texture* get_hud_texture();
@@ -198,6 +199,7 @@ public:
     void set_fullscreen(bool mode);
 
     void blend_images(st_imageData& source, st_imageData& dest, int x, int y);
+    void blend_images(st_imageData& source, st_imageData& dest, int x, int y, int w, int h);
 
     void preload();
 

@@ -81,9 +81,12 @@ public:
 	void setPallete(char *value);
     void load_game();
     void load_area_rooms(int area_n);
-    void save_area_rooms(int area_n);
+    void save_area_rooms(int stage_n, int area_n);
     void save_game();
     void clean_data();                                      // any sanity data cleaning goest here
+    int check_area_links(int room_x, int room_y, int tile_x, int tile_y);
+    void save_map_check_area_links();
+
 
     //void convertProjectileListToV2();
 
@@ -117,7 +120,7 @@ public:
     // old globals
 
 
-    std::vector<file_npc_v3_1_2> enemy_list;
+    std::vector<file_enemy_v3_1_2> enemy_list;
 
     std::vector<file_artificial_inteligence> ai_list;
     //std::vector<file_artificial_inteligence_v3> ai_list;

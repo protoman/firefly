@@ -71,7 +71,7 @@ Mediator::Mediator()  {
     selectedTileset = SharedData::get_instance()->FILEPATH + "/images/tilesets/default.png";
 
     if (enemy_list.size() == 0) { // add one first item to avoid errors
-        enemy_list.push_back(file_npc_v3_1_2());
+        enemy_list.push_back(file_enemy_v3_1_2());
     }
     if (SharedData::get_instance()->v6_object_list.size() == 0) { // add one first item to avoid errors
         SharedData::get_instance()->v6_object_list.push_back(v6_file_object());
@@ -156,9 +156,14 @@ void Mediator::load_game() {
     std::string stages_extra_data_filename = "data/stages_extra_data" + fio.get_sufix() + ".dat";
 
     // convert enemy-ist to 3.1.2
-    enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "game_enemy_list_3_1_2_b.dat");
+    enemy_list = fio_cmm.load_from_disk<file_enemy_v3_1_2>(SharedData::get_instance()->FILEPATH + "game_enemy_list_3_1_2_b.dat");
     if (enemy_list.size() == 0) {
-        enemy_list.push_back(file_npc_v3_1_2());
+        enemy_list.push_back(file_enemy_v3_1_2());
+    }
+
+    SharedData::get_instance()->npc_list = fio_cmm.load_from_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "game_npc_list_3_1_2_b.dat");
+    if (SharedData::get_instance()->npc_list.size() == 0) {
+        SharedData::get_instance()->npc_list.push_back(file_npc_v3_1_2());
     }
 
     SharedData::get_instance()->v6_object_list = fio_cmm.load_from_disk<v6_file_object>(SharedData::get_instance()->FILEPATH + "game_object_list_v6.dat");
@@ -197,10 +202,10 @@ void Mediator::load_game() {
     ScenesMediator::get_instance()->load_game_scenes();
 
     if (fio.file_exists(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST)) {
-        SharedData::get_instance()->v6_area_list = fio_cmm.load_from_disk<file_v6_area>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST);
+        SharedData::get_instance()->v6_stage_list = fio_cmm.load_from_disk<file_v6_stage>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST);
     }
     SharedData::get_instance()->v6_level_map.clear();
-    unsigned int area_size = SharedData::get_instance()->v6_area_list.size();
+    unsigned int area_size = SharedData::get_instance()->v6_stage_list.size();
     std::cout << "AREAS.SIZE[" << area_size << "]" << std::endl;
     for (unsigned int area_n=0; area_n<area_size; area_n++) {
         char level_filename[512];
@@ -212,10 +217,10 @@ void Mediator::load_game() {
             std::vector<file_v6_level_point> point_list;
             // avoid invalid points (fix for changing versions)
             for (unsigned int point_n=0; point_n<temp_point_list.size(); point_n++) {
-                if (temp_point_list.at(point_n).area_number == area_n) {
+                if (temp_point_list.at(point_n).stage_number == area_n) {
                     point_list.push_back(temp_point_list.at(point_n));
                 } else {
-                    std::cout << "WARNING: Invalid area_number[" << temp_point_list.at(area_n).area_number << "] in point for area[" << area_n << "] data file." << std::endl;
+                    std::cout << "WARNING: Invalid area_number[" << temp_point_list.at(area_n).stage_number << "] in point for area[" << area_n << "] data file." << std::endl;
                 }
             }
 
@@ -226,7 +231,8 @@ void Mediator::load_game() {
             // Add single point to avoid empty area for first one
             if (area_n == 0 && SharedData::get_instance()->v6_level_map.at(area_n).size() == 0) {
                 file_v6_level_point new_point;
-                new_point.area_number = 0;
+                new_point.stage_number = SharedData::get_instance()->v6_selected_stage;
+                new_point.area_number = SharedData::get_instance()->v6_selected_area;
                 new_point.x = 0;
                 new_point.y = 0;
                 SharedData::get_instance()->v6_level_map.at(area_n).push_back(new_point);
@@ -240,44 +246,72 @@ void Mediator::load_game() {
 
     std::cout << "DEBUG #4" << std::endl;
 
-    std::cout << "SharedData::get_instance()->v6_level_list.size[" << SharedData::get_instance()->v6_level_map.size() << "]" << std::endl;
-    if (SharedData::get_instance()->v6_area_list.size() == 0) {
-        SharedData::get_instance()->v6_area_list.push_back(file_v6_area());
+    if (SharedData::get_instance()->v6_style_list.size() == 0) {
+        SharedData::get_instance()->v6_style_list.push_back(file_v6_style());
+    }
+
+    //std::cout << "SharedData::get_instance()->v6_level_list.size[" << SharedData::get_instance()->v6_level_map.size() << "]" << std::endl;
+    if (SharedData::get_instance()->v6_stage_list.size() == 0) {
+        SharedData::get_instance()->v6_stage_list.push_back(file_v6_stage());
     }
 
     // FILE V5 //
     SharedData::get_instance()->file_v5_map_link_list = fio_cmm.load_from_disk<file_v5_map_link>(SharedData::get_instance()->FILEPATH + FILE_V5_MAP_LINK_LIST);
     SharedData::get_instance()->slope_list = fio_cmm.load_from_disk<file_v5_slope_tile>(SharedData::get_instance()->FILEPATH + FILE_V5_MAP_SLOPE_LIST);
 
-    for (int i=0; i<SharedData::get_instance()->v6_area_list.size(); i++) {
+    for (int i=0; i<SharedData::get_instance()->v6_stage_list.size(); i++) {
         QString filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_tiles.dat");
 
 
         /// @TODO load area links/
 
-        // load map objects //
+        // load stage objects //
         QString filename_area_objects = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v6_map_") + QString::number(i) + QString("_objects.dat");
-        SharedData::get_instance()->file_v6_map_object_map.insert(std::pair<unsigned int, std::vector<v6_map_object>>(i, std::vector<v6_map_object>()));
+        SharedData::get_instance()->file_v6_stage_objects_map.insert(std::pair<unsigned int, std::vector<v6_stage_object>>(i, std::vector<v6_stage_object>()));
 
         if (fio.file_exists(filename_area_objects.toStdString())) {
-            SharedData::get_instance()->file_v6_map_object_map.at(i) = fio_cmm.load_from_disk<v6_map_object>(filename_area_objects.toStdString());
+            SharedData::get_instance()->file_v6_stage_objects_map.at(i) = fio_cmm.load_from_disk<v6_stage_object>(filename_area_objects.toStdString());
         }
 
 
-        // map enemies //
+        // stage enemies //
         QString filename_area_enemies = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_enemies.dat");
-        SharedData::get_instance()->file_v5_map_npc_map.insert(std::pair<unsigned int, std::vector<file_v5_map_npc>>(i, std::vector<file_v5_map_npc>()));
+        SharedData::get_instance()->file_v5_stage_enemy_map.insert(std::pair<unsigned int, std::vector<file_v5_map_npc>>(i, std::vector<file_v5_map_npc>()));
         if (fio.file_exists(filename_area_enemies.toStdString())) {
-            SharedData::get_instance()->file_v5_map_npc_map.at(i) = fio_cmm.load_from_disk<file_v5_map_npc>(filename_area_enemies.toStdString());
-            std::cout << ">> FOUND AREA-ENEMIES FILE, size[" <<  SharedData::get_instance()->file_v6_map_object_map.at(i).size() << "] <<" << std::endl;
+            SharedData::get_instance()->file_v5_stage_enemy_map.at(i) = fio_cmm.load_from_disk<file_v5_map_npc>(filename_area_enemies.toStdString());
+            std::cout << ">> FOUND AREA-ENEMIES FILE, size[" <<  SharedData::get_instance()->file_v6_stage_objects_map.at(i).size() << "] <<" << std::endl;
+        }
+
+        // stage npcs //
+        QString filename_stage_npcs = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_npcs.dat");
+        SharedData::get_instance()->file_v5_stage_enemy_map.insert(std::pair<unsigned int, std::vector<file_v5_map_npc>>(i, std::vector<file_v5_map_npc>()));
+        if (fio.file_exists(filename_area_enemies.toStdString())) {
+            SharedData::get_instance()->file_v5_stage_enemy_map.at(i) = fio_cmm.load_from_disk<file_v5_map_npc>(filename_area_enemies.toStdString());
+            std::cout << ">> FOUND AREA-ENEMIES FILE, size[" <<  SharedData::get_instance()->file_v6_stage_objects_map.at(i).size() << "] <<" << std::endl;
         }
 
     }
 
-    if (SharedData::get_instance()->v6_area_list.size() == 0) {
-        SharedData::get_instance()->v6_area_list.push_back(file_v6_area());
+    if (SharedData::get_instance()->v6_stage_list.size() == 0) {
+        SharedData::get_instance()->v6_stage_list.push_back(file_v6_stage());
     }
 
+    SharedData::get_instance()->v6_area_map.clear();
+    SharedData::get_instance()->add_missing_areas();
+
+    SharedData::get_instance()->v6_area_map.clear();
+    for (unsigned int i=0; i<SharedData::get_instance()->v6_stage_list.size(); i++) {
+        char area_filename[512];
+        sprintf(area_filename, "%s/%s%d.dat", SharedData::get_instance()->FILEPATH.c_str(), FILE_V6_AREA_LIST_PREFIX, i);
+        std::vector<file_v6_area> stage_area_list = fio_cmm.load_from_disk<file_v6_area>(area_filename);
+        std::cout << "MEDIATOR::load - v6_area_list[" << i << "].size[" << stage_area_list.size() << "]" << std::endl;
+        if (stage_area_list.size() == 0) {
+            stage_area_list.push_back(file_v6_area());
+        }
+        std::pair<int, std::vector<file_v6_area>> new_area_pair(i, stage_area_list);
+        SharedData::get_instance()->v6_area_map.insert(new_area_pair);
+    }
+    SharedData::get_instance()->v6_style_list = fio_cmm.load_from_disk<file_v6_style>(SharedData::get_instance()->FILEPATH + FILE_V6_STYLE_LIST);
 
 }
 
@@ -291,23 +325,35 @@ void Mediator::load_area_rooms(int area_n)
         std::vector<file_v6_room> room_list = fio_cmm.load_from_disk<file_v6_room>(area_rooms_filename);
         // convert to a map based upon the world-map position, so we can get all rooms easily
         for (unsigned int i=0; i<room_list.size(); i++) {
-            std::cout << "MEDIATOR::load_area_rooms[" << area_n << "], pos[" << room_list.at(i).position.x << "][" << room_list.at(i).position.y << "]" << std::endl;
+            //std::cout << "MEDIATOR::load_area_rooms[" << area_n << "], pos[" << room_list.at(i).position.x << "][" << room_list.at(i).position.y << "]" << std::endl;
             SharedData::get_instance()->v6_area_room_list.insert(std::pair<st_position, file_v6_room>(room_list.at(i).position, room_list.at(i)));
+            if (room_list.at(i).area_n == SharedData::get_instance()->v6_selected_area) {
+                SharedData::get_instance()->selected_rooms.push_back(room_list.at(i).position);
+            }
         }
     }
 }
 
-void Mediator::save_area_rooms(int area_n)
+void Mediator::save_area_rooms(int stage_n, int area_n)
 {
     char area_rooms_filename[512];
-    sprintf(area_rooms_filename, "%s/data/v6_area_rooms_%d.dat", SharedData::get_instance()->FILEPATH.c_str(), area_n);
+    sprintf(area_rooms_filename, "%s/data/v6_area_rooms_%d.dat", SharedData::get_instance()->FILEPATH.c_str(), stage_n);
     std::vector<file_v6_room> room_list;
 
-    SharedData::get_instance()->add_missing_area_rooms(area_n);
+    SharedData::get_instance()->add_missing_area_rooms(stage_n, area_n);
 
     for (std::map<st_position, file_v6_room>::iterator it = SharedData::get_instance()->v6_area_room_list.begin(); it != SharedData::get_instance()->v6_area_room_list.end(); ++it) {
+        // FIX - set correct stage and area numbers //
+        if (SharedData::get_instance()->v6_level_map.find(stage_n) != SharedData::get_instance()->v6_level_map.end()) {
+            for (unsigned int i=0; i<SharedData::get_instance()->v6_level_map.at(stage_n).size(); i++) {
+                if (SharedData::get_instance()->v6_level_map.at(stage_n).at(i).x == it->second.position.x && SharedData::get_instance()->v6_level_map.at(stage_n).at(i).y == it->second.position.y) {
+                    it->second.area_n = SharedData::get_instance()->v6_level_map.at(stage_n).at(i).area_number;
+                }
+            }
+        }
         room_list.push_back(it->second);
     }
+    save_map_check_area_links();
     fio_cmm.save_data_to_disk<file_v6_room>(area_rooms_filename, room_list);
 }
 
@@ -317,24 +363,22 @@ void Mediator::save_game()
     //temp_fix_player_colors_order();
 
 
-    std::cout << "@@@@@@@@@@@@@@@ Mediator::save_game - game_data.obj_uuid[" << SharedData::get_instance()->game_data.obj_uuid << "]" << std::endl;
+    //std::cout << "@@@@@@@@@@@@@@@ Mediator::save_game - game_data.obj_uuid[" << SharedData::get_instance()->game_data.obj_uuid << "]" << std::endl;
 
     Mediator::get_instance()->fio.write_game(SharedData::get_instance()->game_data);
-
-
-
 
     std::string stages_extra_data_filename = "data/stages_extra_data" + fio.get_sufix() + ".dat";
 
 
-    fio_cmm.save_data_to_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "game_enemy_list_3_1_2_b.dat", enemy_list);
+    fio_cmm.save_data_to_disk<file_enemy_v3_1_2>(SharedData::get_instance()->FILEPATH + "game_enemy_list_3_1_2_b.dat", enemy_list);
+    fio_cmm.save_data_to_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "game_npc_list_3_1_2_b.dat", SharedData::get_instance()->npc_list);
     fio_cmm.save_data_to_disk<v6_file_object>(SharedData::get_instance()->FILEPATH + "game_object_list_v6.dat", SharedData::get_instance()->v6_object_list);
     fio_cmm.save_data_to_disk<file_artificial_inteligence>(SharedData::get_instance()->FILEPATH + "game_ai_list.dat", ai_list);
 
 
     //fio_cmm.save_data_to_disk<file_artificial_inteligence_v3>("game_ai_list_v3.dat", ai_list);
 
-    std::cout << "################### save projectile list size[" << projectile_list_v3.size() << "]" << std::endl;
+    //std::cout << "################### save projectile list size[" << projectile_list_v3.size() << "]" << std::endl;
     fio_cmm.save_data_to_disk<file_projectilev3>(SharedData::get_instance()->FILEPATH + PROJECTILE_FILE_V3, projectile_list_v3);
 
     fio_cmm.save_data_to_disk<file_anim_block>(SharedData::get_instance()->FILEPATH + "anim_block_list.dat", anim_block_list);
@@ -350,27 +394,29 @@ void Mediator::save_game()
     fio_cmm.save_data_to_disk<file_v5_slope_tile>(SharedData::get_instance()->FILEPATH + FILE_V5_MAP_SLOPE_LIST, SharedData::get_instance()->slope_list);
 
 
-    std::cout << "Mediator::save - saving map-tiles for maps[" << SharedData::get_instance()->v6_area_list.size() << "]" << std::endl;
+    //std::cout << "Mediator::save - saving map-tiles for maps[" << SharedData::get_instance()->v6_stage_list.size() << "]" << std::endl;
 
-    for (unsigned int i=0; i<SharedData::get_instance()->v6_area_list.size(); i++) {
+    for (unsigned int i=0; i<SharedData::get_instance()->v6_stage_list.size(); i++) {
         QString filename = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_tiles.dat");
-        std::cout << "Mediator::save - saving map-tiles, map[" << i << "], filename[" << filename.toStdString() << "]" << std::endl;
+        //std::cout << "Mediator::save - saving map-tiles, map[" << i << "], filename[" << filename.toStdString() << "]" << std::endl;
 
         // @TODO: save area links //
 
         // map objects //
         QString filename_area_objects = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v6_map_") + QString::number(i) + QString("_objects.dat");
-        if (SharedData::get_instance()->file_v6_map_object_map.find(i) != SharedData::get_instance()->file_v6_map_object_map.end()) {
-            std::cout << "################ save area[" << i << "] map-objects in [" << filename_area_objects.toStdString() << "]" << std::endl;
-            fio_cmm.save_data_to_disk<v6_map_object>(filename_area_objects.toStdString(), SharedData::get_instance()->file_v6_map_object_map.at(i));
+        if (SharedData::get_instance()->file_v6_stage_objects_map.find(i) != SharedData::get_instance()->file_v6_stage_objects_map.end()) {
+            //std::cout << "################ save area[" << i << "] map-objects in [" << filename_area_objects.toStdString() << "]" << std::endl;
+            fio_cmm.save_data_to_disk<v6_stage_object>(filename_area_objects.toStdString(), SharedData::get_instance()->file_v6_stage_objects_map.at(i));
         }
 
         // map enemies //
         QString filename_area_enemies = QString(SharedData::get_instance()->FILEPATH.c_str()) + QString("/data/v5_map_") + QString::number(i) + QString("_enemies.dat");
-        if (SharedData::get_instance()->file_v5_map_npc_map.find(i) != SharedData::get_instance()->file_v5_map_npc_map.end()) {
-            std::cout << "################ save area[" << i << "] map-enemies in [" << filename_area_enemies.toStdString() << "]" << std::endl;
-            fio_cmm.save_data_to_disk<file_v5_map_npc>(filename_area_enemies.toStdString(), SharedData::get_instance()->file_v5_map_npc_map.at(i));
+        /*
+        if (SharedData::get_instance()->file_v5_stage_enemy_map.find(i) != SharedData::get_instance()->file_v5_stage_enemy_map.end()) {
+            //std::cout << "################ save area[" << i << "] map-enemies in [" << filename_area_enemies.toStdString() << "]" << std::endl;
+            fio_cmm.save_data_to_disk<file_v5_map_npc>(filename_area_enemies.toStdString(), SharedData::get_instance()->file_v5_stage_enemy_map.at(i));
         }
+        */
     }
 
     // MAP ROOMS - serialize data to save//
@@ -389,25 +435,34 @@ void Mediator::save_game()
     }
     fio_cmm.save_data_to_disk<file_v5_map_room_data>(SharedData::get_instance()->FILEPATH + FILE_V5_ROOM_LIST, serialized_room_data);
 
-    save_area_rooms(SharedData::get_instance()->v6_selected_area);
-    // FILE-V6 //
-    for (unsigned int i=0; i<SharedData::get_instance()->v6_area_list.size(); i++) {
+    save_area_rooms(SharedData::get_instance()->v6_selected_stage, SharedData::get_instance()->v6_selected_area);
+    // FILE-V6 AREAS //
+    for (unsigned int i=0; i<SharedData::get_instance()->v6_stage_list.size(); i++) {
         char level_filename_char[512];
         sprintf(level_filename_char, "%s/data/v6_level_list_%d.dat", SharedData::get_instance()->FILEPATH.c_str(), i);
         if (i == 0 && SharedData::get_instance()->v6_level_map.find(i) == SharedData::get_instance()->v6_level_map.end()) {
             std::vector<file_v6_level_point> point_list;
             SharedData::get_instance()->v6_level_map.insert(std::pair<int, std::vector<file_v6_level_point>>(i, point_list));
             file_v6_level_point new_point;
-            new_point.area_number = 0;
+            new_point.stage_number = 0;
             new_point.x = 0;
             new_point.y = 0;
             SharedData::get_instance()->v6_level_map.at(i).push_back(new_point);
         }
         fio_cmm.save_data_to_disk<file_v6_level_point>(level_filename_char, SharedData::get_instance()->v6_level_map.at(i));
-        std::cout << "SAVED area[" <<i << "] with size[" << SharedData::get_instance()->v6_level_map.at(i).size() << "]" << std::endl;
+        //std::cout << "SAVED area[" <<i << "] with size[" << SharedData::get_instance()->v6_level_map.at(i).size() << "]" << std::endl;
     }
-    fio_cmm.save_data_to_disk<file_v6_area>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST, SharedData::get_instance()->v6_area_list);
 
+    fio_cmm.save_data_to_disk<file_v6_stage>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST, SharedData::get_instance()->v6_stage_list);
+
+    SharedData::get_instance()->add_missing_areas();
+    for ( auto it = SharedData::get_instance()->v6_area_map.begin(); it != SharedData::get_instance()->v6_area_map.end(); ++it) {
+        char area_filename[512];
+        sprintf(area_filename, "%s/%s%d.dat", SharedData::get_instance()->FILEPATH.c_str(), FILE_V6_AREA_LIST_PREFIX, it->first);
+        //std::cout << "MEDIATOR::save - v6_area_list[" << it->first << "].size[" << it->second.size() << "]" << std::endl;
+        fio_cmm.save_data_to_disk<file_v6_area>(area_filename, it->second);
+    }
+    fio_cmm.save_data_to_disk<file_v6_style>(SharedData::get_instance()->FILEPATH + FILE_V6_STYLE_LIST, SharedData::get_instance()->v6_style_list);
 }
 
 
@@ -431,6 +486,111 @@ void Mediator::clean_data()
     int tileset_w = image->width();
     int tileset_h = image->height();
 
+}
+
+int Mediator::check_area_links(int room_x, int room_y, int tile_x, int tile_y)
+{
+    st_position current_room_pos = st_position(room_x, room_y);
+    int area_edge = 0; // 0 no other area, 1 horizontal, 2 vertical
+    // check left
+    if (room_x > 0 && tile_x == 0) {
+        st_position room_left_pos = st_position(room_x-1, room_y);
+        if (SharedData::get_instance()->v6_area_room_list.find(room_left_pos) != SharedData::get_instance()->v6_area_room_list.end()) {
+            if (SharedData::get_instance()->v6_area_room_list.at(current_room_pos).area_n != SharedData::get_instance()->v6_area_room_list.at(room_left_pos).area_n) {
+                area_edge = 1;
+            }
+        } else {
+            std::cout << "$$$$$$$$$$ Area-Left not found" << std::endl;
+        }
+    } else if (tile_x == AREA_ROOM_TILES_W-1) {
+        st_position room_right_pos = st_position(room_x+1, room_y);
+        if (SharedData::get_instance()->v6_area_room_list.find(room_right_pos) != SharedData::get_instance()->v6_area_room_list.end()) {
+            if (SharedData::get_instance()->v6_area_room_list.at(current_room_pos).area_n != SharedData::get_instance()->v6_area_room_list.at(room_right_pos).area_n) {
+                area_edge = 1;
+            }
+        } else {
+            std::cout << "$$$$$$$$$$ Area-Right not found" << std::endl;
+        }
+    } else if (room_y > 0 && tile_y == 0) {
+        st_position room_top_pos = st_position(room_x, room_y-1);
+        if (SharedData::get_instance()->v6_area_room_list.find(room_top_pos) != SharedData::get_instance()->v6_area_room_list.end()) {
+            if (SharedData::get_instance()->v6_area_room_list.at(current_room_pos).area_n != SharedData::get_instance()->v6_area_room_list.at(room_top_pos).area_n) {
+                area_edge = 2;
+            }
+        } else {
+            std::cout << "$$$$$$$$$$ Area-Top not found" << std::endl;
+        }
+    } else if (tile_y == AREA_ROOM_TILES_H-1) {
+        st_position room_bottom_pos = st_position(room_x, room_y+1);
+        if (SharedData::get_instance()->v6_area_room_list.find(room_bottom_pos) != SharedData::get_instance()->v6_area_room_list.end()) {
+            if (SharedData::get_instance()->v6_area_room_list.at(current_room_pos).area_n != SharedData::get_instance()->v6_area_room_list.at(room_bottom_pos).area_n) {
+                area_edge = 2;
+            }
+        } else {
+            std::cout << "$$$$$$$$$$ Area-Bottom not found" << std::endl;
+        }
+    }
+    return area_edge;
+}
+
+void Mediator::save_map_check_area_links()
+{
+    for (std::map<st_position, file_v6_room>::iterator it = SharedData::get_instance()->v6_area_room_list.begin(); it != SharedData::get_instance()->v6_area_room_list.end(); ++it) {
+        if (it->second.area_n == -1) {
+            it->second.area_n = 0;
+        }
+        // top
+        int room_x = it->second.position.x;
+        int room_y = it->second.position.y;
+        st_position current_room_pos = st_position(room_x, room_y);
+        st_position adjascrent_room_pos = st_position(room_x, room_y-1);
+        std::map<st_position, file_v6_room>::iterator adjascent_room_it = SharedData::get_instance()->v6_area_room_list.find(adjascrent_room_pos);
+        if (adjascent_room_it != SharedData::get_instance()->v6_area_room_list.end() && it->second.area_n != adjascent_room_it->second.area_n) {
+            for (unsigned int x=0; x<AREA_ROOM_TILES_W; x++) {
+                int locked = it->second.tiles[x][0].locked;
+                if (locked != TERRAIN_SOLID && locked != TERRAIN_AREA_VSCROLL_LOCK) {
+                    it->second.tiles[x][0].locked = TERRAIN_AREA_VSCROLL_LOCK;
+                }
+            }
+        }
+
+        // bottom
+        adjascrent_room_pos = st_position(room_x, room_y+1);
+        adjascent_room_it = SharedData::get_instance()->v6_area_room_list.find(adjascrent_room_pos);
+        if (adjascent_room_it != SharedData::get_instance()->v6_area_room_list.end() && it->second.area_n != adjascent_room_it->second.area_n) {
+            for (unsigned int x=0; x<AREA_ROOM_TILES_W; x++) {
+                int locked = it->second.tiles[x][AREA_ROOM_TILES_H-1].locked;
+                if (locked != TERRAIN_SOLID && locked != TERRAIN_AREA_VSCROLL_LOCK) {
+                    it->second.tiles[x][AREA_ROOM_TILES_H-1].locked = TERRAIN_AREA_VSCROLL_LOCK;
+                }
+            }
+        }
+
+
+        // left
+        adjascrent_room_pos = st_position(room_x-1, room_y);
+        adjascent_room_it = SharedData::get_instance()->v6_area_room_list.find(adjascrent_room_pos);
+        if (adjascent_room_it != SharedData::get_instance()->v6_area_room_list.end() && it->second.area_n != adjascent_room_it->second.area_n) {
+            for (unsigned int y=0; y<AREA_ROOM_TILES_H; y++) {
+                int locked = it->second.tiles[0][y].locked;
+                if (locked != TERRAIN_SOLID && locked != TERRAIN_AREA_HSCROLL_LOCK) {
+                    it->second.tiles[0][y].locked = TERRAIN_AREA_HSCROLL_LOCK;
+                }
+            }
+        }
+
+        // right
+        adjascrent_room_pos = st_position(room_x+1, room_y);
+        adjascent_room_it = SharedData::get_instance()->v6_area_room_list.find(adjascrent_room_pos);
+        if (adjascent_room_it != SharedData::get_instance()->v6_area_room_list.end() && it->second.area_n != adjascent_room_it->second.area_n) {
+            for (unsigned int y=0; y<AREA_ROOM_TILES_H; y++) {
+                int locked = it->second.tiles[AREA_ROOM_TILES_W-1][y].locked;
+                if (locked != TERRAIN_SOLID && locked != TERRAIN_AREA_HSCROLL_LOCK) {
+                    it->second.tiles[AREA_ROOM_TILES_W-1][y].locked = TERRAIN_AREA_HSCROLL_LOCK;
+                }
+            }
+        }
+    }
 }
 
 

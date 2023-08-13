@@ -136,7 +136,7 @@ void common::fill_graphicfiles_combobox(std::string directory, QComboBox *comboW
 }
 
 
-void common::fill_npc_combo(QComboBox* combo)
+void common::fill_enemies_combo(QComboBox* combo)
 {
     combo->clear(); // delete all previous entries
 
@@ -517,6 +517,28 @@ void common::fill_direction_combo(QComboBox *combo)
     combo->addItem(QString("RIGHT"));
     combo->addItem(QString("UP"));
     combo->addItem(QString("DOWN"));
+}
+
+void common::fill_room_styles_combo(QComboBox *combo)
+{
+    combo->clear();
+    for (unsigned int i=0; i<SharedData::get_instance()->v6_style_list.size(); i++) {
+        QString name = QString("[") + QString::number(i) + QString("] - ") + QString(SharedData::get_instance()->v6_style_list.at(i).style_name);
+        combo->addItem(name);
+    }
+}
+
+void common::fill_npcs_combo(QComboBox *combo)
+{
+    combo->clear();
+    for (unsigned int i=0; i<SharedData::get_instance()->npc_list.size(); i++) {
+        QString temp_str = QString("[");
+        if (i < 10) {
+            temp_str += "0";
+        }
+        temp_str += QString::number(i) + QString("] - ") + QString(SharedData::get_instance()->npc_list.at(i).name);
+        combo->addItem(temp_str);
+    }
 }
 
 

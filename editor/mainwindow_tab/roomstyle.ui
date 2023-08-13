@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RoomStyle</class>
+ <widget class="QDialog" name="RoomStyle">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1028</width>
+    <height>672</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_9">
+   <item row="0" column="0" rowspan="2">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="1" column="0">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="0">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>GFX Effect/Mode:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="1">
+        <layout class="QGridLayout" name="gridLayout_7">
+         <item row="0" column="0">
+          <widget class="QSpinBox" name="layerVerticalPositionSpinBox">
+           <property name="maximum">
+            <number>720</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QDoubleSpinBox" name="layerSpeedDoubleSpinBox">
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="7" column="1">
+        <widget class="QComboBox" name="styleMusicFilenameComboBox"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Name:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="0">
+        <widget class="QLabel" name="label_13">
+         <property name="text">
+          <string>Animation Timer/Width:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>Music:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="1">
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="0" column="0">
+          <widget class="QSpinBox" name="layerAnimationTimerSpinBox"/>
+         </item>
+         <item row="0" column="1">
+          <widget class="QSpinBox" name="layerAnimationWidthSpinBox"/>
+         </item>
+        </layout>
+       </item>
+       <item row="11" column="1">
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="1">
+          <widget class="QSpinBox" name="layerAlphaSpinBox">
+           <property name="maximum">
+            <number>255</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QComboBox" name="layerImageComboBox"/>
+         </item>
+        </layout>
+       </item>
+       <item row="5" column="1">
+        <widget class="QComboBox" name="styleTilesetComboBox"/>
+       </item>
+       <item row="12" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>Position/Speed:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Style:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Tileset:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="QComboBox" name="layerSelectorComboBox"/>
+       </item>
+       <item row="10" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>Current Layer:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="1">
+        <widget class="QComboBox" name="layerAutoscrollComboBox"/>
+       </item>
+       <item row="13" column="0">
+        <widget class="QLabel" name="label_11">
+         <property name="text">
+          <string>Autoscroll:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="styleSelectComboBox"/>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="styleNameLineEdit"/>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Background-Color:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Add Style</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QComboBox" name="styleGfxEffectComboBox"/>
+       </item>
+       <item row="6" column="1">
+        <widget class="QPushButton" name="StyleBackgroundColorPushButton">
+         <property name="text">
+          <string>Pick Color</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>Create</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="3">
+        <layout class="QGridLayout" name="gridLayout_4"/>
+       </item>
+       <item row="9" column="1">
+        <widget class="QComboBox" name="styleGfxModeComboBox"/>
+       </item>
+       <item row="11" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Image/Alpha:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="0">
+        <widget class="QCheckBox" name="layerRepeatXCheckBox">
+         <property name="text">
+          <string>Repeat-X</string>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="1">
+        <widget class="QCheckBox" name="layerRepeatYCheckBox">
+         <property name="text">
+          <string>Repeat-Y</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="1" rowspan="2" colspan="2">
+    <layout class="QGridLayout" name="PreviewGridLayout">
+     <item row="0" column="0">
+      <widget class="RoomStylePreviewArea" name="areaEditPreviewWidgetObj" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>640</width>
+         <height>480</height>
+        </size>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_6"/>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>RoomStylePreviewArea</class>
+   <extends>QWidget</extends>
+   <header>widgets/roomstylepreviewarea.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -148,6 +148,7 @@ public:
     bool gravity(bool boss_demo_mode);							// returns true if finished (reached ground)
     bool hit_ground();
     bool is_on_last_animation_frame();
+    bool is_on_quicksand();
     /**
      * @brief
      *
@@ -268,8 +269,6 @@ protected:
     virtual bool can_air_dash();
     Uint8 get_projectile_max_shots(bool always_charged);
     bool executeCheckSlope(int xinc, int yinc);
-
-
 
 
 // members

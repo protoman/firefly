@@ -43,17 +43,17 @@ GameEnemy::GameEnemy(int map_id, int main_id, int id) : _is_player_friend(false)
 {
     is_ghost = false;
     build_basic_npc(map_id, main_id);
-    facing = SharedData::get_instance()->file_v5_map_npc_map.at(map_id).at(id).direction;
+    facing = SharedData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).direction;
     set_direction(facing);
 
     fflush(stdout);
 
-    start_point.x = ( SharedData::get_instance()->file_v5_map_npc_map.at(map_id).at(id).start_point.x * TILESIZE) + GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.x;
+    start_point.x = ( SharedData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).start_point.x * TILESIZE) + GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.x;
     if (GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.x != 0) {
         std::cout << ">>>>>>>>>>>>> bg_pos.x[" << GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.x << "]" << std::endl;
     }
-    start_point.y = ( SharedData::get_instance()->file_v5_map_npc_map.at(map_id).at(id).start_point.y * TILESIZE) + GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.y;
-    static_bg_pos = st_position( SharedData::get_instance()->file_v5_map_npc_map.at(map_id).at(id).start_point.x * TILESIZE,  SharedData::get_instance()->file_v5_map_npc_map.at(map_id).at(id).start_point.y * TILESIZE);
+    start_point.y = ( SharedData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).start_point.y * TILESIZE) + GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.y;
+    static_bg_pos = st_position( SharedData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).start_point.x * TILESIZE,  SharedData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).start_point.y * TILESIZE);
     position.x = start_point.x;
     position.y = start_point.y;
     if (name == "OCTOPUS") {
@@ -128,7 +128,7 @@ void GameEnemy::build_basic_npc(int map_id, int main_id)
 	// TODO - usar operador igual e também para cópia de toda a classe para ela mesma
 	st_imageData npc_sprite_surface;
 
-    file_npc_v3_1_2* copyref = GameMediator::get_instance()->get_enemy(main_id);
+    file_enemy_v3_1_2* copyref = GameMediator::get_instance()->get_enemy(main_id);
 
     name = std::string(copyref->name);
 

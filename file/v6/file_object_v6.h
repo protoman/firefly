@@ -46,7 +46,7 @@ struct v6_file_object { // DONE - Game
 
 
 
-struct v6_map_object {
+struct v6_stage_object {
     int uuid = -1;
     int currentMap = -1;
     int id_object = -1;

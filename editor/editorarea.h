@@ -8,6 +8,8 @@
 #include <QMouseEvent>
 #include <QBitmap>
 #include <QInputEvent>
+#include <iostream>
+#include <map>
 
 #include "aux_tools/stringutils.h"
 
@@ -58,12 +60,26 @@ public:
   void update_map_data();                       // rebuild map data/tiles when needed
   void update_editarea_size();
 
+protected:
+    // methods
+    void paintEvent(QPaintEvent *event);
+    void mousePressEvent(QMouseEvent * event);
+    void mouseReleaseEvent(QMouseEvent * event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent *event);
+
 private:
   void preload_slope_images();
   void draw_slope_tile(int x, int y, int dest_x, int dest_y, QPainter *painter);
+  int check_area_links(int room_x, int room_y, int tile_x, int tile_y);
+  int find_npc_in_position(int x, int y);
+  void drawRoomLayers(QPainter *painter, std::map<st_position, file_v6_room>::iterator it, int map_pos_x, int map_pos_y);
+  void drawTileset(QPainter *painter);
+  void drawLockTileset(QPainter *painter);
+  void drawMapEnemies(QPainter *painter);
+  void drawStageObjects(QPainter *painter);
 
 private:
-
   // variables
   int link_pos_x;
   int link_pos_y;
@@ -78,20 +94,8 @@ private:
   int leftmost_point = 99999;
   int rightmost_point = -1;
 
-protected:
-    // methods
-    void paintEvent(QPaintEvent *event);
-    void mousePressEvent(QMouseEvent * event);
-    void mouseReleaseEvent(QMouseEvent * event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void wheelEvent(QWheelEvent *event);
 
-    int find_npc_in_position(int x, int y);
 
-    void drawTileset(QPainter *painter);
-    void drawLockTileset(QPainter *painter);
-    void drawMapEnemies(QPainter *painter);
-    void drawMapObjects(QPainter *painter);
 
     // variables
     int temp;
@@ -115,15 +119,18 @@ protected:
     QPixmap tileset_image;
     QBitmap tileset_bitmap;
     QPixmap bg1_image;
-    QPixmap fg_layer__image;
+    QPixmap fg_layer_image;
     float fg_opacity;
 
     std::map<int, QPixmap> slope_image_list;
 
     QPixmap layer_pixmap_list[LAYERS_COUNT];
 
-    v6_map_object* obj_ref = nullptr;
+    v6_stage_object* obj_ref = nullptr;
 
+    // ============================ NEW STYLE-MAP SYSTEM ============================= //
+    std::map<int, QPixmap> style_map_tileset;
+    std::map<int, std::vector<QPixmap>> style_map_layers;
 
 //signals:
 //     void save();

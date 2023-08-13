@@ -32,7 +32,7 @@ void game_properties_tab::fill_data()
     common::fill_graphicfiles_combobox(std::string("images/faces"), ui->stagefaces_face_combo);
     common::fill_object_combo(ui->special_item1_combo);
     common::fill_object_combo(ui->special_item2_combo);
-    common::fill_npc_combo(ui->finalBoss_comboBox);
+    common::fill_enemies_combo(ui->finalBoss_comboBox);
 
     // set values/positions
     ui->semicharged_shot_combo->setCurrentIndex(SharedData::get_instance()->game_data.semi_charged_projectile_id);

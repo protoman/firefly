@@ -96,7 +96,7 @@ void draw::preload()
     boss_intro_bg = ImageView::get_instance()->imageFromFile(filename);
 
     filename = SharedData::get_instance()->GAMEPATH + "shared/images/dark_effect_mask.png";
-    dark_effect_mask = ImageView::get_instance()->imageFromFile(filename);
+    dark_effect_light_source_mask = ImageView::get_instance()->imageFromFile(filename);
 
     filename = SharedData::get_instance()->GAMEPATH + "shared/images/yellow_light_mask.png";
     yellow_light_mask = ImageView::get_instance()->imageFromFile(filename);
@@ -106,7 +106,7 @@ void draw::preload()
 
 
     ImageView::get_instance()->init_target_image(dark_effect_surface, RES_W, AREA_H);
-    ImageView::get_instance()->clear_texture_area(0, 0, RES_W, RES_H, 0, 0, 0, 155, dark_effect_surface);
+    ImageView::get_instance()->clear_texture_area(0, 0, RES_W, RES_H, 0, 100, 0, 55, dark_effect_surface);
 
 
     // DROPABLE OBJECT GRAPHICS
@@ -227,6 +227,7 @@ void draw::show_gfx()
         show_inferno_effect();
     } else if (screen_gfx == SCREEN_GFX_DARK) {
         show_dark_effect();
+        //show_tint_screen_effect();
     } else if (screen_gfx != SCREEN_GFX_NONE) {
         std::cout << "UNKNOWN screen_gfx[" << (int)screen_gfx << "] UNKNOWN" << std::endl;
     }
@@ -1480,35 +1481,63 @@ void draw::show_dark_effect()
 {
     int alpha = 180;
 
-    ImageView::get_instance()->clear_texture_area(0, 0, RES_W, RES_H, 0, 0, 0, 155, dark_effect_surface);
+    // create a white surface that adds to the dark, so we can simulare an alpha effect
+    st_imageData alpha_mask_dark_effect;
+    ImageView::get_instance()->init_target_image(alpha_mask_dark_effect, RES_W, AREA_H);
+    ImageView::get_instance()->clear_texture_area(0, 0, RES_W, RES_H, 255, 255, 255, 100, alpha_mask_dark_effect);
+
+
+    SDL_SetTextureBlendMode(dark_effect_surface.texture, SDL_BLENDMODE_BLEND);
+    ImageView::get_instance()->clear_texture_area(0, 0, RES_W, RES_H, 0, 0, 80, 255, dark_effect_surface);
+    SDL_SetTextureBlendMode(dark_effect_surface.texture, SDL_BLENDMODE_MOD);
 
     st_position player_center_pos = GameManager::get_instance()->get_player_relative_center_position();
 
 
-    //ImageView::get_instance()->blend_images(dark_effect_mask, dark_effect_surface, player_center_pos.x-512, player_center_pos.y-512);
-    std::cout << "WHITE x[" << (player_center_pos.x-dark_effect_mask.surface->w/2) << "], y[" << (player_center_pos.y-dark_effect_mask.surface->h/2) << "]" << std::endl;
+    ImageView::get_instance()->blend_images(alpha_mask_dark_effect, dark_effect_surface, 0, 0);
+    ImageView::get_instance()->blend_images(dark_effect_light_source_mask, dark_effect_surface, player_center_pos.x-512, player_center_pos.y-512);
+    std::cout << "WHITE x[" << (player_center_pos.x-dark_effect_light_source_mask.surface->w/2) << "], y[" << (player_center_pos.y-dark_effect_light_source_mask.surface->h/2) << "]" << std::endl;
     //WHITE x[209], y[-148]
-    ImageView::get_instance()->blend_images(dark_effect_mask, dark_effect_surface, player_center_pos.x-dark_effect_mask.surface->w/2, player_center_pos.y-dark_effect_mask.surface->h/2);
+    // TODO: must to this to all light sources
+    ImageView::get_instance()->blend_images(dark_effect_light_source_mask, dark_effect_surface, player_center_pos.x-dark_effect_light_source_mask.surface->w/2, player_center_pos.y-dark_effect_light_source_mask.surface->h/2);
+
+    int limit_flame_effect = 20;
+    if (flame_light_timer < TimerView::get_instance()->getTimer()) {
+        if (flame_light_expanding) {
+            flame_light_state += 2;
+            if (flame_light_state > limit_flame_effect) {
+                flame_light_state = limit_flame_effect;
+                flame_light_expanding = !flame_light_expanding;
+            }
+        } else {
+            flame_light_state -= 2;
+            if (flame_light_state < 0) {
+                flame_light_state = 0;
+                flame_light_expanding = !flame_light_expanding;
+            }
+        }
+        flame_light_timer = TimerView::get_instance()->getTimer() + 10;
+    }
+
+    ImageView::get_instance()->blend_images(yellow_light_mask, dark_effect_surface, -100+flame_light_state/2, -100+flame_light_state/2, yellow_light_mask.surface->w-flame_light_state, yellow_light_mask.surface->h-flame_light_state);
 
     //ImageView::get_instance()->blend_images(yellow_light_mask, dark_effect_surface, player_center_pos.x-128, player_center_pos.y-128);
     //ImageView::get_instance()->set_surface_alpha(50, light_points_layer);
 
-
+/*
     for (int i=0; i<SharedData::get_instance()->lightpoint_list.size(); i++) {
         if (SharedData::get_instance()->lightpoint_list.at(i).color == LIGHT_POINT_COLOR_WHITE) {
-            ImageView::get_instance()->blend_images(dark_effect_mask, dark_effect_surface,  SharedData::get_instance()->lightpoint_list.at(i).x-dark_effect_mask.surface->w/2, SharedData::get_instance()->lightpoint_list.at(i).y-dark_effect_mask.surface->h/2);
+            ImageView::get_instance()->blend_images(dark_effect_light_source_mask, dark_effect_surface,  SharedData::get_instance()->lightpoint_list.at(i).x-dark_effect_light_source_mask.surface->w/2, SharedData::get_instance()->lightpoint_list.at(i).y-dark_effect_mask.surface->h/2);
         } else if (SharedData::get_instance()->lightpoint_list.at(i).color == LIGHT_POINT_COLOR_YELLOW) {
             ImageView::get_instance()->blend_images(yellow_light_mask, dark_effect_surface, SharedData::get_instance()->lightpoint_list.at(i).x-yellow_light_mask.surface->w/2, SharedData::get_instance()->lightpoint_list.at(i).y-yellow_light_mask.surface->h/2);
         } else if (SharedData::get_instance()->lightpoint_list.at(i).color == LIGHT_POINT_COLOR_RED) {
             ImageView::get_instance()->blend_images(red_light_mask, dark_effect_surface, SharedData::get_instance()->lightpoint_list.at(i).x-red_light_mask.surface->w/2, SharedData::get_instance()->lightpoint_list.at(i).y-red_light_mask.surface->h/2);
         }
     }
+*/
 
-
-    SDL_SetTextureBlendMode(dark_effect_surface.texture, SDL_BLENDMODE_MOD);
-    //SDL_SetTextureAlphaMod(dark_effect_surface.texture, 120);
+    SDL_SetTextureAlphaMod(dark_effect_surface.texture, 55);
     ImageView::get_instance()->renderImageAt(0, 0, dark_effect_surface);
-    SDL_SetTextureBlendMode(dark_effect_surface.texture, SDL_BLENDMODE_BLEND);
 
 
 
@@ -1519,6 +1548,25 @@ void draw::show_dark_effect()
     //ImageView::get_instance()->renderImageAt(0, 0, dark_effect_surface);
 
 
+}
+
+void draw::show_tint_screen_effect()
+{
+    st_imageData tint_image;
+    ImageView::get_instance()->init_target_image(tint_image, RES_W, AREA_H);
+    //SDL_SetTextureBlendMode(tint_image.texture, SDL_BLENDMODE_MUL);
+
+    ImageView::get_instance()->clear_texture_area(0, 0, RES_W, RES_H, 255, 0, 0, 55, tint_image);
+
+    ImageView::get_instance()->set_surface_alpha(100, tint_image);
+
+    SDL_SetTextureBlendMode(tint_image.texture, SDL_BLENDMODE_BLEND);
+    ImageView::get_instance()->renderImageAt(0, 0, tint_image);
+
+
+    Uint8 alpha = 0x7F;
+    //SDL_SetTextureAlphaMod(tint_image.texture, alpha);
+    //SDL_SetTextureColorMod(tint_image.texture, 255, 0, 0);
 }
 
 

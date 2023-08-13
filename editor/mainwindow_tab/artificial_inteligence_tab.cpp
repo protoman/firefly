@@ -119,7 +119,7 @@ void artificial_inteligence_tab::on_ai_selector_currentIndexChanged(int index)
 void artificial_inteligence_tab::fill_data(int index)
 {
 	// ai selector
-    common::fill_npc_combo(ui->ai_selector);
+    common::fill_enemies_combo(ui->ai_selector);
 
 	// actions
 	common::fill_ai_actions_combo(ui->action1);

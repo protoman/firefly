@@ -20,7 +20,7 @@ public:
     file_projectilev3 get_projectile(int n);
     int get_projectile_list_size();
 
-    file_npc_v3_1_2* get_enemy(int n);
+    file_enemy_v3_1_2* get_enemy(int n);
     int get_enemy_list_size();
 
 private:
@@ -39,7 +39,7 @@ private:
     std::map<std::string, Mix_Chunk*> sfx_map;                                               // map of sfx files loaded, used in projectiles to avoid loading from disk every time
     fio_common fio_cmm;
 
-    std::vector<file_npc_v3_1_2> enemy_list;
+    std::vector<file_enemy_v3_1_2> enemy_list;
 
 
 

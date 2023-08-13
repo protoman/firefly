@@ -30,8 +30,11 @@ struct file_v6_room_tile {
 
 struct file_v6_room {
     file_v6_room_tile tiles[AREA_ROOM_TILES_W][AREA_ROOM_TILES_H];
-    int area_n = -1;
+    int stage_n = 0;
+    int area_n = 0;
     st_position position;
 };
+
+
 
 #endif // FILE_ROOM_H

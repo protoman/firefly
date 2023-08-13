@@ -171,7 +171,7 @@ struct file_player_v3_1_1 {
 
 
 // **************************** NPC 3.1.2 **************************** //
-struct file_npc_v3_1_2 {
+struct file_enemy_v3_1_2 {
     int id;                                                  // serial number
     //unsigned int projectile_id;                              // indicates the projectile ID (relation with file_projectile)
     int projectile_id[2];                                    // indicate the id of an attack the NCP can user
@@ -204,7 +204,7 @@ struct file_npc_v3_1_2 {
     int npc_given_item_id;
 
 
-    file_npc_v3_1_2() {
+    file_enemy_v3_1_2() {
         id = -1;
         projectile_id[0] = -1;
         projectile_id[1] = -1;
@@ -233,6 +233,42 @@ struct file_npc_v3_1_2 {
     }
 };
 
+
+struct file_npc_v3_1_2 {
+    int id;                                                  // serial number
+    char name[CHAR_NAME_SIZE];
+    char graphic_filename[FS_CHAR_NAME_SIZE];
+    int direction;                                           // direction it faces by default
+    int speed;                                               // defines the distances it can see enemies
+    int walk_range;                                         // defines how long from the start point it can go
+    int npc_move_behavior;                                  // NPCs do not have programmeable behavior in the editor, but use some hardcoded pre-defined types
+    struct st_position start_point;
+    int frame_width;
+    int frame_duration;
+    st_rectangle hit_area;
+    int npc_dialog_id;
+    int npc_quest_id;                                       // npc has a quest that can be more complex and include dialogs
+    int npc_requested_item_id;                              // npcs wants an item to give another
+    int npc_given_item_id;
+
+
+    file_npc_v3_1_2() {
+        id = -1;
+        sprintf(name, "%s", "Enemy Name");
+        graphic_filename[0] = '\0';
+        direction = ANIM_DIRECTION_LEFT;
+        speed = 3;
+        walk_range = 160;
+        frame_width = TILESIZE;
+        npc_move_behavior = 0;
+        frame_duration = 100;
+        npc_dialog_id = -1;
+        npc_quest_id = -1;
+        npc_requested_item_id = -1;
+        npc_given_item_id = -1;
+        hit_area = st_rectangle(0, 0, TILESIZE, TILESIZE);
+    }
+};
 
 // **************************** NPC 3.1.2 **************************** //
 

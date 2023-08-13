@@ -10,7 +10,7 @@ SlopePreviewWidget::SlopePreviewWidget(QWidget *parent) : QWidget(parent)
 void SlopePreviewWidget::setImage(std::string filename)
 {
     this->filename = filename;
-    std::cout << "### SlopePreviewWidget::setImage[" << filename << "]" << std::endl;
+    //std::cout << "### SlopePreviewWidget::setImage[" << filename << "]" << std::endl;
 }
 
 int SlopePreviewWidget::getCurrentPos()

@@ -30,8 +30,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setWindowTitle(window_title);
 
 	// insert NPC tab form
-	npc_edit_tab = new npc_edit();
-    ui->NPCScrollArea->setWidget(npc_edit_tab);
+    enemy_edit_tab = new enemy_edit();
+    ui->EnemyScrollArea->setWidget(enemy_edit_tab);
 
 
 	// insert AI tab form
@@ -61,6 +61,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     area_edit_tab = new AreaEditTab;
     ui->areaEditScrollArea->setWidget(area_edit_tab);
 
+    room_style_tab = new RoomStyle;
+    ui->StyleScrollArea->setWidget(room_style_tab);
+
+    npc_edit_tab = new NPCEditTab;
+    ui->NpcEditScrollArea->setWidget(npc_edit_tab);
 }
 
 MainWindow::~MainWindow()
@@ -143,11 +148,13 @@ void MainWindow::reload()
     projectile_edit_tab->reload();
     object_edit_tab->reload();
     ai_edit_tab->reload();
-    npc_edit_tab->reload();
+    enemy_edit_tab->reload();
     map_edit_tab->reload();
     anim_tiles_edit_tab->reload();
     slope_edit_tab->reload();
     area_edit_tab->reload();
+    room_style_tab->reload();
+    npc_edit_tab->reload();
     this->show();
 }
 

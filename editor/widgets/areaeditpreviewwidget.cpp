@@ -13,9 +13,15 @@ areaEditPreviewWidget::areaEditPreviewWidget(QWidget *parent) : QWidget(parent)
 
 void areaEditPreviewWidget::update_files()
 {
-    //std::cout << "current-area[" << SharedData::get_instance()->v6_selected_area << "]" << std::endl;
-    //std::cout << "area_list.size[" << SharedData::get_instance()->v6_area_list.size() << "]" << std::endl;
-    std::string filename_str = SharedData::get_instance()->FILEPATH + std::string("/images/tilesets/") + SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).tileset_filename;
+    int style_n = SharedData::get_instance()->v6_area_map.find(SharedData::get_instance()->v6_selected_stage)->second.at(SharedData::get_instance()->v6_selected_area).style;
+    if (style_n >= SharedData::get_instance()->v6_style_list.size()) {
+        style_n = 0;
+    }
+
+    std::cout << "### areaEditPreviewWidget - style_n[" << style_n << "]" << std::endl;
+
+    file_v6_style style = SharedData::get_instance()->v6_style_list.at(style_n);
+    std::string filename_str = SharedData::get_instance()->FILEPATH + std::string("/images/tilesets/") + style.tileset_filename;
     if (filename_str.length() == 0) {
         tileset_image = QPixmap();
     } else {
@@ -23,13 +29,12 @@ void areaEditPreviewWidget::update_files()
     }
 
     for (int i=0; i<LAYERS_COUNT; i++) {
-        std::string layer_filename = std::string(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).layers[i].filename);
+        std::string layer_filename = std::string(style.layers[i].filename);
         if (layer_filename.length() == 0) {
             layer_pixmap_list[i] = QPixmap();
         } else {
-            std::string filename_str = SharedData::get_instance()->FILEPATH + std::string("/images/map_backgrounds/") + SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).layers[i].filename;
+            std::string filename_str = SharedData::get_instance()->FILEPATH + std::string("/images/map_backgrounds/") + style.layers[i].filename;
             filename_str = StringUtils::clean_filename(filename_str);
-            //std::cout << ">>>>>>>> update_files.filename-bg[" << i << "]: [" << filename_str << "]" << std::endl;
             layer_pixmap_list[i] = QPixmap(filename_str.c_str());
         }
     }
@@ -39,6 +44,10 @@ void areaEditPreviewWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
 
+    int style_n = SharedData::get_instance()->v6_area_map.find(SharedData::get_instance()->v6_selected_stage)->second.at(SharedData::get_instance()->v6_selected_area).style;
+    file_v6_style style = SharedData::get_instance()->v6_style_list.at(style_n);
+
+
     // DRAW BORDER //
     painter.setPen(Qt::black);
     painter.drawRect(QRect(0, 0, RES_W*Mediator::get_instance()->zoom, RES_H*Mediator::get_instance()->zoom));
@@ -46,7 +55,7 @@ void areaEditPreviewWidget::paintEvent(QPaintEvent *event)
     painter.setPen(QColor(0, 0, 200));
 
     if (Mediator::get_instance()->show_background_color == true) {
-        st_color bg_color = SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).background_color;
+        st_color bg_color = style.background_color;
         QColor qbg_color = QColor(bg_color.r, bg_color.g, bg_color.b, 255);
         painter.fillRect(QRectF(0.0, 0.0, RES_W*Mediator::get_instance()->zoom, AREA_H*Mediator::get_instance()->zoom), qbg_color);
     }
@@ -55,7 +64,7 @@ void areaEditPreviewWidget::paintEvent(QPaintEvent *event)
         for (int i=0; i<LAYERS_COUNT; i++) {
             if (!layer_pixmap_list[i].isNull()) {
                 //std::cout << ">>>>>>>>>> paintEvent.show_layer[" << i << "]" << std::endl;
-                int bg_pos_y =SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).layers[i].adjust_y;
+                int bg_pos_y = style.layers[i].adjust_y;
                 int max_repeat = 2;
                 for (int k=0; k<max_repeat; k++) {
                     QRectF pos_source(QPoint(0, 0), QSize(layer_pixmap_list[i].width(), layer_pixmap_list[i].height()));
@@ -68,7 +77,7 @@ void areaEditPreviewWidget::paintEvent(QPaintEvent *event)
     // draw borders
     if (!layer_pixmap_list[current_layer].isNull()) {
         //std::cout << ">>>>>>>>>> paintEvent.show_layer[" << i << "]" << std::endl;
-        int bg_pos_y =SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).layers[current_layer].adjust_y;
+        int bg_pos_y = style.layers[current_layer].adjust_y;
         int max_repeat = 2;
         for (int k=0; k<max_repeat; k++) {
             QRectF pos_source(QPoint(0, 0), QSize(layer_pixmap_list[current_layer].width(), layer_pixmap_list[current_layer].height()));

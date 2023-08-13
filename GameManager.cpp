@@ -134,15 +134,15 @@ void GameManager::loadGameData()
 
     // CURRENT AREA DATA //
     char level_filename[512];
-    sprintf(level_filename, "%s/data/v6_level_list_%d.dat", SharedData::get_instance()->FILEPATH.c_str(), SharedData::get_instance()->v6_selected_area);
+    sprintf(level_filename, "%s/data/v6_level_list_%d.dat", SharedData::get_instance()->FILEPATH.c_str(), SharedData::get_instance()->v6_selected_stage);
     std::vector<file_v6_level_point> point_list = fio_cmm.load_from_disk<file_v6_level_point>(level_filename);
     // CURRENT AREA-ROOMS
-    loadAreaRooms(SharedData::get_instance()->v6_selected_area);
+    loadAreaRooms(SharedData::get_instance()->v6_selected_stage);
 
     // ENEMIES LIST
-    SharedData::get_instance()->enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "/game_enemy_list_3_1_2_b.dat");
+    SharedData::get_instance()->enemy_list = fio_cmm.load_from_disk<file_enemy_v3_1_2>(SharedData::get_instance()->FILEPATH + "/game_enemy_list_3_1_2_b.dat");
     if (SharedData::get_instance()->enemy_list.size() == 0) {
-        SharedData::get_instance()->enemy_list.push_back(file_npc_v3_1_2());
+        SharedData::get_instance()->enemy_list.push_back(file_enemy_v3_1_2());
     }
     loadEnemyStateData();
 
@@ -172,6 +172,7 @@ void GameManager::loadGameData()
     }
 
     SharedData::get_instance()->slope_list = fio_cmm.load_from_disk<file_v5_slope_tile>(SharedData::get_instance()->FILEPATH+FILE_V5_MAP_SLOPE_LIST);
+    SharedData::get_instance()->v6_style_list = fio_cmm.load_from_disk<file_v6_style>(SharedData::get_instance()->FILEPATH + FILE_V6_STYLE_LIST);
 }
 
 void GameManager::loadAreaRooms(int area_n)
@@ -196,7 +197,7 @@ void GameManager::loadEnemyStateData()
         enemy_state_list = fio_cmm.load_from_disk<file_npc_state>(SharedData::get_instance()->FILEPATH + "/game_enemy_state_list_3_1_3.dat");
     } else { // first-time list generation
         for (unsigned int i=0; i<SharedData::get_instance()->enemy_list.size(); i++) {
-            file_npc_v3_1_2 npc = SharedData::get_instance()->enemy_list.at(i);
+            file_enemy_v3_1_2 npc = SharedData::get_instance()->enemy_list.at(i);
             //std::cout << "######## npc.state.list.id[" << i << "]" << std::endl;
             enemy_state_list.push_back(file_npc_state(i, false));
         }
@@ -217,32 +218,44 @@ void GameManager::loadEnemyStateData()
 void GameManager::loadMapData()
 {
     // FILE V5 //
-    SharedData::get_instance()->v6_area_list = fio_cmm.load_from_disk<file_v6_area>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST);
+    SharedData::get_instance()->v6_stage_list = fio_cmm.load_from_disk<file_v6_stage>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST);
 
     SharedData::get_instance()->file_v5_map_link_list = fio_cmm.load_from_disk<file_v5_map_link>(SharedData::get_instance()->FILEPATH+FILE_V5_MAP_LINK_LIST);
 
-    for (int i=0; i<SharedData::get_instance()->v6_area_list.size(); i++) {
+    for (int i=0; i<SharedData::get_instance()->v6_stage_list.size(); i++) {
 
         /// @TODO: load map links ///
 
         // load map objects
         char map_objects_name[FS_CHAR_FILENAME_SIZE];
         sprintf(map_objects_name, "/data/v6_map_%d_objects.dat", i);
-        SharedData::get_instance()->file_v6_map_object_map.insert(std::pair<unsigned int, std::vector<v6_map_object>>(i, std::vector<v6_map_object>()));
+        SharedData::get_instance()->file_v6_stage_objects_map.insert(std::pair<unsigned int, std::vector<v6_stage_object>>(i, std::vector<v6_stage_object>()));
         if (fio.file_exists(SharedData::get_instance()->FILEPATH+map_objects_name)) {
-            SharedData::get_instance()->file_v6_map_object_map.at(i) = fio_cmm.load_from_disk<v6_map_object>(SharedData::get_instance()->FILEPATH+map_objects_name);
+            SharedData::get_instance()->file_v6_stage_objects_map.at(i) = fio_cmm.load_from_disk<v6_stage_object>(SharedData::get_instance()->FILEPATH+map_objects_name);
             //std::cout << ">>>> gameManager::loadMapData - LOAD-MAP-LINK-FILE[" << map_link_name << "], SIZE[" << SharedData::get_instance()->file_v6_map_object_map.at(i).size() << "]" << std::endl;
         }
 
         // map enemies //
         char map_enemies_name[FS_CHAR_FILENAME_SIZE];
         sprintf(map_enemies_name, "/data/v5_map_%d_enemies.dat", i);
-        SharedData::get_instance()->file_v5_map_npc_map.insert(std::pair<unsigned int, std::vector<file_v5_map_npc>>(i, std::vector<file_v5_map_npc>()));
+        SharedData::get_instance()->file_v5_stage_enemy_map.insert(std::pair<unsigned int, std::vector<file_v5_map_npc>>(i, std::vector<file_v5_map_npc>()));
         if (fio.file_exists(SharedData::get_instance()->FILEPATH+map_enemies_name)) {
-            SharedData::get_instance()->file_v5_map_npc_map.at(i) = fio_cmm.load_from_disk<file_v5_map_npc>(SharedData::get_instance()->FILEPATH+map_enemies_name);
+            SharedData::get_instance()->file_v5_stage_enemy_map.at(i) = fio_cmm.load_from_disk<file_v5_map_npc>(SharedData::get_instance()->FILEPATH+map_enemies_name);
             //std::cout << ">> FOUND AREA-ENEMIES FILE, size[" <<  SharedData::get_instance()->file_v5_map_npc_map.at(i).size() << "] <<" << std::endl;
         }
 
+    }
+    SharedData::get_instance()->v6_area_map.clear();
+    for (unsigned int i=0; i<SharedData::get_instance()->v6_stage_list.size(); i++) {
+        char area_filename[512];
+        sprintf(area_filename, "%s/%s%d.dat", SharedData::get_instance()->FILEPATH.c_str(), FILE_V6_AREA_LIST_PREFIX, i);
+        std::vector<file_v6_area> stage_area_list = fio_cmm.load_from_disk<file_v6_area>(area_filename);
+        std::cout << "MEDIATOR::load - v6_area_list[" << i << "].size[" << stage_area_list.size() << "]" << std::endl;
+        if (stage_area_list.size() == 0) {
+            stage_area_list.push_back(file_v6_area());
+        }
+        std::pair<int, std::vector<file_v6_area>> new_area_pair(i, stage_area_list);
+        SharedData::get_instance()->v6_area_map.insert(new_area_pair);
     }
     mapController.loadMap();
 }
@@ -396,7 +409,7 @@ void GameManager::initGame()
 void GameManager::start_stage_music()
 {
     SoundView::get_instance()->stop_music();
-    SoundView::get_instance()->load_music(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).music_filename);
+    SoundView::get_instance()->load_music(SharedData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
     SoundView::get_instance()->play_music();
 }
 
@@ -572,6 +585,8 @@ st_float_position GameManager::checkScrolling()
 
     move.x += (p1Pos.x - mapScroll.x) - RES_W/2;
 
+    //std::cout << "GameManager::checkScrolling - move.x[" << move.x << "]" << std::endl;
+
     if (mapScroll.x + move.x < 0 || mapScroll.x + move.x > mapController.get_size().width*TILESIZE) {
         move.x = 0;
 	}
@@ -596,7 +611,7 @@ void GameManager::start_stage()
 
 	SoundView::get_instance()->stop_music();
 
-    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).music_filename);
+    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
 
     mapController.loadMap();
     mapController.set_scroll_to_bottom();
@@ -733,7 +748,7 @@ void GameManager::restart_stage()
     draw::get_instance()->update_screen();
     // if was on stage-boss, mneeds to reload music
     if (SoundView::get_instance()->get_is_playing_boss_music() == true) {
-        SoundView::get_instance()->load_stage_music(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).music_filename);
+        SoundView::get_instance()->load_stage_music(SharedData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
     }
     SoundView::get_instance()->restart_music();
     if (SharedData::get_instance()->checkpoint.y == -1) { // did not reached any checkpoint, use the calculated value from stage start
@@ -772,7 +787,7 @@ bool GameManager::show_game_intro()
     show_beta_version_warning();
 #endif
 
-    SharedData::get_instance()->v6_selected_area = 0;
+    SharedData::get_instance()->v6_selected_stage = 0;
 
     scenes.main_screen();
 	initGame();
@@ -907,18 +922,18 @@ void GameManager::show_notice()
 
 void GameManager::set_current_map(unsigned int temp_map_n)
 {
-    SharedData::get_instance()->v6_selected_area = temp_map_n;
+    SharedData::get_instance()->v6_selected_stage = temp_map_n;
     mapController.loadMap();
 }
 
 unsigned int GameManager::get_current_map()
 {
-    return SharedData::get_instance()->v6_selected_area;
+    return SharedData::get_instance()->v6_selected_stage;
 }
 
 int GameManager::get_current_area()
 {
-    return SharedData::get_instance()->v6_selected_area;
+    return SharedData::get_instance()->v6_selected_stage;
 }
 
 
@@ -1064,7 +1079,7 @@ void GameManager::transition_screen(Uint8 type, Uint8 map_n, short int adjust_x,
     ImageView::get_instance()->renderTexturePortionAt(0, i*TRANSITION_STEP, RES_W, RES_H, 0, 0, temp_screen.texture);
 
     // if map destiny and map origin are the same, adjust player's X position
-    if (SharedData::get_instance()->v6_selected_area == map_n) {
+    if (SharedData::get_instance()->v6_selected_stage == map_n) {
         //std::cout << "p.x[" << (int)test_player->getPosition().x << "], p.real.x[" << test_player->get_real_position().x << "]" << std::endl;
         pObj->set_position(st_position(pObj->get_real_position().x+adjust_x, pObj->get_real_position().y));
         //adjust_x += TILESIZE;
@@ -1359,6 +1374,118 @@ void GameManager::vertical_screen_move(short direction, bool is_door, short tile
     mapController.show();
 }
 
+
+void GameManager::transition_area_horizontal(short direction, short tileX, short tileY)
+{
+    // TODO: understand and simplify the transition logic
+    //std::cout << "GameManager::transition_area_horizontal::START" << std::endl;
+    game_pause();
+    ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
+
+    int total_move = RES_W;
+    int total_steps = total_move/TRANSITION_STEP;
+    int screen_move_step = TRANSITION_STEP;
+
+    // player needs to move just a bit to compensate the map scroll and move from its position to the other side of the screen
+    player1.char_update_real_position();
+    int player_x_dist = RES_W - player1.get_real_position().x;
+    float player_move_x = player_x_dist/total_steps;
+
+    if (direction == ANIM_DIRECTION_LEFT) {
+        int player_x_dist = TILESIZE*4;
+        player_move_x = -(player_x_dist/total_steps);
+        screen_move_step = -TRANSITION_STEP;
+    }
+
+    for (int i=0; i<total_steps; i++) {
+        // TODO - change_map_scroll should respect limits and do not scroll more than it can
+        change_map_scroll(st_float_position(screen_move_step, 0), false);
+        ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
+        player1.show();
+#if defined(PC)
+        TimerView::get_instance()->delay(2);
+#endif
+        draw::get_instance()->update_screen();
+        player1.inc_position(player_move_x, 0);
+        player1.char_update_real_position();
+        ImageView::get_instance()->change_render_target(RENDER_TARGET_HUD_TEXTURE);
+        show_hud(true);
+        ImageView::get_instance()->change_render_target(RENDER_TARGET_GAME_TEXTURE);
+        mapController.show();
+    }
+    TimerView::get_instance()->delay(6);
+    game_unpause();
+    add_autoscroll_delay();
+    update_current_area_number();
+    mapController.load_new_style();
+    mapController.show();
+}
+
+
+void GameManager::transition_area_vertical(short direction, short tileX)
+{
+    std::cout << "gameManager::vertical_screen_move::START" << std::endl;
+    st_float_position scroll_move;
+
+    game_pause();
+    ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
+
+    if (direction == ANIM_DIRECTION_UP) {
+        scroll_move.y = -TRANSITION_STEP;
+    } else {
+        scroll_move.y = TRANSITION_STEP;
+    }
+
+    int move_limit = AREA_H/abs(TRANSITION_STEP);
+
+    std::cout << "$$$$$$$$$$$$$ move_limit[" << move_limit << "], scroll_move.y[" << scroll_move.y << "]" << std::endl;
+
+    float player_move_y = (float)(TILESIZE*4)/(float)move_limit; // player should move two tilesize, to avoid doors
+    if (scroll_move.y < 0) {
+        player_move_y = player_move_y * -1;
+    }
+
+    if (direction != ANIM_DIRECTION_UP) {
+        move_limit -= player_move_y/2;
+    }
+    std::cout << ">>>>>> player_move_y[" << player_move_y << "], move_limit[" << move_limit << "]" << std::endl;
+
+
+    ImageView::get_instance()->change_render_target(RENDER_TARGET_GAME_TEXTURE);
+    for (int i=0; i<move_limit; i++) {
+        //std::cout << ">>>> gameManager::vertical_screen_move scroll_move.x[" << scroll_move.x << "], scroll_move.y[" << scroll_move.y << "]" << std::endl;
+
+        change_map_scroll(scroll_move, false);
+        ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
+        player1.show();
+#if defined(PC)
+        TimerView::get_instance()->delay(2);
+#endif
+        draw::get_instance()->update_screen();
+        player1.inc_position(0, player_move_y);
+        ImageView::get_instance()->change_render_target(RENDER_TARGET_HUD_TEXTURE);
+        show_hud(true);
+        ImageView::get_instance()->change_render_target(RENDER_TARGET_GAME_TEXTURE);
+    }
+    TimerView::get_instance()->delay(6);
+    game_unpause();
+    add_autoscroll_delay();
+    std::cout << "scroll.y[" << mapController.getMapScrolling().y << "]" << std::endl;
+    update_current_area_number();
+    mapController.load_new_style();
+    mapController.show();
+}
+
+void GameManager::update_current_area_number()
+{
+    // find the current_area from the map center
+    int map_tile_x = (mapController.getMapScrolling().x/TILESIZE + AREA_ROOM_TILES_W/2)/AREA_ROOM_TILES_W;
+    int map_tile_y = (mapController.getMapScrolling().y/TILESIZE + AREA_ROOM_TILES_H/2)/AREA_ROOM_TILES_H;
+    //std::cout << "GameManager::update_current_area_number - x[" << map_tile_x << "], y[" << map_tile_y << "]" << std::endl;
+    st_position map_pos = st_position(map_tile_x, map_tile_y);
+    SharedData::get_instance()->v6_selected_area = SharedData::get_instance()->v6_area_room_list.at(map_pos).area_n;
+}
+
 void GameManager::show_door_animation()
 {
     remove_players_slide();
@@ -1511,13 +1638,15 @@ void GameManager::update_stage_scrolling()
     }
     mapController.changeScrolling(checkScrolling(), true);
     st_position p_pos = player1.get_real_position();
+    p_pos.x += player1.get_size().width/2;
     //std::cout << "p_pos.x: " << p_pos.x << std::endl;
-    if (p_pos.x < 0.0) {
+    //if (p_pos.x < 0.0) {
+    if (p_pos.x < -TILESIZE/2) {
         player1.change_position_x(1);
         // out of screen, probably because was pushed out on a autoscroll stage
-        if (p_pos.x < -(TILESIZE*2)) {
-                player1.damage(999, true);
-            }
+        if (p_pos.x < -(TILESIZE-2)) {
+            player1.damage(999, true);
+        }
     }
 }
 
@@ -1645,7 +1774,6 @@ void GameManager::walk_character_to_screen_point_x(character *char_obj, short po
 {
 	/// @TODO: jump obstacles
 	if (char_obj->get_real_position().x+char_obj->get_size().width/2 > pos_x) {
-        std::cout << "SET-ANIM_TYPE_WALK #2" << std::endl;
         char_obj->set_animation_type(ANIM_TYPE_WALK);
 		char_obj->set_direction(ANIM_DIRECTION_LEFT);
 		while (char_obj->get_real_position().x+char_obj->get_size().width/2 > pos_x) {
@@ -1658,7 +1786,6 @@ void GameManager::walk_character_to_screen_point_x(character *char_obj, short po
             TimerView::get_instance()->delay(20);
 		}
 	} else if (char_obj->get_real_position().x+char_obj->get_size().width/2 < pos_x) {
-        std::cout << "SET-ANIM_TYPE_WALK #3" << std::endl;
 		char_obj->set_direction(ANIM_DIRECTION_RIGHT);
         char_obj->set_animation_type(ANIM_TYPE_WALK);
 		while (char_obj->get_real_position().x+char_obj->get_size().width/2 < pos_x) {
@@ -1686,7 +1813,7 @@ void GameManager::set_player_teleporter(short set_teleport_n, st_position set_pl
 	_player_teleporter.active = true;
 	_player_teleporter.finished = false;
     _player_teleporter.old_map_scroll = mapController.getMapScrolling();
-    _player_teleporter.old_map_n = SharedData::get_instance()->v6_selected_area;
+    _player_teleporter.old_map_n = SharedData::get_instance()->v6_selected_stage;
 }
 
 bool GameManager::is_player_on_teleporter()
@@ -1831,7 +1958,7 @@ void GameManager::finish_player_teleporter()
     draw::get_instance()->fade_screen(0, 0, 0, 500, true);
     _player_teleporter.old_player_pos.y -= 5;
     player1.set_position(_player_teleporter.old_player_pos);
-    SharedData::get_instance()->v6_selected_area = _player_teleporter.old_map_n;
+    SharedData::get_instance()->v6_selected_stage = _player_teleporter.old_map_n;
     if (_last_stage_used_teleporters.size() == 8) {
         // search for the final-boss teleporter capsule and start it
         mapController.activate_final_boss_teleporter();
@@ -1844,7 +1971,7 @@ void GameManager::finish_player_teleporter()
     }
     player1.set_teleporter(-1);
     SoundView::get_instance()->stop_music();
-    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).music_filename);
+    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
     SoundView::get_instance()->play_music();
 }
 
@@ -1908,6 +2035,9 @@ st_size GameManager::calc_area_tile_size(int area_n)
     SharedData::get_instance()->leftmost_room = 99999;
     SharedData::get_instance()->rightmost_room = -1;
     for (std::map<st_position, file_v6_room>::iterator it = SharedData::get_instance()->v6_area_room_list.begin(); it != SharedData::get_instance()->v6_area_room_list.end(); ++it) {
+
+        std::cout << "GameManager::calc_area_tile_size - room.x[" << it->first.x << "], room.y[" << it->first.y << "]" << std::endl;
+
         if (it->first.x > SharedData::get_instance()->rightmost_room) {
             SharedData::get_instance()->rightmost_room = it->first.x;
         }
@@ -1924,6 +2054,8 @@ st_size GameManager::calc_area_tile_size(int area_n)
     SharedData::get_instance()->total_editarea_w = (SharedData::get_instance()->rightmost_room - SharedData::get_instance()->leftmost_room) + 1; // plus 1 because we start the count in zero
     SharedData::get_instance()->total_editarea_h = (SharedData::get_instance()->bottommost_room - SharedData::get_instance()->topmost_room) +1;
 
+    //std::cout << "GameManager::calc_area_tile_size - w[" << SharedData::get_instance()->total_editarea_w << "], h[" << SharedData::get_instance()->total_editarea_h << "]";
+    //std::cout << ", leftmost[" << SharedData::get_instance()->leftmost_room << "], rightmost[" << SharedData::get_instance()->rightmost_room << "], topmost[" << SharedData::get_instance()->topmost_room << "], bottomost[" << SharedData::get_instance()->bottommost_room << "]" << std::endl;
 
     return st_size(SharedData::get_instance()->total_editarea_w, SharedData::get_instance()->total_editarea_h);
 

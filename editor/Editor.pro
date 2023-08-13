@@ -62,6 +62,9 @@ SOURCES += main.cpp \
     editorarea.cpp \
     editortilepallete.cpp \
     mainwindow_tab/areaedittab.cpp \
+    mainwindow_tab/enemy_edit.cpp \
+    mainwindow_tab/npcedittab.cpp \
+    mainwindow_tab/roomstyle.cpp \
     mainwindow_tab/text/dialogeditform.cpp \
     mainwindow_tab/text/model/dialogtableitemmodel.cpp \
     mediator.cpp \
@@ -71,7 +74,6 @@ SOURCES += main.cpp \
     dialogobjectedit.cpp \
     projectilepreviewarea.cpp \
     player_preview_area.cpp \
-    mainwindow_tab/npc_edit.cpp \
     common.cpp \
     mainwindow_tab/object_tab.cpp \
     sprite_preview_area.cpp \
@@ -121,6 +123,8 @@ SOURCES += main.cpp \
     ../data/shareddata.cpp \
     mainwindow_tab/slopeedittab.cpp \
     widgets/areaeditpreviewwidget.cpp \
+    widgets/npcpreviewarea.cpp \
+    widgets/roomstylepreviewarea.cpp \
     widgets/slopepreviewwidget.cpp \
     widgets/slopepickerwidget.cpp \
     widgets/worldmapeditorArea.cpp
@@ -132,6 +136,9 @@ HEADERS += mainwindow.h \
     editorarea.h \
     editortilepallete.h \
     mainwindow_tab/areaedittab.h \
+    mainwindow_tab/enemy_edit.h \
+    mainwindow_tab/npcedittab.h \
+    mainwindow_tab/roomstyle.h \
     mainwindow_tab/text/dialogeditform.h \
     mainwindow_tab/text/model/dialogtableitemmodel.h \
     mediator.h \
@@ -142,7 +149,6 @@ HEADERS += mainwindow.h \
     dialogobjectedit.h \
     projectilepreviewarea.h \
     player_preview_area.h \
-    mainwindow_tab/npc_edit.h \
     common.h \
     mainwindow_tab/object_tab.h \
     sprite_preview_area.h \
@@ -215,6 +221,8 @@ HEADERS += mainwindow.h \
     ../file/file_io.h \
     mainwindow_tab/slopeedittab.h \
     widgets/areaeditpreviewwidget.h \
+    widgets/npcpreviewarea.h \
+    widgets/roomstylepreviewarea.h \
     widgets/slopepreviewwidget.h \
     widgets/slopepickerwidget.h \
     widgets/worldmapeditorArea.h
@@ -225,8 +233,10 @@ FORMS += mainwindow.ui \
     dialognpcedit.ui \
     dialogobjectedit.ui \
     mainwindow_tab/areaedittab.ui \
-    mainwindow_tab/npc_edit.ui \
+    mainwindow_tab/enemy_edit.ui \
+    mainwindow_tab/npcedittab.ui \
     mainwindow_tab/object_tab.ui \
+    mainwindow_tab/roomstyle.ui \
     mainwindow_tab/text/dialogeditform.ui \
     mainwindow_tab/weapon_edit.ui \
     mainwindow_tab/artificial_inteligence_tab.ui \

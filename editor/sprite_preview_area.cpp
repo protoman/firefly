@@ -36,7 +36,7 @@ void sprite_preview_area::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
 
-    file_npc_v3_1_2 temp_npc = Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n);
+    file_enemy_v3_1_2 temp_npc = Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n);
 
     std::string filename = SharedData::get_instance()->FILEPATH + "/images/sprites/enemies/" + Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).graphic_filename;
 

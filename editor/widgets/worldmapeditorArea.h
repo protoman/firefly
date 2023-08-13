@@ -12,8 +12,8 @@ class worldMapEditorArea : public QWidget
     Q_OBJECT
 public:
     explicit worldMapEditorArea(QWidget *parent = nullptr);
-    void setCurrentArea(int area_n);
-    void setCurrentMap(int map_n);
+    void setCurrentStage(int area_n);
+    void setCurrentArea(int map_n);
     void set_edit_mode(e_AREA_EDIT_MODE mode);
 
 
@@ -31,8 +31,8 @@ private:
 signals:
 
 private:
+    unsigned int currentStage = 0;
     unsigned int currentArea = 0;
-    unsigned int currentMap = 0;
     unsigned int editor_selectedTileX = 0;
     unsigned int editor_selectedTileY = 0;
     e_AREA_EDIT_MODE edit_mode = AREA_EDIT_MODE_NORMAL;

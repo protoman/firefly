@@ -1,0 +1,20 @@
+# animações novas para sprites:
+    # agachado
+    # levando dano
+    # morrendo
+
+
+# frankie
+    # ataque:
+
+# lobisomem
+    # adaque: slash (curta distância)
+    # abilidade especial: agarrar paredes (como mmx)
+
+# múmia
+    # ataque: bandagens (média distância, similar a chain do spike)
+    # abilidade especial: ?
+
+# beta
+    # ataque: duplo tiro carregado
+    # abilidade especial: sobreviver no espaço

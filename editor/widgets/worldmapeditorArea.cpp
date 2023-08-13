@@ -29,14 +29,14 @@ worldMapEditorArea::worldMapEditorArea(QWidget *parent) : QWidget(parent)
 
 }
 
-void worldMapEditorArea::setCurrentArea(int area_n)
+void worldMapEditorArea::setCurrentStage(int area_n)
 {
-    currentArea = area_n;
+    currentStage = area_n;
 }
 
-void worldMapEditorArea::setCurrentMap(int map_n)
+void worldMapEditorArea::setCurrentArea(int map_n)
 {
-    currentMap = map_n;
+    currentArea = map_n;
 }
 
 void worldMapEditorArea::set_edit_mode(e_AREA_EDIT_MODE mode)
@@ -61,16 +61,19 @@ void worldMapEditorArea::paintEvent(QPaintEvent *event)
 
 
     // draw areas-points
-    for (unsigned int area_n=0; area_n<SharedData::get_instance()->v6_area_list.size(); area_n++) {
+    for (unsigned int area_n=0; area_n<SharedData::get_instance()->v6_stage_list.size(); area_n++) {
         if (SharedData::get_instance()->v6_level_map.find(area_n) != SharedData::get_instance()->v6_level_map.end()) {
             for (unsigned int i=0; i<SharedData::get_instance()->v6_level_map.at(area_n).size(); i++) {
-                if (SharedData::get_instance()->v6_level_map.at(area_n).at(i).area_number == currentArea) {
+                if (SharedData::get_instance()->v6_level_map.at(area_n).at(i).stage_number == currentStage) {
                     painter.setBrush(QColor(0, 0, 255, 180));
+                    if (SharedData::get_instance()->v6_level_map.at(area_n).at(i).area_number == currentArea) {
+                        painter.setBrush(QColor(0, 255, 0, 180));
+                    }
                     painter.setPen(QColor(0, 0, 180, 255));
+                    painter.drawRect(SharedData::get_instance()->v6_level_map.at(area_n).at(i).x*TILE_SHOW_SIZE, SharedData::get_instance()->v6_level_map.at(area_n).at(i).y*TILE_SHOW_SIZE, TILE_SHOW_SIZE, TILE_SHOW_SIZE);
                 } else {
-                    std::cout << ">>>>>>>>>> invalid area number[" << SharedData::get_instance()->v6_level_map.at(area_n).at(i).area_number << "] in area[" << currentArea << "] data file" << std::endl;
+                    std::cout << ">>>>>>>>>> invalid area number[" << SharedData::get_instance()->v6_level_map.at(area_n).at(i).stage_number << "] in area[" << currentStage << "] data file" << std::endl;
                 }
-                painter.drawRect(SharedData::get_instance()->v6_level_map.at(area_n).at(i).x*TILE_SHOW_SIZE, SharedData::get_instance()->v6_level_map.at(area_n).at(i).y*TILE_SHOW_SIZE, TILE_SHOW_SIZE, TILE_SHOW_SIZE);
             }
         }
     }
@@ -98,7 +101,10 @@ void worldMapEditorArea::mousePressEvent(QMouseEvent *event)
     editor_selectedTileY = pnt.y()/TILE_SHOW_SIZE;
 
     // can't change area-zero minimal parts //
-    if (currentArea == 0 && editor_selectedTileY == 0 && editor_selectedTileX >= 10 && editor_selectedTileX < 20) {
+    if (currentStage != 0 && editor_selectedTileY == 0 && editor_selectedTileX < 10) {
+        QMessageBox msgBox;
+        msgBox.setText("This room is reserved for initial area.");
+        msgBox.exec();
         return;
     }
 
@@ -106,7 +112,7 @@ void worldMapEditorArea::mousePressEvent(QMouseEvent *event)
     int current_area_rooms_count = 0;
     bool is_adjascent_point_to_same_area = false;
     bool is_adjascent_point = false;
-    for (unsigned int area_n=0; area_n<SharedData::get_instance()->v6_area_list.size(); area_n++) {
+    for (unsigned int area_n=0; area_n<SharedData::get_instance()->v6_stage_list.size(); area_n++) {
 
         if (SharedData::get_instance()->v6_level_map.find(area_n) == SharedData::get_instance()->v6_level_map.end()) {
             std::vector<file_v6_level_point> point_list;
@@ -117,6 +123,14 @@ void worldMapEditorArea::mousePressEvent(QMouseEvent *event)
             std::cout << "CLICK - area_n[" << area_n << "], i[" << i << "]" << std::endl;
             std::cout << "CLICK - area.size[" << SharedData::get_instance()->v6_level_map.at(area_n).size() << "]" << std::endl;
             bool is_next_to_room = false;
+
+            if (editor_selectedTileX == SharedData::get_instance()->v6_level_map.at(area_n).at(i).x && editor_selectedTileY == SharedData::get_instance()->v6_level_map.at(area_n).at(i).y) {
+                QMessageBox msgBox;
+                msgBox.setText("Point already set with area[" + QString::number(SharedData::get_instance()->v6_level_map.at(area_n).at(i).area_number) + "]");
+                msgBox.exec();
+                return;
+            }
+
             // up
             if (editor_selectedTileX == SharedData::get_instance()->v6_level_map.at(area_n).at(i).x && editor_selectedTileY == SharedData::get_instance()->v6_level_map.at(area_n).at(i).y-1) {
                 is_next_to_room = true;
@@ -133,7 +147,7 @@ void worldMapEditorArea::mousePressEvent(QMouseEvent *event)
             if (editor_selectedTileX == SharedData::get_instance()->v6_level_map.at(area_n).at(i).x+1 && editor_selectedTileY == SharedData::get_instance()->v6_level_map.at(area_n).at(i).y) {
                 is_next_to_room = true;
             }
-            if (SharedData::get_instance()->v6_level_map.at(area_n).at(i).area_number == currentArea) {
+            if (SharedData::get_instance()->v6_level_map.at(area_n).at(i).stage_number == currentStage) {
                 current_area_rooms_count++;
                 if (is_next_to_room == true) {
                     is_adjascent_point_to_same_area = true;
@@ -145,6 +159,8 @@ void worldMapEditorArea::mousePressEvent(QMouseEvent *event)
             }
         }
     }
+
+    // TODO: do not add same point again
 
     if (current_area_rooms_count >= AREA_ROOM_MAX_NUMBER) {
         QMessageBox msgBox;
@@ -160,7 +176,7 @@ void worldMapEditorArea::mousePressEvent(QMouseEvent *event)
         msgBox.setText("You can only add points next to existing ones from same area");
         msgBox.exec();
         return;
-    } else if (currentArea != 0 && current_area_rooms_count == 0 && is_adjascent_point == false) {
+    } else if (currentStage != 0 && current_area_rooms_count == 0 && is_adjascent_point == false) {
         QMessageBox msgBox;
         msgBox.setText("The first point of an area needs to be next to one from another area");
         msgBox.exec();
@@ -170,10 +186,11 @@ void worldMapEditorArea::mousePressEvent(QMouseEvent *event)
     file_v6_level_point point;
     point.x = editor_selectedTileX;
     point.y = editor_selectedTileY;
+    point.stage_number = currentStage;
     point.area_number = currentArea;
-    SharedData::get_instance()->v6_level_map.at(currentArea).push_back(point);
-    SharedData::get_instance()->add_missing_area_rooms(currentArea);
-    std::cout << "point added area[" << currentArea << "], list_size[" << SharedData::get_instance()->v6_level_map.size() << "]" << std::endl;
+    SharedData::get_instance()->v6_level_map.at(currentStage).push_back(point);
+    SharedData::get_instance()->add_missing_area_rooms(currentStage, currentArea);
+    std::cout << "point added area[" << currentStage << "], list_size[" << SharedData::get_instance()->v6_level_map.size() << "]" << std::endl;
 
     repaint();
 

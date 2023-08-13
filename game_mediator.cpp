@@ -40,7 +40,7 @@ int GameMediator::get_projectile_list_size()
     return SharedData::get_instance()->projectile_list_v3.size();
 }
 
-file_npc_v3_1_2* GameMediator::get_enemy(int n)
+file_enemy_v3_1_2* GameMediator::get_enemy(int n)
 {
     // boss not yet set
     if (n < 0 || n >= enemy_list.size()) {
@@ -59,7 +59,7 @@ int GameMediator::get_enemy_list_size()
 
 GameMediator::GameMediator()
 {
-    enemy_list = fio_cmm.load_from_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "/game_enemy_list_3_1_2_b.dat");
+    enemy_list = fio_cmm.load_from_disk<file_enemy_v3_1_2>(SharedData::get_instance()->FILEPATH + "/game_enemy_list_3_1_2_b.dat");
     SharedData::get_instance()->v6_object_list = fio_cmm.load_from_disk<v6_file_object>(SharedData::get_instance()->FILEPATH + "/game_object_list_v6.dat");
     ai_list = fio_cmm.load_from_disk<file_artificial_inteligence>(SharedData::get_instance()->FILEPATH + "/game_ai_list.dat");
 
@@ -74,7 +74,7 @@ GameMediator::GameMediator()
         }
     }
 
-    SharedData::get_instance()->v6_area_list = fio_cmm.load_from_disk<file_v6_area>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST);
+    SharedData::get_instance()->v6_stage_list = fio_cmm.load_from_disk<file_v6_stage>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST);
 }
 
 

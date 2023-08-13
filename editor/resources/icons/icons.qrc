@@ -109,5 +109,7 @@
         <file>arrow_right.png</file>
         <file>arrow_up.png</file>
         <file>v_scroll_lock.png</file>
+        <file>area_h_link.png</file>
+        <file>area_v_link.png</file>
     </qresource>
 </RCC>

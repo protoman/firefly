@@ -30,12 +30,14 @@ map_tab::~map_tab()
 
 void map_tab::reload()
 {
+    SharedData::get_instance()->v6_selected_area = 0;
     ui->animTilePaletteWidget->reload();
     ui->editArea->update_files();
 
     properties_hidden = true;
     ui->editArea->update_map_data();
-    std::string pallete_filename = SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).tileset_filename;
+    file_v6_style style = SharedData::get_instance()->v6_style_list.at(SharedData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).style);
+    std::string pallete_filename = style.tileset_filename;
     if (pallete_filename.length() > 0) {
         Mediator::get_instance()->setPallete(pallete_filename);
     }
@@ -67,7 +69,28 @@ void map_tab::fill_data()
     ui->object_direction_combo->setCurrentIndex(Mediator::get_instance()->object_direction);
 
     fill_map_selector();
+    fill_area_combo();
 
+    _data_loading = false;
+}
+
+void map_tab::fill_area_combo()
+{
+    if (SharedData::get_instance()->v6_area_map.size() == 0) {
+        return;
+    }
+    _data_loading = true;
+    SharedData::get_instance()->v6_selected_area = 0;
+    ui->areaSelector_comboBox->clear();
+
+    auto it = SharedData::get_instance()->v6_area_map.find(SharedData::get_instance()->v6_selected_stage);
+    if (it != SharedData::get_instance()->v6_area_map.end()) {
+        for (unsigned int i=0; i<it->second.size(); i++) {
+            ui->areaSelector_comboBox->addItem(QString("[") + QString::number(i) + "] - " + QString(it->second.at(i).area_name));
+        }
+    }
+
+    ui->editArea->repaint();
     _data_loading = false;
 }
 
@@ -373,23 +396,24 @@ void map_tab::on_editModeSlope_Button_clicked()
 void map_tab::fill_map_selector()
 {
     ui->mapSelector_comboBox->clear();
-    for (unsigned int i=0; i<SharedData::get_instance()->v6_area_list.size(); i++) {
-        QString itemName = QString("[") + QString::number(i) + QString("] - ") + QString(SharedData::get_instance()->v6_area_list.at(i).map_name);
+    for (unsigned int i=0; i<SharedData::get_instance()->v6_stage_list.size(); i++) {
+        QString itemName = QString("[") + QString::number(i) + QString("] - ") + QString(SharedData::get_instance()->v6_stage_list.at(i).stage_name);
         ui->mapSelector_comboBox->addItem(itemName);
     }
-    ui->mapSelector_comboBox->setCurrentIndex(SharedData::get_instance()->v6_selected_area);
+    ui->mapSelector_comboBox->setCurrentIndex(SharedData::get_instance()->v6_selected_stage);
 }
 
 
 void map_tab::on_mapSelector_comboBox_currentIndexChanged(int index)
 {
     if (_data_loading == true || index == -1) { return; }
-    SharedData::get_instance()->v6_selected_area = index;
+    file_v6_style style = SharedData::get_instance()->v6_style_list.at(SharedData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).style);
+    SharedData::get_instance()->v6_selected_stage = index;
     _data_loading = true;
-    Mediator::get_instance()->load_area_rooms(SharedData::get_instance()->v6_selected_area);
+    Mediator::get_instance()->load_area_rooms(SharedData::get_instance()->v6_selected_stage);
     fill_data();
     ui->editArea->update_map_data();
-    Mediator::get_instance()->setPallete(SharedData::get_instance()->v6_area_list.at(SharedData::get_instance()->v6_selected_area).tileset_filename);
+    Mediator::get_instance()->setPallete(style.tileset_filename);
     ui->editArea->repaint();
     _data_loading = false;
 }
@@ -398,4 +422,12 @@ void map_tab::on_mapSelector_comboBox_currentIndexChanged(int index)
 
 
 
+
+
+void map_tab::on_areaSelector_comboBox_currentIndexChanged(int index)
+{
+    if (_data_loading == true || index == -1) { return; }
+    SharedData::get_instance()->v6_selected_area = index;
+    ui->editArea->repaint();
+}
 

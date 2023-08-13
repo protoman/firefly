@@ -42,7 +42,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>7</number>
       </property>
       <widget class="QWidget" name="game_tab">
        <attribute name="title">
@@ -60,7 +60,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>275</height>
+             <height>273</height>
             </rect>
            </property>
           </widget>
@@ -84,7 +84,31 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>275</height>
+             <height>273</height>
+            </rect>
+           </property>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Room Style</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <widget class="QScrollArea" name="StyleScrollArea">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="StyleScrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>828</width>
+             <height>273</height>
             </rect>
            </property>
           </widget>
@@ -108,7 +132,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>275</height>
+             <height>273</height>
             </rect>
            </property>
           </widget>
@@ -132,7 +156,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>275</height>
+             <height>273</height>
             </rect>
            </property>
           </widget>
@@ -156,7 +180,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>275</height>
+             <height>273</height>
             </rect>
            </property>
           </widget>
@@ -180,7 +204,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>275</height>
+             <height>273</height>
             </rect>
            </property>
           </widget>
@@ -188,13 +212,37 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="npc_tab">
+      <widget class="QWidget" name="tab_npc_edit">
+       <attribute name="title">
+        <string>NPCs</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <widget class="QScrollArea" name="NpcEditScrollArea">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>828</width>
+             <height>273</height>
+            </rect>
+           </property>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="enemy_tab">
        <attribute name="title">
         <string>Enemies</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_11">
         <item row="0" column="0">
-         <widget class="QScrollArea" name="NPCScrollArea">
+         <widget class="QScrollArea" name="EnemyScrollArea">
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
@@ -204,7 +252,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>275</height>
+             <height>273</height>
             </rect>
            </property>
           </widget>
@@ -228,7 +276,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>275</height>
+             <height>273</height>
             </rect>
            </property>
           </widget>
@@ -252,7 +300,7 @@
              <x>0</x>
              <y>0</y>
              <width>828</width>
-             <height>275</height>
+             <height>273</height>
             </rect>
            </property>
           </widget>

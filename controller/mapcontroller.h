@@ -116,26 +116,14 @@ public:
     void showAbove(int scroll_y=0, int temp_scroll_x = -99999, bool show_fg=true);
 
     bool is_point_solid(st_position pos) const;
-
-
     file_v6_room_tile getTileFromPosition(int x, int y);
-
+    bool tile_room_exists(int x, int y);
     bool get_map_point_wall_lock(int x);
-
     void changeScrolling(st_float_position pos, bool check_lock=true);
-
     void incScrollValue(float xinc, float yinc);
-
     void changeLayerScroll(int x_change, int y_change);
-
-
-
-
     void reset_scrolled();
-
     void load_map_objects();
-
-
     bool is_obj_ignored_by_enemies(Uint8 obj_type);                 // returns true if object if of type that can be got like energy
 
     void collision_char_object(character*, const float, const short int);
@@ -249,6 +237,7 @@ public:
     bool must_show_static_bg();                                 // method used to prevent showing enemies on transition if showing static-bg
 
     void reset_map_loaded_flag();
+    void load_new_style();
 
 
 
@@ -268,6 +257,7 @@ private:
 
     void preload_slope_images();
     void draw_slope_tile(int x, int y, int dest_x, int dest_y);
+    file_v6_style &get_style();
 
 
 

@@ -132,7 +132,7 @@ bool classPlayer::get_item(object_collision &obj_info)
             v6_file_game_object_state obj_state;
             obj_state.uuid = obj_info._object->get_uuid();
             obj_state.obj_id = obj_info._object->get_id();
-            obj_state.area_n = SharedData::get_instance()->v6_selected_area;
+            obj_state.area_n = SharedData::get_instance()->v6_selected_stage;
             obj_state.x = -1;
             obj_state.y = -1;
             obj_state.finished = true;
@@ -207,14 +207,13 @@ bool classPlayer::shoryuken()
             //std::cout << "jump::check_collision - i[" << i << "], map_lock["  << map_lock << "]" << std::endl;
 
             if (map_lock == BLOCK_UNBLOCKED || map_lock == BLOCK_WATER) {
-                //std::cout << "jump.speed[" << speed_y << "]" << std::endl;
+                std::cout << ">>>>>>>>>>>>>>>>>>>> PLAYER::INC-Y #1" << std::endl;
                 position.y += speed_y;
                 jump_moved = true;
                 break;
             }
         }
         if (jump_speed != 0 && jump_moved == false) {
-            //std::cout << "chat::jump - must interrupt because a collision happened" << std::endl;
             if (jump_speed < 0) {
                 _obj_jump.interrupt();
             } else {
@@ -985,7 +984,6 @@ void classPlayer::reset_charging_shot()
 
     // also reset slide/dash
     if (state.animation_type == ANIM_TYPE_SLIDE) {
-        std::cout << "SET-ANIM_TYPE_WALK #6" << std::endl;
         set_animation_type(ANIM_TYPE_WALK);
         state.slide_distance = 0;
     }

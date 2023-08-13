@@ -47,6 +47,8 @@
 #define FILE_V6_LEVEL_LIST "data/v6_level_list.dat"
 #define FILE_V6_VISITED_LEVEL_LIST "data/v6_visited_level_list.dat"
 #define FILE_V6_MAP_LIST "data/v6_map_list.dat"
+#define FILE_V6_STYLE_LIST "data/v6_style_list.dat"
+#define FILE_V6_AREA_LIST_PREFIX "data/v6_area_list_"
 
 #define FS_MAX_PLAYERS 4
 #define PLAYER_INITIAL_HP 100
@@ -172,6 +174,10 @@
 
 #define GAME_TEXT_LINE_SEPARATOR_CHAR ';'
 #define GAME_TEXT_DIALOG_SEPARATOR_CHAR '#'
+
+#define QUICKSAND_JUMP_LIMIT 4
+#define QUICKSAND_GRAVITY 0.5
+
 
 enum e_KEY_TYPE {
     KEY_TYPE_NONE,
@@ -930,11 +936,14 @@ enum TERRAIN_TYPES {
     TERRAIN_ICE,
     TERRAIN_MOVE_LEFT,
     TERRAIN_MOVE_RIGHT,
-    TERRAIN_SAND,
+    TERRAIN_QUICKSAND,
     TERRAIN_HSCROLL_LOCK,
     TERRAIN_VSCROLL_LOCK,
     TERRAIN_SLOPE,
-    TERRAIN_SCROLL_LOCK,      // locks the scrolling but player can cross it (use with caution)
+    TERRAIN_SCROLL_LOCK,
+    TERRAIN_AREA_HSCROLL_LOCK,
+    TERRAIN_AREA_VSCROLL_LOCK,
+    // locks the scrolling but player can cross it (use with caution)
     TERRAIN_TYPES_COUNT
 };
 

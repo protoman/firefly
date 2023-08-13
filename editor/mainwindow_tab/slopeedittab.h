@@ -38,6 +38,8 @@ private slots:
 private:
     Ui::SlopeEditTab *ui;
     bool data_loading = false;
+    int currentSlopePos = 0;
+    int selectedSlopePos = 0;
 };
 
 #endif // SLOPEEDITTAB_H

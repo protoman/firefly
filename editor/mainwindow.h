@@ -8,7 +8,7 @@
 #include <QComboBox>
 #include <QListWidget>
 
-#include "mainwindow_tab/npc_edit.h"
+#include "mainwindow_tab/enemy_edit.h"
 #include "mainwindow_tab/object_tab.h"
 #include "mainwindow_tab/projectile_edit.h"
 #include "mainwindow_tab/artificial_inteligence_tab.h"
@@ -22,7 +22,8 @@
 #include "files_editor/fileseditor.h"
 #include "files_editor/stringseditor.h"
 #include "mainwindow_tab/areaedittab.h"
-
+#include "mainwindow_tab/roomstyle.h"
+#include "mainwindow_tab/npcedittab.h"
 
 namespace Ui
 {
@@ -141,13 +142,14 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    npc_edit *npc_edit_tab;
+    enemy_edit *enemy_edit_tab;
     artificial_inteligence_tab *ai_edit_tab;
     object_tab *object_edit_tab;
     projectile_edit *projectile_edit_tab;
     map_tab *map_edit_tab;
     anim_tiles_edit *anim_tiles_edit_tab;
     SlopeEditTab* slope_edit_tab;
+    NPCEditTab* npc_edit_tab;
 
 
     // USED IN NPC TAB
@@ -158,6 +160,7 @@ private:
     FilesEditor* files_editor_window;
     StringsEditor* strings_editor_window;
     AreaEditTab* area_edit_tab;
+    RoomStyle* room_style_tab;
 };
 
 
