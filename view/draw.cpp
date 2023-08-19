@@ -33,9 +33,9 @@
 #include "game_data.h"
 #include "file/v5/struct_file_game_area_map.h"
 
-draw* draw::_instance = nullptr;
+Draw* Draw::_instance = nullptr;
 
-draw::draw()
+Draw::Draw()
 {
     for (int i=0; i<FLASH_POINTS_N; i++) {
         flash_points[i].x = rand() % RES_W;
@@ -66,15 +66,15 @@ draw::draw()
 
 }
 
-draw *draw::get_instance()
+Draw *Draw::get_instance()
 {
     if (!_instance) {
-        _instance = new draw();
+        _instance = new Draw();
     }
     return _instance;
 }
 
-void draw::preload()
+void Draw::preload()
 {
     std::string filename = SharedData::get_instance()->GAMEPATH + std::string("shared/images/teleport_small.png");
     _teleport_small_gfx = ImageView::get_instance()->imageFromFile(filename);
@@ -110,7 +110,7 @@ void draw::preload()
 
 
     // DROPABLE OBJECT GRAPHICS
-    for (unsigned int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
+    for (unsigned int i=0; i<GameData::get_instance()->v6_object_list.size(); i++) {
         for (int j=0; j<DROP_ITEM_COUNT; j++) {
             short obj_type_n = GameManager::get_instance()->get_drop_item_id(j);
             if (obj_type_n != -1) {
@@ -207,7 +207,7 @@ void draw::preload()
 
 }
 
-void draw::show_gfx()
+void Draw::show_gfx()
 {
     //std::cout << "screen_gfx[" << (int)screen_gfx << "]" << std::endl;
 
@@ -237,13 +237,13 @@ void draw::show_gfx()
     }
 }
 
-st_imageData *draw::get_input_surface(e_INPUT_IMAGES input)
+st_imageData *Draw::get_input_surface(e_INPUT_IMAGES input)
 {
     return &input_images_map.at(input);
 }
 
 // show GFX or things added to pipeline //
-void draw::update_screen()
+void Draw::update_screen()
 {
 
     if (GameManager::get_instance()->is_paused() == false) {
@@ -291,7 +291,7 @@ void draw::update_screen()
     ImageView::get_instance()->updateRender();
 }
 
-void draw::set_gfx(Uint8 gfx, short mode)
+void Draw::set_gfx(Uint8 gfx, short mode)
 {
     screen_gfx = gfx;
     screen_gfx_mode = mode;
@@ -310,18 +310,18 @@ void draw::set_gfx(Uint8 gfx, short mode)
     }
 }
 
-Uint8 draw::get_gfx()
+Uint8 Draw::get_gfx()
 {
     return screen_gfx;
 }
 
-void draw::set_flash_enabled(bool enabled)
+void Draw::set_flash_enabled(bool enabled)
 {
     flash_effect_enabled = enabled;
 }
 
 
-void draw::show_rain()
+void Draw::show_rain()
 {
     for (int i=0; i<RES_W/TILESIZE; i++) {
         for (int j=0; j<AREA_H/TILESIZE; j++) {
@@ -338,7 +338,7 @@ void draw::show_rain()
     }
 }
 
-void draw::show_flash()
+void Draw::show_flash()
 {
     if (flash_obj.surface == nullptr) {
         // load rain
@@ -358,7 +358,7 @@ void draw::show_flash()
 }
 
 
-void draw::show_bubble(int x, int y)
+void Draw::show_bubble(int x, int y)
 {
     if (_bubble_gfx.surface == nullptr) {
         std::string filename = SharedData::get_instance()->GAMEPATH + "shared/images/bubble.png";
@@ -368,7 +368,7 @@ void draw::show_bubble(int x, int y)
 }
 
 
-void draw::show_teleport_small(int x, int y)
+void Draw::show_teleport_small(int x, int y)
 {
     if (teleport_small_frame_count > 0) {
         int x_origin = teleport_small_frame * _teleport_small_gfx.surface->h;
@@ -388,7 +388,7 @@ void draw::show_teleport_small(int x, int y)
 }
 
 /// @TODO: make "async" like dialogs
-int draw::show_credits_text(bool can_leave, std::vector<std::string> credit_text)
+int Draw::show_credits_text(bool can_leave, std::vector<std::string> credit_text)
 {
     int line_n=0;
     unsigned int scrolled = 0;
@@ -484,7 +484,7 @@ int draw::show_credits_text(bool can_leave, std::vector<std::string> credit_text
     return 0;
 }
 
-int draw::show_credits(bool can_leave)
+int Draw::show_credits(bool can_leave)
 {
     SoundView::get_instance()->stop_music();
     SoundView::get_instance()->load_music("rockbot_endcredits.mod");
@@ -504,12 +504,12 @@ int draw::show_credits(bool can_leave)
     return 0;
 }
 
-void draw::show_unlocked_charsMsg()
+void Draw::show_unlocked_charsMsg()
 {
 
 }
 
-std::vector<std::string> draw::create_engine_credits_text()
+std::vector<std::string> Draw::create_engine_credits_text()
 {
 
     fio_strings fio_str;
@@ -675,7 +675,7 @@ std::vector<std::string> draw::create_engine_credits_text()
 }
 
 
-void draw::draw_credit_line(st_imageData &surface, Uint8 initial_line,std::vector<std::string> credit_text)
+void Draw::draw_credit_line(st_imageData &surface, Uint8 initial_line,std::vector<std::string> credit_text)
 {
     if (initial_line < credit_text.size()) {
         std::cout << "draw::draw_credit_line - text[" << credit_text.at(initial_line) << "]" << std::endl;
@@ -695,7 +695,7 @@ void draw::draw_credit_line(st_imageData &surface, Uint8 initial_line,std::vecto
 
 
 
-st_imageData *draw::get_object_graphic(int obj_id)
+st_imageData *Draw::get_object_graphic(int obj_id)
 {
     std::map<unsigned int, st_imageData>::iterator it;
     st_imageData temp_sprite;
@@ -704,31 +704,31 @@ st_imageData *draw::get_object_graphic(int obj_id)
 
     it = objects_sprite_list.find(obj_id);
     if (it == objects_sprite_list.end()) { // there is no graphic with this key yet, add it
-        std::string graphic_filename(SharedData::get_instance()->v6_object_list.at(obj_id).graphic_filename);
+        std::string graphic_filename(GameData::get_instance()->v6_object_list.at(obj_id).graphic_filename);
         if (graphic_filename.length() > 0) {
             std::string complete_filename(SharedData::get_instance()->FILEPATH + "images/sprites/objects/" + graphic_filename);
             temp_sprite = ImageView::get_instance()->imageFromFile(complete_filename);
             objects_sprite_list.insert(std::pair<unsigned int, st_imageData>(obj_id, temp_sprite));
             it = objects_sprite_list.find(obj_id);
         } else {
-            std::cout << "ERROR: Invalid object graphic. Object_ID: '" + obj_id << "'" << std::endl;
+            std::cout << "ERROR: Invalid object graphic. Object_ID: '" << obj_id << "'" << std::endl;
             return nullptr;
         }
     }
     return &(*it).second;
 }
 
-void draw::show_object_graphic(int x, int y, int obj_id)
+void Draw::show_object_graphic(int x, int y, int obj_id)
 {
     st_imageData *obj_graphic = get_object_graphic(obj_id);
     if (obj_graphic != nullptr) {
-        int framesize_w = SharedData::get_instance()->v6_object_list.at(obj_id).size.width;
-        int framesize_h = SharedData::get_instance()->v6_object_list.at(obj_id).size.height;
-        ImageView::get_instance()->renderTexturePortionAt(0, 0, framesize_w, framesize_h, x, y-framesize_h, draw::get_instance()->get_object_graphic(obj_id)->texture);
+        int framesize_w = GameData::get_instance()->v6_object_list.at(obj_id).size.width;
+        int framesize_h = GameData::get_instance()->v6_object_list.at(obj_id).size.height;
+        ImageView::get_instance()->renderTexturePortionAt(0, 0, framesize_w, framesize_h, x, y-framesize_h, Draw::get_instance()->get_object_graphic(obj_id)->texture);
     }
 }
 
-void draw::remove_object_graphic(int obj_id)
+void Draw::remove_object_graphic(int obj_id)
 {
     std::map<unsigned int, st_imageData>::iterator it;
     it = objects_sprite_list.find(obj_id);
@@ -737,20 +737,20 @@ void draw::remove_object_graphic(int obj_id)
     }
 }
 
-void draw::show_ingame_warning(st_dialog dialog)
+void Draw::show_ingame_warning(st_dialog dialog)
 {
-    draw::get_instance()->show_dialog(1);
-    st_position dialog_pos = draw::get_instance()->get_dialog_pos();
+    Draw::get_instance()->show_dialog(1);
+    st_position dialog_pos = Draw::get_instance()->get_dialog_pos();
     for (unsigned int i=0; i<dialog.msgs.size(); i++) {
         TextView::get_instance()->renderText(dialog_pos.x+30, dialog_pos.y+56+((FONT_SIZE*1.5)*i), st_color(250, 250, 250), false, dialog.msgs.at(i));
     }
     if (dialog.timer == 0) {
-        draw::get_instance()->show_dialog_button(0);
+        Draw::get_instance()->show_dialog_button(0);
     }
 }
 
 
-void draw::fade_screen(int r, int g, int b, int total_delay, bool reverse)
+void Draw::fade_screen(int r, int g, int b, int total_delay, bool reverse)
 {
     st_imageData transparent_area;
     transparent_area = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
@@ -783,19 +783,19 @@ void draw::fade_screen(int r, int g, int b, int total_delay, bool reverse)
 }
 
 // executes the fade-out each time update screen is called
-void draw::add_fade_out_effect(int r, int g, int b)
+void Draw::add_fade_out_effect(int r, int g, int b)
 {
     current_alpha = 0;
     current_alpha_color = st_color(r, g, b);
 }
 
-void draw::remove_fade_out_effect()
+void Draw::remove_fade_out_effect()
 {
     current_alpha = -1;
     current_alpha_surface.freeGraphic();
 }
 
-void draw::pixelate_screen()
+void Draw::pixelate_screen()
 {
     st_imageData res_surface = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
     st_imageData screen_copy = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
@@ -849,7 +849,7 @@ void draw::pixelate_screen()
 
 }
 
-void draw::add_weapon_tooltip(short weapon_n, const st_position &player_pos, const Uint8 &direction)
+void Draw::add_weapon_tooltip(short weapon_n, const st_position &player_pos, const Uint8 &direction)
 {
     _weapon_tooltip_n = weapon_n;
     _weapon_tooltip_pos_ref = &player_pos;
@@ -857,7 +857,7 @@ void draw::add_weapon_tooltip(short weapon_n, const st_position &player_pos, con
     _weapon_tooltip_direction_ref = &direction;
 }
 
-st_float_position draw::get_radius_point(st_position center_point, int radius, float angle)
+st_float_position Draw::get_radius_point(st_position center_point, int radius, float angle)
 {
     st_float_position res;
     // x = r * cos(x0), y = r * sin(y0)
@@ -866,7 +866,7 @@ st_float_position draw::get_radius_point(st_position center_point, int radius, f
     return res;
 }
 
-void draw::draw_castle_path(bool instant, st_position initial_point, st_position final_point)
+void Draw::draw_castle_path(bool instant, st_position initial_point, st_position final_point)
 {
     if (initial_point.x == 0 && initial_point.y == 0 && final_point.x == 0 && final_point.x == 0) {
         return;
@@ -958,12 +958,12 @@ void draw::draw_castle_path(bool instant, st_position initial_point, st_position
 
 }
 
-void draw::draw_castle_point(int x, int y)
+void Draw::draw_castle_point(int x, int y)
 {
     ImageView::get_instance()->renderImageAt(x, y, castle_point);
 }
 
-void draw::show_interstage_map_bg(st_position pos)
+void Draw::show_interstage_map_bg(st_position pos)
 {
     ImageView::get_instance()->renderImageAt(0, 0, interstage_map);
     ImageView::get_instance()->renderTexturePortionAt(TILESIZE, 0, TILESIZE, TILESIZE, pos.x-4, pos.y-4, hud_player_1up.texture);
@@ -971,7 +971,7 @@ void draw::show_interstage_map_bg(st_position pos)
     TimerView::get_instance()->delay(5000);
 }
 
-void draw::draw_in_game_menu_bg(int screen)
+void Draw::draw_in_game_menu_bg(int screen)
 {
     //ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 20);
 
@@ -999,7 +999,7 @@ void draw::draw_in_game_menu_bg(int screen)
     }
 }
 
-void draw::draw_in_game_menu_animation()
+void Draw::draw_in_game_menu_animation()
 {
     // @TODO: set map scroll to current room //
     in_game_menu_map_pos = st_position(0, 0);
@@ -1024,7 +1024,7 @@ void draw::draw_in_game_menu_animation()
     ImageView::get_instance()->updateRender();
 }
 
-void draw::draw_in_game_menu_map()
+void Draw::draw_in_game_menu_map()
 {
     //std::cout << "DRAW::draw_in_game_menu_map - visited_level_list.size[" << SharedData::get_instance()->visited_level_list.size() << "]" << std::endl;
     int MAP_ROOM_SIZE_W = 24;
@@ -1062,7 +1062,7 @@ void draw::draw_in_game_menu_map()
     */
 }
 
-void draw::draw_game_button(int x, int y, e_INPUT_IMAGES button)
+void Draw::draw_game_button(int x, int y, e_INPUT_IMAGES button)
 {
     //std::cout << "draw::draw_game_button - x[" << x << "], y[" << y << "]" << std::endl;
     draw_game_button_request.x = x - input_images_map.at(draw_game_button_request.button).surface->w/2;
@@ -1070,7 +1070,7 @@ void draw::draw_game_button(int x, int y, e_INPUT_IMAGES button)
     draw_game_button_request.button = button;
 }
 
-void draw::show_dialog(Uint8 position)
+void Draw::show_dialog(Uint8 position)
 {
     int posX = (RES_W-dialog_surface.surface->w)*0.5;
     int posY;
@@ -1091,7 +1091,7 @@ void draw::show_dialog(Uint8 position)
 
 }
 
-void draw::show_dialog_button(Uint8 position)
+void Draw::show_dialog_button(Uint8 position)
 {
     int posX = (RES_W-dialog_surface.surface->w)*0.5;
     int posY;
@@ -1110,15 +1110,15 @@ void draw::show_dialog_button(Uint8 position)
 
 }
 
-st_position draw::get_dialog_pos() const
+st_position Draw::get_dialog_pos() const
 {
     return _dialog_pos;
 }
 
-void draw::show_dialogs_from_queue()
+void Draw::show_dialogs_from_queue()
 {
     if (GameManager::get_instance()->get_dialog_queue()->size() > 0) {
-        draw::get_instance()->show_ingame_warning(GameManager::get_instance()->get_dialog_queue()->at(0));
+        Draw::get_instance()->show_ingame_warning(GameManager::get_instance()->get_dialog_queue()->at(0));
         if (GameManager::get_instance()->get_dialog_queue()->at(0).music_filename.length() > 0 && GameManager::get_instance()->get_dialog_status()->started == false) {
             InputController::get_instance()->clean();
             GameManager::get_instance()->get_dialog_status()->started = true;
@@ -1130,7 +1130,7 @@ void draw::show_dialogs_from_queue()
     }
 }
 
-void draw::draw_water_tile_overlay(int x, int y)
+void Draw::draw_water_tile_overlay(int x, int y)
 {
     // TODO: we can add animation to the water tile overlay
     //std::cout << "draw::draw_water_tile_overlay - water_animation_pos[" << water_animation_pos << "]" << std::endl;
@@ -1151,18 +1151,18 @@ void draw::draw_water_tile_overlay(int x, int y)
     }
 }
 
-void draw::draw_player_death(st_position center_point, int frame_n)
+void Draw::draw_player_death(st_position center_point, int frame_n)
 {
     int frame_size = _death_animation.surface->h;
     ImageView::get_instance()->renderTexturePortionAt(frame_n*frame_size, 0, frame_size, frame_size, center_point.x-frame_size/2, center_point.y-frame_size/2, _death_animation.texture);
 }
 
-int draw::get_death_animation_frames_n()
+int Draw::get_death_animation_frames_n()
 {
     return _death_animation_frames_n;
 }
 
-void draw::draw_explosion(st_position center_point, int radius, int angle_inc)
+void Draw::draw_explosion(st_position center_point, int radius, int angle_inc)
 {
     // 8 initial points
     int points_n = 12;
@@ -1182,7 +1182,7 @@ void draw::draw_explosion(st_position center_point, int radius, int angle_inc)
 }
 
 
-st_imageData *draw::get_dynamic_background(std::string filename)
+st_imageData *Draw::get_dynamic_background(std::string filename)
 {
     std::map<std::string, st_imageData>::iterator it;
 
@@ -1194,7 +1194,7 @@ st_imageData *draw::get_dynamic_background(std::string filename)
     return &maps_dynamic_background_list.find(filename)->second;
 }
 
-st_imageData *draw::get_dynamic_foreground(std::string filename)
+st_imageData *Draw::get_dynamic_foreground(std::string filename)
 {
     std::map<std::string, st_imageData>::iterator it;
 
@@ -1206,7 +1206,7 @@ st_imageData *draw::get_dynamic_foreground(std::string filename)
     return &maps_dynamic_background_list.find(filename)->second;
 }
 
-void draw::set_dynamic_bg_alpha(std::string filename, int alpha)
+void Draw::set_dynamic_bg_alpha(std::string filename, int alpha)
 {
     std::map<std::string, st_imageData>::iterator it;
 
@@ -1218,7 +1218,7 @@ void draw::set_dynamic_bg_alpha(std::string filename, int alpha)
 }
 
 
-void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weapon_value, int room_n_x, int room_n_y)
+void Draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weapon_value, int room_n_x, int room_n_y)
 {
     // TODO::IURI - usar imagem de fundo //
     ImageView::get_instance()->clearScreenArea(0, AREA_H, RES_W, HUD_H, 0, 0, 0);
@@ -1251,7 +1251,7 @@ void draw::show_hud(int hp, int player_n, int selected_weapon, int selected_weap
     ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, HUD_H, 0, AREA_H, ImageView::get_instance()->get_hud_texture());
 }
 
-void draw::show_hud_items()
+void Draw::show_hud_items()
 {
     for (int i=0; i<GAME_ITEM_SLOTS; i++) {
         if (SharedData::get_instance()->game_save.game_item_list[i].uuid != -1) {
@@ -1263,7 +1263,7 @@ void draw::show_hud_items()
     }
 }
 
-void draw::draw_enery_bars(int value, int x_pos, int y_pos, int type)
+void Draw::draw_enery_bars(int value, int x_pos, int y_pos, int type)
 {
     int type_y = 0;
     if (type == 1) {
@@ -1285,23 +1285,23 @@ void draw::draw_enery_bars(int value, int x_pos, int y_pos, int type)
     }
 }
 
-void draw::set_boss_hp(int hp)
+void Draw::set_boss_hp(int hp)
 {
     _boss_current_hp = hp;
 }
 
-void draw::show_boss_intro_bg()
+void Draw::show_boss_intro_bg()
 {
     ImageView::get_instance()->renderImageAt(0, 0, boss_intro_bg);
     ImageView::get_instance()->updateRender();
 }
 
-void draw::clear_maps_dynamic_background_list()
+void Draw::clear_maps_dynamic_background_list()
 {
     maps_dynamic_background_list.clear();
 }
 
-void draw::add_dynamic_background(std::string filename, int auto_scroll_mode, st_color bg_color)
+void Draw::add_dynamic_background(std::string filename, int auto_scroll_mode, st_color bg_color)
 {
     // only add if not existing in map
     if (maps_dynamic_background_list.find(filename) == maps_dynamic_background_list.end()) {
@@ -1328,7 +1328,7 @@ void draw::add_dynamic_background(std::string filename, int auto_scroll_mode, st
 
 
 
-void draw::generate_snow_particles()
+void Draw::generate_snow_particles()
 {
     for (int i=0; i<SNOW_PARTICLES_NUMBER; i++) {
         int rand_x = rand() % RES_W;
@@ -1341,7 +1341,7 @@ void draw::generate_snow_particles()
     }
 }
 
-void draw::show_snow_effect()
+void Draw::show_snow_effect()
 {
     if (_snow_particles.size() == 0) {                  // generate snow particles, if needed
         generate_snow_particles();
@@ -1386,7 +1386,7 @@ void draw::show_snow_effect()
     }
 }
 
-void draw::show_train_effect()
+void Draw::show_train_effect()
 {
     if (_train_effect_timer == 0) {
         std::cout << "TRAIN_EFFECT-RESET" << std::endl;
@@ -1410,7 +1410,7 @@ void draw::show_train_effect()
     }
 }
 
-void draw::show_lightingbolt_effect()
+void Draw::show_lightingbolt_effect()
 {
     if (_lightingbolt_effect_timer == 0) {
         _lightingbolt_effect_timer = TimerView::get_instance()->getTimer() + LIGHTINGBOLT_DELAY1;
@@ -1440,7 +1440,7 @@ void draw::show_lightingbolt_effect()
     }
 }
 
-void draw::show_shadow_top_effect()
+void Draw::show_shadow_top_effect()
 {
 
     int max = 100;
@@ -1454,7 +1454,7 @@ void draw::show_shadow_top_effect()
     }
 }
 
-void draw::show_inferno_effect()
+void Draw::show_inferno_effect()
 {
     if (_inferno_surface.is_null()) {
         _inferno_surface = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
@@ -1477,7 +1477,7 @@ void draw::show_inferno_effect()
 
 
 
-void draw::show_dark_effect()
+void Draw::show_dark_effect()
 {
     int alpha = 180;
 
@@ -1550,7 +1550,7 @@ void draw::show_dark_effect()
 
 }
 
-void draw::show_tint_screen_effect()
+void Draw::show_tint_screen_effect()
 {
     st_imageData tint_image;
     ImageView::get_instance()->init_target_image(tint_image, RES_W, AREA_H);
@@ -1570,7 +1570,7 @@ void draw::show_tint_screen_effect()
 }
 
 
-void draw::free_inferno_surface()
+void Draw::free_inferno_surface()
 {
     _inferno_surface.freeGraphic();
 }

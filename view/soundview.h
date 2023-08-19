@@ -44,6 +44,7 @@ public:
     void play_sfx_from_chunk(Mix_Chunk* chunk, int repeat_n);
     Mix_Chunk *sfx_from_file(std::string filename);
     bool get_is_playing_boss_music();
+    Mix_Chunk *get_sfx(std::string filename);
 
 private:
     SoundView();
@@ -59,6 +60,7 @@ private:
     Sint8 _repeated_sfx_channel; /**< TODO */
     Uint8 _repeated_sfx; /**< TODO */
     bool is_playing_boss_music;
+    std::map<std::string, Mix_Chunk*> sfx_map;                                               // map of sfx files loaded, used in projectiles to avoid loading from disk every time
 };
 
 #endif // SOUNDVIEW_H

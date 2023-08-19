@@ -44,10 +44,10 @@ struct st_draw_game_button {
     e_INPUT_IMAGES button = INPUT_IMAGES_Y;
 };
 
-class draw
+class Draw
 {
 public:
-    static draw* get_instance();
+    static Draw* get_instance();
 
     void preload();
     void show_gfx();
@@ -110,9 +110,9 @@ public:
 
 
 private:
-    draw();
-    draw(draw const&){};             // copy constructor is private
-    draw& operator=(draw const&){ return *this; };  // assignment operator is private
+    Draw();
+    Draw(Draw const&){};             // copy constructor is private
+    Draw& operator=(Draw const&){ return *this; };  // assignment operator is private
 
     void draw_credit_line(st_imageData& surface, Uint8 initial_line, std::vector<std::string> credit_text);
     void show_rain();
@@ -129,10 +129,13 @@ private:
     st_float_position get_radius_point(st_position center_point, int radius, float angle);
     //void create_dynamic_background_surface(st_imageData& dest_surface, st_imageData& image_surface, int auto_scroll_mode);
 
+public:
+    std::map<std::string, st_imageData> character_graphic_map;                          // character graphics
+
 
 private:
     file_io fio;
-    static draw* _instance;
+    static Draw* _instance;
     st_imageData boss_intro_bg;
     st_imageData rain_obj;
     st_imageData dark_effect_light_source_mask;

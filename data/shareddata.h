@@ -62,12 +62,6 @@ public:
     st_save game_save;
     st_checkpoint checkpoint;
 
-
-    // MAPS DATA //
-
-
-
-
     unsigned int file_v5_selected_area = 0;
     unsigned int file_v5_selected_layer = 0;
     unsigned int file_v5_selected_slope = 0;
@@ -78,14 +72,8 @@ public:
     long area_scroll_x = 0;
     long area_scroll_y = 0;
 
-
-
-
-
-
     unsigned int v6_selected_stage = 0;
     unsigned int v6_selected_area = 0;
-    std::vector<v6_file_object> v6_object_list;
     std::vector<st_position> area_room_list;
 
 

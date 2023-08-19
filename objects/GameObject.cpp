@@ -22,22 +22,22 @@
 // constructor for map_object
 GameObject::GameObject(short set_id, MapController *set_map, st_position map_pos, st_position teleporter_dest, short map_dest) : _finished(false), _state(0), _duration(0), _timer_limit(0), _started(false), _animation_finished(false), _animation_reversed(false), _hidden(false)
 {
-    if (set_id >= SharedData::get_instance()->v6_object_list.size()) {
-        std::cout << "Invalid object_id[" << set_id << "], for list with size[" << SharedData::get_instance()->v6_object_list.size() << "]" << std::endl;
+    if (set_id >= GameData::get_instance()->v6_object_list.size()) {
+        std::cout << "Invalid object_id[" << set_id << "], for list with size[" << GameData::get_instance()->v6_object_list.size() << "]" << std::endl;
         exit(-1);
     }
 	map = set_map;
 	_id = set_id;
-    name = std::string(SharedData::get_instance()->v6_object_list.at(_id).name);
-    graphic_filename = SharedData::get_instance()->v6_object_list.at(_id).graphic_filename;
-    type = SharedData::get_instance()->v6_object_list.at(_id).type;
-    obj_timer = SharedData::get_instance()->v6_object_list.at(_id).timer;
-    speed = SharedData::get_instance()->v6_object_list.at(_id).speed;
-    limit = SharedData::get_instance()->v6_object_list.at(_id).limit;
+    name = std::string(GameData::get_instance()->v6_object_list.at(_id).name);
+    graphic_filename = GameData::get_instance()->v6_object_list.at(_id).graphic_filename;
+    type = GameData::get_instance()->v6_object_list.at(_id).type;
+    obj_timer = GameData::get_instance()->v6_object_list.at(_id).timer;
+    speed = GameData::get_instance()->v6_object_list.at(_id).speed;
+    limit = GameData::get_instance()->v6_object_list.at(_id).limit;
 	direction = 0;
 	distance = 0;
-    framesize_w = SharedData::get_instance()->v6_object_list.at(_id).size.width;
-    framesize_h = SharedData::get_instance()->v6_object_list.at(_id).size.height;
+    framesize_w = GameData::get_instance()->v6_object_list.at(_id).size.width;
+    framesize_h = GameData::get_instance()->v6_object_list.at(_id).size.height;
 	frame = 0;
 	start_point.x = map_pos.x*TILESIZE;
 	start_point.y = map_pos.y*TILESIZE;
@@ -59,7 +59,7 @@ GameObject::GameObject(short set_id, MapController *set_map, st_position map_pos
     _command_up = false;
 	_command_down = false;
     _start_timer = 0;
-    _frame_duration = SharedData::get_instance()->v6_object_list.at(_id).frame_duration;
+    _frame_duration = GameData::get_instance()->v6_object_list.at(_id).frame_duration;
     _obj_frame_timer = TimerView::get_instance()->getTimer()+_frame_duration;
     frame = 0;
     _timer_limit = 0;
@@ -173,14 +173,14 @@ void GameObject::reset_obj_anim_timer()
 // ********************************************************************************************** //
 void GameObject::add_graphic()
 {
-    draw::get_instance()->get_object_graphic(_id);
-    if ((draw::get_instance()->get_object_graphic(_id))->surface->w ==framesize_w) {
+    Draw::get_instance()->get_object_graphic(_id);
+    if ((Draw::get_instance()->get_object_graphic(_id))->surface->w ==framesize_w) {
         max_frames = 1;
     } else {
-        max_frames = ((draw::get_instance()->get_object_graphic(_id))->surface->w/framesize_w);
+        max_frames = ((Draw::get_instance()->get_object_graphic(_id))->surface->w/framesize_w);
     }
     if (max_frames == 0) {
-        std::cout << "Invalid object size.w[" << framesize_w << "] for img-w[" << (draw::get_instance()->get_object_graphic(_id))->surface->w << "]" << std::endl;
+        std::cout << "Invalid object size.w[" << framesize_w << "] for img-w[" << (Draw::get_instance()->get_object_graphic(_id))->surface->w << "]" << std::endl;
         exit(-1);
     }
 }
@@ -317,20 +317,20 @@ bool GameObject::is_consumable()
 
 int GameObject::get_ability()
 {
-    if ((type != OBJ_ABILITY_ITEM && type != OBJ_TREASURE_CHEST) || _id > SharedData::get_instance()->v6_object_list.size()) {
+    if ((type != OBJ_ABILITY_ITEM && type != OBJ_TREASURE_CHEST) || _id > GameData::get_instance()->v6_object_list.size()) {
         return -1;
     }
-    v6_file_object& ref_obj = SharedData::get_instance()->v6_object_list.at(_id);
-    return SharedData::get_instance()->v6_object_list.at(_id).given_ability;
+    v6_file_object& ref_obj = GameData::get_instance()->v6_object_list.at(_id);
+    return GameData::get_instance()->v6_object_list.at(_id).given_ability;
 }
 
 int GameObject::get_key_n()
 {
-    if (type != OBJ_ABILITY_ITEM || _id > SharedData::get_instance()->v6_object_list.size()) {
+    if (type != OBJ_ABILITY_ITEM || _id > GameData::get_instance()->v6_object_list.size()) {
         return -1;
     }
-    v6_file_object& ref_obj = SharedData::get_instance()->v6_object_list.at(_id);
-    return SharedData::get_instance()->v6_object_list.at(_id).key_id;
+    v6_file_object& ref_obj = GameData::get_instance()->v6_object_list.at(_id);
+    return GameData::get_instance()->v6_object_list.at(_id).key_id;
 
 }
 
@@ -393,7 +393,7 @@ void GameObject::show(int adjust_y, int adjust_x)
         scroll_y = adjust_y;
     }
 
-    if (draw::get_instance()->get_object_graphic(_id) == nullptr) {
+    if (Draw::get_instance()->get_object_graphic(_id) == nullptr) {
         std::cout << "### OBJECT::SHOW - can't find graphic ###" << std::endl;
 		return;
 	}
@@ -458,7 +458,7 @@ void GameObject::show(int adjust_y, int adjust_x)
         if (_teleport_state == e_object_teleport_state_teleport_in || _teleport_state == e_object_teleport_state_teleport_out) {
             if (TimerView::get_instance()->getTimer() < teleport_max_timer) {
                 //std::cout << "obj.show.pos.x[" << position.x << "]" << std::endl;
-                draw::get_instance()->show_teleport_small(position.x-scroll_x, position.y);
+                Draw::get_instance()->show_teleport_small(position.x-scroll_x, position.y);
                 return;
             } else {
                 if (_teleport_state == e_object_teleport_state_teleport_in) {
@@ -480,7 +480,7 @@ void GameObject::show(int adjust_y, int adjust_x)
 
         //std::cout << "ON-SCREEN: obj[" << name << "] position.x: " << position.x << ", scroll_x: " << scroll_x << ", dest.x: " << graphic_destiny.x << ", dest.y: " << graphic_destiny.y << std::endl;
         // animation
-        if ((SharedData::get_instance()->v6_object_list.at(_id).animation_auto_start == true || (SharedData::get_instance()->v6_object_list.at(_id).animation_auto_start == false && _started == true)) && framesize_w * 2 <= (draw::get_instance()->get_object_graphic(_id)->surface->w))  { // have at least two frames
+        if ((GameData::get_instance()->v6_object_list.at(_id).animation_auto_start == true || (GameData::get_instance()->v6_object_list.at(_id).animation_auto_start == false && _started == true)) && framesize_w * 2 <= (Draw::get_instance()->get_object_graphic(_id)->surface->w))  { // have at least two frames
             //std::cout << "OBJECT::SHOW::ANIM[#1], _obj_frame_timer[" << _obj_frame_timer << "], timer[" << TimerView::get_instance()->getTimer() << "]" << std::endl;
 			graphic_origin.x = frame * framesize_w;
             if (_obj_frame_timer < TimerView::get_instance()->getTimer()) {
@@ -514,10 +514,10 @@ void GameObject::show(int adjust_y, int adjust_x)
             //std::cout << "obj[" << name << "].show.frame[" << (int)frame << "]" << std::endl;
 
 			if	(_animation_reversed == false && frame > max_frames) {
-                if (SharedData::get_instance()->v6_object_list.at(_id).animation_loop == false) { // if animation loop is set to false, set this to show always the last frame
-                    if (SharedData::get_instance()->v6_object_list.at(_id).animation_reverse == false) { // don't need to reverse animation, finish it
+                if (GameData::get_instance()->v6_object_list.at(_id).animation_loop == false) { // if animation loop is set to false, set this to show always the last frame
+                    if (GameData::get_instance()->v6_object_list.at(_id).animation_reverse == false) { // don't need to reverse animation, finish it
 						_animation_finished = true;
-                        frame = draw::get_instance()->get_object_graphic(_id)->surface->w/framesize_w-1;
+                        frame = Draw::get_instance()->get_object_graphic(_id)->surface->w/framesize_w-1;
 					} else {
 						_animation_reversed = true; // start animation reverse process
 						frame--;
@@ -540,7 +540,7 @@ void GameObject::show(int adjust_y, int adjust_x)
 
 		//std::cout << "object::show - frame_n: " << frame << ", _animation_reversed: " << _animation_reversed << ", max_frames: " << max_frames << std::endl;
 		// direction
-        if (framesize_h*2 <= draw::get_instance()->get_object_graphic(_id)->surface->h)  {
+        if (framesize_h*2 <= Draw::get_instance()->get_object_graphic(_id)->surface->h)  {
 			//std::cout << ">>>> object height is enought for direction-right";
 			if (direction != ANIM_DIRECTION_RIGHT) {
 				graphic_origin.y = 0;
@@ -567,8 +567,8 @@ void GameObject::show(int adjust_y, int adjust_x)
         //std::cout << "object::show::name[" << name << "]::adjust_y[" << adjust_y << "]::graphic_destiny.y[" << graphic_destiny.y << "]::position.y[" << position.y << "]" << std::endl;
 
 
-        if (draw::get_instance()->get_object_graphic(_id) != nullptr) { // there is no graphic with this key yet, add it
-            ImageView::get_instance()->renderTexturePortionAt(graphic_origin.x, graphic_origin.y, graphic_origin.w, graphic_origin.h, graphic_destiny.x, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+        if (Draw::get_instance()->get_object_graphic(_id) != nullptr) { // there is no graphic with this key yet, add it
+            ImageView::get_instance()->renderTexturePortionAt(graphic_origin.x, graphic_origin.y, graphic_origin.w, graphic_origin.h, graphic_destiny.x, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
             // disappearning block has a shadow under it
             if (type == OBJ_DISAPPEARING_BLOCK) {
                 ImageView::get_instance()->clearScreenArea(graphic_destiny.x, graphic_destiny.y+framesize_h, framesize_w, 6, 0, 0, 0);
@@ -602,7 +602,7 @@ void GameObject::show_frame_n(int frame_n, int adjust_y)
         std::cout << "GameObject::show_frame_n - Inmvalid frame_n, set to ZERO" << std::endl;
         frame_n = 0;
     }
-    ImageView::get_instance()->renderTexturePortionAt(frame_n*framesize_w, 0, framesize_w, framesize_h, graphic_destiny_x, graphic_destiny_y, draw::get_instance()->get_object_graphic(_id)->texture);
+    ImageView::get_instance()->renderTexturePortionAt(frame_n*framesize_w, 0, framesize_w, framesize_h, graphic_destiny_x, graphic_destiny_y, Draw::get_instance()->get_object_graphic(_id)->texture);
 }
 
 st_float_position GameObject::get_relative_position()
@@ -626,7 +626,7 @@ void GameObject::show_deathray_vertical(int adjust_x, int adjust_y)
     graphic_destiny.y = position.y + map->getMapScrolling().y + adjust_y;
 
 
-    if (draw::get_instance()->get_object_graphic(_id) != nullptr) {
+    if (Draw::get_instance()->get_object_graphic(_id) != nullptr) {
         if (_obj_frame_timer < TimerView::get_instance()->getTimer()) {
             _obj_frame_timer = TimerView::get_instance()->getTimer() + _frame_duration;
             _ray_state = !_ray_state;
@@ -635,22 +635,22 @@ void GameObject::show_deathray_vertical(int adjust_x, int adjust_y)
         //std::cout << "OBJECT::show_deathray_vertical, _ray_state[" << (int)_ray_state << "], _state[" << (int)_state << "]" << std::endl;
 
         // draw base
-        ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, 0, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+        ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, 0, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
         if (_state == 1) {
             // point
-            ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, TILESIZE*3, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y+TILESIZE, draw::get_instance()->get_object_graphic(_id)->texture);
+            ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, TILESIZE*3, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y+TILESIZE, Draw::get_instance()->get_object_graphic(_id)->texture);
         } else if (_state == 2) {
             // point
-            ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, TILESIZE*3, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y+TILESIZE*2, draw::get_instance()->get_object_graphic(_id)->texture);
+            ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, TILESIZE*3, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y+TILESIZE*2, Draw::get_instance()->get_object_graphic(_id)->texture);
             // body
-            ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, TILESIZE*2, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y+TILESIZE, draw::get_instance()->get_object_graphic(_id)->texture);
+            ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, TILESIZE*2, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y+TILESIZE, Draw::get_instance()->get_object_graphic(_id)->texture);
         } else if (_state > 2) {
             if (_expanding == true) {
                 // point
-                ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, TILESIZE*3, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y+TILESIZE*_state, draw::get_instance()->get_object_graphic(_id)->texture);
+                ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, TILESIZE*3, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y+TILESIZE*_state, Draw::get_instance()->get_object_graphic(_id)->texture);
                 // body
                 for (int i=1; i<_state; i++) {
-                    ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, TILESIZE*2, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y+TILESIZE*i, draw::get_instance()->get_object_graphic(_id)->texture);
+                    ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, TILESIZE*2, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y+TILESIZE*i, Draw::get_instance()->get_object_graphic(_id)->texture);
                 }
             } else {
                 int start_x = RES_H/TILESIZE;
@@ -659,10 +659,10 @@ void GameObject::show_deathray_vertical(int adjust_x, int adjust_y)
                 }
                 // body
                 for (int i=start_x+1; i<_state; i++) {
-                    ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, TILESIZE*2, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y+TILESIZE*i, draw::get_instance()->get_object_graphic(_id)->texture);
+                    ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, TILESIZE*2, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y+TILESIZE*i, Draw::get_instance()->get_object_graphic(_id)->texture);
                 }
                 // tail
-                ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, TILESIZE, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y+TILESIZE*start_x, draw::get_instance()->get_object_graphic(_id)->texture);
+                ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, TILESIZE, framesize_w, TILESIZE, graphic_destiny.x, graphic_destiny.y+TILESIZE*start_x, Draw::get_instance()->get_object_graphic(_id)->texture);
             }
 
         }
@@ -681,7 +681,7 @@ void GameObject::show_deathray_horizontal(int adjust_x, int adjust_y)
     graphic_destiny.x = position.x - scroll_x;
     graphic_destiny.y = position.y + map->getMapScrolling().y + adjust_y;
 
-    if (draw::get_instance()->get_object_graphic(_id) != nullptr) {
+    if (Draw::get_instance()->get_object_graphic(_id) != nullptr) {
         if (_obj_frame_timer < TimerView::get_instance()->getTimer()) {
             _obj_frame_timer = TimerView::get_instance()->getTimer() + _frame_duration;
             _ray_state = !_ray_state;
@@ -690,40 +690,40 @@ void GameObject::show_deathray_horizontal(int adjust_x, int adjust_y)
 
         if (direction == ANIM_DIRECTION_LEFT) {
             // draw base
-            ImageView::get_instance()->renderTexturePortionAt(TILESIZE*3+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+            ImageView::get_instance()->renderTexturePortionAt(TILESIZE*3+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
             if (_size == 1) {
                 // point
-                ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x-TILESIZE*2, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+                ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x-TILESIZE*2, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
             } else if (_size == 2) {
                 // point
-                ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x-TILESIZE*2, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+                ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x-TILESIZE*2, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
                 // body
-                ImageView::get_instance()->renderTexturePortionAt(TILESIZE+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x-TILESIZE, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+                ImageView::get_instance()->renderTexturePortionAt(TILESIZE+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x-TILESIZE, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
             } else if (_size > 2) {
                 // point
-                ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x-TILESIZE*_size, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+                ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x-TILESIZE*_size, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
                 // body
                 for (int i=1; i<_size; i++) {
-                    ImageView::get_instance()->renderTexturePortionAt(TILESIZE+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x-TILESIZE*i, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+                    ImageView::get_instance()->renderTexturePortionAt(TILESIZE+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x-TILESIZE*i, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
                 }
             }
         } else {
             // draw base
-            ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+            ImageView::get_instance()->renderTexturePortionAt(framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
             if (_size == 1) {
                 // point
-                ImageView::get_instance()->renderTexturePortionAt(TILESIZE*3+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x+TILESIZE, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+                ImageView::get_instance()->renderTexturePortionAt(TILESIZE*3+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x+TILESIZE, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
             } else if (_size == 2) {
                 // point
-                ImageView::get_instance()->renderTexturePortionAt(TILESIZE*3+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x+TILESIZE*2, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+                ImageView::get_instance()->renderTexturePortionAt(TILESIZE*3+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x+TILESIZE*2, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
                 // body
-                ImageView::get_instance()->renderTexturePortionAt(TILESIZE*2+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x+TILESIZE, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+                ImageView::get_instance()->renderTexturePortionAt(TILESIZE*2+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x+TILESIZE, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
             } else if (_size > 2) {
                 // point
-                ImageView::get_instance()->renderTexturePortionAt(TILESIZE*3+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x+TILESIZE*_size, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+                ImageView::get_instance()->renderTexturePortionAt(TILESIZE*3+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x+TILESIZE*_size, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
                 // body
                 for (int i=1; i<_size; i++) {
-                    ImageView::get_instance()->renderTexturePortionAt(TILESIZE*2+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x+TILESIZE*i, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+                    ImageView::get_instance()->renderTexturePortionAt(TILESIZE*2+framesize_w*_ray_state, framesize_h*direction, TILESIZE, framesize_h, graphic_destiny.x+TILESIZE*i, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
                 }
             }
         }
@@ -750,8 +750,8 @@ void GameObject::show_boss_door(int adjust_x, int adjust_y)
         //std::cout << "object::show_boss_door::graph_h[" << graph_h << "]" << std::endl;
     }
 
-    if (draw::get_instance()->get_object_graphic(_id) != nullptr) {
-        ImageView::get_instance()->renderTexturePortionAt(0, 0, framesize_w, graph_h, graphic_destiny.x, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+    if (Draw::get_instance()->get_object_graphic(_id) != nullptr) {
+        ImageView::get_instance()->renderTexturePortionAt(0, 0, framesize_w, graph_h, graphic_destiny.x, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
     }
 
 }
@@ -775,18 +775,18 @@ void GameObject::show_vertical_ray(int adjust_x, int adjust_y)
     graphic_destiny.x = position.x - scroll_x;
     graphic_destiny.y = position.y + map->getMapScrolling().y + adjust_y;
 
-    if (draw::get_instance()->get_object_graphic(_id) != nullptr) {
+    if (Draw::get_instance()->get_object_graphic(_id) != nullptr) {
         if (_obj_frame_timer < TimerView::get_instance()->getTimer()) {
             _obj_frame_timer = TimerView::get_instance()->getTimer() + RAYFRAME_DELAY;
             _ray_state = !_ray_state;
         }
 
-        int dest_y = draw::get_instance()->get_object_graphic(_id)->surface->h-(TILESIZE*(_state+1));
+        int dest_y = Draw::get_instance()->get_object_graphic(_id)->surface->h-(TILESIZE*(_state+1));
 
         //std::cout << "OBJECT::show_vertical_ray, timer[" << TimerView::get_instance()->getTimer() << "], obj.timer[" << _obj_frame_timer << "], _ray_state[" << (int)_ray_state << "], _state[" << (int)_state << "]" << std::endl;
 
         //std::cout << "OBJECT::show_vertical_ray - dest_y: " << dest_y << ", _state: " << _state << std::endl;
-        ImageView::get_instance()->renderTexturePortionAt(TILESIZE*_ray_state, dest_y, TILESIZE, TILESIZE*(_state+1), graphic_destiny.x, graphic_destiny.y-TILESIZE*(_state), draw::get_instance()->get_object_graphic(_id)->texture);
+        ImageView::get_instance()->renderTexturePortionAt(TILESIZE*_ray_state, dest_y, TILESIZE, TILESIZE*(_state+1), graphic_destiny.x, graphic_destiny.y-TILESIZE*(_state), Draw::get_instance()->get_object_graphic(_id)->texture);
     }
 }
 
@@ -801,7 +801,7 @@ void GameObject::show_horizontal_ray(int adjust_x, int adjust_y)
     graphic_destiny.x = position.x - scroll_x;
     graphic_destiny.y = position.y + map->getMapScrolling().y + adjust_y;
 
-    if (draw::get_instance()->get_object_graphic(_id) != nullptr) {
+    if (Draw::get_instance()->get_object_graphic(_id) != nullptr) {
         if (_obj_frame_timer < TimerView::get_instance()->getTimer()) {
             _obj_frame_timer = TimerView::get_instance()->getTimer() + RAYFRAME_DELAY;
             _ray_state = !_ray_state;
@@ -811,11 +811,11 @@ void GameObject::show_horizontal_ray(int adjust_x, int adjust_y)
             int graphic_x = framesize_w - TILESIZE*(_state+1) + framesize_w*_ray_state;
             int graphic_w = TILESIZE*(_state+1);
             int dest_x = graphic_destiny.x - graphic_w + TILESIZE;
-            ImageView::get_instance()->renderTexturePortionAt(graphic_x, 0, graphic_w, TILESIZE, dest_x, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+            ImageView::get_instance()->renderTexturePortionAt(graphic_x, 0, graphic_w, TILESIZE, dest_x, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
         } else {
             int graphic_x = framesize_w*_ray_state;
             int graphic_w = TILESIZE*(_state+1);
-            ImageView::get_instance()->renderTexturePortionAt(graphic_x, framesize_h, graphic_w, TILESIZE, graphic_destiny.x, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+            ImageView::get_instance()->renderTexturePortionAt(graphic_x, framesize_h, graphic_w, TILESIZE, graphic_destiny.x, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
         }
     }
 }
@@ -830,9 +830,9 @@ void GameObject::show_track_platform(int adjust_x, int adjust_y)
     }
     graphic_destiny.x = position.x - scroll_x;
     graphic_destiny.y = position.y + map->getMapScrolling().y + adjust_y;
-    if (draw::get_instance()->get_object_graphic(_id) != nullptr) {
+    if (Draw::get_instance()->get_object_graphic(_id) != nullptr) {
         //std::cout << "show_track_platform - _state: " << _state << std::endl;
-        ImageView::get_instance()->renderTexturePortionAt(_state*framesize_w, 0, framesize_w, framesize_h, graphic_destiny.x, graphic_destiny.y, draw::get_instance()->get_object_graphic(_id)->texture);
+        ImageView::get_instance()->renderTexturePortionAt(_state*framesize_w, 0, framesize_w, framesize_h, graphic_destiny.x, graphic_destiny.y, Draw::get_instance()->get_object_graphic(_id)->texture);
     }
 }
 
@@ -1063,7 +1063,7 @@ void GameObject::move(bool paused)
             if (_expanding == true) {
                 _state++;
                 _timer_limit = TimerView::get_instance()->getTimer() + FRAMETIMER_RAY;
-                if (draw::get_instance()->get_object_graphic(_id) != nullptr) {
+                if (Draw::get_instance()->get_object_graphic(_id) != nullptr) {
                     int limit = framesize_w/TILESIZE - 1;
                     if (type == OBJ_RAY_VERTICAL) {
                         limit = framesize_h/TILESIZE - 1;
@@ -1273,7 +1273,7 @@ st_position GameObject::get_start_position() const
 
 int GameObject::get_move_speed()
 {
-    return SharedData::get_instance()->v6_object_list.at(_id).speed;
+    return GameData::get_instance()->v6_object_list.at(_id).speed;
 }
 
 st_rectangle GameObject::get_area()

@@ -58,7 +58,7 @@ void scenesLib::preloadScenes()
 void scenesLib::draw_main()
 {
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 
 	// PARTE 1 - TITLE SCREEN
     st_imageData intro_screen;
@@ -155,7 +155,7 @@ void scenesLib::main_screen()
 			main_picker.draw();
         } else if (picked_n == 3) { // ABOUT/CREDITS //
             // only wait for keypress if user did not interrupted credits
-            if (draw::get_instance()->show_credits(true) == 0) {
+            if (Draw::get_instance()->show_credits(true) == 0) {
                 InputController::get_instance()->wait_keypress();
             }
             draw_main();
@@ -171,7 +171,7 @@ void scenesLib::main_screen()
             main_picker.draw();
         }
 	}
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 
     if (picked_n == 0) { // NEW GAME //
         // demo do not have player selection, only rockbot is playable
@@ -189,7 +189,7 @@ void scenesLib::show_cheats_menu()
     config_text_pos.y = ImageView::get_instance()->get_config_menu_pos().y + 40;
 
     ImageView::get_instance()->show_config_bg();
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(300);
 
@@ -232,7 +232,7 @@ Uint8 scenesLib::select_difficulty()
     std::vector<std::string> options;
 
     ImageView::get_instance()->show_config_bg();
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(300);
 
@@ -260,7 +260,7 @@ Uint8 scenesLib::select_difficulty()
         }
         std::cout << "############ select_difficulty.selected_option[" << selected_option << "]" << std::endl;
         ImageView::get_instance()->clearScreenArea(config_text_pos.x-1, config_text_pos.y-1, RES_W,  180, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
     }
     return res;
 }

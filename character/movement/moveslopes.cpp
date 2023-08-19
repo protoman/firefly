@@ -207,7 +207,7 @@ void moveSlopes::calc_slope_diff_h(st_position map_pos)
         std::cout << "character::adjust_slope_y - LEAVE #2" << std::endl;
         return;
     }
-    slope_data data = SharedData::get_instance()->slope_list.at(tile.tile_underlay.x).slope[tile.tile_underlay.y];
+    slope_data data = GameData::get_instance()->slope_list.at(tile.tile_underlay.x).slope[tile.tile_underlay.y];
 
 
     int left = TILESIZE - data.left;
@@ -229,7 +229,7 @@ int moveSlopes::adjust_slope_y(int xinc, int incy, st_position map_pos, st_recta
         std::cout << "character::adjust_slope_y - LEAVE #2" << std::endl;
         return BLOCK_UNBLOCKED;
     }
-    slope_data data = SharedData::get_instance()->slope_list.at(tile.tile_underlay.x).slope[tile.tile_underlay.y];
+    slope_data data = GameData::get_instance()->slope_list.at(tile.tile_underlay.x).slope[tile.tile_underlay.y];
 
 
     int left = TILESIZE - data.left;

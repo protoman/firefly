@@ -107,7 +107,7 @@ Sint8 option_picker::pick(int initial_pick_pos)
             } else {
                 //std::cout << "option_picker::option_picker::END #1" << std::endl;
                 ImageView::get_instance()->eraseCursor(st_position(_position.x-CURSOR_SPACING, _position.y+(_pick_pos*CURSOR_SPACING)));
-                draw::get_instance()->update_screen();
+                Draw::get_instance()->update_screen();
                 if (_show_return == true) {
                     _pick_pos--;
                 }
@@ -145,14 +145,14 @@ Sint8 option_picker::pick(int initial_pick_pos)
         }
         InputController::get_instance()->clean();
         TimerView::get_instance()->delay(10);
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
     }
     if (_pick_pos < 0 || _pick_pos >= picker_item_list.size()) {
         _pick_pos = 0;
     }
 	ImageView::get_instance()->eraseCursor(st_position(_position.x-CURSOR_SPACING, _position.y+(_pick_pos*CURSOR_SPACING)));
     TimerView::get_instance()->delay(10);
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 
 
     if (_show_return == true) {

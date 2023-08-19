@@ -229,7 +229,7 @@ void artificial_inteligence::define_ai_next_step()
         bool found_chance = false;
         int chance_sum = 0;
         for (int i=0; i<AI_MAX_STATES; i++) {
-            //std::cout << "[" << name << "][" << i << "].chance: " << GameMediator::get_instance()->ai_list.at(_number).states[i].chance << ", chance_sum: " << chance_sum << std::endl;
+            //std::cout << "[" << name << "][" << i << "].chance: " << GameGameData::get_instance()->ai_list.at(_number).states[i].chance << ", chance_sum: " << chance_sum << std::endl;
             chance_sum += GameData::get_instance()->ai_list.at(_number).states[i].chance;
             if (rand_n < chance_sum) {
                 //std::cout << "AI::define_ai_next_step[" << name << "] - FOUND CHANCE at [" << i << "]" << std::endl;

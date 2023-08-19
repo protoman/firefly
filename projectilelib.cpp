@@ -85,7 +85,7 @@ projectile::projectile(Uint8 id, Uint8 set_direction, st_position set_position, 
 	} else if (_move_type == TRAJECTORY_FREEZE) {
 		_quake_info.timer = TimerView::get_instance()->getTimer() + FREEZE_DURATION;
 		ImageView::get_instance()->blink_screen(235, 235, 235);
-        draw::get_instance()->set_flash_enabled(true);
+        Draw::get_instance()->set_flash_enabled(true);
     } else if (_move_type == TRAJECTORY_PUSH_BACK) {
         _effect_timer = TimerView::get_instance()->getTimer() + 2000;
     } else if (_move_type == TRAJECTORY_PULL) {
@@ -660,7 +660,7 @@ st_size projectile::move() {
 		if (_quake_info.timer < TimerView::get_instance()->getTimer()) {
             //std::cout << "projectile::projectile - freeze STOPPED at[" << TimerView::get_instance()->getTimer() << "], should stop at [" << _quake_info.timer << "]" << std::endl;
             //std::cout << "[[[freeze_weapon_effect(RESET #5)]]]" << std::endl;
-            draw::get_instance()->set_flash_enabled(false);
+            Draw::get_instance()->set_flash_enabled(false);
 			is_finished = true;
 		}
 	} else if (_move_type == TRAJECTORY_CENTERED) {
@@ -1217,7 +1217,7 @@ void projectile::finish()
     // @TODO - quake
     if (_is_temporary == false && _move_type == TRAJECTORY_FREEZE) {
         //std::cout << "[[[freeze_weapon_effect(RESET #4)]]] - timer: " << _quake_info.timer << std::endl;
-        draw::get_instance()->set_flash_enabled(false);
+        Draw::get_instance()->set_flash_enabled(false);
     }
     is_finished = true;
 }

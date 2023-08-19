@@ -60,7 +60,7 @@ void game_menu::show_extra_menu()
     config_text_pos.y = ImageView::get_instance()->get_config_menu_pos().y + 40;
 
     ImageView::get_instance()->show_config_bg();
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(300);
 
@@ -80,7 +80,7 @@ void game_menu::show_extra_menu()
         // ABOUT/CREDITS //
         if (selected_option == 0) {
             // only wait for keypress if user did not interrupted credits
-            if (draw::get_instance()->show_credits(true) == 0) {
+            if (Draw::get_instance()->show_credits(true) == 0) {
                 InputController::get_instance()->wait_keypress();
             }
         }
@@ -94,7 +94,7 @@ short game_menu::show_main_config(short stage_finished, bool called_from_game)
     std::vector<st_menu_option> options;
 
     ImageView::get_instance()->show_config_bg();
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(300);
 
@@ -141,7 +141,7 @@ short game_menu::show_main_config(short stage_finished, bool called_from_game)
             break;
         }
         ImageView::get_instance()->clearScreenArea(config_text_pos.x-1, config_text_pos.y-1, RES_W,  180, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
         if (selected_option == 0) { // CONFIG AUDIO //
             show_config_audio();
         } else if (selected_option == 1) { // CONFIG INPUT //
@@ -171,7 +171,7 @@ short game_menu::show_main_config(short stage_finished, bool called_from_game)
         fio.save_config(SharedData::get_instance()->game_config);
 
         ImageView::get_instance()->clearScreenArea(config_text_pos.x-1, config_text_pos.y-1, RES_W,  180, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
     }
     return res;
 }
@@ -274,10 +274,10 @@ void game_menu::show_config_ask_restart()
     TextView::get_instance()->renderText(menu_pos.x, menu_pos.y+10, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, strings_map::get_instance()->get_ingame_string(strings_ingame_config_restart2, SharedData::get_instance()->current_language));
     TextView::get_instance()->renderText(menu_pos.x, menu_pos.y+20, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, strings_map::get_instance()->get_ingame_string(strings_ingame_config_restart3, SharedData::get_instance()->current_language));
     TextView::get_instance()->renderText(menu_pos.x, menu_pos.y+40, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, strings_map::get_instance()->get_ingame_string(strings_ingame_config_presstorestart, SharedData::get_instance()->current_language));
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     InputController::get_instance()->wait_keypress();
     ImageView::get_instance()->clearScreenArea(menu_pos.x, menu_pos.y, RES_W,  180, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 }
 
 void game_menu::show_config_audio()
@@ -430,10 +430,10 @@ void game_menu::show_config_warning_android_play_services()
     TextView::get_instance()->renderText(menu_pos.x, menu_pos.y+20, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, strings_map::get_instance()->get_ingame_string(strings_ingame_config_android_play_services3, SharedData::get_instance()->current_language));
     TextView::get_instance()->renderText(menu_pos.x, menu_pos.y+40, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, strings_map::get_instance()->get_ingame_string(strings_ingame_config_android_play_services4, SharedData::get_instance()->current_language));
     TextView::get_instance()->renderText(menu_pos.x, menu_pos.y+60, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, strings_map::get_instance()->get_ingame_string(strings_ingame_config_presstorestart, SharedData::get_instance()->current_language));
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     InputController::get_instance()->wait_keypress();
     ImageView::get_instance()->clearScreenArea(menu_pos.x, menu_pos.y, RES_W,  180, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 }
 
 void game_menu::show_config_warning_android_cloud_save()
@@ -447,10 +447,10 @@ void game_menu::show_config_warning_android_cloud_save()
     TextView::get_instance()->renderText(menu_pos.x, menu_pos.y+20, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, strings_map::get_instance()->get_ingame_string(strings_ingame_config_android_cloud_save3, SharedData::get_instance()->current_language));
     TextView::get_instance()->renderText(menu_pos.x, menu_pos.y+40, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, strings_map::get_instance()->get_ingame_string(strings_ingame_config_android_cloud_save4, SharedData::get_instance()->current_language));
     TextView::get_instance()->renderText(menu_pos.x, menu_pos.y+60, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, strings_map::get_instance()->get_ingame_string(strings_ingame_config_presstorestart, SharedData::get_instance()->current_language));
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     InputController::get_instance()->wait_keypress();
     ImageView::get_instance()->clearScreenArea(menu_pos.x, menu_pos.y, RES_W,  180, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 }
 
 void game_menu::show_config_warning_android_hide_controls()
@@ -463,10 +463,10 @@ void game_menu::show_config_warning_android_hide_controls()
     TextView::get_instance()->renderText(menu_pos.x, menu_pos.y+10, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, strings_map::get_instance()->get_ingame_string(strings_ingame_config_restart2, SharedData::get_instance()->current_language));
     TextView::get_instance()->renderText(menu_pos.x, menu_pos.y+20, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, strings_map::get_instance()->get_ingame_string(strings_ingame_config_restart3, SharedData::get_instance()->current_language));
     TextView::get_instance()->renderText(menu_pos.x, menu_pos.y+40, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, strings_map::get_instance()->get_ingame_string(strings_ingame_config_presstorestart, SharedData::get_instance()->current_language));
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     InputController::get_instance()->wait_keypress();
     ImageView::get_instance()->clearScreenArea(menu_pos.x, menu_pos.y, RES_W,  180, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 }
 
 
@@ -511,7 +511,7 @@ void game_menu::config_int_value(int initial_value_int, int min, int max)
         }
         InputController::get_instance()->clean();
         TimerView::get_instance()->delay(10);
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
     }
 
 }

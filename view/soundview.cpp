@@ -481,3 +481,15 @@ bool SoundView::get_is_playing_boss_music()
     return is_playing_boss_music;
 }
 
+Mix_Chunk *SoundView::get_sfx(std::string filename)
+{
+    std::map<std::string, Mix_Chunk*>::iterator it = sfx_map.find(filename);
+    if (it == sfx_map.end()) {
+        Mix_Chunk* sfx = SoundView::get_instance()->sfx_from_file(filename);
+        sfx_map.insert(std::pair<std::string, Mix_Chunk*>(filename, sfx));
+        return sfx;
+    } else {
+        return it->second;
+    }
+}
+

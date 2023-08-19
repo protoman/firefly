@@ -1089,7 +1089,7 @@ void character::show() {
             if (ImageView::get_instance()->get_scale() < 1.2) {
                 ImageView::get_instance()->inc_scale(0.01);
             }
-            draw::get_instance()->show_object_graphic(relativePosition.x, relativePosition.y+40, got_item_id);
+            Draw::get_instance()->show_object_graphic(relativePosition.x, relativePosition.y+40, got_item_id);
         }
     }
 }
@@ -2340,7 +2340,7 @@ st_map_collision character::map_collision(const float incx, const short incy, st
             } else if (!get_item(res_collision_object)) {
                 if (res_collision_object._object->get_type() == OBJ_TREASURE_CHEST) {
                     if (res_collision_object._object->is_started() == false) {
-                        draw::get_instance()->draw_game_button(relativePosition.x+frameSize.width/2, relativePosition.y-20, INPUT_IMAGES_DPAD_DOWN);
+                        Draw::get_instance()->draw_game_button(relativePosition.x+frameSize.width/2, relativePosition.y-20, INPUT_IMAGES_DPAD_DOWN);
                         if (InputController::get_instance()->p1_input[BTN_DOWN] == 1) {
                             got_item_id = res_collision_object._object->get_ability();
                             std::cout << "character::map_collision - OPEN TREASURE CHEST, id_item[" << got_item_id << "]" << std::endl;

@@ -134,7 +134,7 @@ void MapController::show()
     //std::cout << "MAP::show - scroll.x[" << scroll.x << "]" << std::endl;
     drawLayers(false);
     if (get_map_gfx_mode() == SCREEN_GFX_MODE_BACKGROUND) {
-        draw::get_instance()->show_gfx();
+        Draw::get_instance()->show_gfx();
     }
 
     show_ghost_enemies();
@@ -157,7 +157,7 @@ void MapController::show()
     draw_animated_tiles();
 
     if (get_map_gfx_mode() == SCREEN_GFX_MODE_FULLMAP) {
-        draw::get_instance()->show_gfx();
+        Draw::get_instance()->show_gfx();
     }
 
     show_objects();
@@ -470,7 +470,7 @@ void MapController::showAbove(int scroll_y, int temp_scroll_x, bool show_fg)
             //std::cout << "$$$$$$$$$$$$$$$$$$$$$ tile.water[" << pos_x << "][" << pos_y << "], scroll_x[" << scroll_x << "], scroll_y[" << scroll_y << "], dest[" << dest_x << "][" << dest_y << "]" << std::endl;
 
             //ImageView::get_instance()->clearScreenArea(dest_x, dest_y, TILESIZE, TILESIZE, 100, 0, 0);
-            draw::get_instance()->draw_water_tile_overlay(dest_x, dest_y);
+            Draw::get_instance()->draw_water_tile_overlay(dest_x, dest_y);
         }
     }
 
@@ -478,7 +478,7 @@ void MapController::showAbove(int scroll_y, int temp_scroll_x, bool show_fg)
 
 
     if (_water_bubble.pos.x != -1) {
-        draw::get_instance()->show_bubble(_water_bubble.pos.x+_water_bubble.x_adjust, _water_bubble.pos.y);
+        Draw::get_instance()->show_bubble(_water_bubble.pos.x+_water_bubble.x_adjust, _water_bubble.pos.y);
         int water_lock = getMapPointLock(st_position((_water_bubble.pos.x+2+scroll_x)/TILESIZE, _water_bubble.pos.y/TILESIZE));
         _water_bubble.pos.y -= 2;
         if (_water_bubble.x_adjust_direction == ANIM_DIRECTION_LEFT) {
@@ -1146,7 +1146,7 @@ file_v6_style& MapController::get_style()
         exit(-1);
     }
     unsigned int style_n = it->second.at(SharedData::get_instance()->v6_selected_area).style;
-    if (style_n >= GameData::get_instance()->v6_style_list.size()) {
+    if (style_n != -1 && style_n >= GameData::get_instance()->v6_style_list.size()) {
         std::cout << "ERROR - Could not find style[" << style_n << "]" << std::endl;
         exit(-1);
     }
@@ -1620,7 +1620,7 @@ void MapController::load_map_objects() {
     for (int i=0; i<GameData::get_instance()->file_v6_stage_objects_map.at(mapNumber).size(); i++) {
         if (GameData::get_instance()->file_v6_stage_objects_map.at(mapNumber).at(i).id_object != -1) {
 
-            //std::cout << "################# OBJ[" << i << "].name[" << SharedData::get_instance()->v6_object_list.at(SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).at(i).id_object).name  << "].uuid[" << SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).at(i).uuid << "]" << std::endl;
+            //std::cout << "################# OBJ[" << i << "].name[" << GameData::get_instance()->v6_object_list.at(SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).at(i).id_object).name  << "].uuid[" << SharedData::get_instance()->file_v6_map_object_map.at(mapNumber).at(i).uuid << "]" << std::endl;
 
 
             GameObject temp_obj(GameData::get_instance()->file_v6_stage_objects_map.at(mapNumber).at(i).id_object, this, GameData::get_instance()->file_v6_stage_objects_map.at(mapNumber).at(i).start_point, GameData::get_instance()->file_v6_stage_objects_map.at(mapNumber).at(i).dest_position, GameData::get_instance()->file_v6_stage_objects_map.at(mapNumber).at(i).dest_map);
@@ -2326,7 +2326,7 @@ GameNPC *MapController::collision_player_npcs(character* playerObj)
             if (InputController::get_instance()->p1_input[BTN_UP] == 1) {
                 GameManager::get_instance()->talk_with_npc(npc_ref->get_id());
             } else {
-                draw::get_instance()->draw_game_button(playerObj->get_real_position().x+playerObj->get_size().width/2, playerObj->get_real_position().y-20, INPUT_IMAGES_DPAD_UP);
+                Draw::get_instance()->draw_game_button(playerObj->get_real_position().x+playerObj->get_size().width/2, playerObj->get_real_position().y-20, INPUT_IMAGES_DPAD_UP);
             }
             return npc_ref;
         }
@@ -2689,7 +2689,7 @@ void MapController::show_enemies() /// @TODO - check out of screen
 
         if (GameManager::get_instance()->must_show_boss_hp() && enemy_ref->is_boss() && enemy_ref->is_on_visible_screen() == true) {
             has_boss = true;
-            draw::get_instance()->set_boss_hp(enemy_ref->get_current_hp());
+            Draw::get_instance()->set_boss_hp(enemy_ref->get_current_hp());
         }
         if (enemy_ref->is_dead() == false) {
             enemy_ref->show();
@@ -2697,7 +2697,7 @@ void MapController::show_enemies() /// @TODO - check out of screen
         enemy_ref->show_projectiles();
     }
     if (has_boss == false) {
-        draw::get_instance()->set_boss_hp(-99);
+        Draw::get_instance()->set_boss_hp(-99);
     }
 }
 
@@ -2712,7 +2712,7 @@ void MapController::show_enemies_to_left(int x)
         }
         npc_ref->show_projectiles();
     }
-    draw::get_instance()->set_boss_hp(-99);
+    Draw::get_instance()->set_boss_hp(-99);
 }
 
 void MapController::show_ghost_enemies()
@@ -2726,7 +2726,7 @@ void MapController::show_ghost_enemies()
         }
         if (GameManager::get_instance()->must_show_boss_hp() && npc_ref->is_boss() && npc_ref->is_on_visible_screen() == true) {
             has_boss = true;
-            draw::get_instance()->set_boss_hp(npc_ref->get_current_hp());
+            Draw::get_instance()->set_boss_hp(npc_ref->get_current_hp());
         }
         if (npc_ref->is_dead() == false) {
             npc_ref->show();
@@ -2734,7 +2734,7 @@ void MapController::show_ghost_enemies()
         npc_ref->show_projectiles();
     }
     if (has_boss == false) {
-        draw::get_instance()->set_boss_hp(-99);
+        Draw::get_instance()->set_boss_hp(-99);
     }
 }
 

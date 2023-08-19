@@ -11,8 +11,10 @@
 struct file_v6_quest {
     char name[LANGUAGE_COUNT-1][FILE_V6_QUEST_NAME_SIZE];
     char short_description[LANGUAGE_COUNT-1][FILE_V6_QUEST_NAME_SIZE];
+    char beforehand_text[LANGUAGE_COUNT-1][FILE_V6_QUEST_TEXT_SIZE];
     char received_item_text[LANGUAGE_COUNT-1][FILE_V6_QUEST_TEXT_SIZE];
     char give_item_text[LANGUAGE_COUNT-1][FILE_V6_QUEST_TEXT_SIZE];
+    char afterwards_text[LANGUAGE_COUNT-1][FILE_V6_QUEST_TEXT_SIZE];
     int requested_item_id;
     int given_item_id;
 

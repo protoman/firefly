@@ -51,7 +51,7 @@ void key_map::draw_screen()
         redraw_line(i);
     }
     TextView::get_instance()->renderText(config_text_pos.x, config_text_pos.y + _keys_list.size()*CURSOR_SPACING, strings_map::get_instance()->get_ingame_string(strings_config_return, SharedData::get_instance()->current_language));
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 
     ImageView::get_instance()->drawCursor(st_position(cursor_pos.x-CURSOR_SPACING, cursor_pos.y+(_pick_pos*CURSOR_SPACING)));
 
@@ -62,12 +62,12 @@ void key_map::draw_screen()
                 finished = true;
             } else {
                 TextView::get_instance()->renderText(config_text_pos.x, config_text_pos.y + _keys_list.size()*CURSOR_SPACING+CURSOR_SPACING*2, strings_map::get_instance()->get_ingame_string(strings_ingame_config_key_pressnew, SharedData::get_instance()->current_language)); //input code (number)
-                draw::get_instance()->update_screen();
+                Draw::get_instance()->update_screen();
                 ImageView::get_instance()->clearScreenArea(config_text_pos.x, config_text_pos.y + _keys_list.size()*CURSOR_SPACING+CURSOR_SPACING*2-1, 180,  CURSOR_SPACING+1, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
                 ///@TODO - key_config[_pick_pos].key_type = new_key.key_type;
                 ///@TODO - key_config[_pick_pos].key_number = new_key.key_number;
                 redraw_line(_pick_pos);
-                draw::get_instance()->update_screen();
+                Draw::get_instance()->update_screen();
             }
         }
         if (InputController::get_instance()->p1_input[BTN_DOWN]) {
@@ -93,7 +93,7 @@ void key_map::draw_screen()
         }
         InputController::get_instance()->clean();
         TimerView::get_instance()->delay(10);
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
     }
 }
 
@@ -342,7 +342,7 @@ void key_map::config_buttons()
 
             ImageView::get_instance()->clearScreenArea(menu_pos.x, menu_pos.y, 195,  180, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
             TextView::get_instance()->renderText(menu_pos.x, menu_pos.y, strings_map::get_instance()->get_ingame_string(strings_ingame_pressanykey, SharedData::get_instance()->current_language));
-            draw::get_instance()->update_screen();
+            Draw::get_instance()->update_screen();
             InputController::get_instance()->clean();
             TimerView::get_instance()->delay(200);
             bool is_joystick = InputController::get_instance()->pick_key_or_button(game_config_copy, selected_key);
@@ -365,14 +365,14 @@ std::cout << "### INPUT::config_buttons::FINISHED @1 ###" << std::endl;
             if (is_key_set(BTN_JUMP, game_config_copy) == false) {
                 std::string line = strings_map::get_instance()->get_ingame_string(strings_config_keys_unet, SharedData::get_instance()->current_language) + std::string(" JUMP KEY");
                 TextView::get_instance()->renderText(menu_pos.x, RES_H-40, st_color(180, 0, 0), false, line);
-                draw::get_instance()->update_screen();
+                Draw::get_instance()->update_screen();
                 TimerView::get_instance()->delay(1000);
                 InputController::get_instance()->clean_all();
                 selected_option = 0;
             } else if (is_key_set(BTN_ATTACK, game_config_copy) == false) {
                 std::string line = strings_map::get_instance()->get_ingame_string(strings_config_keys_unet, SharedData::get_instance()->current_language) + std::string(" ATTACK KEY");
                 TextView::get_instance()->renderText(menu_pos.x, RES_H-40, st_color(180, 0, 0), false, line);
-                draw::get_instance()->update_screen();
+                Draw::get_instance()->update_screen();
                 TimerView::get_instance()->delay(1000);
                 InputController::get_instance()->clean_all();
                 selected_option = 0;
@@ -380,7 +380,7 @@ std::cout << "### INPUT::config_buttons::FINISHED @1 ###" << std::endl;
                 std::string line = strings_map::get_instance()->get_ingame_string(strings_config_keys_unet, SharedData::get_instance()->current_language) + std::string(" START KEY");
                 TextView::get_instance()->renderText(menu_pos.x, RES_H-40, st_color(180, 0, 0), false, line);
                 TimerView::get_instance()->delay(1000);
-                draw::get_instance()->update_screen();
+                Draw::get_instance()->update_screen();
                 InputController::get_instance()->clean_all();
                 selected_option = 0;
             }

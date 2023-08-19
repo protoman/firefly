@@ -439,9 +439,9 @@ void ImageView::preload()
 
     // object icons
     icon_bg = imageFromFile(SharedData::get_instance()->FILEPATH + std::string("images/backgrounds/icon.png"));
-    for (unsigned int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
+    for (unsigned int i=0; i<GameData::get_instance()->v6_object_list.size(); i++) {
         // TODO: border and image size
-        std::string filename = SharedData::get_instance()->FILEPATH + std::string("images/sprites/objects/") + SharedData::get_instance()->v6_object_list.at(i).graphic_filename;
+        std::string filename = SharedData::get_instance()->FILEPATH + std::string("images/sprites/objects/") + GameData::get_instance()->v6_object_list.at(i).graphic_filename;
         object_icon_map.insert(std::pair<int, st_imageData>(i, imageFromFile(filename)));
     }
 

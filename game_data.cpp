@@ -12,19 +12,11 @@ GameData *GameData::get_instance()
         _instance = new GameData();
     }
     return _instance;
-
 }
 
-Mix_Chunk* GameData::get_sfx(std::string filename)
+GameData::GameData()
 {
-    std::map<std::string, Mix_Chunk*>::iterator it = sfx_map.find(filename);
-    if (it == sfx_map.end()) {
-        Mix_Chunk* sfx = SoundView::get_instance()->sfx_from_file(filename);
-        sfx_map.insert(std::pair<std::string, Mix_Chunk*>(filename, sfx));
-        return sfx;
-    } else {
-        return it->second;
-    }
+    //load_data();
 }
 
 file_projectilev3 GameData::get_projectile(int n)
@@ -56,6 +48,11 @@ int GameData::get_enemy_list_size()
     return enemy_list.size();
 }
 
+void GameData::add_enemy(file_enemy_v3_1_2 enemy)
+{
+    enemy_list.push_back(enemy);
+}
+
 
 file_npc_v3_1_2 *GameData::get_npc(unsigned int n)
 {
@@ -72,16 +69,24 @@ int GameData::get_npc_list_size()
     return npc_list.size();
 }
 
+void GameData::add_npc(file_npc_v3_1_2 npc)
+{
+    npc_list.push_back(npc);
+}
+
 void GameData::load_data()
 {
     loadGameData();
     load_style_list();
     load_enemy_list();
+    load_npc_list();
     load_ai_list();
     load_projectile_list();
     load_slope_list();
     loadNpcStateData();
+    load_anim_tile_list();
     loadMapData();
+    load_player_list();
 }
 
 void GameData::loadStageRooms(int area_n)
@@ -106,6 +111,15 @@ void GameData::load_enemy_list()
     }
 }
 
+void GameData::load_npc_list()
+{
+    npc_list = fio_cmm.load_from_disk<file_npc_v3_1_2>(SharedData::get_instance()->FILEPATH + "game_npc_list_3_1_2_b.dat");
+    if (npc_list.size() == 0) {
+        npc_list.push_back(file_npc_v3_1_2());
+    }
+
+}
+
 void GameData::load_ai_list()
 {
     ai_list = fio_cmm.load_from_disk<file_artificial_inteligence>(SharedData::get_instance()->FILEPATH + "/game_ai_list.dat");
@@ -113,6 +127,9 @@ void GameData::load_ai_list()
         for (unsigned int i=0; i<enemy_list.size(); i++) {
             ai_list.push_back(file_artificial_inteligence());
         }
+    }
+    if (ai_list.size() == 0) { // add one first item to avoid errors
+        ai_list.push_back(file_artificial_inteligence());
     }
 }
 
@@ -133,6 +150,10 @@ void GameData::load_slope_list()
 void GameData::load_style_list()
 {
     v6_style_list = fio_cmm.load_from_disk<file_v6_style>(SharedData::get_instance()->FILEPATH + FILE_V6_STYLE_LIST);
+    if (v6_style_list.size() == 0) {
+        v6_style_list.push_back(file_v6_style());
+    }
+
 }
 
 void GameData::loadGameData()
@@ -152,9 +173,9 @@ void GameData::loadGameData()
     // ENEMIES LIST
     loadNpcStateData();
 
-    SharedData::get_instance()->v6_object_list = fio_cmm.load_from_disk<v6_file_object>(SharedData::get_instance()->FILEPATH + "/game_object_list_v6.dat");
-    if (SharedData::get_instance()->v6_object_list.size() == 0) { // add one first item to avoid errors
-        SharedData::get_instance()->v6_object_list.push_back(v6_file_object());
+    v6_object_list = fio_cmm.load_from_disk<v6_file_object>(SharedData::get_instance()->FILEPATH + "/game_object_list_v6.dat");
+    if (v6_object_list.size() == 0) { // add one first item to avoid errors
+        v6_object_list.push_back(v6_file_object());
     }
 }
 
@@ -227,28 +248,21 @@ void GameData::loadMapData()
     }
 }
 
-GameData::GameData()
+void GameData::load_anim_tile_list()
 {
-    enemy_list = fio_cmm.load_from_disk<file_enemy_v3_1_2>(SharedData::get_instance()->FILEPATH + "/game_enemy_list_3_1_2_b.dat");
-
-    std::string npc_list_filename = SharedData::get_instance()->FILEPATH + "game_npc_list_3_1_2_b.dat";
-    npc_list = fio_cmm.load_from_disk<file_npc_v3_1_2>(npc_list_filename);
-
-    SharedData::get_instance()->v6_object_list = fio_cmm.load_from_disk<v6_file_object>(SharedData::get_instance()->FILEPATH + "/game_object_list_v6.dat");
-    ai_list = fio_cmm.load_from_disk<file_artificial_inteligence>(SharedData::get_instance()->FILEPATH + "/game_ai_list.dat");
-
     anim_tile_list = fio_cmm.load_from_disk<file_anim_block>(SharedData::get_instance()->FILEPATH + "/anim_block_list.dat");
-    player_list_v3_1 = fio_cmm.load_from_disk<file_player_v3_1_1>(SharedData::get_instance()->FILEPATH + "/player_list_v3_1_1.dat");
+}
 
-
-    // add some dummy data for game not to crash
+void GameData::load_player_list()
+{
+    player_list_v3_1 = fio_cmm.load_from_disk<file_player_v3_1_1>(SharedData::get_instance()->FILEPATH + "player_list_v3_1_1.dat");
     if (player_list_v3_1.size() == 0) {
         for (int i=0; i<FS_MAX_PLAYERS; i++) {
             player_list_v3_1.push_back(file_player_v3_1_1(i));
         }
     }
-
-    v6_stage_list = fio_cmm.load_from_disk<file_v6_stage>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST);
 }
+
+
 
 

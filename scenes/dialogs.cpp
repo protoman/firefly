@@ -31,10 +31,10 @@ void dialogs::show_dialog(std::string face_file, bool top_side, std::string line
     GameManager::get_instance()->game_pause();
 
     draw_dialog_bg();
-    draw::get_instance()->update_screen();
-    st_position dialog_pos = draw::get_instance()->get_dialog_pos();
+    Draw::get_instance()->update_screen();
+    st_position dialog_pos = Draw::get_instance()->get_dialog_pos();
 	ImageView::get_instance()->place_face(face_file, st_position(dialog_pos.x+16, dialog_pos.y+16));
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 
 	/// @TODO: usar show_config_bg e hide_config_bg da graphLib - modificar para aceitar centered (que é o atual) ou top ou bottom
     for (int i=0; i<FS_DIALOG_LINES; i++) {
@@ -42,13 +42,13 @@ void dialogs::show_dialog(std::string face_file, bool top_side, std::string line
         TextView::get_instance()->renderText(dialog_pos.x+52, i*11+(dialog_pos.y+16), st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, line);
 
 
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
         TimerView::get_instance()->delay(50);
     }
 
     if (show_btn == true) {
-        draw::get_instance()->show_dialog_button(1);
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->show_dialog_button(1);
+        Draw::get_instance()->update_screen();
     }
 
 
@@ -71,7 +71,7 @@ bool dialogs::show_yes_no_dialog(std::string lines[3])
     bool repeat_menu = true;
     int picked_n = -1;
 
-    Uint8 gfx = draw::get_instance()->get_gfx();
+    Uint8 gfx = Draw::get_instance()->get_gfx();
     GameManager::get_instance()->game_pause();
 
     InputController::get_instance()->clean();
@@ -80,8 +80,8 @@ bool dialogs::show_yes_no_dialog(std::string lines[3])
     bgCopy = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
     ImageView::get_instance()->copyScreenAreaToImage(0, 0, RES_W, RES_H, 0, 0, bgCopy);
 
-    draw::get_instance()->show_dialog(0);
-    st_position dialog_pos = draw::get_instance()->get_dialog_pos();
+    Draw::get_instance()->show_dialog(0);
+    st_position dialog_pos = Draw::get_instance()->get_dialog_pos();
 
     for (int i=0; i<3; i++) {
         TextView::get_instance()->renderText(dialog_pos.x+30, dialog_pos.y+16+15*i, st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, lines[i]);
@@ -92,7 +92,7 @@ bool dialogs::show_yes_no_dialog(std::string lines[3])
     item_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_yes, SharedData::get_instance()->current_language));
     item_list.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_no, SharedData::get_instance()->current_language));
     option_picker main_picker(false, st_position(dialog_pos.x+40, dialog_pos.y+16+11), item_list, false);
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     while (repeat_menu == true) {
         picked_n = main_picker.pick();
         //std::cout << "picked_n: " << picked_n << std::endl;
@@ -109,7 +109,7 @@ bool dialogs::show_yes_no_dialog(std::string lines[3])
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(200);
     ImageView::get_instance()->renderImageAt(0, 0, bgCopy);
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     GameManager::get_instance()->game_unpause();
 
     return res;
@@ -122,10 +122,10 @@ void dialogs::show_timed_dialog(std::string face_file, bool is_left, std::string
 
     GameManager::get_instance()->game_pause();
 
-    draw::get_instance()->update_screen();
-    st_position dialog_pos = draw::get_instance()->get_dialog_pos();
+    Draw::get_instance()->update_screen();
+    st_position dialog_pos = Draw::get_instance()->get_dialog_pos();
     ImageView::get_instance()->place_face(face_file, st_position(dialog_pos.x+16, dialog_pos.y+16));
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 
 	/// @TODO: usar show_config_bg e hide_config_bg da graphLib - modificar para aceitar centered (que é o atual) ou top ou bottom
 	for (int i=0; i<3; i++) {
@@ -135,14 +135,14 @@ void dialogs::show_timed_dialog(std::string face_file, bool is_left, std::string
 			temp_text += temp_char;
 
             TextView::get_instance()->renderText(j*9+(dialog_pos.x+52), i*11+(dialog_pos.y+16), st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, temp_text);
-            draw::get_instance()->update_screen();
+            Draw::get_instance()->update_screen();
             TimerView::get_instance()->delay(15);
 		}
 	}
 
     if (show_btn == true) {
-        draw::get_instance()->show_dialog_button(1);
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->show_dialog_button(1);
+        Draw::get_instance()->update_screen();
     }
 
 
@@ -169,7 +169,7 @@ void dialogs::draw_dialog_bg()
 	if (is_showing_dialog_bg == true) {
 		return;
 	}
-    draw::get_instance()->show_dialog(1);
+    Draw::get_instance()->show_dialog(1);
 }
 
 

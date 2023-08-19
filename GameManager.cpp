@@ -114,7 +114,7 @@ void GameManager::preloadGameData()
     GameData::get_instance()->load_data();
     mapController.loadMap();
     ImageView::get_instance()->preload();
-    draw::get_instance()->preload();
+    Draw::get_instance()->preload();
     read_save();
 
 }
@@ -215,7 +215,7 @@ void GameManager::show_hud(bool update_room)
 
     /// @TODO: show mini-map ///
 
-    draw::get_instance()->show_hud(player1.get_current_hp(), 1, 0, 0, area_room_x, area_room_y);
+    Draw::get_instance()->show_hud(player1.get_current_hp(), 1, 0, 0, area_room_x, area_room_y);
 
 
 }
@@ -425,7 +425,7 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
     }
 
 
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 
     mapController.reset_map_loaded_flag();
 }
@@ -495,7 +495,7 @@ void GameManager::start_stage()
 
     mapController.show();
     mapController.showAbove();
-    draw::get_instance()->fade_screen(0, 0, 0, 1000, true);
+    Draw::get_instance()->fade_screen(0, 0, 0, 1000, true);
 
     game_unpause();
 
@@ -506,7 +506,7 @@ void GameManager::start_stage()
         InputController::get_instance()->clean_confirm_button();
         mapController.show();
         mapController.showAbove();
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
         TimerView::get_instance()->delay(20);
     }
     // TODO::IURI //
@@ -552,14 +552,14 @@ void GameManager::show_player_teleport(int pos_x, int pos_y)
             player1.set_animation_has_restarted(false);
         }
         player1.show();
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
         TimerView::get_instance()->delay(20);
     }
 
     //std::cout << "GAME::show_player_telport #3" << std::endl;
     player1.set_animation_frame(2);
     player1.show();
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     TimerView::get_instance()->delay(20);
     //std::cout << "GAME::show_player_telport #4" << std::endl;
 
@@ -569,7 +569,7 @@ void GameManager::show_player_teleport(int pos_x, int pos_y)
     mapController.show();
     mapController.showAbove();
     player1.show();
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     TimerView::get_instance()->delay(20);
 
 }
@@ -590,7 +590,7 @@ void GameManager::restart_stage()
         SharedData::get_instance()->checkpoint.x = TILESIZE*4;
     }
     // remove any used teleporter
-    draw::get_instance()->fade_screen(0, 0, 0, 500, true);
+    Draw::get_instance()->fade_screen(0, 0, 0, 500, true);
 
     player1.set_teleporter(-1);
     _player_teleporter.active = false;
@@ -615,7 +615,7 @@ void GameManager::restart_stage()
 
     mapController.show();
     mapController.showAbove();
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     // if was on stage-boss, mneeds to reload music
     if (SoundView::get_instance()->get_is_playing_boss_music() == true) {
         SoundView::get_instance()->load_stage_music(GameData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
@@ -631,12 +631,12 @@ void GameManager::restart_stage()
     while (player1.get_anim_type() == ANIM_TYPE_TELEPORT) {
         InputController::get_instance()->clean_all();
         show_game(true, false);
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
     }
     for (int i=0; i<AUTOSCROLL_START_DELAY_FRAMES; i++) { // extra delay to teleport without moving screen
         InputController::get_instance()->clean_all();
         show_game(false, false);
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
         TimerView::get_instance()->delay(20);
     }
 
@@ -671,7 +671,7 @@ bool GameManager::show_game_intro()
 void GameManager::show_beta_version_warning()
 {
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(100);
 
@@ -687,14 +687,14 @@ void GameManager::show_beta_version_warning()
     TextView::get_instance()->renderCenteredText(170, "REPORT ANY FOUND ISSUES TO");
     TextView::get_instance()->renderCenteredText(185, "bugs@upperland.net");
     TextView::get_instance()->renderCenteredText(210, "PRESS A BUTTON OR KEY TO CONTINUE.");
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     InputController::get_instance()->wait_keypress();
 }
 
 void GameManager::show_free_version_warning()
 {
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(100);
 
@@ -712,14 +712,14 @@ void GameManager::show_free_version_warning()
 
     TextView::get_instance()->renderCenteredText(205, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning11, SharedData::get_instance()->current_language));
     TextView::get_instance()->renderCenteredText(220, strings_map::get_instance()->get_ingame_string(string_press_key_or_button, SharedData::get_instance()->current_language));
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     InputController::get_instance()->wait_keypress();
 }
 
 void GameManager::show_notice()
 {
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 
     st_imageData upperland_surface;
     upperland_surface = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->GAMEPATH + "/shared/images/upperland.png");
@@ -734,17 +734,17 @@ void GameManager::show_notice()
     //std::cout << ">> logo_pos.x: " << logo_pos.x << ", logo_pos.y: " << logo_pos.y << std::endl;
     ImageView::get_instance()->renderTexturePortionAt(0, 0, upperland_surface.surface->w/6, upperland_surface.surface->h, logo_pos.x, logo_pos.y, upperland_surface.texture);
     TextView::get_instance()->renderCenteredText(220, "HTTP://ROCKBOT.UPPERLAND.NET");
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     InputController::get_instance()->clean_and_wait_scape_time(400);
     for (int i=1; i<6; i++) {
         ImageView::get_instance()->renderTexturePortionAt((upperland_surface.surface->w/6)*i, 0, upperland_surface.surface->w/6, upperland_surface.surface->h, logo_pos.x, logo_pos.y, upperland_surface.texture);
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
         InputController::get_instance()->wait_scape_time(30);
     }
     ImageView::get_instance()->renderTexturePortionAt(0, 0, upperland_surface.surface->w/6, upperland_surface.surface->h, logo_pos.x, logo_pos.y, upperland_surface.texture);
 
 
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 
     InputController::get_instance()->clean_and_wait_scape_time(1200);
 
@@ -760,7 +760,7 @@ void GameManager::show_notice()
     TextView::get_instance()->renderCenteredText(130, strings_map::get_instance()->get_ingame_string(string_intro_engine7, SharedData::get_instance()->current_language));
     TextView::get_instance()->renderCenteredText(150, strings_map::get_instance()->get_ingame_string(string_intro_engine8, SharedData::get_instance()->current_language));
 
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 
     TimerView::get_instance()->delay(10000);
 
@@ -778,7 +778,7 @@ void GameManager::show_notice()
     TextView::get_instance()->renderCenteredText(200, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning9, SharedData::get_instance()->current_language));
     TextView::get_instance()->renderCenteredText(220, strings_map::get_instance()->get_ingame_string(string_intro_demo_warning10, SharedData::get_instance()->current_language));
 
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     TimerView::get_instance()->delay(10000);
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
 }
@@ -827,7 +827,7 @@ void GameManager::map_present_boss(bool show_dialog, bool is_static_boss)
         player1.show();
         mapController.showAbove();
         TimerView::get_instance()->delay(8);
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
 	}
 
 	// 2. blink screen
@@ -960,7 +960,7 @@ void GameManager::transition_screen(Uint8 type, Uint8 map_n, short int adjust_x,
     // posição nova é o scroll-x novo mais essa diferença
 
     // draw map in the screen, erasing all players/objects/npcs/GFX
-    draw::get_instance()->set_gfx(SCREEN_GFX_NONE, BG_SCROLL_MODE_NONE);
+    Draw::get_instance()->set_gfx(SCREEN_GFX_NONE, BG_SCROLL_MODE_NONE);
     mapController.show();
 
 
@@ -1043,7 +1043,7 @@ void GameManager::transition_screen(Uint8 type, Uint8 map_n, short int adjust_x,
             show_hud(false);
 
 
-            draw::get_instance()->update_screen();
+            Draw::get_instance()->update_screen();
 #if !defined(PLAYSTATION2) && !defined(ANDROID)
             TimerView::get_instance()->delay(6);
             //TimerView::get_instance()->delay(100); // DEBUG //
@@ -1141,7 +1141,7 @@ void GameManager::horizontal_screen_move(short direction, bool is_door, short ti
 #if defined(PC)
         TimerView::get_instance()->delay(2);
 #endif
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
 
         player1.inc_position(player_move_x, 0);
         /*
@@ -1228,7 +1228,7 @@ void GameManager::vertical_screen_move(short direction, bool is_door, short tile
 #if defined(PC)
         TimerView::get_instance()->delay(2);
 #endif
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
 
         player1.inc_position(0, player_move_y);
 
@@ -1277,7 +1277,7 @@ void GameManager::transition_area_horizontal(short direction, short tileX, short
 #if defined(PC)
         TimerView::get_instance()->delay(2);
 #endif
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
         player1.inc_position(player_move_x, 0);
         player1.char_update_real_position();
         ImageView::get_instance()->change_render_target(RENDER_TARGET_HUD_TEXTURE);
@@ -1333,7 +1333,7 @@ void GameManager::transition_area_vertical(short direction, short tileX)
 #if defined(PC)
         TimerView::get_instance()->delay(2);
 #endif
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
         player1.inc_position(0, player_move_y);
         ImageView::get_instance()->change_render_target(RENDER_TARGET_HUD_TEXTURE);
         show_hud(true);
@@ -1374,7 +1374,7 @@ void GameManager::show_door_animation()
 void GameManager::leave_stage()
 {
     save_game();
-    draw::get_instance()->set_flash_enabled(false);
+    Draw::get_instance()->set_flash_enabled(false);
 
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(200);
@@ -1395,7 +1395,7 @@ void GameManager::return_to_intro_screen()
 {
     save_game();
 
-    draw::get_instance()->set_flash_enabled(false);
+    Draw::get_instance()->set_flash_enabled(false);
 
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(200);
@@ -1465,7 +1465,7 @@ void GameManager::show_ending()
     SharedData::get_instance()->game_config.game_finished = true;
     fio.save_config(SharedData::get_instance()->game_config);
 
-    draw::get_instance()->show_credits(false);
+    Draw::get_instance()->show_credits(false);
 
     return_to_intro_screen();
 }
@@ -1526,7 +1526,7 @@ void GameManager::update_stage_scrolling()
 
 
 void GameManager::draw_explosion(st_position center, bool show_players) {
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     int angle_inc = 0;
 
 
@@ -1540,13 +1540,13 @@ void GameManager::draw_explosion(st_position center, bool show_players) {
         if (angle_inc > 360) {
             angle_inc = 0;
         }
-        draw::get_instance()->draw_explosion(center, i, angle_inc);
+        Draw::get_instance()->draw_explosion(center, i, angle_inc);
         for (int k=50; k<250; k+=80) {
             if (i > k) {
-                draw::get_instance()->draw_explosion(center, i-k, angle_inc);
+                Draw::get_instance()->draw_explosion(center, i-k, angle_inc);
             }
         }
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->update_screen();
         TimerView::get_instance()->delay(10);
     }
 
@@ -1604,19 +1604,19 @@ void GameManager::draw_player_death(st_position center)
     center.x += 29/2;
     center.y += 29/2;
 
-    for (int i=0; i<draw::get_instance()->get_death_animation_frames_n(); i++) {
+    for (int i=0; i<Draw::get_instance()->get_death_animation_frames_n(); i++) {
         show_stage(0, false);
-        draw::get_instance()->draw_player_death(center, i);
-        draw::get_instance()->update_screen();
+        Draw::get_instance()->draw_player_death(center, i);
+        Draw::get_instance()->update_screen();
         TimerView::get_instance()->delay(DEATH_ANIMATION_DELAY);
         if (i == 5) {
             show_stage(0, false);
-            draw::get_instance()->draw_player_death(center, i-1);
-            draw::get_instance()->update_screen();
+            Draw::get_instance()->draw_player_death(center, i-1);
+            Draw::get_instance()->update_screen();
             TimerView::get_instance()->delay(DEATH_ANIMATION_DELAY);
             show_stage(0, false);
-            draw::get_instance()->draw_player_death(center, i);
-            draw::get_instance()->update_screen();
+            Draw::get_instance()->draw_player_death(center, i);
+            Draw::get_instance()->update_screen();
             TimerView::get_instance()->delay(DEATH_ANIMATION_DELAY);
         }
     }
@@ -1655,7 +1655,7 @@ void GameManager::walk_character_to_screen_point_x(character *char_obj, short po
             mapController.show_enemies();
             mapController.show_npcs();
             player1.show();
-            draw::get_instance()->update_screen();
+            Draw::get_instance()->update_screen();
             TimerView::get_instance()->delay(20);
 		}
 	} else if (char_obj->get_real_position().x+char_obj->get_size().width/2 < pos_x) {
@@ -1668,7 +1668,7 @@ void GameManager::walk_character_to_screen_point_x(character *char_obj, short po
             mapController.show_enemies();
             mapController.show_npcs();
             player1.show();
-            draw::get_instance()->update_screen();
+            Draw::get_instance()->update_screen();
             TimerView::get_instance()->delay(20);
 		}
 	}
@@ -1793,7 +1793,7 @@ void GameManager::select_game_screen()
 
     option_picker main_picker(false, st_position(30, 40), game_list, false);
     main_picker.enable_check_input_reset_command();
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
     bool repeat_menu = true;
     int picked_n = -1;
     while (repeat_menu == true) {
@@ -1821,7 +1821,7 @@ void GameManager::finish_player_teleporter()
     remove_all_projectiles();
     remove_players_slide();
     player1.recharge(ENERGY_TYPE_HP, ENERGY_ITEM_BIG);
-    draw::get_instance()->fade_screen(0, 0, 0, 500, true);
+    Draw::get_instance()->fade_screen(0, 0, 0, 500, true);
     TimerView::get_instance()->delay(1000);
 
     std::cout << "################### RESET PLAYER TELEPORTER ###################" << std::endl;
@@ -1829,7 +1829,7 @@ void GameManager::finish_player_teleporter()
     _last_stage_used_teleporters.insert(std::pair<int,bool>(_player_teleporter.teleporter_n, true));
 	// teleport out
 	SoundView::get_instance()->play_sfx(SFX_TELEPORT);
-    draw::get_instance()->fade_screen(0, 0, 0, 500, true);
+    Draw::get_instance()->fade_screen(0, 0, 0, 500, true);
     _player_teleporter.old_player_pos.y -= 5;
     player1.set_position(_player_teleporter.old_player_pos);
     SharedData::get_instance()->v6_selected_stage = _player_teleporter.old_map_n;
@@ -1866,7 +1866,7 @@ void GameManager::show_stage(int wait_time, bool move_npcs)
 	if (wait_time > 0) {
         TimerView::get_instance()->delay(wait_time);
 	}
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 }
 
 bool GameManager::subboss_alive_on_left(short tileX)
@@ -1950,7 +1950,7 @@ void GameManager::talk_with_npc(int npc_id)
     int obj_id = player1.get_current_item_id_from_slot();
     //std::cout << ">>>>>>>>>>> obj_id[" << obj_id << "]" << std::endl;
     if (obj_id != -1) {
-        obj_name = SharedData::get_instance()->v6_object_list.at(obj_id).name;
+        obj_name = GameData::get_instance()->v6_object_list.at(obj_id).name;
     }
 
     // check if npc wants item or gets item from player
@@ -2035,8 +2035,8 @@ void GameManager::object_teleport_boss(st_position dest_pos, Uint8 dest_map, Uin
     if (must_return) {
         set_player_teleporter(teleporter_id, st_position(player1.getPosition().x, player1.getPosition().y), true);
     }
-    draw::get_instance()->fade_screen(0, 0, 0, 500, false);
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->fade_screen(0, 0, 0, 500, false);
+    Draw::get_instance()->update_screen();
     TimerView::get_instance()->delay(500);
 
     set_current_map(dest_map);
@@ -2055,7 +2055,7 @@ void GameManager::object_teleport_boss(st_position dest_pos, Uint8 dest_map, Uin
 
     mapController.reset_scrolled();
 
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 }
 
 
@@ -2081,7 +2081,7 @@ void GameManager::show_savegame_error()
     msgs.push_back(strings_map::get_instance()->get_ingame_string(strings_ingame_savegameerror3, SharedData::get_instance()->current_language));
     st_dialog dialog;
     dialog.msgs = msgs;
-    draw::get_instance()->show_ingame_warning(dialog);
+    Draw::get_instance()->show_ingame_warning(dialog);
 
     InputController::get_instance()->clean();
     //InputController::get_instance()->wait_keypress();
@@ -2093,14 +2093,14 @@ void GameManager::get_drop_item_ids()
     for (int i=0; i<DROP_ITEM_COUNT; i++) {
         _drop_item_list[i] = -1;
     }
-    for (int i=0; i<SharedData::get_instance()->v6_object_list.size(); i++) {
-        if (SharedData::get_instance()->v6_object_list.at(i).type == OBJ_ENERGY_PILL_SMALL) {
+    for (int i=0; i<GameData::get_instance()->v6_object_list.size(); i++) {
+        if (GameData::get_instance()->v6_object_list.at(i).type == OBJ_ENERGY_PILL_SMALL) {
             _drop_item_list[DROP_ITEM_ENERGY_SMALL] = i;
-        } else if (SharedData::get_instance()->v6_object_list.at(i).type == OBJ_ENERGY_PILL_BIG) {
+        } else if (GameData::get_instance()->v6_object_list.at(i).type == OBJ_ENERGY_PILL_BIG) {
             _drop_item_list[DROP_ITEM_ENERGY_BIG] = i;
-        } else if (SharedData::get_instance()->v6_object_list.at(i).type == OBJ_WEAPON_PILL_SMALL) {
+        } else if (GameData::get_instance()->v6_object_list.at(i).type == OBJ_WEAPON_PILL_SMALL) {
             _drop_item_list[DROP_ITEM_WEAPON_SMALL] = i;
-        } else if (SharedData::get_instance()->v6_object_list.at(i).type == OBJ_WEAPON_PILL_BIG) {
+        } else if (GameData::get_instance()->v6_object_list.at(i).type == OBJ_WEAPON_PILL_BIG) {
             _drop_item_list[DROP_ITEM_WEAPON_BIG] = i;
         }
     }
@@ -2130,7 +2130,7 @@ void GameManager::show_map()
 {
     mapController.show();
     mapController.showAbove();
-    draw::get_instance()->update_screen();
+    Draw::get_instance()->update_screen();
 }
 
 
