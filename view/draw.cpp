@@ -30,7 +30,7 @@
 #include "view/ingame_presentation.h"
 #include "options/pausemenu.h"
 
-#include "game_mediator.h"
+#include "game_data.h"
 #include "file/v5/struct_file_game_area_map.h"
 
 draw* draw::_instance = nullptr;
@@ -492,7 +492,7 @@ int draw::show_credits(bool can_leave)
     int res = show_credits_text(can_leave, create_engine_credits_text());
     if (res == 1) {
         SoundView::get_instance()->stop_music();
-        SoundView::get_instance()->load_music(SharedData::get_instance()->game_data.game_start_screen_music_filename);
+        SoundView::get_instance()->load_music(GameData::get_instance()->game_data.game_start_screen_music_filename);
         SoundView::get_instance()->play_music();
         return 1;
     }

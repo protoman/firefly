@@ -250,6 +250,7 @@ struct file_npc_v3_1_2 {
     int npc_quest_id;                                       // npc has a quest that can be more complex and include dialogs
     int npc_requested_item_id;                              // npcs wants an item to give another
     int npc_given_item_id;
+    st_sprite_data sprites[ANIM_TYPE_NPC_COUNT][ANIM_TYPE_NPC_FRAMES_N];
 
 
     file_npc_v3_1_2() {
@@ -266,7 +267,7 @@ struct file_npc_v3_1_2 {
         npc_quest_id = -1;
         npc_requested_item_id = -1;
         npc_given_item_id = -1;
-        hit_area = st_rectangle(0, 0, TILESIZE, TILESIZE);
+        hit_area = st_rectangle(0, 0, 0, 0);
     }
 };
 

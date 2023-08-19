@@ -1,5 +1,5 @@
 #include "character_animation.h"
-#include "game_mediator.h"
+#include "game_data.h"
 #include "view/imageview.h"
 #include "view/timerview.h"
 
@@ -18,14 +18,14 @@ void character_animation::init(std::string set_name, std::string filename, st_si
         }
     }
     // if the char does not have image loaded yet, add it
-    if (GameMediator::get_instance()->character_graphic_map.find(name) == GameMediator::get_instance()->character_graphic_map.end()) {
+    if (GameData::get_instance()->character_graphic_map.find(name) == GameData::get_instance()->character_graphic_map.end()) {
         st_imageData sprites_img;
         sprites_img = ImageView::get_instance()->imageFromFile(filename);
         std::pair<std::string, st_imageData> sprites_data(name, sprites_img);
-        GameMediator::get_instance()->character_graphic_map.insert(sprites_data);
+        GameData::get_instance()->character_graphic_map.insert(sprites_data);
     }
     sprite_size = size;
-    graphic_ref = &GameMediator::get_instance()->character_graphic_map.find(name)->second;
+    graphic_ref = &GameData::get_instance()->character_graphic_map.find(name)->second;
     frame_n = 0;
     next_frame_timer = 0;
     initialized = true;

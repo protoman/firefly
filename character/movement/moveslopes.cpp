@@ -82,7 +82,7 @@ int moveSlopes::calcExpectedVericalPosForSlope(int xinc, int yinc, st_rectangle 
         return -1;
     }
 
-    slope_data data = SharedData::get_instance()->slope_list.at(tile_info.tile.tile_underlay.x).slope[tile_info.tile.tile_underlay.y];
+    slope_data data = GameData::get_instance()->slope_list.at(tile_info.tile.tile_underlay.x).slope[tile_info.tile.tile_underlay.y];
 
     int left = TILESIZE - data.left;
     int right = TILESIZE - data.right;

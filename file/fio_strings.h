@@ -8,8 +8,6 @@
 #include <map>
 
 #include "file/v4/file_strings.h"
-#include "aux_tools/json/json.h"
-
 
 // namespace
 class fio_strings
@@ -26,6 +24,9 @@ public:
     // === DIALOGS === //
     void save_game_dialogs(std::vector<std::vector<std::string>>);
     std::vector<std::vector<std::string>> load_game_dialogs();
+    void save_npc_dialog(int language_id, int npc_id, std::string text);
+    std::string get_npc_dialog_filename(int language_id, int npc_id);
+    std::string load_npc_dialog(int language_id, int npc_id);
 
     // === COMMON STRINGS === //
     std::string get_common_strings_filename(int language);

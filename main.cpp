@@ -75,13 +75,14 @@ int main()
 {
     get_filepath();
     detect_language();
-    GameManager::get_instance()->initHardwareLayer();
-    GameManager::get_instance()->preloadGameData();
+    GameManager* game_manager_instance = GameManager::get_instance();
+    game_manager_instance->initHardwareLayer();
+    game_manager_instance->preloadGameData();
     //GameManager::get_instance()->introScreen();
-    GameManager::get_instance()->initGame();
+    game_manager_instance->initGame();
 
     while (SharedData::get_instance()->run_game) {
-        GameManager::get_instance()->show_game(true, true);
+        game_manager_instance->show_game(true, true);
         SDL_Delay(10);
     }
 

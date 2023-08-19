@@ -12,7 +12,7 @@
 
 #include "controller/mapcontroller.h"
 
-#include "game_mediator.h"
+#include "game_data.h"
 #include "GameManager.h"
 
 //#define PLAYER_MOVE_SPEED 6.00 // higher is faster
@@ -56,26 +56,26 @@ void classPlayer::initialize()
     sprintf(temp_name, "PLAYER_%d", _number);
     name = std::string(temp_name);
 
-    max_projectiles = GameMediator::get_instance()->player_list_v3_1[_number].max_shots;
+    max_projectiles = GameData::get_instance()->player_list_v3_1[_number].max_shots;
     // it is a player, can't have zero projectiles!!
     if (max_projectiles < 1) {
         max_projectiles = 1;
     }
 
     //std::cout << "player.number[" << _number << "]" << std::endl;
-    _charged_shot_projectile_id = GameMediator::get_instance()->player_list_v3_1[_number].full_charged_projectile_id;
-    _normal_shot_projectile_id = GameMediator::get_instance()->player_list_v3_1[_number].normal_shot_projectile_id;
+    _charged_shot_projectile_id = GameData::get_instance()->player_list_v3_1[_number].full_charged_projectile_id;
+    _normal_shot_projectile_id = GameData::get_instance()->player_list_v3_1[_number].normal_shot_projectile_id;
 
     //std::cout << "classPlayer::initialize - player[" << _number << "][" << name << "], _normal_shot_projectile_id[" << _normal_shot_projectile_id << "]" << std::endl;
 
-    _simultaneous_shots = GameMediator::get_instance()->player_list_v3_1[_number].simultaneous_shots;
+    _simultaneous_shots = GameData::get_instance()->player_list_v3_1[_number].simultaneous_shots;
     //std::cout << "classjump::set_acceleration - player[" << name << "], accel[" << GameMediator::get_instance()->player_list[_number].jump_gravity << "]" << std::endl;
     if (can_double_jump() == true) {
         _jumps_number = 2;
     } else {
         _jumps_number = 1;
     }
-    _damage_modifier = GameMediator::get_instance()->player_list_v3_1[_number].damage_modifier;
+    _damage_modifier = GameData::get_instance()->player_list_v3_1[_number].damage_modifier;
 }
 
 
@@ -368,7 +368,7 @@ void classPlayer::attack(bool dont_update_colors)
 
         std::cout << "classPlayer::attack::DEBUG #1" << std::endl;
 
-        int weapon_trajectory = GameMediator::get_instance()->get_projectile(0).trajectory;
+        int weapon_trajectory = GameData::get_instance()->get_projectile(0).trajectory;
         if (weapon_trajectory == TRAJECTORY_CENTERED || weapon_trajectory == TRAJECTORY_SLASH) {
             temp_proj.set_owner_direction(&state.direction);
             temp_proj.set_owner_position(&position);
@@ -378,7 +378,7 @@ void classPlayer::attack(bool dont_update_colors)
 
         } else if (weapon_trajectory == TRAJECTORY_FOLLOW) {
             st_rectangle hitbox = get_hitbox();
-            GameEnemy* temp = GameManager::get_instance()->get_current_map_obj()->find_nearest_npc(st_position(hitbox.x+hitbox.w/2, hitbox.y+hitbox.h/2));
+            GameEnemy* temp = GameManager::get_instance()->get_current_map_obj()->find_nearest_enemy(st_position(hitbox.x+hitbox.w/2, hitbox.y+hitbox.h/2));
             if (temp != nullptr) {
                 std::cout << "PLAYER::attack - could not find target" << std::endl;
                 temp_proj.set_target_position(temp->get_position_ref());
@@ -386,7 +386,7 @@ void classPlayer::attack(bool dont_update_colors)
         } else if (weapon_trajectory == TRAJECTORY_TARGET_DIRECTION || weapon_trajectory == TRAJECTORY_TARGET_EXACT || weapon_trajectory == TRAJECTORY_ARC_TO_TARGET) {
             st_rectangle hitbox = get_hitbox();
             st_position player_pos(hitbox.x+hitbox.w/2, hitbox.y+hitbox.h/2);
-            GameEnemy* temp = GameManager::get_instance()->get_current_map_obj()->find_nearest_npc_on_direction(player_pos, state.direction);
+            GameEnemy* temp = GameManager::get_instance()->get_current_map_obj()->find_nearest_enemy_on_direction(player_pos, state.direction);
             if (temp != nullptr) {
                 std::cout << "PLAYER::attack - could not find target" << std::endl;
                 temp_proj.set_target_position(temp->get_position_ref());
@@ -431,8 +431,8 @@ void classPlayer::damage_ground_npcs()
 	/// @TODO - this part must be done only ONCE
 	// find quake in projectiles list
 	int projectile_n = -1;
-    for (int i =0; i<GameMediator::get_instance()->get_projectile_list_size(); i++) {
-        if (GameMediator::get_instance()->get_projectile(i).trajectory == TRAJECTORY_QUAKE) {
+    for (int i =0; i<GameData::get_instance()->get_projectile_list_size(); i++) {
+        if (GameData::get_instance()->get_projectile(i).trajectory == TRAJECTORY_QUAKE) {
 			projectile_n = i;
 			break;
 		}
@@ -930,7 +930,7 @@ void classPlayer::clean_move_commands()
 
 bool classPlayer::can_shoot_diagonal()
 {
-    if (GameMediator::get_instance()->player_list_v3_1[_number].can_shot_diagonal) {
+    if (GameData::get_instance()->player_list_v3_1[_number].can_shot_diagonal) {
         return true;
     }
     // armor-pieces checking
@@ -941,7 +941,7 @@ bool classPlayer::can_shoot_diagonal()
 
 bool classPlayer::can_double_jump()
 {
-    if (GameMediator::get_instance()->player_list_v3_1[_number].can_double_jump) {
+    if (GameData::get_instance()->player_list_v3_1[_number].can_double_jump) {
         return true;
     }
     // -------------------- armor-pieces checking -------------------- //
@@ -950,7 +950,7 @@ bool classPlayer::can_double_jump()
 
 bool classPlayer::can_air_dash()
 {
-    if (GameMediator::get_instance()->player_list_v3_1[_number].can_air_dash == true) {
+    if (GameData::get_instance()->player_list_v3_1[_number].can_air_dash == true) {
         return true;
     }
 

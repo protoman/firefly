@@ -6,7 +6,7 @@
 
 #include "defines.h"
 #include "strings_map.h"
-#include "game_mediator.h"
+#include "game_data.h"
 #include "file/file_io.h"
 #include "file/fio_strings.h"
 #include "view/option_picker.h"

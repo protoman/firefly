@@ -4,7 +4,7 @@
 #include <math.h>
 
 #include "GameManager.h"
-#include "game_mediator.h"
+#include "game_data.h"
 
 #ifdef ANDROID
 #include <android/log.h>
@@ -472,7 +472,6 @@ void character::charMove() {
 
             // check that path is clear to move
             if (is_in_stairs_frame() && (bottom_point_lock == TERRAIN_WATER || bottom_point_lock == TERRAIN_UNBLOCKED || bottom_point_lock == TERRAIN_STAIR)) {
-                std::cout << "QUICKSAND.DEBUG #4" << std::endl;
                 position.y += temp_move_speed * STAIRS_MOVE_MULTIPLIER;
             }
 
@@ -497,7 +496,6 @@ void character::charMove() {
                     set_animation_type(ANIM_TYPE_STAIRS_SEMI);
 
                     //std::cout << "### STAIRS-DOWN #2 ###" << std::endl;
-                    std::cout << "QUICKSAND.DEBUG #5" << std::endl;
                     position.y += temp_move_speed * STAIRS_MOVE_MULTIPLIER;
                     //std::cout << "<<<<<<<<<<< POS.X.SET #2 >>>>>>>>>>>>>" << std::endl;
                     position.x = stairs_pos_bottom.x * TILESIZE - 6;
@@ -764,7 +762,7 @@ st_position character::get_attack_position(short direction)
         proj_pos = st_position(position.x+frameSize.width-TILESIZE/2, position.y+frameSize.height/2);
     }
     if (is_player() == false) {
-        st_position_int8 attack_arm_pos = GameMediator::get_instance()->get_enemy(_number)->attack_arm_pos;
+        st_position_int8 attack_arm_pos = GameData::get_instance()->get_enemy(_number)->attack_arm_pos;
         if (attack_arm_pos.x >= 1 || attack_arm_pos.y >= 1) {
             if (direction == ANIM_DIRECTION_LEFT) {
                 proj_pos = st_position(position.x + attack_arm_pos.x, position.y + attack_arm_pos.y);
@@ -876,7 +874,7 @@ void character::attack(bool dont_update_colors, short updown_trajectory, bool al
         return;
     } else if (must_attack == ATTACK_TYPE_NORMAL) {
         if (always_charged == true) {
-            attack_id = SharedData::get_instance()->game_data.semi_charged_projectile_id;
+            attack_id = GameData::get_instance()->game_data.semi_charged_projectile_id;
         } else {
             if (_normal_shot_projectile_id > 0) {
                 attack_id = _normal_shot_projectile_id;
@@ -885,7 +883,7 @@ void character::attack(bool dont_update_colors, short updown_trajectory, bool al
             }
         }
     } else if (must_attack == ATTACK_TYPE_SEMICHARGED) {
-        attack_id = SharedData::get_instance()->game_data.semi_charged_projectile_id;
+        attack_id = GameData::get_instance()->game_data.semi_charged_projectile_id;
     } else if (must_attack == ATTACK_TYPE_FULLYCHARGED) {
         attack_id = _charged_shot_projectile_id;
     }
@@ -895,7 +893,7 @@ void character::attack(bool dont_update_colors, short updown_trajectory, bool al
         std::cout << "character::attack - attack_id: " << attack_id << std::endl;
 
         //if (!is_player()) { std::cout << "CHAR::attack::attack_id: " << attack_id << std::endl; }
-        if (attack_id == _charged_shot_projectile_id || attack_id == SharedData::get_instance()->game_data.semi_charged_projectile_id) {
+        if (attack_id == _charged_shot_projectile_id || attack_id == GameData::get_instance()->game_data.semi_charged_projectile_id) {
 			if (is_player() && SoundView::get_instance()->is_playing_repeated_sfx() == true) {
 				SoundView::get_instance()->stop_repeated_sfx();
 			}
@@ -915,7 +913,7 @@ void character::attack(bool dont_update_colors, short updown_trajectory, bool al
 
 
         // second projectile for player that fires multiple ones
-        if ((attack_id == 0 || attack_id == _normal_shot_projectile_id || (attack_id == SharedData::get_instance()->game_data.semi_charged_projectile_id && always_charged == true)) && is_player() && _simultaneous_shots > 1) { /// @TODO - move number of simultaneous shots to character/data-file
+        if ((attack_id == 0 || attack_id == _normal_shot_projectile_id || (attack_id == GameData::get_instance()->game_data.semi_charged_projectile_id && always_charged == true)) && is_player() && _simultaneous_shots > 1) { /// @TODO - move number of simultaneous shots to character/data-file
             int pos_x_second = proj_pos.x+TILESIZE;
             if (state.direction == ANIM_DIRECTION_RIGHT) {
                 pos_x_second = proj_pos.x-TILESIZE;
@@ -938,7 +936,7 @@ void character::attack(bool dont_update_colors, short updown_trajectory, bool al
 
         }
 
-        int proj_trajectory = GameMediator::get_instance()->get_projectile(attack_id).trajectory;
+        int proj_trajectory = GameData::get_instance()->get_projectile(attack_id).trajectory;
         temp_proj.set_owner(this);
         if (proj_trajectory == TRAJECTORY_CENTERED || proj_trajectory == TRAJECTORY_SLASH) {
             temp_proj.set_owner_direction(&state.direction);
@@ -952,9 +950,9 @@ void character::attack(bool dont_update_colors, short updown_trajectory, bool al
             } else {
                 GameEnemy* temp_npc = nullptr;
                 if (proj_trajectory == TRAJECTORY_TARGET_DIRECTION || proj_trajectory == TRAJECTORY_TARGET_EXACT || proj_trajectory == TRAJECTORY_ARC_TO_TARGET) {
-                    temp_npc = GameManager::get_instance()->get_current_map_obj()->find_nearest_npc(st_position(position.x, position.y));
+                    temp_npc = GameManager::get_instance()->get_current_map_obj()->find_nearest_enemy(st_position(position.x, position.y));
                 } else {
-                    temp_npc = GameManager::get_instance()->get_current_map_obj()->find_nearest_npc_on_direction(st_position(position.x, position.y), state.direction);
+                    temp_npc = GameManager::get_instance()->get_current_map_obj()->find_nearest_enemy_on_direction(st_position(position.x, position.y), state.direction);
                 }
                 if (temp_npc != nullptr) {
                     temp_proj.set_target_position(temp_npc->get_position_ref());
@@ -1431,7 +1429,6 @@ bool character::gravity(bool boss_demo_mode=false)
 			for (int i=limit_speed; i>0; i--) {
                 bool res_test_move = test_change_position(0, i);
                 if ((boss_demo_mode == true && position.y <= TILESIZE*2) || res_test_move == true) {
-                    std::cout << "QUICKSAND.DEBUG #6" << std::endl;
                     position.y += i;
 					is_moved = true;
 					break;
@@ -1494,11 +1491,11 @@ bool character::gravity(bool boss_demo_mode=false)
                 if (mapLock == BLOCK_UNBLOCKED || mapLock == BLOCK_WATER || mapLock == BLOCK_STAIR_X || mapLock == BLOCK_STAIR_Y) {
                     //if (is_player()) std::cout << "character::gravity - FALL, mapLock[" << mapLock << "]" << std::endl;
                     if (mapLock != BLOCK_WATER || (mapLock == BLOCK_WATER && abs((float)i*WATER_SPEED_MULT) < 1)) {
-                        std::cout << "QUICKSAND.GRAVIOTY #1" << std::endl;
+                        //std::cout << "QUICKSAND.GRAVIOTY #1" << std::endl;
                         position.y += i;
                         movedY = i;
                     } else {
-                        std::cout << "QUICKSAND.GRAVIOTY #2" << std::endl;
+                        //std::cout << "QUICKSAND.GRAVIOTY #2" << std::endl;
                         position.y += i*WATER_SPEED_MULT;
                         movedY = i*WATER_SPEED_MULT;
                     }
@@ -1750,7 +1747,6 @@ void character::inc_position(float inc_x, float inc_y)
 {
     //std::cout << "CHAR::inc_position::inc_x[" << inc_x << "]" << std::endl;
     position.x += inc_x;
-    std::cout << "QUICKSAND.DEBUG #4" << std::endl;
     position.y += inc_y;
     moved_dist.x += inc_x;
     moved_dist.y += inc_y;
@@ -2403,23 +2399,20 @@ st_map_collision character::map_collision(const float incx, const short incy, st
         if (have_shoryuken() == true && state.animation_type == ANIM_TYPE_SPECIAL_ATTACK) {
             GameManager::get_instance()->get_current_map_obj()->collision_player_special_attack(this, incx, incy, 9, py_adjust);
         } else {
-            GameEnemy* npc_touch = GameManager::get_instance()->get_current_map_obj()->collision_player_npcs(this, 0, 0);
-            if (npc_touch != nullptr) {
-                if (npc_touch->get_size().height > this->get_size().height) {
+            GameEnemy* enemy_touch = GameManager::get_instance()->get_current_map_obj()->collision_player_enemies(this, 0, 0);
+            if (enemy_touch != nullptr) {
+                if (enemy_touch->get_size().height > this->get_size().height) {
                     damage(TOUCH_DAMAGE_SMALL, false);
                 } else {
                     damage(TOUCH_DAMAGE_BIG, false);
                 }
                 if (_was_hit == true) {
-                    npc_touch->hit_player();
+                    enemy_touch->hit_player();
                 }
             }
+            GameManager::get_instance()->get_current_map_obj()->collision_player_npcs(this);
         }
 	}
-
-    //if (incx > 0) std::cout << ">>>>>>> #1 - map_block[" << map_block << "]" << std::endl;
-
-
 
     // no need to test map collision if object collision is already X+Y
     if (map_block == BLOCK_XY && incx != 0) {
@@ -2842,13 +2835,13 @@ st_rectangle character::get_hitbox(int anim_type)
 
         // prevent getting size from a frame that does not have information, use Vulnerable-area or hitbox from STAND instead
         st_rectangle col_rect;
-        if (GameMediator::get_instance()->get_enemy(_number)->sprites[anim_type][anim_n].used == true) {
-            col_rect = GameMediator::get_instance()->get_enemy(_number)->sprites[anim_type][anim_n].collision_rect;
+        if (GameData::get_instance()->get_enemy(_number)->sprites[anim_type][anim_n].used == true) {
+            col_rect = GameData::get_instance()->get_enemy(_number)->sprites[anim_type][anim_n].collision_rect;
         } else {
-            col_rect = st_rectangle(GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.x,
-                                    GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.y,
-                                    GameMediator::get_instance()->get_enemy(_number)->frame_size.width,
-                                    GameMediator::get_instance()->get_enemy(_number)->frame_size.height);
+            col_rect = st_rectangle(GameData::get_instance()->get_enemy(_number)->sprites_pos_bg.x,
+                                    GameData::get_instance()->get_enemy(_number)->sprites_pos_bg.y,
+                                    GameData::get_instance()->get_enemy(_number)->frame_size.width,
+                                    GameData::get_instance()->get_enemy(_number)->frame_size.height);
         }
 
         // IURI: removed this adjust because it was blocking enemies when it should not, like moving up/down
@@ -2863,7 +2856,7 @@ st_rectangle character::get_hitbox(int anim_type)
         w = col_rect.w - 4;
         h = col_rect.h;
         if (w <= 0 || h <= 0) {
-            file_enemy_v3_1_2* npc_ref = GameMediator::get_instance()->get_enemy(_number);
+            file_enemy_v3_1_2* npc_ref = GameData::get_instance()->get_enemy(_number);
             /*
             std::cout << "#### CHAR::GET_HITBOX name[" << name << "], x[" << x << "], y[" << y << "], w[" << w << "], h[" << h << "], animation_state[" << anim_n << "], animation_type[" << anim_type << "]" << std::endl;
             if (GameMediator::get_instance()->get_enemy(_number)->sprites[anim_type][anim_n].used == true) {
@@ -3129,7 +3122,7 @@ Uint8 character::get_projectile_max_shots(bool always_charged)
         short id = (*it).get_id();
         // if always charged, and projectile is semi-charged, count as normal
         if (id != -1 && id != 0) {
-            if (always_charged == true && id == SharedData::get_instance()->game_data.semi_charged_projectile_id) {
+            if (always_charged == true && id == GameData::get_instance()->game_data.semi_charged_projectile_id) {
                 continue;
             }
             all_projectiles_normal = false;
@@ -3588,7 +3581,6 @@ bool character::change_position(short xinc, short yinc)
 	position.x += xinc;
     moved_dist.x += xinc;
     //std::cout << "### STAIRS-DOWN #6 ###" << std::endl;
-    std::cout << "QUICKSAND.DEBUG #3" << std::endl;
 	position.y += yinc;
     moved_dist.y += yinc;
     return true;

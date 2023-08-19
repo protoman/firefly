@@ -118,8 +118,6 @@ template <class T> std::vector<T> fio_common::load_from_disk(std::string filenam
     while (!feof(fp) && !ferror(fp)) {
         T out;
         int res_read = fread(&out, sizeof(T), 1, fp);
-
-
         //std::cout << ">>file_io::load_from_disk - res_read '" << res_read << "'." << std::endl;
         if (res_read == -1) {
             std::cout << ">>file_io::load_from_disk - Error reading data from scenes_list file '" << filename << "'." << std::endl;

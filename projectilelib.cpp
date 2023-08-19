@@ -4,7 +4,7 @@
 #include "projectilelib.h"
 #include "character/character.h"
 #include "collision_detection.h"
-#include "game_mediator.h"
+#include "game_data.h"
 #include "GameManager.h"
 
 #include "view/draw.h"
@@ -43,8 +43,8 @@ projectile::projectile(Uint8 id, Uint8 set_direction, st_position set_position, 
 	if (_id == -1) {
 		_size.width = 6;
 		_size.height = 6;
-    } else if (GameMediator::get_instance()->get_projectile(_id).speed > 0) {
-        _speed = GameMediator::get_instance()->get_projectile(_id).speed;
+    } else if (GameData::get_instance()->get_projectile(_id).speed > 0) {
+        _speed = GameData::get_instance()->get_projectile(_id).speed;
     }
 
     _sin_x = 0;
@@ -215,7 +215,7 @@ st_size projectile::get_size() const
     } else if (_move_type == TRAJECTORY_LARGE_BEAM) {
         return st_size(frame_w * (2+status), _size.height);
     }
-    return GameMediator::get_instance()->get_projectile(_id).size;
+    return GameData::get_instance()->get_projectile(_id).size;
 }
 
 void projectile::move_ahead(st_size &moved)
@@ -348,10 +348,10 @@ Uint8 projectile::get_damage() const
     if ((get_trajectory() == TRAJECTORY_BOMB || get_trajectory() == TRAJECTORY_FALL_BOMB) && _effect_n == 0) {
 		return 0;
 	}
-    if (GameMediator::get_instance()->get_projectile(_id).damage <= 0) {
+    if (GameData::get_instance()->get_projectile(_id).damage <= 0) {
 		return PROJECTILE_DEFAULT_DAMAGE;
 	}
-    return GameMediator::get_instance()->get_projectile(_id).damage;
+    return GameData::get_instance()->get_projectile(_id).damage;
 }
 
 Uint8 projectile::get_trajectory() const
@@ -359,12 +359,12 @@ Uint8 projectile::get_trajectory() const
     if (_id == -1) {
         return TRAJECTORY_LINEAR;
     }
-    return GameMediator::get_instance()->get_projectile(_id).trajectory;
+    return GameData::get_instance()->get_projectile(_id).trajectory;
 }
 
 Uint8 projectile::get_vanishes_on_hit() const
 {
-    return GameMediator::get_instance()->get_projectile(_id).vanishes_on_hit;
+    return GameData::get_instance()->get_projectile(_id).vanishes_on_hit;
 }
 
 void projectile::set_trajectory(short new_trajectory)
@@ -475,7 +475,7 @@ st_rectangle projectile::get_area()
 
 short projectile::get_max_shots()
 {
-    return GameMediator::get_instance()->get_projectile(_id).max_shots;
+    return GameData::get_instance()->get_projectile(_id).max_shots;
 }
 
 short projectile::get_id()
@@ -485,7 +485,7 @@ short projectile::get_id()
 
 void projectile::play_sfx(bool called_from_npc)
 {
-    std::string projectile_sfx(GameMediator::get_instance()->get_projectile(_id).sfx_filename);
+    std::string projectile_sfx(GameData::get_instance()->get_projectile(_id).sfx_filename);
 
 
     if (projectile_sfx.length() > 0) {
@@ -1160,7 +1160,7 @@ Uint8 projectile::get_move_type() const
     if (_id == -1) {
         return TRAJECTORY_LINEAR;
     }
-    return GameMediator::get_instance()->get_projectile(_id).trajectory;
+    return GameData::get_instance()->get_projectile(_id).trajectory;
 }
 
 bool projectile::is_explosive()
@@ -1168,7 +1168,7 @@ bool projectile::is_explosive()
     if (_id == -1) {
         return false;
     }
-    return GameMediator::get_instance()->get_projectile(_id).is_explosive;
+    return GameData::get_instance()->get_projectile(_id).is_explosive;
 }
 
 void projectile::set_y(int sety)

@@ -10,7 +10,7 @@
 #endif
 
 #include "defines.h"
-#include "game_mediator.h"
+#include "game_data.h"
 #include "aux_tools/exception_manager.h"
 
 #include "data/shareddata.h"
@@ -40,7 +40,7 @@ artificial_inteligence::artificial_inteligence() :  walk_range(TILESIZE*6), targ
     _ai_state.main_status = 0;
     _parameter = 0;
     _show_reset_stand = false;
-    _auto_respawn_timer = TimerView::get_instance()->getTimer() + GameMediator::get_instance()->get_enemy(_number)->respawn_delay;
+    _auto_respawn_timer = TimerView::get_instance()->getTimer() + GameData::get_instance()->get_enemy(_number)->respawn_delay;
     _dest_point = position;
     _execution_state = 0;
     jump_attack_type = -1;
@@ -86,7 +86,7 @@ void artificial_inteligence::execute_ai()
         //std::cout << "AI::execute_ai::FINISHED" << std::endl;
         if (_current_ai_type != AI_ACTION_WAIT_RANDOM_TIME) { // this AI will set the delay itself
             if (_reaction_type == 0) {
-                int delay = GameMediator::get_instance()->ai_list.at(_number).states[_ai_chain_n].go_to_delay;
+                int delay = GameData::get_instance()->ai_list.at(_number).states[_ai_chain_n].go_to_delay;
                 _ai_timer = TimerView::get_instance()->getTimer() + delay;
             } else {
                 _ai_timer = TimerView::get_instance()->getTimer() + 200;
@@ -152,17 +152,17 @@ void artificial_inteligence::check_ai_reaction()
 
     //std::cout << "AI::check_ai_reaction::START - dist_players.dist[" << dist_players.dist << "], diff_y[" << diff_y << "]" << std::endl;
 
-    if (dist_players.dist < TILESIZE*4 && GameMediator::get_instance()->ai_list.at(_number).reactions[AI_REACTION_PLAYER_ON_RANGE].action > 0) {
+    if (dist_players.dist < TILESIZE*4 && GameData::get_instance()->ai_list.at(_number).reactions[AI_REACTION_PLAYER_ON_RANGE].action > 0) {
         //std::cout << ">>>>> AI::check_ai_reaction - NEAR - START!!! <<<<<" << std::endl;
         _reaction_type = 0;
         start_reaction = true;
     // hit
-    } else if (_was_hit == true && GameMediator::get_instance()->ai_list.at(_number).reactions[AI_REACTION_HIT].action > 0) {
+    } else if (_was_hit == true && GameData::get_instance()->ai_list.at(_number).reactions[AI_REACTION_HIT].action > 0) {
         //std::cout << ">>>>> AI::check_ai_reaction - HIT - START!!! <<<<<" << std::endl;
         _reaction_type = 1;
         start_reaction = true;
     // dead
-    } else if (hitPoints.current <= 0 && GameMediator::get_instance()->ai_list.at(_number).reactions[AI_REACTION_DEAD].action > 0) {
+    } else if (hitPoints.current <= 0 && GameData::get_instance()->ai_list.at(_number).reactions[AI_REACTION_DEAD].action > 0) {
         std::cout << ">>>>> AI::check_ai_reaction - DEAD - START!!! <<<<<" << std::endl;
         _reaction_type = 2;
         start_reaction = true;
@@ -176,7 +176,7 @@ void artificial_inteligence::check_ai_reaction()
         //anim2.set_initial_delay(500);
         //gameManager::get_instance()->get_current_map_obj()->add_animation(anim2);
 
-    } else if (dist_players.dist < walk_range && diff_y < 2 && GameMediator::get_instance()->ai_list.at(_number).reactions[AI_REACTION_PLAYER_SAME_Y].action > 0) {
+    } else if (dist_players.dist < walk_range && diff_y < 2 && GameData::get_instance()->ai_list.at(_number).reactions[AI_REACTION_PLAYER_SAME_Y].action > 0) {
         _reaction_type = 3;
         start_reaction = true;
     }
@@ -186,7 +186,7 @@ void artificial_inteligence::check_ai_reaction()
     if (start_reaction == true) {
 
         // do not start a walk-reaction in middle air
-        int react_type = GameMediator::get_instance()->ai_list.at(_number).reactions[_reaction_type].action;
+        int react_type = GameData::get_instance()->ai_list.at(_number).reactions[_reaction_type].action;
         react_type--;
         //std::cout << "AI::check_ai_reaction[" << _reaction_type << "] - react_type: " << react_type << std::endl;
         if (react_type == AI_ACTION_WALK && hit_ground() == false && can_fly == false) {
@@ -209,7 +209,7 @@ void artificial_inteligence::check_ai_reaction()
 void artificial_inteligence::define_ai_next_step()
 {
     bool must_ignore_next = (shot_success == false && _current_ai_type == AI_ACTION_SHOT_PROJECTILE_AHEAD);
-        if (must_ignore_next == false && (_initialized == 0 || GameMediator::get_instance()->ai_list.at(_number).states[_ai_chain_n].go_to == AI_ACTION_GOTO_CHANCE)) { // CHANCE
+        if (must_ignore_next == false && (_initialized == 0 || GameData::get_instance()->ai_list.at(_number).states[_ai_chain_n].go_to == AI_ACTION_GOTO_CHANCE)) { // CHANCE
         _initialized = 1;
         int rand_n = rand() % 100;
 
@@ -230,7 +230,7 @@ void artificial_inteligence::define_ai_next_step()
         int chance_sum = 0;
         for (int i=0; i<AI_MAX_STATES; i++) {
             //std::cout << "[" << name << "][" << i << "].chance: " << GameMediator::get_instance()->ai_list.at(_number).states[i].chance << ", chance_sum: " << chance_sum << std::endl;
-            chance_sum += GameMediator::get_instance()->ai_list.at(_number).states[i].chance;
+            chance_sum += GameData::get_instance()->ai_list.at(_number).states[i].chance;
             if (rand_n < chance_sum) {
                 //std::cout << "AI::define_ai_next_step[" << name << "] - FOUND CHANCE at [" << i << "]" << std::endl;
                 _ai_chain_n = i;
@@ -244,7 +244,7 @@ void artificial_inteligence::define_ai_next_step()
         }
     } else {
         //std::cout << "AI::define_ai_next_step FORCE NEXT - _ai_chain_n[BEFORE][" << (int)_ai_chain_n << "]" << std::endl;
-        _ai_chain_n = GameMediator::get_instance()->ai_list.at(_number).states[_ai_chain_n].go_to-1;
+        _ai_chain_n = GameData::get_instance()->ai_list.at(_number).states[_ai_chain_n].go_to-1;
         if (_ai_chain_n < 0) {
             _ai_chain_n = 0;
         }
@@ -471,7 +471,7 @@ void artificial_inteligence::pull_players(short direction)
 
 bool artificial_inteligence::auto_respawn() const
 {
-    if (GameMediator::get_instance()->get_enemy(_number)->respawn_delay > 0 && TimerView::get_instance()->getTimer() > _auto_respawn_timer)  {
+    if (GameData::get_instance()->get_enemy(_number)->respawn_delay > 0 && TimerView::get_instance()->getTimer() > _auto_respawn_timer)  {
         return true;
     }
     return false;
@@ -1229,7 +1229,7 @@ void artificial_inteligence::execute_ai_action_trow_projectile(unsigned short n,
 // creates a projectile, return false if could not fire
 bool artificial_inteligence::throw_projectile(int projectile_type, bool invert_direction)
 {
-    file_projectilev3 temp_projectile = GameMediator::get_instance()->get_projectile(projectile_type);
+    file_projectilev3 temp_projectile = GameData::get_instance()->get_projectile(projectile_type);
     // some projectile types are limited to one
     if (temp_projectile.trajectory == TRAJECTORY_CENTERED && projectile_list.size() > 0) {
         _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
@@ -1545,12 +1545,12 @@ void artificial_inteligence::execute_ai_step_fly()
                 temp_proj.play_sfx(true);
                 temp_proj.set_owner(this);
 
-                if (GameMediator::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_CENTERED) {
+                if (GameData::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_CENTERED) {
                     temp_proj.set_owner_direction(&state.direction);
                     temp_proj.set_owner_position(&position);
                 }
 
-                if (GameMediator::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_TARGET_DIRECTION || GameMediator::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_TARGET_EXACT || GameMediator::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_ARC_TO_TARGET || GameMediator::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_FOLLOW) {
+                if (GameData::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_TARGET_DIRECTION || GameData::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_TARGET_EXACT || GameData::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_ARC_TO_TARGET || GameData::get_instance()->get_projectile(_parameter).trajectory == TRAJECTORY_FOLLOW) {
                     if (!is_player() && GameManager::get_instance()->get_player() != nullptr) {
                         character* p_player = GameManager::get_instance()->get_player();
                         temp_proj.set_target_position(p_player->get_position_ref());
@@ -2238,7 +2238,7 @@ void artificial_inteligence::execute_ai_replace_itself(bool morph)
     hitPoints.current = 0;
     _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
     // spawn new npc
-    GameEnemy* npc_ref = GameManager::get_instance()->get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y+frameSize.height/2), state.direction, false, false);
+    GameEnemy* npc_ref = GameManager::get_instance()->get_current_map_obj()->spawn_map_enemy(_parameter, st_position(position.x, position.y+frameSize.height/2), state.direction, false, false);
     // is executing reaction and is dying and is map-boss -> set child as new map-boss
     if (_reaction_state == 1 && _reaction_type == 2 && _is_stage_boss == true) {
         std::cout << "########################## SET NEW BOSS (REPLACE)" << std::endl;
@@ -2253,13 +2253,13 @@ void artificial_inteligence::execute_ai_replace_itself(bool morph)
         }
         // @TODO: the boss HP HUD gets lost with morph //
         _dead_state = DEAD_STATE_IGNORE;
-        npc_ref->npc_set_hp(hp_copy);
+        npc_ref->enemy_set_hp(hp_copy);
         // adjust Y post because of heigth difference //
         st_float_position new_pos = position;
         new_pos.y += frameSize.height - npc_ref->get_size().height;
-        npc_ref->npc_set_position(new_pos);
-        npc_ref->npc_set_direction(state.direction);
-        npc_ref->npc_set_initialized(3);
+        npc_ref->enemy_set_position(new_pos);
+        npc_ref->enemy_set_direction(state.direction);
+        npc_ref->enemy_set_initialized(3);
     }
 }
 
@@ -2276,7 +2276,7 @@ void artificial_inteligence::execute_ai_step_spawn_npc()
         return;
     }
 
-    int child_count = GameManager::get_instance()->get_current_map_obj()->child_npc_count(get_number());
+    int child_count = GameManager::get_instance()->get_current_map_obj()->child_enemy_count(get_number());
     if (child_count >= MAX_NPC_SPAWN) {
         //std::cout << ">> CAN'T SPAWN - child-count[" << child_count << "], max[" << MAX_NPC_SPAWN << "]" << std::endl;
         _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
@@ -2293,9 +2293,9 @@ void artificial_inteligence::execute_ai_step_spawn_npc()
         }
         GameEnemy* npc_ref;
         if (name == "TOP HAT") {
-            npc_ref = GameManager::get_instance()->get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y), state.direction, false, true);
+            npc_ref = GameManager::get_instance()->get_current_map_obj()->spawn_map_enemy(_parameter, st_position(position.x, position.y), state.direction, false, true);
         } else {
-            npc_ref = GameManager::get_instance()->get_current_map_obj()->spawn_map_npc(_parameter, st_position(position.x, position.y+frameSize.height/2), state.direction, false, false);
+            npc_ref = GameManager::get_instance()->get_current_map_obj()->spawn_map_enemy(_parameter, st_position(position.x, position.y+frameSize.height/2), state.direction, false, false);
         }
 
         if (npc_ref == nullptr) {
@@ -2547,20 +2547,20 @@ int artificial_inteligence::get_ai_type() {
     int type = -1;
 
     // check for error
-    if (_number < 0 || _number >= GameMediator::get_instance()->ai_list.size()) {
+    if (_number < 0 || _number >= GameData::get_instance()->ai_list.size()) {
         return 0;
     }
     if (_reaction_type < 0 || _reaction_type >= MAX_AI_REACTIONS) {
         return 0;
     }
 
-    if (_reaction_state == 0 || GameMediator::get_instance()->ai_list.at(_number).reactions[_reaction_type].action == -1) {
-        type = GameMediator::get_instance()->ai_list.at(_number).states[_ai_chain_n].action;
-        _parameter = GameMediator::get_instance()->ai_list.at(_number).states[_ai_chain_n].extra_parameter;
+    if (_reaction_state == 0 || GameData::get_instance()->ai_list.at(_number).reactions[_reaction_type].action == -1) {
+        type = GameData::get_instance()->ai_list.at(_number).states[_ai_chain_n].action;
+        _parameter = GameData::get_instance()->ai_list.at(_number).states[_ai_chain_n].extra_parameter;
         //std::cout << ">> AI::get_ai_type - _number: " << _number << ", _ai_chain_n: " << _ai_chain_n << ", action: " << type << ", extra_parameter: " << _parameter << std::endl;
     } else {
-        type = GameMediator::get_instance()->ai_list.at(_number).reactions[_reaction_type].action;
-        _parameter = GameMediator::get_instance()->ai_list.at(_number).reactions[_reaction_type].extra_parameter;
+        type = GameData::get_instance()->ai_list.at(_number).reactions[_reaction_type].action;
+        _parameter = GameData::get_instance()->ai_list.at(_number).reactions[_reaction_type].extra_parameter;
         //std::cout << ">> AI::execute_ai_step - REACTION-MODE - _number: " << _number << ", _reaction_type: " << _reaction_type << ", type: " << type << ", _parameter: " << _parameter << std::endl;
     }
     //std::cout << "AI::get_ai_type ==> _current_ai_type: " << _current_ai_type << ", new_type: " << type << ", _parameter: " << _parameter << std::endl;
@@ -2569,18 +2569,18 @@ int artificial_inteligence::get_ai_type() {
 
 bool artificial_inteligence::get_is_npc()
 {
-    return SharedData::get_instance()->enemy_list.at(_number).is_npc;
+    return GameData::get_instance()->get_enemy(_number)->is_npc;
 }
 
 int artificial_inteligence::get_dialog_id()
 {
-    return SharedData::get_instance()->enemy_list.at(_number).npc_dialog_id;
+    return GameData::get_instance()->get_enemy(_number)->npc_dialog_id;
 }
 
 
 bool artificial_inteligence::always_move_ahead() const
 {
-    if (GameMediator::get_instance()->ai_list.at(_number).states[_ai_chain_n].go_to-1 == _ai_chain_n) {
+    if (GameData::get_instance()->ai_list.at(_number).states[_ai_chain_n].go_to-1 == _ai_chain_n) {
         return true;
     }
     return false;
@@ -2589,7 +2589,7 @@ bool artificial_inteligence::always_move_ahead() const
 bool artificial_inteligence::uses_fly_fall()
 {
     for (int i=0; i<AI_MAX_STATES; i++) {
-        if (GameMediator::get_instance()->ai_list.at(_number).states[_ai_chain_n].action == AI_ACTION_FLY && GameMediator::get_instance()->ai_list.at(_number).states[_ai_chain_n].extra_parameter == AI_ACTION_FLY_OPTION_FALL) {
+        if (GameData::get_instance()->ai_list.at(_number).states[_ai_chain_n].action == AI_ACTION_FLY && GameData::get_instance()->ai_list.at(_number).states[_ai_chain_n].extra_parameter == AI_ACTION_FLY_OPTION_FALL) {
             return true;
         }
     }

@@ -10,7 +10,7 @@
 #include "controller/inputcontroller.h"
 #include "data/st_common.h"
 #include "data/shareddata.h"
-#include "game_mediator.h"
+#include "game_data.h"
 #include "file/file_io.h"
 
 #define FLASH_POINTS_N 10

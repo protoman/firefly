@@ -25,11 +25,12 @@ linux {
 SOURCES += \
     GameManager.cpp \
     aux_tools/ability_name.cpp \
-    aux_tools/jsoncpp.cpp \
     character/GameEnemy.cpp \
+    character/GameNpc.cpp \
     character/custom/ai_boss_001.cpp \
     character/gamenpc.cpp \
     character/movement/moveslopes.cpp \
+    game_data.cpp \
         main.cpp \
     text/i18ntext.cpp \
     text/npc_dialog_manager.cpp \
@@ -63,7 +64,6 @@ SOURCES += \
     projectilelib.cpp \
     sceneslib.cpp \
     strings_map.cpp \
-    game_mediator.cpp \
     scenes/game_menu.cpp \
     class_config.cpp \
     options/key_map.cpp \
@@ -75,9 +75,8 @@ SOURCES += \
 HEADERS += \
     GameManager.h \
     aux_tools/ability_name.h \
-    aux_tools/json/json-forwards.h \
-    aux_tools/json/json.h \
     character/GameEnemy.h \
+    character/GameNpc.h \
     character/custom/ai_boss_001.h \
     character/gamenpc.h \
     character/movement/moveslopes.h \
@@ -90,6 +89,8 @@ HEADERS += \
     file/v6/file_object_v6.h \
     file/v6/file_room_v6.h \
     file/v6/file_style_v6.h \
+    file/v6/file_v6_quest.h \
+    game_data.h \
     text/i18ntext.h \
     text/npc_dialog_manager.h \
     view/ingame_presentation.h \
@@ -133,7 +134,6 @@ HEADERS += \
     file/format/st_projectile.h \
     file/format/st_teleporter.h \
     file/format/st_hitPoints.h \
-    game_mediator.h \
     scenes/game_menu.h \
     class_config.h \
     options/key_map.h \

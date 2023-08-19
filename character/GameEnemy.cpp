@@ -5,17 +5,12 @@
 #include <math.h>
 #include <string.h>
 
-#include "game_mediator.h"
+#include "game_data.h"
 #include "GameManager.h"
 #include "data/shareddata.h"
 #include "view/imageview.h"
 #include "view/timerview.h"
 
-#ifdef ANDROID
-#include <android/log.h>
-#endif
-
-#define REQUEST_ITEM_TOOLTIP_DURATION 3000
 
 // ********************************************************************************************** //
 //                                                                                                //
@@ -37,27 +32,25 @@ GameEnemy::GameEnemy() : graphic_filename(), first_run(true), _is_player_friend(
 }
 
 
-
-
-GameEnemy::GameEnemy(int map_id, int main_id, int id) : _is_player_friend(false) // map-loaded npc
+GameEnemy::GameEnemy(int map_id, int main_id, int id) : _is_player_friend(false) // map-loaded enemy
 {
     is_ghost = false;
-    build_basic_npc(map_id, main_id);
-    facing = SharedData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).direction;
+    build_basic_enemy(map_id, main_id);
+    facing = GameData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).direction;
     set_direction(facing);
 
     fflush(stdout);
 
-    start_point.x = ( SharedData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).start_point.x * TILESIZE) + GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.x;
-    if (GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.x != 0) {
-        std::cout << ">>>>>>>>>>>>> bg_pos.x[" << GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.x << "]" << std::endl;
+    start_point.x = ( GameData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).start_point.x * TILESIZE) + GameData::get_instance()->get_enemy(_number)->sprites_pos_bg.x;
+    if (GameData::get_instance()->get_enemy(_number)->sprites_pos_bg.x != 0) {
+        std::cout << ">>>>>>>>>>>>> bg_pos.x[" << GameData::get_instance()->get_enemy(_number)->sprites_pos_bg.x << "]" << std::endl;
     }
-    start_point.y = ( SharedData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).start_point.y * TILESIZE) + GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.y;
-    static_bg_pos = st_position( SharedData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).start_point.x * TILESIZE,  SharedData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).start_point.y * TILESIZE);
+    start_point.y = ( GameData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).start_point.y * TILESIZE) + GameData::get_instance()->get_enemy(_number)->sprites_pos_bg.y;
+    static_bg_pos = st_position( GameData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).start_point.x * TILESIZE,  GameData::get_instance()->file_v5_stage_enemy_map.at(map_id).at(id).start_point.y * TILESIZE);
     position.x = start_point.x;
     position.y = start_point.y;
     if (name == "OCTOPUS") {
-        std::cout << "NPC[" << name << "], x[" << position.x << "], y[" << position.y << "]" << std::endl;
+        std::cout << "ENEMY[" << name << "], x[" << position.x << "], y[" << position.y << "]" << std::endl;
     }
     _is_spawn = false;
     _initialized = 0;
@@ -71,18 +64,18 @@ GameEnemy::GameEnemy(int map_id, int main_id, int id) : _is_player_friend(false)
     }
 }
 
-GameEnemy::GameEnemy(int map_id, int main_id, st_position npc_pos, short int direction, bool player_friend) // spawned npc
+GameEnemy::GameEnemy(int map_id, int main_id, st_position enemy_pos, short int direction, bool player_friend) // spawned enemy
 {
     is_ghost = false;
-    build_basic_npc(map_id, main_id);
+    build_basic_enemy(map_id, main_id);
     _is_player_friend = player_friend;
     facing = direction;
     set_direction(direction);
-    start_point.x = npc_pos.x;
-    start_point.y = npc_pos.y;
-    static_bg_pos = st_position(npc_pos.x * TILESIZE, npc_pos.y * TILESIZE);
-    position.x = npc_pos.x;
-    position.y = npc_pos.y;
+    start_point.x = enemy_pos.x;
+    start_point.y = enemy_pos.y;
+    static_bg_pos = st_position(enemy_pos.x * TILESIZE, enemy_pos.y * TILESIZE);
+    position.x = enemy_pos.x;
+    position.y = enemy_pos.y;
     _is_spawn = true;
     _initialized = 0;
     _screen_blinked = false;
@@ -122,46 +115,46 @@ GameEnemy::~GameEnemy()
 {
 }
 
-void GameEnemy::build_basic_npc(int map_id, int main_id)
+void GameEnemy::build_basic_enemy(int map_id, int main_id)
 {
 	_number = main_id;
 	// TODO - usar operador igual e também para cópia de toda a classe para ela mesma
-	st_imageData npc_sprite_surface;
+    st_imageData enemy_sprite_surface;
 
-    file_enemy_v3_1_2* copyref = GameMediator::get_instance()->get_enemy(main_id);
+    file_enemy_v3_1_2* copyref = GameData::get_instance()->get_enemy(main_id);
 
     name = std::string(copyref->name);
 
 	add_graphic();
 
 
-    hitPoints.total = GameMediator::get_instance()->get_enemy(main_id)->hp;
+    hitPoints.total = GameData::get_instance()->get_enemy(main_id)->hp;
 	hitPoints.current = hitPoints.total;
 
     if (state.direction > CHAR_ANIM_DIRECTION_COUNT) {
         set_direction(ANIM_DIRECTION_RIGHT);
 	}
 
-    move_speed = GameMediator::get_instance()->get_enemy(main_id)->speed;
-    walk_range = GameMediator::get_instance()->get_enemy(main_id)->walk_range;
+    move_speed = GameData::get_instance()->get_enemy(main_id)->speed;
+    walk_range = GameData::get_instance()->get_enemy(main_id)->walk_range;
 	if (walk_range < 0 || walk_range > 1000) { // fix data errors by setting value to default
 		walk_range = TILESIZE*6;
 	}
 
-    graphic_filename = GameMediator::get_instance()->get_enemy(main_id)->graphic_filename;
+    graphic_filename = GameData::get_instance()->get_enemy(main_id)->graphic_filename;
 
 
-    frameSize.width = GameMediator::get_instance()->get_enemy(main_id)->frame_size.width;
-    frameSize.height = GameMediator::get_instance()->get_enemy(main_id)->frame_size.height;
-    is_ghost = (GameMediator::get_instance()->get_enemy(main_id)->is_ghost != 0);
-    shield_type = GameMediator::get_instance()->get_enemy(main_id)->shield_type;
+    frameSize.width = GameData::get_instance()->get_enemy(main_id)->frame_size.width;
+    frameSize.height = GameData::get_instance()->get_enemy(main_id)->frame_size.height;
+    is_ghost = (GameData::get_instance()->get_enemy(main_id)->is_ghost != 0);
+    shield_type = GameData::get_instance()->get_enemy(main_id)->shield_type;
 	_is_boss = false;
 
-    _attack_frame_n = GameMediator::get_instance()->get_enemy(main_id)->attack_frame;
+    _attack_frame_n = GameData::get_instance()->get_enemy(main_id)->attack_frame;
 
     // TODO - this logic can be passed to the editor
-    if (GameMediator::get_instance()->get_enemy(main_id)->fly_flag != 0) {
-        //std::cout << "******** classnpc::set_file_data - npc: " << name << ", canfly: " << can_fly << std::endl;
+    if (GameData::get_instance()->get_enemy(main_id)->fly_flag != 0) {
+        //std::cout << "******** GameEnemy::set_file_data - enemy: " << name << ", canfly: " << can_fly << std::endl;
         can_fly = true;
     }
 	relativePosition.x = 0;
@@ -173,7 +166,7 @@ void GameEnemy::build_basic_npc(int map_id, int main_id)
 	last_execute_time = 0;
 
 
-	// only add graphics if there is no graphic for this NPC yet
+    // only add graphics if there is no graphic for this enemy yet
 	if (have_frame_graphics() == false) {
 		// load the graphic from file and set it into frameset
 
@@ -181,16 +174,16 @@ void GameEnemy::build_basic_npc(int map_id, int main_id)
         std::string temp_filename = SharedData::get_instance()->FILEPATH + "images/sprites/enemies/" + graphic_filename;
         //printf(">> temp_filename: '%s'\n", temp_filename.c_str());
 
-        npc_sprite_surface = ImageView::get_instance()->imageFromFile(temp_filename);
-        if (npc_sprite_surface.surface == nullptr) {
-			std::cout << "initFrames - Error loading player surface from file\n";
+        enemy_sprite_surface = ImageView::get_instance()->imageFromFile(temp_filename);
+        if (enemy_sprite_surface.surface == nullptr) {
+            std::cout << "initFrames - Error loading enemy surface from file\n";
 			return;
 		}
 
         for (int i=0; i<ANIM_TYPE_COUNT; i++) {
             for (int j=0; j<ANIM_FRAMES_COUNT; j++) {
-                if (GameMediator::get_instance()->get_enemy(main_id)->sprites[i][j].used == true) {
-                    addSpriteFrame(i, GameMediator::get_instance()->get_enemy(main_id)->sprites[i][j].sprite_graphic_pos_x, npc_sprite_surface, GameMediator::get_instance()->get_enemy(main_id)->sprites[i][j].duration);
+                if (GameData::get_instance()->get_enemy(main_id)->sprites[i][j].used == true) {
+                    addSpriteFrame(i, GameData::get_instance()->get_enemy(main_id)->sprites[i][j].sprite_graphic_pos_x, enemy_sprite_surface, GameData::get_instance()->get_enemy(main_id)->sprites[i][j].duration);
                 }
             }
         }
@@ -199,13 +192,13 @@ void GameEnemy::build_basic_npc(int map_id, int main_id)
 
     if (have_background_graphics() == false) {
         st_imageData bg_surface;
-        std::string bg_filename(GameMediator::get_instance()->get_enemy(main_id)->bg_graphic_filename);
-        //std::cout << ">>>>>>>>> NPC[" << name << "].bg_filename: '" << bg_filename << "', length: " << bg_filename.length() << ", size: " << bg_filename.size() << std::endl;
+        std::string bg_filename(GameData::get_instance()->get_enemy(main_id)->bg_graphic_filename);
+        //std::cout << ">>>>>>>>> enemy[" << name << "].bg_filename: '" << bg_filename << "', length: " << bg_filename.length() << ", size: " << bg_filename.size() << std::endl;
         if (bg_filename.size() > 0) {
             std::string full_bggraphic_filename = SharedData::get_instance()->FILEPATH + "images/sprites/enemies/backgrounds/" + bg_filename;
             bg_surface = ImageView::get_instance()->imageFromFile(full_bggraphic_filename);
             if (bg_surface.surface == nullptr) {
-                std::cout << "initFrames - Error loading NPC background surface from file '" << full_bggraphic_filename << std::endl;
+                std::cout << "initFrames - Error loading Enemy background surface from file '" << full_bggraphic_filename << std::endl;
                 return;
             }
             /*
@@ -224,7 +217,7 @@ void GameEnemy::build_basic_npc(int map_id, int main_id)
     }
 
 
-    vulnerable_area_box = GameMediator::get_instance()->get_enemy(_number)->vulnerable_area;
+    vulnerable_area_box = GameData::get_instance()->get_enemy(_number)->vulnerable_area;
 }
 
 
@@ -241,14 +234,14 @@ bool GameEnemy::is_spawn()
 
 bool GameEnemy::is_subboss()
 {
-    return GameMediator::get_instance()->get_enemy(_number)->is_sub_boss;
+    return GameData::get_instance()->get_enemy(_number)->is_sub_boss;
 }
 
 void GameEnemy::reset_position()
 {
     position.x = start_point.x;
     position.y = start_point.y;
-    // if the NPC uses fly/fall, it means, we need to respawn it inside the hole
+    // if the enemy uses fly/fall, it means, we need to respawn it inside the hole
     if (uses_fly_fall()) {
         position.y = RES_H + TILESIZE;
     }
@@ -275,31 +268,24 @@ void GameEnemy::show()
     artificial_inteligence::show();
     // show tooltip, if needed
     //std::cout << "ENEMY.SHOW[" << name << "]" << std::endl;
-    if (npc_request_item_tooltip_timer != 0 && npc_request_item_tooltip_timer > TimerView::get_instance()->getTimer()) {
-        st_position tooltip_pos = this->get_real_position();
-        tooltip_pos.x += this->get_size().width/2;
-        ImageView::get_instance()->show_item_tooltip(tooltip_pos, GameMediator::get_instance()->get_enemy(_number)->npc_requested_item_id);
-    } else if (npc_request_item_tooltip_timer != 0) {
-        npc_request_item_tooltip_timer = 0;
-    }
 }
 
-bool GameEnemy::npc_is_ghost()
+bool GameEnemy::enemy_is_ghost()
 {
     return is_ghost;
 }
 
-void GameEnemy::npc_set_position(st_float_position pos)
+void GameEnemy::enemy_set_position(st_float_position pos)
 {
     position = pos;
 }
 
-void GameEnemy::npc_set_direction(short dir)
+void GameEnemy::enemy_set_direction(short dir)
 {
     set_direction(dir);
 }
 
-void GameEnemy::npc_set_initialized(short init)
+void GameEnemy::enemy_set_initialized(short init)
 {
     _initialized = init;
 }
@@ -321,7 +307,7 @@ void GameEnemy::reset_timers()
 
 bool GameEnemy::is_static()
 {
-    if (GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.x != 0 && GameMediator::get_instance()->get_enemy(_number)->sprites_pos_bg.y != 0) {
+    if (GameData::get_instance()->get_enemy(_number)->sprites_pos_bg.x != 0 && GameData::get_instance()->get_enemy(_number)->sprites_pos_bg.y != 0) {
         return true;
     }
     return false;
@@ -332,13 +318,7 @@ int GameEnemy::get_id()
     return _number;
 }
 
-void GameEnemy::npc_activate_request_item_tooltip()
-{
-    npc_request_item_tooltip_timer = TimerView::get_instance()->getTimer() + REQUEST_ITEM_TOOLTIP_DURATION;
-    std::cout << "current-timer[" << TimerView::get_instance()->getTimer() << "], npc_request_item_tooltip_timer[" << npc_request_item_tooltip_timer << "]" << std::endl;
-}
-
-void GameEnemy::npc_set_hp(st_hit_points new_hp)
+void GameEnemy::enemy_set_hp(st_hit_points new_hp)
 {
     hitPoints = new_hp;
 }
@@ -372,12 +352,12 @@ void GameEnemy::execute()
 
 void GameEnemy::init_animation()
 {
-    animation_obj.init(name, SharedData::get_instance()->FILEPATH + "images/sprites/enemies/" + graphic_filename, frameSize,  GameMediator::get_instance()->get_enemy(_number)->sprites);
+    animation_obj.init(name, SharedData::get_instance()->FILEPATH + "images/sprites/enemies/" + graphic_filename, frameSize,  GameData::get_instance()->get_enemy(_number)->sprites);
 }
 
 void GameEnemy::boss_move()
 {
-    //std::cout << "NPC::boss_move::BEGIN" << std::endl;
+    //std::cout << "Enemy::boss_move::BEGIN" << std::endl;
     if (hitPoints.current <= 0 || position.x < GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x-TILESIZE*2 || position.x > GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x+RES_W+TILESIZE*2) {
         //std::cout << "classboss::execute - LEAVE #1" << std::endl;
         return;
@@ -458,7 +438,7 @@ void GameEnemy::move_projectiles()
 {
 	//int i = 0;
 	// animate projectiles
-    //if (name == "Dynamite Bot") std::cout << "******* NPC::move_projectiles - projectile_list.size: " << projectile_list.size() << std::endl;
+    //if (name == "Dynamite Bot") std::cout << "******* Enemy::move_projectiles - projectile_list.size: " << projectile_list.size() << std::endl;
     std::vector<projectile>::iterator it;
     st_rectangle player_hitbox = GameManager::get_instance()->get_current_map_obj()->get_player_hitbox();
 
@@ -470,7 +450,7 @@ void GameEnemy::move_projectiles()
 			continue;
 		}
 
-        if (_is_player_friend == false) { // NPC attacking players
+        if (_is_player_friend == false) { // Enemy attacking players
 
             if ((*it).is_finished == true) {
                 projectile_list.erase(it);
@@ -508,12 +488,11 @@ void GameEnemy::move_projectiles()
                     }
                 }
             }
-        } else { // NPC attacking other NPCs
+        } else { // Enemy attacking other Enemies
 
             for (unsigned int i=0; i<GameManager::get_instance()->get_current_map_obj()->map_enemy_list.size(); i++) {
-                st_rectangle other_npc_hitbox = GameManager::get_instance()->get_current_map_obj()->map_enemy_list.at(i).get_vulnerable_area();
-				//classnpc* enemy = (*enemy_it);
-                if (other_npc_hitbox.is_empty() == false && (*it).check_collision(other_npc_hitbox, st_position(moved.width, moved.height)) == true) {
+                st_rectangle other_enemy_hitbox = GameManager::get_instance()->get_current_map_obj()->map_enemy_list.at(i).get_vulnerable_area();
+                if (other_enemy_hitbox.is_empty() == false && (*it).check_collision(other_enemy_hitbox, st_position(moved.width, moved.height)) == true) {
 					//std::cout << "is_shielded::CALL 2" << std::endl;
                     if (GameManager::get_instance()->get_current_map_obj()->map_enemy_list.at(i).is_intangible() == true) {
                         continue;
@@ -547,13 +526,13 @@ void GameEnemy::show_projectiles()
 }
 
 
-// executes the NPC sub-IA behavior
+// executes the Enemy sub-IA behavior
 void GameEnemy::move() {
     if (state.direction > CHAR_ANIM_DIRECTION_COUNT-1) {
         set_direction(ANIM_DIRECTION_LEFT);
     }
 
-	/// @TODO: this check must be placed in game.cpp and npc must have a set_frozen() method, for individual effect
+    /// @TODO: this check must be placed in game.cpp and Enemy must have a set_frozen() method, for individual effect
 
     move_projectiles();
 
@@ -571,14 +550,14 @@ void GameEnemy::move() {
         execute_ai();
 	}
 
-    //std::cout << "classnpc::move - position.y: " << position.y << std::endl;
+    //std::cout << "GameEnemy::move - position.y: " << position.y << std::endl;
 
     if (can_fly == false && position.y >= RES_H+1) {
         // death because felt in a hole
         damage(999, true);
         position.x = start_point.x;
         position.y = start_point.y;
-        //std::cout << "classnpc::move - FELT IN HOLE - DEATH - pos.x: " << position.x << ", pos.y: " << position.y << std::endl;
+        //std::cout << "GameEnemy::move - FELT IN HOLE - DEATH - pos.x: " << position.x << ", pos.y: " << position.y << std::endl;
         return;
     }
 
@@ -613,7 +592,7 @@ void GameEnemy::death()
     _obj_jump.interrupt();
     _obj_jump.finish();
     dead = true;
-    _auto_respawn_timer = TimerView::get_instance()->getTimer() + GameMediator::get_instance()->get_enemy(_number)->respawn_delay;
+    _auto_respawn_timer = TimerView::get_instance()->getTimer() + GameData::get_instance()->get_enemy(_number)->respawn_delay;
     if (is_stage_boss()) {
         GameManager::get_instance()->get_current_map_obj()->clear_animations();
     }
@@ -670,10 +649,10 @@ void GameEnemy::set_stage_boss(bool boss_flag)
 
 void GameEnemy::revive()
 {
-    //std::cout << "**** classnpc::revive[" << name << " ****" << std::endl;
+    //std::cout << "**** GameEnemy::revive[" << name << " ****" << std::endl;
 	//position.x = start_point.x;
     //position.y = start_point.y;
-    if (GameMediator::get_instance()->ai_list.at(_number).states[_ai_chain_n].extra_parameter == AI_ACTION_FLY_OPTION_DRILL_DOWN) {
+    if (GameData::get_instance()->ai_list.at(_number).states[_ai_chain_n].extra_parameter == AI_ACTION_FLY_OPTION_DRILL_DOWN) {
         position.y = -TILESIZE;
     }
 	hitPoints.current = hitPoints.total;

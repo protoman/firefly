@@ -1,34 +1,48 @@
 ########################################################
+                     INSPIRACÃO
+########################################################
+https://store.steampowered.com/app/1802190/Puzzles_For_Clef/
+
+########################################################
                      PRIORIDADE
 ########################################################
+- reorganizar dados
+    # centralizar em uma classe, GameData que tanto o editor como o jogo usam,e  tem load/save como o mediator,
+    # passar coisas do sharedData, mediator e gamemediator para esta nova classe.
+    # a própria classe tem os métodos de save e load.
+    # shareddata passa a conter apenas os objetos in-game/editor.
+
+- Começar a pensar básico da primeira fase.
+    # pântano com area-movediça
+    # subterrânemos com esgotos ou algo assim
+
+
+- GAME:
+    - npcs x enemies
+    - doors
+
 - novos tipos de animações:
     GOT_ITEM
     CROUCH
     FRONT (para salvar, etc)
 
-- Verificar se objetos e npcs estao por estagio
-- EDITOR: Separar NPCs e Inimigos
-    - NPCs tem edição de diálogos e só animação stand e walk e got-item
+- animações NPC (3 frames cada):
+    # STAND
+    # WALK
+    # GOT_ITEM
+    # GIVE_ITEM
+    # TALKING
+
+
 - Quests editaveis (é melhor)
-
-- Implementar objeto porta
-    # pode ter uma chaves# pode ser horizontal ou vertical
-    # tamanho e orientação são definidos no editor (segundo clique coloca segunda baixo/direita)
-    # pode abrir com um objeto no inventário do jogador ou simplesmente abre
-
-
-- EDITOR: criar uma lista com imagens de fundo e tilesets de cada estilo, e desenhar cada área de acordo com seu próprio estilo
-    # adicionar repetição do fundo
+- Pensar como fazer diálogos.
 
 - EDITOR: adicionar opção para re-gerar mapas do stage
-
-- [Rockbot] EDITOR: poder ver o preview em outros idiomas, respeitando a opção do combo em sequence
 
 - EDITOR: clicar novamente em uma sala já na lista esta corrompendo mapa
     # deveria ignorar e apenas salvar a solução da seleção (para definir propriedades só daquela sala)
     # além disto tem algumas salas com azul mais claro; será que estão duplicadas noa rquivo?
     # mostrar a sala selecionada com uma borda vermelha
-- EDITOR: a imagem de seleção de slopes tem que ser duplicada em tamanho
 
 - tentar importar correções do Rockbot que forem relativas à hitbox/hit-area/etc
     # só fazer na direção certa no preview

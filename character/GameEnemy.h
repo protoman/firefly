@@ -13,7 +13,7 @@ class classPlayer;
  * @brief
  *
  */
-struct npc_frameset {
+struct enemy_frameset {
     int frameset;				// holds information about the type of this frame /**< TODO */
     unsigned int frameset_time;		// the number of milisseconds this frame leasts /**< TODO */
     struct st_size framesize; /**< TODO */
@@ -32,8 +32,8 @@ public:
     GameEnemy();
     ~GameEnemy();
     GameEnemy(std::string set_name);
-    GameEnemy(int map_id, int main_id, int id); // load data from game_data and create a new npc
-    GameEnemy(int map_id, int main_id, st_position npc_pos, short int direction, bool player_friend); // spawned npc
+    GameEnemy(int map_id, int main_id, int id); // load data from game_data and create a new enemy
+    GameEnemy(int map_id, int main_id, st_position enemy_pos, short int direction, bool player_friend); // spawned enemy
     void initFrames();
     void execute();
     void init_animation();
@@ -56,26 +56,22 @@ public:
     st_position get_bg_position();
     void show();
     // those are needed for AI to use because of linker not reconizing character class
-    bool npc_is_ghost();
-    void npc_set_hp(st_hit_points new_hp);
-    void npc_set_position(st_float_position pos);
-    void npc_set_direction(short dir);
-    void npc_set_initialized(short init);
+    bool enemy_is_ghost();
+    void enemy_set_hp(st_hit_points new_hp);
+    void enemy_set_position(st_float_position pos);
+    void enemy_set_direction(short dir);
+    void enemy_set_initialized(short init);
     void set_parent_id(int parent_id);
     int get_parent_id();
     void reset_timers();
     bool is_static();
     int get_id();
 
-    void npc_activate_request_item_tooltip();
+
 
 
 
 protected:
-    /**
-     * @brief
-     *
-     */
     void death();
     /**
      * @brief
@@ -89,16 +85,16 @@ protected:
      * @param map_id
      * @param main_id
      */
-    void build_basic_npc(int map_id, int main_id);
+    void build_basic_enemy(int map_id, int main_id);
 
 
 
 protected:
 	// W A R N I N G -----------------> new members must be reflected in copy() method
-    short int facing;									// defines the side npc is facing before start moving (also used by LINEWALK behavior) /**< TODO */
+    short int facing;									// defines the side enemy is facing before start moving (also used by LINEWALK behavior) /**< TODO */
     std::string graphic_filename;						// graphic file used on it /**< TODO */
     bool first_run; /**< TODO */
-    bool _is_player_friend;								// player spawned npcs must not hit him, but other npcs instead /**< TODO */
+    bool _is_player_friend;								// player spawned enemies must not hit him, but other enemies instead /**< TODO */
     bool _is_spawn;                                     // indicates that is a spawn, so won't drop items, etc
 
 
@@ -108,7 +104,6 @@ protected:
     int _parent_id;
     st_position static_bg_pos;
 
-    unsigned long npc_request_item_tooltip_timer = 0;
 };
 
 #endif // CLASSNPC_H

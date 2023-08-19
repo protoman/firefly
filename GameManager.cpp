@@ -111,8 +111,8 @@ void GameManager::initHardwareLayer()
 
 void GameManager::preloadGameData()
 {
-    loadGameData();
-    loadMapData();
+    GameData::get_instance()->load_data();
+    mapController.loadMap();
     ImageView::get_instance()->preload();
     draw::get_instance()->preload();
     read_save();
@@ -125,140 +125,7 @@ void GameManager::introScreen()
     menu.show_intro_menu();
 }
 
-void GameManager::loadGameData()
-{
 
-    //std::cout << "loadGameData - FILEPATH[" << SharedData::get_instance()->FILEPATH << "]" << std::endl;
-
-    fio.read_game(SharedData::get_instance()->game_data);
-
-    // CURRENT AREA DATA //
-    char level_filename[512];
-    sprintf(level_filename, "%s/data/v6_level_list_%d.dat", SharedData::get_instance()->FILEPATH.c_str(), SharedData::get_instance()->v6_selected_stage);
-    std::vector<file_v6_level_point> point_list = fio_cmm.load_from_disk<file_v6_level_point>(level_filename);
-    // CURRENT AREA-ROOMS
-    loadAreaRooms(SharedData::get_instance()->v6_selected_stage);
-
-    // ENEMIES LIST
-    SharedData::get_instance()->enemy_list = fio_cmm.load_from_disk<file_enemy_v3_1_2>(SharedData::get_instance()->FILEPATH + "/game_enemy_list_3_1_2_b.dat");
-    if (SharedData::get_instance()->enemy_list.size() == 0) {
-        SharedData::get_instance()->enemy_list.push_back(file_enemy_v3_1_2());
-    }
-    loadEnemyStateData();
-
-    SharedData::get_instance()->v6_object_list = fio_cmm.load_from_disk<v6_file_object>(SharedData::get_instance()->FILEPATH + "/game_object_list_v6.dat");
-    if (SharedData::get_instance()->v6_object_list.size() == 0) { // add one first item to avoid errors
-        SharedData::get_instance()->v6_object_list.push_back(v6_file_object());
-    }
-
-    SharedData::get_instance()->ai_list = fio_cmm.load_from_disk<file_artificial_inteligence>(SharedData::get_instance()->FILEPATH + "/game_ai_list.dat");
-    //std::cout << "MEDIATOR::load_game::ai_list.size(): " << ai_list.size() << std::endl;
-    if (SharedData::get_instance()->ai_list.size() == 0) { // add one first item to avoid errors
-        for (unsigned int i=0; i<SharedData::get_instance()->enemy_list.size(); i++) {
-            SharedData::get_instance()->ai_list.push_back(file_artificial_inteligence());
-        }
-    }
-
-    //SharedData::get_instance()->projectile_list_v3 = fio_cmm.load_from_disk<file_projectilev3>(SharedData::get_instance()->FILEPATH + PROJECTILE_FILE_V3);
-
-    SharedData::get_instance()->projectile_list_v3 = fio_cmm.load_from_disk<file_projectilev3>(SharedData::get_instance()->FILEPATH + PROJECTILE_FILE_V3);
-
-    //std::cout << "MEDIATOR::load_game::projectile_list_v3.size(): " << SharedData::get_instance()->projectile_list_v3.size() << std::endl;
-    if (SharedData::get_instance()->projectile_list_v3.size() == 0) {
-        std::cout << ">>>>>>>>>>>>>>>>>>>>> add default projectile as list is empty" << std::endl;
-        SharedData::get_instance()->projectile_list_v3.push_back(file_projectilev3());
-    //} else {
-        //std::cout << "PROJECTILE[0][" << SharedData::get_instance()->projectile_list_v3.at(0).name << "]" << std::endl;
-    }
-
-    SharedData::get_instance()->slope_list = fio_cmm.load_from_disk<file_v5_slope_tile>(SharedData::get_instance()->FILEPATH+FILE_V5_MAP_SLOPE_LIST);
-    SharedData::get_instance()->v6_style_list = fio_cmm.load_from_disk<file_v6_style>(SharedData::get_instance()->FILEPATH + FILE_V6_STYLE_LIST);
-}
-
-void GameManager::loadAreaRooms(int area_n)
-{
-    char area_rooms_filename[512];
-    sprintf(area_rooms_filename, "%s/data/v6_area_rooms_%d.dat", SharedData::get_instance()->FILEPATH.c_str(), area_n);
-    if (fio.file_exists(area_rooms_filename)) {
-        std::vector<file_v6_room> room_list = fio_cmm.load_from_disk<file_v6_room>(area_rooms_filename);
-        // convert to a map based upon the world-map position, so we can get all rooms easily
-        SharedData::get_instance()->v6_area_room_list.clear();
-        for (unsigned int i=0; i<room_list.size(); i++) {
-            SharedData::get_instance()->v6_area_room_list.insert(std::pair<st_position, file_v6_room>(room_list.at(i).position, room_list.at(i)));
-        }
-    }
-}
-
-void GameManager::loadEnemyStateData()
-{
-    // ENEMIES STATE LIST
-    std::vector<file_npc_state> enemy_state_list;
-    if (fio.file_exists(SharedData::get_instance()->FILEPATH + "/game_enemy_state_list_3_1_2.dat")) { // load list from disk
-        enemy_state_list = fio_cmm.load_from_disk<file_npc_state>(SharedData::get_instance()->FILEPATH + "/game_enemy_state_list_3_1_3.dat");
-    } else { // first-time list generation
-        for (unsigned int i=0; i<SharedData::get_instance()->enemy_list.size(); i++) {
-            file_enemy_v3_1_2 npc = SharedData::get_instance()->enemy_list.at(i);
-            //std::cout << "######## npc.state.list.id[" << i << "]" << std::endl;
-            enemy_state_list.push_back(file_npc_state(i, false));
-        }
-    }
-    for (unsigned int i=0; i<enemy_state_list.size(); i++) { // convert to a map
-        //std::cout << ">>>>> added-npc-state id[" << enemy_state_list.at(i).npc_id << "], state[" << enemy_state_list.at(i).state << "]" << std::endl;
-        SharedData::get_instance()->enemy_state_map.insert(std::pair<int, short>(enemy_state_list.at(i).npc_id, enemy_state_list.at(i).state));
-    }
-    for (unsigned int i=0; i<SharedData::get_instance()->enemy_list.size(); i++) { // fill missing npcs
-        if (SharedData::get_instance()->enemy_state_map.find(i) == SharedData::get_instance()->enemy_state_map.end()) {
-            //std::cout << ">>>>> added-missing-npc-state id[" << i << "], state[false]" << std::endl;
-            SharedData::get_instance()->enemy_state_map.insert(std::pair<int, short>(i, 0));
-        }
-    }
-    //std::cout << ">>>>> SharedData::get_instance()->enemy_state_map.size[" << SharedData::get_instance()->enemy_state_map.size() << "]" << std::endl;
-}
-
-void GameManager::loadMapData()
-{
-    // FILE V5 //
-    SharedData::get_instance()->v6_stage_list = fio_cmm.load_from_disk<file_v6_stage>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST);
-
-    SharedData::get_instance()->file_v5_map_link_list = fio_cmm.load_from_disk<file_v5_map_link>(SharedData::get_instance()->FILEPATH+FILE_V5_MAP_LINK_LIST);
-
-    for (int i=0; i<SharedData::get_instance()->v6_stage_list.size(); i++) {
-
-        /// @TODO: load map links ///
-
-        // load map objects
-        char map_objects_name[FS_CHAR_FILENAME_SIZE];
-        sprintf(map_objects_name, "/data/v6_map_%d_objects.dat", i);
-        SharedData::get_instance()->file_v6_stage_objects_map.insert(std::pair<unsigned int, std::vector<v6_stage_object>>(i, std::vector<v6_stage_object>()));
-        if (fio.file_exists(SharedData::get_instance()->FILEPATH+map_objects_name)) {
-            SharedData::get_instance()->file_v6_stage_objects_map.at(i) = fio_cmm.load_from_disk<v6_stage_object>(SharedData::get_instance()->FILEPATH+map_objects_name);
-            //std::cout << ">>>> gameManager::loadMapData - LOAD-MAP-LINK-FILE[" << map_link_name << "], SIZE[" << SharedData::get_instance()->file_v6_map_object_map.at(i).size() << "]" << std::endl;
-        }
-
-        // map enemies //
-        char map_enemies_name[FS_CHAR_FILENAME_SIZE];
-        sprintf(map_enemies_name, "/data/v5_map_%d_enemies.dat", i);
-        SharedData::get_instance()->file_v5_stage_enemy_map.insert(std::pair<unsigned int, std::vector<file_v5_map_npc>>(i, std::vector<file_v5_map_npc>()));
-        if (fio.file_exists(SharedData::get_instance()->FILEPATH+map_enemies_name)) {
-            SharedData::get_instance()->file_v5_stage_enemy_map.at(i) = fio_cmm.load_from_disk<file_v5_map_npc>(SharedData::get_instance()->FILEPATH+map_enemies_name);
-            //std::cout << ">> FOUND AREA-ENEMIES FILE, size[" <<  SharedData::get_instance()->file_v5_map_npc_map.at(i).size() << "] <<" << std::endl;
-        }
-
-    }
-    SharedData::get_instance()->v6_area_map.clear();
-    for (unsigned int i=0; i<SharedData::get_instance()->v6_stage_list.size(); i++) {
-        char area_filename[512];
-        sprintf(area_filename, "%s/%s%d.dat", SharedData::get_instance()->FILEPATH.c_str(), FILE_V6_AREA_LIST_PREFIX, i);
-        std::vector<file_v6_area> stage_area_list = fio_cmm.load_from_disk<file_v6_area>(area_filename);
-        std::cout << "MEDIATOR::load - v6_area_list[" << i << "].size[" << stage_area_list.size() << "]" << std::endl;
-        if (stage_area_list.size() == 0) {
-            stage_area_list.push_back(file_v6_area());
-        }
-        std::pair<int, std::vector<file_v6_area>> new_area_pair(i, stage_area_list);
-        SharedData::get_instance()->v6_area_map.insert(new_area_pair);
-    }
-    mapController.loadMap();
-}
 
 int GameManager::mapNumberFromAreaPosition(int area_n, int x, int y)
 {
@@ -326,6 +193,7 @@ void GameManager::show_at_texture_renderer()
     ImageView::get_instance()->change_render_target(RENDER_TARGET_GAME_TEXTURE);
     mapController.show();
     mapController.show_objects();
+    mapController.show_enemies();
     mapController.show_npcs();
     player1.show();
     mapController.show_above_objects();
@@ -409,7 +277,7 @@ void GameManager::initGame()
 void GameManager::start_stage_music()
 {
     SoundView::get_instance()->stop_music();
-    SoundView::get_instance()->load_music(SharedData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
+    SoundView::get_instance()->load_music(GameData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
     SoundView::get_instance()->play_music();
 }
 
@@ -498,6 +366,7 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
             player1.execute();
             st_position p1_real_pos = get_player_relative_center_position();
             SharedData::get_instance()->lightpoint_list.push_back(st_light_point(p1_real_pos.x, p1_real_pos.y, LIGHT_POINT_COLOR_WHITE));
+            mapController.move_enemies();
             mapController.move_npcs();
         }
 
@@ -510,6 +379,7 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
 
         if (_dark_mode == false) {
             mapController.show_objects();
+            mapController.show_enemies();
             mapController.show_npcs();
             player1.show();
             mapController.show_above_objects();
@@ -611,7 +481,7 @@ void GameManager::start_stage()
 
 	SoundView::get_instance()->stop_music();
 
-    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
+    SoundView::get_instance()->load_stage_music(GameData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
 
     mapController.loadMap();
     mapController.set_scroll_to_bottom();
@@ -670,7 +540,7 @@ void GameManager::show_player_teleport(int pos_x, int pos_y)
 
     // find ground for player
     set_player_position_teleport_in(pos_x, pos_y);
-    long end_time = TimerView::get_instance()->getTimer() + 1500;
+    unsigned long end_time = TimerView::get_instance()->getTimer() + 1500;
 
     //std::cout << "GAME::show_player_telport #2" << std::endl;
 
@@ -748,7 +618,7 @@ void GameManager::restart_stage()
     draw::get_instance()->update_screen();
     // if was on stage-boss, mneeds to reload music
     if (SoundView::get_instance()->get_is_playing_boss_music() == true) {
-        SoundView::get_instance()->load_stage_music(SharedData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
+        SoundView::get_instance()->load_stage_music(GameData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
     }
     SoundView::get_instance()->restart_music();
     if (SharedData::get_instance()->checkpoint.y == -1) { // did not reached any checkpoint, use the calculated value from stage start
@@ -1044,7 +914,7 @@ bool GameManager::must_show_boss_hp()
 void GameManager::remove_all_projectiles()
 {
     player1.clean_projectiles();
-    mapController.clean_map_npcs_projectiles();
+    mapController.clean_map_enemies_projectiles();
     player1.remove_freeze_effect();
 }
 
@@ -1260,9 +1130,10 @@ void GameManager::horizontal_screen_move(short direction, bool is_door, short ti
         change_map_scroll(scroll_move, false);
         mapController.show();
         if (mapController.must_show_static_bg() == false) {
+            mapController.show_enemies();
             mapController.show_npcs();
         } else {
-            mapController.show_npcs_to_left(static_scroll_x+RES_W);
+            mapController.show_enemies_to_left(static_scroll_x+RES_W);
         }
         player1.show();
         mapController.showAbove();
@@ -1346,9 +1217,10 @@ void GameManager::vertical_screen_move(short direction, bool is_door, short tile
         change_map_scroll(scroll_move, false);
         mapController.show();
         if (mapController.must_show_static_bg() == false) {
+            mapController.show_enemies();
             mapController.show_npcs();
         } else {
-            mapController.show_npcs_to_left(static_scroll_y+RES_W);
+            mapController.show_enemies_to_left(static_scroll_y+RES_W);
         }
         player1.show();
         mapController.showAbove();
@@ -1483,7 +1355,7 @@ void GameManager::update_current_area_number()
     int map_tile_y = (mapController.getMapScrolling().y/TILESIZE + AREA_ROOM_TILES_H/2)/AREA_ROOM_TILES_H;
     //std::cout << "GameManager::update_current_area_number - x[" << map_tile_x << "], y[" << map_tile_y << "]" << std::endl;
     st_position map_pos = st_position(map_tile_x, map_tile_y);
-    SharedData::get_instance()->v6_selected_area = SharedData::get_instance()->v6_area_room_list.at(map_pos).area_n;
+    SharedData::get_instance()->v6_selected_area = GameData::get_instance()->v6_area_room_list.at(map_pos).area_n;
 }
 
 void GameManager::show_door_animation()
@@ -1780,6 +1652,7 @@ void GameManager::walk_character_to_screen_point_x(character *char_obj, short po
 			char_obj->set_position(st_position(char_obj->getPosition().x-2, char_obj->getPosition().y));
             mapController.show();
             mapController.showAbove();
+            mapController.show_enemies();
             mapController.show_npcs();
             player1.show();
             draw::get_instance()->update_screen();
@@ -1792,6 +1665,7 @@ void GameManager::walk_character_to_screen_point_x(character *char_obj, short po
 			char_obj->set_position(st_position(char_obj->getPosition().x+2, char_obj->getPosition().y));
             mapController.show();
             mapController.showAbove();
+            mapController.show_enemies();
             mapController.show_npcs();
             player1.show();
             draw::get_instance()->update_screen();
@@ -1971,7 +1845,7 @@ void GameManager::finish_player_teleporter()
     }
     player1.set_teleporter(-1);
     SoundView::get_instance()->stop_music();
-    SoundView::get_instance()->load_stage_music(SharedData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
+    SoundView::get_instance()->load_stage_music(GameData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
     SoundView::get_instance()->play_music();
 }
 
@@ -1981,9 +1855,10 @@ void GameManager::show_stage(int wait_time, bool move_npcs)
         mapController.show();
     }
 	if (move_npcs == true) {
-        mapController.move_npcs();
+        mapController.move_enemies();
 	}
     if (_dark_mode == false) {
+        mapController.show_enemies();
         mapController.show_npcs();
         player1.show();
         mapController.showAbove();
@@ -2034,9 +1909,9 @@ st_size GameManager::calc_area_tile_size(int area_n)
     SharedData::get_instance()->bottommost_room = -1;
     SharedData::get_instance()->leftmost_room = 99999;
     SharedData::get_instance()->rightmost_room = -1;
-    for (std::map<st_position, file_v6_room>::iterator it = SharedData::get_instance()->v6_area_room_list.begin(); it != SharedData::get_instance()->v6_area_room_list.end(); ++it) {
+    for (std::map<st_position, file_v6_room>::iterator it = GameData::get_instance()->v6_area_room_list.begin(); it != GameData::get_instance()->v6_area_room_list.end(); ++it) {
 
-        std::cout << "GameManager::calc_area_tile_size - room.x[" << it->first.x << "], room.y[" << it->first.y << "]" << std::endl;
+        //std::cout << "GameManager::calc_area_tile_size - room.x[" << it->first.x << "], room.y[" << it->first.y << "]" << std::endl;
 
         if (it->first.x > SharedData::get_instance()->rightmost_room) {
             SharedData::get_instance()->rightmost_room = it->first.x;
@@ -2080,15 +1955,25 @@ void GameManager::talk_with_npc(int npc_id)
 
     // check if npc wants item or gets item from player
 
-    GameEnemy* enemy = mapController.find_npc_by_id(npc_id);
+    if (npc_id >= GameData::get_instance()->get_npc_list_size()) {
+        return;
+    }
+    GameNPC* npc = mapController.find_npc_by_id(npc_id);
+    file_npc_v3_1_2* main_npc = GameData::get_instance()->get_npc(npc_id);
     short requesting_item_state = npc_dialog_manager.item_request_state(npc_id, obj_id);
     if (requesting_item_state == 0) { // show item request tooltip over npc-head
-        if (player1.get_current_item_id_from_slot() == SharedData::get_instance()->enemy_list.at(npc_id).npc_requested_item_id) {
-            // drop item
-            npc_dialog_manager.inc_request_state(npc_id);
-            mapController.drop_game_item(SharedData::get_instance()->enemy_list.at(npc_id).npc_given_item_id, -1, enemy->get_int_position().x, enemy->get_int_position().y);
-        } else {
-            enemy->npc_activate_request_item_tooltip();
+        int requested_object_id = GameData::get_instance()->get_npc(npc_id)->npc_requested_item_id;
+        if (requested_object_id != -1) {
+            if (player1.get_current_item_id_from_slot() == requested_object_id) {
+                // drop item
+                npc_dialog_manager.inc_request_state(npc_id);
+                mapController.drop_game_item(main_npc->npc_given_item_id, -1, npc->get_int_position().x, npc->get_int_position().y);
+            } else {
+                npc->npc_activate_request_item_tooltip();
+            }
+        } else if (main_npc->npc_dialog_id != -1) {
+            std::cout << "TALK_WITH_NPC, dialog_id[" << main_npc->npc_dialog_id << "]" << std::endl;
+            // TODO: show npc dialog
         }
     }
 

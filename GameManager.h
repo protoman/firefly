@@ -152,11 +152,6 @@ private:
     void set_player_position_teleport_in(int initial_pos_x, int initial_pos_y);
     void show_player_teleport(int pos_x, int pos_y);
 
-    void loadGameData();
-    void loadAreaRooms(int area_n);
-    void loadEnemyStateData();
-    void loadMapData();
-    void loadAreaListSize();
     int mapNumberFromAreaPosition(int area_n, int x, int y);
 
     void restart_stage();

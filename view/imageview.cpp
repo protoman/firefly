@@ -11,7 +11,7 @@ ImageView* ImageView::_instance = nullptr;
 
 #include "view/timerview.h"
 #include "view/textview.h"
-#include "game_mediator.h"
+#include "game_data.h"
 
 ImageView::ImageView()
 {
@@ -358,7 +358,7 @@ void ImageView::init()
 
     load_icons();
 
-    std::string filename = SharedData::get_instance()->FILEPATH + "images/tilesets/swamp.png";
+    std::string filename = SharedData::get_instance()->FILEPATH + "/images/tilesets/swamp.png";
     if (tileset.surface != nullptr) {
         tileset.freeGraphic();
     }
@@ -401,9 +401,9 @@ void ImageView::init()
 void ImageView::preload()
 {
     // projectile images
-    int total_projectile = GameMediator::get_instance()->get_projectile_list_size();
+    int total_projectile = GameData::get_instance()->get_projectile_list_size();
     for (int i=0; i<total_projectile; i++) {
-        std::string filename(GameMediator::get_instance()->get_projectile(i).graphic_filename);
+        std::string filename(GameData::get_instance()->get_projectile(i).graphic_filename);
         filename = SharedData::get_instance()->FILEPATH + "images/projectiles/" + filename;
         projectile_surface.push_back(st_surface_with_direction());
         if (filename.length() > 0 && filename.find(".png") != std::string::npos) {
@@ -413,10 +413,10 @@ void ImageView::preload()
         }
     }
 
-    int max = GameMediator::get_instance()->anim_tile_list.size();
+    int max = GameData::get_instance()->anim_tile_list.size();
     //std::cout << "graphicsLib::preload_anim_tiles - max: " << max << std::endl;
     for (int i=0; i<max; i++) {
-        std::string file(GameMediator::get_instance()->anim_tile_list.at(i).filename);
+        std::string file(GameData::get_instance()->anim_tile_list.at(i).filename);
         if (file.length() < 1) {
             //std::cout << "### graphicsLib::preload_anim_tiles::STOP, file: " << file << std::endl;
             break;
@@ -427,10 +427,10 @@ void ImageView::preload()
             ANIM_TILES_SURFACES.at(ANIM_TILES_SURFACES.size()-1) = imageFromFile(filename);
 
             int frames_n = ANIM_TILES_SURFACES.at(ANIM_TILES_SURFACES.size()-1).surface->w / TILESIZE;
-            anim_tile_timer anim_timer(frames_n, TimerView::get_instance()->getTimer() + GameMediator::get_instance()->anim_tile_list.at(i).frame_delay[0]);
+            anim_tile_timer anim_timer(frames_n, TimerView::get_instance()->getTimer() + GameData::get_instance()->anim_tile_list.at(i).frame_delay[0]);
 
             for (int j=0; j<FS_ANIM_TILE_MAX_FRAMES; j++) {
-                anim_timer.frames_delay[j] = GameMediator::get_instance()->anim_tile_list.at(i).frame_delay[j];
+                anim_timer.frames_delay[j] = GameData::get_instance()->anim_tile_list.at(i).frame_delay[j];
             }
 
             ANIM_TILES_TIMERS.push_back(anim_timer);
@@ -700,6 +700,10 @@ void ImageView::placeTile(st_position origin_pos, st_position dest_pos, st_image
 {
     if (!dest.surface) {
         std::cout << "placeTile - ERROR surfaceDestiny is nullptr - ignoring..." << std::endl;
+        return;
+    }
+    if (!tileset.surface || tileset.is_null()) {
+        std::cout << "placeTile - ERROR ImageView::placeTile.tileset is nullptr - ignoring..." << std::endl;
         return;
     }
 

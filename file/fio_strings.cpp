@@ -144,40 +144,56 @@ void fio_strings::save_game_strings(std::vector<std::string> list, std::string f
 
 void fio_strings::save_game_dialogs(std::vector<std::vector<std::string> >)
 {
-    Json::Value root;   // starts as "null"; will contain the root value after parsing
-    //std::cin >> root;
-
-    // Get the value of the member of root named 'my-encoding', return 'UTF-32' if there is no
-    // such member.
-    //std::string my_encoding = root.get("my-encoding", "UTF-32" ).asString();
-
-    // Get the value of the member of root named 'my-plug-ins'; return a 'null' value if
-    // there is no such member.
-    //const Json::Value my_plugins = root["my-plug-ins"];
-    root["encoding"] = "yourlib::getCurrentEncoding()";
-    root["indent"]["length"] = "yourlib::getCurrentIndentLength()";
-    root["indent"]["use_space"] = "yourlib::getCurrentIndentUseSpace()";
-
-    // Make a new JSON document with the new configuration. Preserve original comments.
-    std::cout << "root: " << root << std::endl;
+    // TODO //
 }
 
 std::vector<std::vector<std::string> > fio_strings::load_game_dialogs()
 {
+    // TODO //
     std::vector<std::vector<std::string> > res;
-    // TEST DATA //
-    std::vector<std::string> list1;
-    list1.push_back("AAAAA");
-    list1.push_back("BBBBB");
-
-    std::vector<std::string> list2;
-    list2.push_back("DDDDDD");
-    list2.push_back("EEEEEE");
-
-    res.push_back(list1);
-    res.push_back(list2);
-
     return res;
+}
+
+void fio_strings::save_npc_dialog(int language_id, int npc_id, std::string text)
+{
+    std::string filename = get_npc_dialog_filename(language_id, npc_id);
+    std::ofstream fp(filename.c_str());
+    if (!fp.is_open()) {
+        std::cout << ">> fio_strings::save_npc_dialog: Could not open '" << filename << "' for writting." << std::endl;
+        return;
+    }
+    fp << text.c_str();
+    fp.close();
+    std::cout << ">> fio_strings::save_npc_dialog: Saved dialog into '" << filename << "' file." << std::endl;
+}
+
+std::string fio_strings::get_npc_dialog_filename(int language_id, int npc_id)
+{
+    char filename_char[512];
+    sprintf(filename_char, "npc_%d_dialog_%s.txt", npc_id, get_language_filename_prefix(language_id).c_str());
+    std::string filename = SharedData::get_instance()->FILEPATH + std::string("/dialogs/npc_dialogs/") + std::string(filename_char);
+    return filename;
+}
+
+std::string fio_strings::load_npc_dialog(int language_id, int npc_id)
+{
+    std::string filename = get_npc_dialog_filename(language_id, npc_id);
+    if (!file_exists(filename)) {
+        return std::string("");
+    }
+    std::ifstream fp(filename.c_str());
+
+    if (!fp.is_open()) {
+        std::cout << ">> fio_strings::load_npc_dialog: Could not open '" << filename << "' for writting." << std::endl;
+        return std::string("");
+    }
+
+    std::stringstream strStream;
+    strStream << fp.rdbuf();
+    std::string str = strStream.str();
+
+    fp.close();
+    return str;
 }
 
 std::string fio_strings::get_common_strings_filename(int language)

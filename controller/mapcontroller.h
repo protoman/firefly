@@ -8,6 +8,7 @@
 #include "view/imageview.h"
 
 #include "character/GameEnemy.h"
+#include "character/GameNpc.h"
 #include "objects/GameObject.h"
 #include "view/animation.h"
 #include "view/draw.h"
@@ -98,7 +99,8 @@ public:
     bool isEdgeColumnLocked(int incX, bool first);
 
     void add_bubble_animation(st_position pos);
-    GameEnemy* collision_player_npcs(character*, const short int, const short int);
+    GameEnemy* collision_player_enemies(character*, const short int, const short int);
+    GameNPC* collision_player_npcs(character*playerObj);
     st_float_position get_last_scrolled() const;
 
     // LAYERS //
@@ -133,13 +135,14 @@ public:
 
     void collision_player_special_attack(character*, const short int, const short int, short int, short int);
 
-    GameEnemy* find_nearest_npc(st_position pos);
+    GameEnemy* find_nearest_enemy(st_position pos);
 
-    GameEnemy* find_npc_by_id(int npc_id);
+    GameEnemy* find_enemy_by_id(int enemy_id);
+    GameNPC* find_npc_by_id(int npc_id);
 
-    GameEnemy* find_nearest_npc_on_direction(st_position pos, int direction);
+    GameEnemy* find_nearest_enemy_on_direction(st_position pos, int direction);
 
-    void clean_map_npcs_projectiles();
+    void clean_map_enemies_projectiles();
 
     void reset_beam_objects();
 
@@ -165,20 +168,19 @@ public:
 
     void clear_animations(); // remove all animations from map
 
-    GameEnemy *spawn_map_npc(short int npc_id, st_position npc_pos, short direction, bool player_friend, bool progressive_span);
+    GameEnemy *spawn_map_enemy(short int enemy_id, st_position enemy_pos, short direction, bool player_friend, bool progressive_span);
 
-    int child_npc_count(int parent_id);
+    int child_enemy_count(int parent_id);
 
+    void move_enemies();
+    void show_enemies();
+    void show_enemies_to_left(int x);
+    void show_ghost_enemies();
     void move_npcs();
-
     void show_npcs();
-    void show_npcs_to_left(int x);
-    void show_ghost_npcs();
 
     void build_screen_area_object_list();
-
     void move_objects(bool paused);
-
     void clean_finished_objects();
 
     std::vector<GameObject*> check_collision_with_objects(st_rectangle collision_area);
@@ -187,11 +189,11 @@ public:
 
     void show_above_objects(int adjust_y=0, int adjust_x=0);
 
-    bool boss_hit_ground(GameEnemy *npc_ref);
+    bool boss_hit_ground(GameEnemy *enemy_ref);
 
     GameEnemy* get_near_boss();
 
-    void reset_map_npcs();
+    void reset_map_enemies_and_npcs();
 
     bool is_boss_on_extended_screen();
 
@@ -202,7 +204,7 @@ public:
     st_position get_first_lock_in_direction(st_position pos, st_size max_dist, int direction);
 
 
-    void drop_item(GameEnemy *npc_ref);
+    void drop_item(GameEnemy *enemy_ref);
     void drop_game_item(int obj_id, int uuid, int x, int y);
 
     void set_bg_scroll(int scrollx);
@@ -242,7 +244,7 @@ public:
 
 
 private:
-    void load_map_npcs();
+    void load_map_enemies_and_npcs();
 
     void adjust_dynamic_background_position(unsigned int bg_n);
     void adjust_dynamic_backgrounds_position();
@@ -265,7 +267,8 @@ private:
     std::map<unsigned int, st_background> imageLayerMap;
 
 public:
-    std::vector<GameEnemy> map_enemy_list;                                        // vector npcs
+    std::vector<GameEnemy> map_enemy_list;                                        // vector enemies
+    std::vector<GameNPC> map_npc_list;                                        // vector npcs
     std::vector<GameEnemy> map_enemy_spawn_list;                                  // list of enemyes to be spawned, after added into _npc_list
     std::vector<animation> animation_list;
     // vector teleporters

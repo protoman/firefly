@@ -52,8 +52,7 @@ struct v6_stage_object {
     int id_object = -1;
     struct st_position start_point;
     unsigned int direction = ANIM_DIRECTION_RIGHT;
-    // teleporter data //
-    st_position dest_position;
+    st_position dest_position; // teleporter data, also used for objects that have sizes/orientation defined while placing them in editor //
     int dest_map = -1;
     int dest_level = -1;
 };

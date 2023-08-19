@@ -3,7 +3,7 @@
 #include "file/fio_scenes.h"
 #include "strings_map.h"
 
-#include "game_mediator.h"
+#include "game_data.h"
 
 #include "view/animation.h"
 #include "view/draw.h"
@@ -49,7 +49,7 @@ scenesLib::scenesLib() : _timer(0), _state(0)
 // ********************************************************************************************** //
 void scenesLib::preloadScenes()
 {
-    SoundView::get_instance()->load_boss_music(SharedData::get_instance()->game_data.boss_music_filename);
+    SoundView::get_instance()->load_boss_music(GameData::get_instance()->game_data.boss_music_filename);
 }
 
 
@@ -84,7 +84,7 @@ void scenesLib::main_screen()
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(100);
     SoundView::get_instance()->stop_music();
-    SoundView::get_instance()->load_music(SharedData::get_instance()->game_data.game_start_screen_music_filename);
+    SoundView::get_instance()->load_music(GameData::get_instance()->game_data.game_start_screen_music_filename);
     SoundView::get_instance()->play_music();
 	draw_main();
 
@@ -209,7 +209,7 @@ void scenesLib::show_cheats_menu()
         options.push_back(st_menu_option("ALL BEATEN: " + allStagesStr));
 
         char char_n[50];
-        sprintf(char_n, "%s", GameMediator::get_instance()->player_list_v3_1[current_player].name);
+        sprintf(char_n, "%s", GameData::get_instance()->player_list_v3_1[current_player].name);
         options.push_back(st_menu_option("CHARACTER: " + std::string(char_n)));
 
         option_picker cheat_config_picker(false, config_text_pos, options, true);
