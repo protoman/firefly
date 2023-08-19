@@ -33,16 +33,17 @@ private slots:
     void on_hitboxYSpinBox_valueChanged(int arg1);
     void on_hitboxWSpinBox_valueChanged(int arg1);
     void on_hitboxHSpinBox_valueChanged(int arg1);
-
-    void on_dialogSelectorComboBox_currentIndexChanged(int index);
-
     void on_questSelectorComboBox_currentIndexChanged(int index);
-
     void on_moveBehaviorComboBox_currentIndexChanged(int index);
+    void on_comboBox_currentIndexChanged(int index);
+    void on_pushButton_2_clicked();
 
 private:
     Ui::NPCEditTab *ui;
     bool data_loading = true;
+
 };
+
+
 
 #endif // NPCEDITTAB_H

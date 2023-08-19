@@ -90,7 +90,7 @@ void animTileEdit::paintEvent(QPaintEvent *) {
     image_w = image.width();
     image_h = image.height();
 
-    std::cout << "image_w[" << image_w << "], image_h[" << image_h << "], img_grid_w[" << img_grid_w << "], img_grid_h[" << img_grid_h << "]" << std::endl;
+    //std::cout << "image_w[" << image_w << "], image_h[" << image_h << "], img_grid_w[" << img_grid_w << "], img_grid_h[" << img_grid_h << "]" << std::endl;
 
     image = image.scaled(image.width()*ADJUSTED_SIZE, image.height()*ADJUSTED_SIZE);
     if (_bg_graphic_filename.length() > 0) {

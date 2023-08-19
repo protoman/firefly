@@ -72,30 +72,34 @@ private:
   void preload_slope_images();
   void draw_slope_tile(int x, int y, int dest_x, int dest_y, QPainter *painter);
   int check_area_links(int room_x, int room_y, int tile_x, int tile_y);
-  int find_npc_in_position(int x, int y);
   void drawRoomLayers(QPainter *painter, std::map<st_position, file_v6_room>::iterator it, int map_pos_x, int map_pos_y);
   void drawTileset(QPainter *painter);
   void drawLockTileset(QPainter *painter);
   void drawMapEnemies(QPainter *painter);
+  void drawMapNpcs(QPainter *painter);
   void drawStageObjects(QPainter *painter);
+  void rebuild_stage_npcs_map();
+  void drawDoorObject(QPainter *painter, v6_stage_object &object,QPixmap &image);
+  void drawDoorPlacingTiles(QPainter *painter);
 
 private:
-  // variables
-  int link_pos_x;
-  int link_pos_y;
-  int link_map_origin;
-  int link_size;
-  e_LINK_DIRECTION link_direction;
-  int total_editarea_w = 0;
-  int total_editarea_h = 0;
+    st_position door_start_point;
+    st_position door_current_point;
+    bool door_placing = false;
+    bool door_placing_incorrect_point = false;
+    // variables
+    int link_pos_x;
+    int link_pos_y;
+    int link_map_origin;
+    int link_size;
+    e_LINK_DIRECTION link_direction;
+    int total_editarea_w = 0;
+    int total_editarea_h = 0;
 
-  int topmost_point = 99999;
-  int bottommost_point = -1;
-  int leftmost_point = 99999;
-  int rightmost_point = -1;
-
-
-
+    int topmost_point = 99999;
+    int bottommost_point = -1;
+    int leftmost_point = 99999;
+    int rightmost_point = -1;
 
     // variables
     int temp;

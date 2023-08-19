@@ -14,6 +14,14 @@ class NpcPreviewArea : public QWidget
     Q_OBJECT
 public:
     explicit NpcPreviewArea(QWidget *parent = nullptr);
+    void set_anim_type(int type);
+
+protected:
+  void paintEvent(QPaintEvent *event);
+
+private:
+  QWidget *my_parent;
+  int animation_type = 0;
 
 signals:
 

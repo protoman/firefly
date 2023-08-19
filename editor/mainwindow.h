@@ -114,7 +114,7 @@ public slots:
 
     void on_actionObjects_toggled(bool arg1);
 
-    void on_actionNPCs_toggled(bool arg1);
+    void on_actionEnemies_toggled(bool arg1);
 
     void on_actionTeleporters_toggled(bool arg1);
 
@@ -125,20 +125,13 @@ public slots:
 
 private slots:
     void on_actionStrings_Editor_triggered();
-
     void on_actionZoomOne_triggered();
-
     void on_actionZoomTwo_triggered();
-
     void on_actionZoomThree_triggered();
-
-
-
     void on_actionGRID_toggled(bool arg1);
-
     void on_areaEditTabWidget_currentChanged(int index);
-
     void on_actionOverlay_toggled(bool arg1);
+    void on_actionViewNPCs_toggled(bool arg1);
 
 private:
     Ui::MainWindow *ui;

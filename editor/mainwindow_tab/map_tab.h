@@ -33,7 +33,7 @@ private slots:
     void on_editTile_button_clicked();
     void on_editObject_button_clicked();
     void on_editLink_button_clicked();
-    void on_editNpc_button_clicked();
+    void on_editEnemy_button_clicked();
     void on_editSetSubBoss_button_clicked();
     void on_editSetBoss_button_clicked();
     void on_editModeNormal_button_clicked();
@@ -54,6 +54,8 @@ private slots:
 
 
     void on_areaSelector_comboBox_currentIndexChanged(int index);
+
+    void on_editNPC_button_clicked();
 
 private:
     void fill_data();

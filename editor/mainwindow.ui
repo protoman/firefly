@@ -389,7 +389,8 @@
     <addaction name="menuZoom"/>
     <addaction name="actionGRID"/>
     <addaction name="actionObjects"/>
-    <addaction name="actionNPCs"/>
+    <addaction name="actionEnemies"/>
+    <addaction name="actionViewNPCs"/>
     <addaction name="actionTeleporters"/>
     <addaction name="actionOverlay"/>
    </widget>
@@ -528,7 +529,7 @@
     <string>Objects</string>
    </property>
   </action>
-  <action name="actionNPCs">
+  <action name="actionEnemies">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -620,6 +621,17 @@
    </property>
    <property name="text">
     <string>Overlay</string>
+   </property>
+  </action>
+  <action name="actionViewNPCs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>NPCs</string>
    </property>
   </action>
  </widget>

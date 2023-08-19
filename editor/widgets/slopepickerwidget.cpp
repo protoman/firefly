@@ -24,14 +24,14 @@ void SlopePickerWidget::paintEvent(QPaintEvent *event)
         if (image.isNull()) {
             continue;
         }
-        image = image.scaled(image.width()/2, image.height()/2);
+        //image = image.scaled(image.width()*2, image.height()*2);
 
         for (int j=0; j<SLOPE_MAX_TILES; j++) {
             if (slope_data->slope[j].left == 0 && slope_data->slope[j].right == 0) {
                 continue;
             }
-            QRectF target(QPoint(TILESIZE/2*column, TILESIZE/2*row), QSize(TILESIZE/2, TILESIZE/2));
-            QRectF source(QPoint(j*TILESIZE/2, 0), QSize(TILESIZE/2, TILESIZE/2));
+            QRectF target(QPoint(TILESIZE*column, TILESIZE*row), QSize(TILESIZE, TILESIZE));
+            QRectF source(QPoint(j*TILESIZE, 0), QSize(TILESIZE, TILESIZE));
             column++;
             if (column >= 8) {
                 column = 0;
@@ -43,7 +43,7 @@ void SlopePickerWidget::paintEvent(QPaintEvent *event)
             slope_id_list.push_back(st_position(i, j));
             n++;
         }
-        QRectF selection(QPoint(TILESIZE/2*selectedTileX, TILESIZE/2*selectedTileY), QSize(TILESIZE/2, TILESIZE/2));
+        QRectF selection(QPoint(TILESIZE*selectedTileX, TILESIZE*selectedTileY), QSize(TILESIZE, TILESIZE));
         painter.setPen(QColor(255, 0, 0));
         painter.drawRect(selection);
     }

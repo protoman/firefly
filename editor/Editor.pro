@@ -58,6 +58,7 @@ TEMPLATE = app
 SOURCES += main.cpp \
     ../aux_tools/ability_name.cpp \
     ../aux_tools/jsoncpp.cpp \
+    dialogs/npcdialogeditor.cpp \
     mainwindow.cpp \
     editorarea.cpp \
     editortilepallete.cpp \
@@ -132,7 +133,7 @@ SOURCES += main.cpp \
 HEADERS += mainwindow.h \
     ../aux_tools/ability_name.h \
     ../aux_tools/json/json-forwards.h \
-    ../aux_tools/json/json.h \
+    dialogs/npcdialogeditor.h \
     editorarea.h \
     editortilepallete.h \
     mainwindow_tab/areaedittab.h \
@@ -229,6 +230,7 @@ HEADERS += mainwindow.h \
 
 FORMS += mainwindow.ui \
     addwizard.ui \
+    dialogs/npcdialogeditor.ui \
     loadgamepicker.ui \
     dialognpcedit.ui \
     dialogobjectedit.ui \

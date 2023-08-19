@@ -128,7 +128,7 @@
            <enum>QFrame::NoFrame</enum>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="tabSpacing">
            <number>6</number>
@@ -139,7 +139,7 @@
              <x>0</x>
              <y>0</y>
              <width>330</width>
-             <height>618</height>
+             <height>581</height>
             </rect>
            </property>
            <attribute name="label">
@@ -236,7 +236,7 @@
                    <property name="minimumSize">
                     <size>
                      <width>100</width>
-                     <height>50</height>
+                     <height>51</height>
                     </size>
                    </property>
                   </widget>
@@ -267,7 +267,7 @@
              <x>0</x>
              <y>0</y>
              <width>330</width>
-             <height>618</height>
+             <height>581</height>
             </rect>
            </property>
            <attribute name="label">
@@ -419,86 +419,69 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="page_npc">
+          <widget class="QWidget" name="page_2">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
              <width>330</width>
-             <height>618</height>
+             <height>581</height>
             </rect>
            </property>
            <attribute name="label">
-            <string>Enemy Placing</string>
+            <string>NPC Placing</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_7">
+           <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_4">
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
               <item>
-               <widget class="QWidget" name="horizontalWidget" native="true">
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_7">
+               <layout class="QHBoxLayout" name="horizontalLayout_7">
+                <item>
+                 <widget class="QLabel" name="label_6">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>30</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Direction:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="comboBox_2">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>30</height>
+                   </size>
+                  </property>
+                  <item>
                    <property name="text">
-                    <string>Direction:</string>
+                    <string>LEFT</string>
                    </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QComboBox" name="npc_direction_combo">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>RIGHT</string>
                    </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>16</height>
-                    </size>
-                   </property>
-                   <item>
-                    <property name="text">
-                     <string>Left</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Right</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                </layout>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                </widget>
               </item>
              </layout>
-            </item>
-            <item>
-             <widget class="QListWidget" name="npc_listWidget">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
             </item>
            </layout>
           </widget>
@@ -508,7 +491,7 @@
              <x>0</x>
              <y>0</y>
              <width>330</width>
-             <height>618</height>
+             <height>581</height>
             </rect>
            </property>
            <attribute name="label">
@@ -618,7 +601,7 @@
              <x>0</x>
              <y>0</y>
              <width>330</width>
-             <height>618</height>
+             <height>581</height>
             </rect>
            </property>
            <attribute name="label">
@@ -671,7 +654,7 @@
              <x>0</x>
              <y>0</y>
              <width>330</width>
-             <height>618</height>
+             <height>581</height>
             </rect>
            </property>
            <attribute name="label">
@@ -689,7 +672,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>310</width>
-                 <height>295</height>
+                 <height>277</height>
                 </rect>
                </property>
                <widget class="animTilePalette" name="animTilePaletteWidget" native="true">
@@ -747,7 +730,7 @@
              <x>0</x>
              <y>0</y>
              <width>330</width>
-             <height>618</height>
+             <height>581</height>
             </rect>
            </property>
            <attribute name="label">
@@ -756,6 +739,89 @@
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
              <widget class="SlopePickerWidget" name="slopePickerWidget" native="true"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="page_npc">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>330</width>
+             <height>581</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Enemy Placing</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QWidget" name="horizontalWidget" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="label_7">
+                   <property name="text">
+                    <string>Direction:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="npc_direction_combo">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>16</height>
+                    </size>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>Left</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Right</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QListWidget" name="npc_listWidget">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -826,7 +892,40 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="editNpc_button">
+      <widget class="QPushButton" name="editNPC_button">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>24</horstretch>
+         <verstretch>24</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normalon>:/toolbar_icons/Add Npc</normalon>
+        </iconset>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="editEnemy_button">
        <property name="minimumSize">
         <size>
          <width>24</width>
@@ -1155,6 +1254,7 @@
   </customwidget>
  </customwidgets>
  <resources>
+  <include location="../resources/icons/icons.qrc"/>
   <include location="../resources/icons/icons.qrc"/>
   <include location="../resources/icons/icons.qrc"/>
  </resources>

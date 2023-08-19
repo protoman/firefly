@@ -12,6 +12,7 @@
 #include "file/v6/file_level_v6.h"
 #include "file/v6/file_area_v6.h"
 #include "file/v6/file_room_v6.h"
+#include "game_data.h"
 
 
 struct st_player_graphics_data {
@@ -66,10 +67,12 @@ public:
     int current_npc_n;
     int selectedAnimTileset;
     bool show_objects_flag;
-    bool show_npcs_flag;
+    bool show_enemies_flag;
+    bool show_npcs_flag = true;
     bool show_teleporters_flag;
     short stage_select_edit_mode;
     bool show_grid;
+    std::map<int, std::vector<file_v6_level_point>> v6_level_map; // map a room to a position in the world-map and area-number
 
 
 	int getPalleteX();
@@ -86,13 +89,11 @@ public:
     void clean_data();                                      // any sanity data cleaning goest here
     int check_area_links(int room_x, int room_y, int tile_x, int tile_y);
     void save_map_check_area_links();
-
-
-    //void convertProjectileListToV2();
-
+    void add_missing_area_rooms(int stage_n, int area_n);
+    void add_missing_areas();
 	int get_stage_n(const int map_n);
-
     void reload_game_scenes();
+    void centNumberFormat(int n);
 
 
 	int npcGraphicSize_w;
@@ -107,7 +108,6 @@ public:
 	bool link_is_door;
 
 
-	void centNumberFormat(int n);
 
 	struct st_player_graphics_data player_graphics_data;
 

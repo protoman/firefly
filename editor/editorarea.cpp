@@ -209,6 +209,10 @@ void EditorArea::paintEvent(QPaintEvent *)
     }
     drawStageObjects(&painter);
     drawMapEnemies(&painter);
+    drawMapNpcs(&painter);
+    if (door_placing) {
+        drawDoorPlacingTiles(&painter);
+    }
 }
 
 
@@ -492,18 +496,16 @@ void EditorArea::drawMapEnemies(QPainter *painter)
         return;
     }
 
-    // DRAW ENEMIES BACKGROUNDS //
-    if (Mediator::get_instance()->show_npcs_flag == true) {
-        /// draw NPCs
+    if (Mediator::get_instance()->show_enemies_flag == true) {
+        /// draw Enemies
         for (unsigned int i=0; i<SharedData::get_instance()->file_v5_stage_enemy_map.at(current_stage).size(); i++) {
             file_v5_map_npc stage_npc = SharedData::get_instance()->file_v5_stage_enemy_map.at(current_stage).at(i);
-            //std::cout << "EditorArea::paintEvent #5.0.A [" << i << "]" << std::endl;
-            int npc_id = stage_npc.id_npc;
-            if (npc_id >= Mediator::get_instance()->enemy_list.size() || npc_id < 0) {
+            int enemy_id = stage_npc.id_npc;
+            if (enemy_id >= Mediator::get_instance()->enemy_list.size() || enemy_id < 0) {
                 stage_npc.id_npc = -1;
                 continue;
             }
-            std::string npc_bg_file(Mediator::get_instance()->enemy_list.at(npc_id).bg_graphic_filename);
+            std::string npc_bg_file(Mediator::get_instance()->enemy_list.at(enemy_id).bg_graphic_filename);
             if (npc_bg_file.length() > 0) {
                 std::string _bg_graphic_filename = SharedData::get_instance()->FILEPATH + "/images/sprites/enemies/backgrounds/" + npc_bg_file;
                 QPixmap bg_image(_bg_graphic_filename.c_str());
@@ -519,36 +521,36 @@ void EditorArea::drawMapEnemies(QPainter *painter)
             }
 
             // DRAW ENEMY IMAGE
-            std::string filename = SharedData::get_instance()->FILEPATH + "/images/sprites/enemies/" + Mediator::get_instance()->enemy_list.at(npc_id).graphic_filename;
+            std::string filename = SharedData::get_instance()->FILEPATH + "/images/sprites/enemies/" + Mediator::get_instance()->enemy_list.at(enemy_id).graphic_filename;
             if (filename.length() <= 0) {
                 continue;
             }
             QPixmap temp_image(filename.c_str());
             if (!temp_image.isNull()) {
-                int total_w = Mediator::get_instance()->enemy_list.at(npc_id).frame_size.width*Mediator::get_instance()->zoom;
-                int total_h = Mediator::get_instance()->enemy_list.at(npc_id).frame_size.height*Mediator::get_instance()->zoom;
-                int sprite_adjust_x = Mediator::get_instance()->enemy_list.at(npc_id).sprites_pos_bg.x;
-                int sprite_adjust_y = Mediator::get_instance()->enemy_list.at(npc_id).sprites_pos_bg.y;
+                int total_w = Mediator::get_instance()->enemy_list.at(enemy_id).frame_size.width*Mediator::get_instance()->zoom;
+                int total_h = Mediator::get_instance()->enemy_list.at(enemy_id).frame_size.height*Mediator::get_instance()->zoom;
+                int sprite_adjust_x = Mediator::get_instance()->enemy_list.at(enemy_id).sprites_pos_bg.x;
+                int sprite_adjust_y = Mediator::get_instance()->enemy_list.at(enemy_id).sprites_pos_bg.y;
 
                 QRectF target(QPoint((stage_npc.start_point.x*TILESIZE+sprite_adjust_x)*Mediator::get_instance()->zoom, (stage_npc.start_point.y*TILESIZE+sprite_adjust_y)*Mediator::get_instance()->zoom), QSize(total_w, total_h));
                 QRectF source;
-                if (stage_npc.direction != ANIM_DIRECTION_RIGHT || temp_image.height() <= Mediator::get_instance()->enemy_list.at(npc_id).frame_size.height) {
-                    source = QRectF(QPoint(0, 0), QSize(Mediator::get_instance()->enemy_list.at(npc_id).frame_size.width, Mediator::get_instance()->enemy_list.at(npc_id).frame_size.height));
+                if (stage_npc.direction != ANIM_DIRECTION_RIGHT || temp_image.height() <= Mediator::get_instance()->enemy_list.at(enemy_id).frame_size.height) {
+                    source = QRectF(QPoint(0, 0), QSize(Mediator::get_instance()->enemy_list.at(enemy_id).frame_size.width, Mediator::get_instance()->enemy_list.at(enemy_id).frame_size.height));
                 } else {
-                    source = QRectF(QPoint(0, Mediator::get_instance()->enemy_list.at(npc_id).frame_size.height), QSize(Mediator::get_instance()->enemy_list.at(npc_id).frame_size.width, Mediator::get_instance()->enemy_list.at(npc_id).frame_size.height));
+                    source = QRectF(QPoint(0, Mediator::get_instance()->enemy_list.at(enemy_id).frame_size.height), QSize(Mediator::get_instance()->enemy_list.at(enemy_id).frame_size.width, Mediator::get_instance()->enemy_list.at(enemy_id).frame_size.height));
                 }
 
                 // TODO //
-                if (Mediator::get_instance()->enemy_list.at(npc_id).is_boss) {
+                if (Mediator::get_instance()->enemy_list.at(enemy_id).is_boss) {
                     // translucid orange rectangle
                     painter->setBrush(QColor(255, 128, 35, 200));
                     painter->drawRect(target);
-                } else if (Mediator::get_instance()->enemy_list.at(npc_id).is_sub_boss) {
+                } else if (Mediator::get_instance()->enemy_list.at(enemy_id).is_sub_boss) {
                     // translucid bright-orange rectangle
                     painter->setBrush(QColor(241, 188, 87, 200));
                     painter->drawRect(target);
                 }
-                if (SharedData::get_instance()->game_data.final_boss_id == npc_id) {
+                if (SharedData::get_instance()->game_data.final_boss_id == enemy_id) {
                     // golden border
                     painter->setBrush(Qt::NoBrush);
                     painter->setPen(QColor(255, 215, 0, 255));
@@ -570,8 +572,58 @@ void EditorArea::drawMapEnemies(QPainter *painter)
             }
         }
     }
+}
+
+void EditorArea::drawMapNpcs(QPainter *painter)
+{
+    int current_stage = SharedData::get_instance()->v6_selected_stage;
+
+    if (SharedData::get_instance()->file_v5_stage_npc_map.find(current_stage) == SharedData::get_instance()->file_v5_stage_npc_map.end()) {
+        return;
+    }
+
+    if (Mediator::get_instance()->show_npcs_flag == true) {
+        /// draw NPCs
+        for (unsigned int i=0; i<SharedData::get_instance()->file_v5_stage_npc_map.at(current_stage).size(); i++) {
+            file_v5_map_npc stage_npc = SharedData::get_instance()->file_v5_stage_npc_map.at(current_stage).at(i);
+            int npc_id = stage_npc.id_npc;
+            if (npc_id >= SharedData::get_instance()->npc_list.size() || npc_id < 0) {
+                stage_npc.id_npc = -1;
+                continue;
+            }
+
+            // DRAW NPC IMAGE
+            std::string filename = SharedData::get_instance()->FILEPATH + "/images/sprites/npcs/" + SharedData::get_instance()->npc_list.at(npc_id).graphic_filename;
+            if (filename.length() <= 0) {
+                continue;
+            }
+            QPixmap temp_image(filename.c_str());
+            if (!temp_image.isNull()) {
 
 
+                int total_w = SharedData::get_instance()->npc_list.at(npc_id).frame_width*Mediator::get_instance()->zoom;
+                int total_h = temp_image.height()*Mediator::get_instance()->zoom;
+
+                std::cout << "EditorArea::drawMapNpcs - npc.id[" << (int)SharedData::get_instance()->file_v5_stage_npc_map.at(current_stage).at(i).id_npc << "], x[" << SharedData::get_instance()->file_v5_stage_npc_map.at(current_stage).at(i).start_point.x << "], y[" << SharedData::get_instance()->file_v5_stage_npc_map.at(current_stage).at(i).start_point.y << "]" << std::endl;
+
+
+                QRectF target(QPoint((stage_npc.start_point.x*TILESIZE)*Mediator::get_instance()->zoom, (stage_npc.start_point.y*TILESIZE)*Mediator::get_instance()->zoom), QSize(total_w, total_h));
+                QRectF source = QRectF(QPoint(0, 0), QSize(SharedData::get_instance()->npc_list.at(npc_id).frame_width, temp_image.height()));
+
+                int direction = stage_npc.direction;
+                //std::cout << "direction: " << direction << ", ANIM_DIRECTION_LEFT: " << std::endl;
+                if (direction == ANIM_DIRECTION_LEFT) {
+                    QImage temp_img(filename.c_str());
+                    QImage mirror_image = temp_img.copy(source.x(), source.y(), source.width(), source.height());
+                    mirror_image = mirror_image.mirrored(true, false);
+                    QPixmap mirror_image_pixmap = QPixmap().fromImage(mirror_image);
+                    painter->drawPixmap(target, mirror_image_pixmap, source);
+                } else {
+                    painter->drawPixmap(target, temp_image, source);
+                }
+            }
+        }
+    }
 }
 
 void EditorArea::drawStageObjects(QPainter *painter)
@@ -585,9 +637,6 @@ void EditorArea::drawStageObjects(QPainter *painter)
     }
     for (unsigned int i=0; i<SharedData::get_instance()->file_v6_stage_objects_map.at(current_stage).size(); i++) {
         int obj_id = (int)SharedData::get_instance()->file_v6_stage_objects_map.at(current_stage).at(i).id_object;
-
-
-
         if (obj_id != -1 && SharedData::get_instance()->v6_object_list.size() > obj_id) {
             //std::cout << "EditorArea::drawStageObjects - OBJ[" << i << "][" << SharedData::get_instance()->v6_object_list.at(obj_id).name << "]" << std::endl;
             //if (obj_id == 20) { std::cout << "************************** paintEvent - draw_objects[" << i << "].id: " << obj_id << std::endl; }
@@ -621,6 +670,8 @@ void EditorArea::drawStageObjects(QPainter *painter)
                     QRectF target(QPoint(SharedData::get_instance()->file_v6_stage_objects_map.at(current_stage).at(i).start_point.x*TILESIZE*Mediator::get_instance()->zoom - (SharedData::get_instance()->v6_object_list.at(obj_id).size.width-TILESIZE)*Mediator::get_instance()->zoom, SharedData::get_instance()->file_v6_stage_objects_map.at(current_stage).at(i).start_point.y*TILESIZE*Mediator::get_instance()->zoom), QSize(SharedData::get_instance()->v6_object_list.at(obj_id).size.width*Mediator::get_instance()->zoom, SharedData::get_instance()->v6_object_list.at(obj_id).size.height*Mediator::get_instance()->zoom));
                     QRectF source(QPoint(0, 0), QSize(SharedData::get_instance()->v6_object_list.at(obj_id).size.width, SharedData::get_instance()->v6_object_list.at(obj_id).size.height));
                     painter->drawPixmap(target, temp_image, source);
+                } else if (obj_type == OBJ_DOOR_LOCKED) {
+                    drawDoorObject(painter, SharedData::get_instance()->file_v6_stage_objects_map.at(current_stage).at(i), temp_image);
                 } else {
                     QRectF target(QPoint(SharedData::get_instance()->file_v6_stage_objects_map.at(current_stage).at(i).start_point.x*TILESIZE*Mediator::get_instance()->zoom, SharedData::get_instance()->file_v6_stage_objects_map.at(current_stage).at(i).start_point.y*TILESIZE*Mediator::get_instance()->zoom), QSize(SharedData::get_instance()->v6_object_list.at(obj_id).size.width*Mediator::get_instance()->zoom, SharedData::get_instance()->v6_object_list.at(obj_id).size.height*Mediator::get_instance()->zoom));
                     QRectF source;
@@ -654,11 +705,108 @@ void EditorArea::drawStageObjects(QPainter *painter)
 
 }
 
+void EditorArea::rebuild_stage_npcs_map()
+{
+    std::vector<file_v5_map_npc> temp_stage_npc_list;
+    std::cout << "PRE.stage[" << SharedData::get_instance()->v6_selected_stage << "].size[" << SharedData::get_instance()->file_v5_stage_npc_map.at(SharedData::get_instance()->v6_selected_stage).size() << "]" << std::endl;
+    for (unsigned int i=0; i<SharedData::get_instance()->file_v5_stage_npc_map.at(SharedData::get_instance()->v6_selected_stage).size(); i++) {
+        if (SharedData::get_instance()->file_v5_stage_npc_map.at(SharedData::get_instance()->v6_selected_stage).at(i).id_npc != -1) {
+            temp_stage_npc_list.push_back(SharedData::get_instance()->file_v5_stage_npc_map.at(SharedData::get_instance()->v6_selected_stage).at(i));
+        }
+    }
+    SharedData::get_instance()->file_v5_stage_npc_map.at(SharedData::get_instance()->v6_selected_stage) = temp_stage_npc_list;
+    std::vector<file_v5_map_npc> temp_stage_npc_list2 = SharedData::get_instance()->file_v5_stage_npc_map.at(SharedData::get_instance()->v6_selected_stage);
+    std::cout << "POS.stage[" << SharedData::get_instance()->v6_selected_stage << "].size[" << SharedData::get_instance()->file_v5_stage_npc_map.at(SharedData::get_instance()->v6_selected_stage).size() << "]" << std::endl;
+}
+
+// this object have a hardcoded image format divided in 3 tiles of TILESETxTIULESET size.
+// first for is left, centert, right, second is top, middle, bottom
+void EditorArea::drawDoorObject(QPainter *painter, v6_stage_object &object, QPixmap &image)
+{
+    bool objectDirectionIsRight = false;
+    if (object.dest_position.x > object.start_point.x) {
+        objectDirectionIsRight = true;
+    }
+
+    int startX = object.start_point.x * TILESIZE * Mediator::get_instance()->zoom;
+    int startY = object.start_point.y * TILESIZE * Mediator::get_instance()->zoom;
+    int destX = object.dest_position.x * TILESIZE * Mediator::get_instance()->zoom;
+    int destY = object.dest_position.y * TILESIZE * Mediator::get_instance()->zoom;
+    if (objectDirectionIsRight) {
+        QRectF sourceLeft(QPoint(0, 0), QSize(TILESIZE, TILESIZE));
+        QRectF sourceCenter(QPoint(TILESIZE, 0), QSize(TILESIZE, TILESIZE));
+        QRectF sourceRight(QPoint(TILESIZE*2, 0), QSize(TILESIZE, TILESIZE));
+        // draw left
+        QRectF target(QPoint(startX, startY), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
+        painter->drawPixmap(target, image, sourceLeft);
+        // draw right
+        target = QRectF(QPoint(destX, destY), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
+        painter->drawPixmap(target, image, sourceRight);
+        // draw center
+        for (int x=object.start_point.x+1; x<object.dest_position.x; x++) {
+            int posX = x * TILESIZE * Mediator::get_instance()->zoom;
+            target = QRectF(QPoint(posX, startY), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
+            painter->drawPixmap(target, image, sourceCenter);
+        }
+    } else {
+        QRectF sourceTop(QPoint(0, TILESIZE), QSize(TILESIZE, TILESIZE));
+        QRectF sourceMiddle(QPoint(TILESIZE, TILESIZE), QSize(TILESIZE, TILESIZE));
+        QRectF sourceBottom(QPoint(TILESIZE*2, TILESIZE), QSize(TILESIZE, TILESIZE));
+        // draw top
+        QRectF target(QPoint(startX, startY), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
+        painter->drawPixmap(target, image, sourceTop);
+        // draw bottom
+        target = QRectF(QPoint(destX, destY), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
+        painter->drawPixmap(target, image, sourceBottom);
+        // draw middle
+        for (int y=object.start_point.y+1; y<object.dest_position.y; y++) {
+            int posY = y * TILESIZE * Mediator::get_instance()->zoom;
+            target = QRectF(QPoint(startX, posY), QSize(TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom));
+            painter->drawPixmap(target, image, sourceMiddle);
+        }
+    }
+}
+
+void EditorArea::drawDoorPlacingTiles(QPainter *painter)
+{
+    painter->setBrush(QColor(60, 60, 160, 180));
+    if (door_start_point.x < door_current_point.x) {
+        for (int i=door_start_point.x; i<=door_current_point.x; i++) {
+            painter->drawRect(i*TILESIZE*Mediator::get_instance()->zoom, door_start_point.y*TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);
+        }
+    } else if (door_start_point.y < door_current_point.y) {
+        for (int i=door_start_point.y; i<=door_current_point.y; i++) {
+            painter->drawRect(door_start_point.x*TILESIZE*Mediator::get_instance()->zoom, i*TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom, TILESIZE*Mediator::get_instance()->zoom);        }
+
+    }
+}
+
+
+
 
 
 
 void EditorArea::mouseMoveEvent(QMouseEvent *event) {
 	QPoint pnt = event->pos();
+
+    std::cout << "MOVE::START, door_placing[" << door_placing << "]" << std::endl;
+    if (door_placing == true) {
+        std::cout << "MOVE - OBJ_DOOR_LOCKED::START" << std::endl;
+        int pointX = pnt.x()/(TILESIZE*Mediator::get_instance()->zoom);
+        int pointY = pnt.y()/(TILESIZE*Mediator::get_instance()->zoom);
+        std::cout << "pointX[" << pointX << "], pointY[" << pointY << "], door_start_point.x[" << door_start_point.x << "], door_start_point.y[" << door_start_point.y << "]" << std::endl;
+        if ((pointX > door_start_point.x && pointY == door_start_point.y) || (pointY > door_start_point.y && pointX == door_start_point.x)) {
+            QApplication::setOverrideCursor(Qt::ArrowCursor);
+            door_current_point.x = pointX;
+            door_current_point.y = pointY;
+            door_placing_incorrect_point = false;
+        } else {
+            QApplication::setOverrideCursor(Qt::ForbiddenCursor);
+            door_placing_incorrect_point = true;
+        }
+        repaint();
+        return;
+    }
 
     if (Mediator::get_instance()->editMode != EDITMODE_SELECT) {
         // forces "click" when moving
@@ -705,27 +853,8 @@ void EditorArea::wheelEvent(QWheelEvent *event)
     event->accept();
 }
 
-int EditorArea::find_npc_in_position(int x, int y)
-{
-    int current_stage = SharedData::get_instance()->v6_selected_stage;
-    if (SharedData::get_instance()->file_v5_stage_enemy_map.find(current_stage) == SharedData::get_instance()->file_v5_stage_enemy_map.end()) {
-        return -1;
-    }
-
-    // search if there is an existing NPC in ths position, and if yes, remove it
-    for (unsigned int i=0; i<SharedData::get_instance()->file_v5_stage_enemy_map.at(current_stage).size(); i++) {
-        if (SharedData::get_instance()->file_v5_stage_enemy_map.at(current_stage).at(i).id_npc != -1 && SharedData::get_instance()->file_v5_stage_enemy_map.at(current_stage).at(i).start_point.x == x && SharedData::get_instance()->file_v5_stage_enemy_map.at(current_stage).at(i).start_point.y == y) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-
-
-
 void EditorArea::mousePressEvent(QMouseEvent *event) {
-    if (mouse_released == false && (Mediator::get_instance()->editTool == EDITMODE_LINK || Mediator::get_instance()->editTool == EDITMODE_LINK_DEST || Mediator::get_instance()->editMode == EDITMODE_NPC || Mediator::get_instance()->editMode == EDITMODE_OBJECT || Mediator::get_instance()->editMode == EDITMODE_SET_BOSS || Mediator::get_instance()->editMode == EDITMODE_SET_SUBBOSS || Mediator::get_instance()->editMode == EDITMODE_ANIM_TILE)) {
+    if (mouse_released == false && (Mediator::get_instance()->editTool == EDITMODE_LINK || Mediator::get_instance()->editTool == EDITMODE_LINK_DEST || Mediator::get_instance()->editMode == EDITMODE_ENEMY  || Mediator::get_instance()->editMode == EDITMODE_NPC || Mediator::get_instance()->editMode == EDITMODE_OBJECT || Mediator::get_instance()->editMode == EDITMODE_SET_BOSS || Mediator::get_instance()->editMode == EDITMODE_SET_SUBBOSS || Mediator::get_instance()->editMode == EDITMODE_ANIM_TILE)) {
         std::cout << "EDITORAREA::mousePressEvent - IGNORED" << std::endl;
 		return;
 	}
@@ -743,7 +872,7 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
     int tile_x = (leftmost_point*AREA_ROOM_TILES_W)+editor_selectedTileX - (room_x*AREA_ROOM_TILES_W);
     int tile_y = (topmost_point*AREA_ROOM_TILES_H)+editor_selectedTileY - (room_y*AREA_ROOM_TILES_H);
 
-    std::cout << "### tile_x[" << tile_x << "], tile_y[" << tile_y << "], room_x[" << room_x << "], room_y[" << room_y << "], leftmost_point[" << leftmost_point << "], topmost_point[" << topmost_point << "]" << std::endl;
+    //std::cout << "### tile_x[" << tile_x << "], tile_y[" << tile_y << "], room_x[" << room_x << "], room_y[" << room_y << "], leftmost_point[" << leftmost_point << "], topmost_point[" << topmost_point << "]" << std::endl;
 
     st_position index = st_position(room_x, room_y);
 
@@ -824,15 +953,12 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
         return;
 
 
-    } else if (Mediator::get_instance()->editMode == EDITMODE_NPC) {
-        printf(">> EditorArea::mousePressEvent - EDITMODE_NPC\n");
-
+    } else if (Mediator::get_instance()->editMode == EDITMODE_ENEMY) {
         int found_npc = -1;
         int current_stage = SharedData::get_instance()->v6_selected_area;
         if (SharedData::get_instance()->file_v5_stage_enemy_map.find(current_stage) == SharedData::get_instance()->file_v5_stage_enemy_map.end()) {
             SharedData::get_instance()->file_v5_stage_enemy_map.insert(std::pair<int, std::vector<file_v5_map_npc>>(current_stage, std::vector<file_v5_map_npc>()));
         }
-
         // search if there is an existing NPC in ths position, and if yes, remove it
         for (int i=0; i<SharedData::get_instance()->file_v5_stage_enemy_map.at(current_stage).size(); i++) {
             if (SharedData::get_instance()->file_v5_stage_enemy_map.at(current_stage).at(i).id_npc != -1 && SharedData::get_instance()->file_v5_stage_enemy_map.at(current_stage).at(i).start_point.x == editor_selectedTileX && SharedData::get_instance()->file_v5_stage_enemy_map.at(current_stage).at(i).start_point.y == editor_selectedTileY) {
@@ -840,10 +966,10 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
                 break;
             }
         }
-
         if (Mediator::get_instance()->editTool == EDITMODE_ERASER && found_npc != -1) {
             std::cout << "remove npc - slot: " << found_npc << std::endl;
             SharedData::get_instance()->file_v5_stage_enemy_map.at(current_stage).at(found_npc).id_npc = -1;
+            repaint();
         } else if (Mediator::get_instance()->editTool == EDITMODE_NORMAL && found_npc == -1 && Mediator::get_instance()->selectedNPC != -1) {
             file_v5_map_npc new_npc;
             new_npc.id_npc = Mediator::get_instance()->selectedNPC;
@@ -851,13 +977,44 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
             new_npc.start_point.y = editor_selectedTileY;
             new_npc.direction = Mediator::get_instance()->npc_direction;
             SharedData::get_instance()->file_v5_stage_enemy_map.at(current_stage).push_back(new_npc);
+            std::cout << "EditorArea::mousePressEvent - ADDED Enemy in map[" << current_stage << "], pos[" << editor_selectedTileX << "][" << editor_selectedTileY << "]" << std::endl;
+            repaint();
+        } else if (Mediator::get_instance()->editTool == EDITMODE_NORMAL && found_npc != -1 && Mediator::get_instance()->selectedNPC != -1) {
+            printf(">> EditorArea::mousePressEvent - Adding Enemy - place already taken\n");
+        }
+
+    } else if (Mediator::get_instance()->editMode == EDITMODE_NPC) {
+        std::cout << "EditorArea::mousePressEvent - EDITMODE_NPC - editor_selectedTileX[" << editor_selectedTileX << "], editor_selectedTileY[" << editor_selectedTileY << "]" << std::endl;
+        int found_npc = -1;
+        int current_stage = SharedData::get_instance()->v6_selected_area;
+        if (SharedData::get_instance()->file_v5_stage_npc_map.find(current_stage) == SharedData::get_instance()->file_v5_stage_npc_map.end()) {
+            SharedData::get_instance()->file_v5_stage_npc_map.insert(std::pair<int, std::vector<file_v5_map_npc>>(current_stage, std::vector<file_v5_map_npc>()));
+        }
+        // search if there is an existing NPC in ths position, and if yes, remove it
+        for (unsigned int i=0; i<SharedData::get_instance()->file_v5_stage_npc_map.at(current_stage).size(); i++) {
+            std::cout << "ditorArea::mousePressEvent - npc[" << i << "].id[" << (int)SharedData::get_instance()->file_v5_stage_npc_map.at(current_stage).at(i).id_npc << "], x[" << SharedData::get_instance()->file_v5_stage_npc_map.at(current_stage).at(i).start_point.x << "], y[" << SharedData::get_instance()->file_v5_stage_npc_map.at(current_stage).at(i).start_point.y << "]" << std::endl;
+            if (SharedData::get_instance()->file_v5_stage_npc_map.at(current_stage).at(i).id_npc != -1 && SharedData::get_instance()->file_v5_stage_npc_map.at(current_stage).at(i).start_point.x == editor_selectedTileX && SharedData::get_instance()->file_v5_stage_npc_map.at(current_stage).at(i).start_point.y == editor_selectedTileY) {
+                found_npc = i;
+                break;
+            }
+        }
+        if (Mediator::get_instance()->editTool == EDITMODE_ERASER && found_npc != -1) {
+            std::cout << "remove npc - slot: " << found_npc << std::endl;
+            SharedData::get_instance()->file_v5_stage_npc_map.at(current_stage).at(found_npc).id_npc = -1;
+            rebuild_stage_npcs_map();
+            repaint();
+        } else if (Mediator::get_instance()->editTool == EDITMODE_NORMAL && found_npc == -1 && Mediator::get_instance()->selectedNPC != -1) {
+            file_v5_map_npc new_npc;
+            new_npc.id_npc = Mediator::get_instance()->selectedNPC;
+            new_npc.start_point.x = editor_selectedTileX;
+            new_npc.start_point.y = editor_selectedTileY;
+            new_npc.direction = Mediator::get_instance()->npc_direction;
+            SharedData::get_instance()->file_v5_stage_npc_map.at(current_stage).push_back(new_npc);
             std::cout << "EditorArea::mousePressEvent - ADDED NPC in map[" << current_stage << "], pos[" << editor_selectedTileX << "][" << editor_selectedTileY << "]" << std::endl;
             repaint();
         } else if (Mediator::get_instance()->editTool == EDITMODE_NORMAL && found_npc != -1 && Mediator::get_instance()->selectedNPC != -1) {
             printf(">> EditorArea::mousePressEvent - Adding NPC - place already taken\n");
         }
-
-
 
     } else if (Mediator::get_instance()->editMode == EDITMODE_OBJECT) {
         std::cout << ">> EditorArea::mousePressEvent - EDITMODE_OBJECT" << std::endl;
@@ -879,7 +1036,29 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
         if (Mediator::get_instance()->editTool == EDITMODE_ERASER && found_object != -1) {
             std::cout << "remove object - slot: " << found_object << std::endl;
             SharedData::get_instance()->file_v6_stage_objects_map.at(current_stage).erase(SharedData::get_instance()->file_v6_stage_objects_map.at(current_stage).begin()+found_object);
+            repaint();
         } else if (Mediator::get_instance()->editTool == EDITMODE_NORMAL && found_object == -1 && Mediator::get_instance()->selectedNPC != -1) {
+                int obj_type = SharedData::get_instance()->v6_object_list.at(Mediator::get_instance()->selectedNPC).type;
+                std::cout << "CLICK - obj_type[" << obj_type << "], selectedObject[" << Mediator::get_instance()->selectedNPC << "]" << std::endl;
+                if (obj_type == -1) {
+                    std::cout << "CLICK - invalid object type" << std::endl;
+                    return;
+                }
+                if (obj_type == OBJ_DOOR_LOCKED) {
+                    std::cout << "CLICK - OBJ_DOOR_LOCKED::START, editor_selectedTileX[" << editor_selectedTileX << "], editor_selectedTileY[" << editor_selectedTileY << "]" << std::endl;
+                    if (!door_placing) {
+                        door_placing = true;
+                        door_start_point.x = editor_selectedTileX;
+                        door_start_point.y = editor_selectedTileY;
+                        repaint();
+                        return;
+                    } else {
+                        std::cout << "CLICK - OBJ_DOOR_LOCKED::CONTINUE" << std::endl;
+                        return;
+                    }
+                }
+
+
                 v6_stage_object new_obj;
                 new_obj.id_object = Mediator::get_instance()->selectedNPC;
                 new_obj.start_point.x = editor_selectedTileX;
@@ -888,7 +1067,6 @@ void EditorArea::mousePressEvent(QMouseEvent *event) {
                 std::cout << "$$$$$$$$$$$$$$ game_data.uuid[" << SharedData::get_instance()->game_data.obj_uuid << "]" << std::endl;
                 new_obj.uuid = SharedData::get_instance()->game_data.obj_uuid;
                 // se item é teleportador, deve entrar no modo de colocar link de object
-                int obj_type = SharedData::get_instance()->v6_object_list.at(Mediator::get_instance()->selectedNPC).type;
                 if (obj_type == OBJ_BOSS_TELEPORTER || obj_type == OBJ_FINAL_BOSS_TELEPORTER || obj_type == OBJ_PLATFORM_TELEPORTER || obj_type == OBJ_STAGE_BOSS_TELEPORTER || obj_type == OBJ_FRONT_DOOR_TELEPORTER) {
                     editor_selected_object_pos = SharedData::get_instance()->file_v6_stage_objects_map.size();
                     std::cout << "SET editor_selected_object_pos: " << editor_selected_object_pos << std::endl;
@@ -1162,7 +1340,30 @@ void EditorArea::mouseReleaseEvent(QMouseEvent *event) {
     editor_selectedTileX = pnt.x()/(TILESIZE*Mediator::get_instance()->zoom) + 1;
     editor_selectedTileY = pnt.y()/(TILESIZE*Mediator::get_instance()->zoom) + 1;
 
-
+    if (door_placing == true) {
+        if (door_placing_incorrect_point == false) {
+            v6_stage_object new_obj;
+            new_obj.id_object = Mediator::get_instance()->selectedNPC;
+            new_obj.start_point.x = door_start_point.x;
+            new_obj.start_point.y = door_start_point.y;
+            new_obj.dest_position.x = editor_selectedTileX-1;
+            new_obj.dest_position.y = editor_selectedTileY-1;
+            if (new_obj.start_point.x < editor_selectedTileX) {
+                new_obj.direction = ANIM_DIRECTION_RIGHT;
+            } else {
+                new_obj.direction = ANIM_DIRECTION_DOWN;
+            }
+            new_obj.uuid = SharedData::get_instance()->game_data.obj_uuid;
+            // se item é teleportador, deve entrar no modo de colocar link de object
+            SharedData::get_instance()->file_v6_stage_objects_map.at(SharedData::get_instance()->v6_selected_area).push_back(new_obj);
+            obj_ref = &SharedData::get_instance()->file_v6_stage_objects_map.at(SharedData::get_instance()->v6_selected_area).at(SharedData::get_instance()->file_v6_stage_objects_map.at(SharedData::get_instance()->v6_selected_area).size()-1);
+            SharedData::get_instance()->game_data.obj_uuid++; // increase unique counter
+            std::cout << "$$$$$$$$$$$$$$ Added door, start[" << new_obj.start_point.x << "][" << new_obj.start_point.y << "], dest[" << new_obj.dest_position.x << "][" << new_obj.dest_position.y << "]" << std::endl;
+        }
+        door_placing = false;
+        repaint();
+        return;
+    }
 
     if (Mediator::get_instance()->editMode == EDITMODE_SELECT) {
         // copies points in the selection to the selection matrix

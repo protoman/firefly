@@ -392,9 +392,9 @@ void MainWindow::on_actionObjects_toggled(bool arg1)
     map_edit_tab->update_edit_area();
 }
 
-void MainWindow::on_actionNPCs_toggled(bool arg1)
+void MainWindow::on_actionEnemies_toggled(bool arg1)
 {
-    Mediator::get_instance()->show_npcs_flag = arg1;
+    Mediator::get_instance()->show_enemies_flag = arg1;
     map_edit_tab->update_edit_area();
 }
 
@@ -516,3 +516,10 @@ void MainWindow::on_actionOverlay_toggled(bool arg1)
     Mediator::get_instance()->show_fg_layer = arg1;
     map_edit_tab->update_edit_area();
 }
+
+void MainWindow::on_actionViewNPCs_toggled(bool arg1)
+{
+    Mediator::get_instance()->show_npcs_flag = arg1;
+    map_edit_tab->update_edit_area();
+}
+

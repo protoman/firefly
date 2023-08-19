@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>877</width>
+    <width>935</width>
     <height>607</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -17,28 +23,58 @@
    <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <property name="rightMargin">
-      <number>10</number>
+      <number>0</number>
      </property>
      <item>
       <layout class="QGridLayout" name="gridLayout_2">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMinimumSize</enum>
+       </property>
        <item row="5" column="0">
         <widget class="QLabel" name="label_3">
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Move Speed:</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="1">
-        <widget class="QComboBox" name="dialogSelectorComboBox"/>
-       </item>
        <item row="6" column="1">
-        <widget class="QSpinBox" name="moveRangeSpinBox"/>
+        <widget class="QSpinBox" name="moveRangeSpinBox">
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>999</number>
+         </property>
+        </widget>
        </item>
        <item row="5" column="1">
-        <widget class="QSpinBox" name="moveSpeedSpinBox"/>
+        <widget class="QSpinBox" name="moveSpeedSpinBox">
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>99</number>
+         </property>
+        </widget>
        </item>
        <item row="9" column="1">
-        <widget class="QSpinBox" name="frameWidthSpinBox"/>
+        <widget class="QSpinBox" name="frameWidthSpinBox">
+         <property name="maximum">
+          <number>9999</number>
+         </property>
+        </widget>
        </item>
        <item row="6" column="0">
         <widget class="QLabel" name="label_4">
@@ -55,10 +91,20 @@
         </widget>
        </item>
        <item row="10" column="1">
-        <widget class="QSpinBox" name="animationFrameDurationSpinBox"/>
+        <widget class="QSpinBox" name="animationFrameDurationSpinBox">
+         <property name="maximum">
+          <number>9999</number>
+         </property>
+        </widget>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label">
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Name:</string>
          </property>
@@ -79,29 +125,69 @@
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="label_14">
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Graphics:</string>
          </property>
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="nameLineEdit"/>
+        <widget class="QLineEdit" name="nameLineEdit">
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
        </item>
        <item row="8" column="1">
-        <widget class="QComboBox" name="questSelectorComboBox"/>
+        <widget class="QComboBox" name="questSelectorComboBox">
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QComboBox" name="npcSelectorComboBox"/>
+        <widget class="QComboBox" name="npcSelectorComboBox">
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_13">
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Create New:</string>
          </property>
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QComboBox" name="graphicsComboBox"/>
+        <widget class="QComboBox" name="graphicsComboBox">
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
        </item>
        <item row="11" column="0">
         <widget class="QLabel" name="label_8">
@@ -148,21 +234,43 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QSpinBox" name="hitboxXSpinBox"/>
+          <widget class="QSpinBox" name="hitboxXSpinBox">
+           <property name="maximum">
+            <number>9999</number>
+           </property>
+          </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QSpinBox" name="hitboxYSpinBox"/>
+          <widget class="QSpinBox" name="hitboxYSpinBox">
+           <property name="maximum">
+            <number>9999</number>
+           </property>
+          </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QSpinBox" name="hitboxWSpinBox"/>
+          <widget class="QSpinBox" name="hitboxWSpinBox">
+           <property name="maximum">
+            <number>9999</number>
+           </property>
+          </widget>
          </item>
          <item row="3" column="1">
-          <widget class="QSpinBox" name="hitboxHSpinBox"/>
+          <widget class="QSpinBox" name="hitboxHSpinBox">
+           <property name="maximum">
+            <number>9999</number>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
        <item row="0" column="1">
         <widget class="QPushButton" name="pushButton">
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Add</string>
          </property>
@@ -184,6 +292,12 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_2">
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Selected NPC:</string>
          </property>
@@ -191,6 +305,12 @@
        </item>
        <item row="4" column="0">
         <widget class="QLabel" name="label_16">
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Move Behavior:</string>
          </property>
@@ -198,6 +318,12 @@
        </item>
        <item row="4" column="1">
         <widget class="QComboBox" name="moveBehaviorComboBox">
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <item>
           <property name="text">
            <string>STATIC</string>
@@ -220,22 +346,96 @@
          </item>
         </widget>
        </item>
+       <item row="7" column="1">
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>Edit</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
-      <widget class="QWidget" name="npcPreviewAreaWidget" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>640</width>
-         <height>480</height>
-        </size>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMaximumSize</enum>
        </property>
-      </widget>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_17">
+           <property name="text">
+            <string>Preview Animation:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="comboBox">
+           <item>
+            <property name="text">
+             <string>STAND</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>WALK/FLY</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>GOT ITEM</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>GIVE ITEM</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TALK</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="NpcPreviewArea" name="npcPreviewAreaWidget" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>640</width>
+           <height>480</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>NpcPreviewArea</class>
+   <extends>QWidget</extends>
+   <header>widgets/npcpreviewarea.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
