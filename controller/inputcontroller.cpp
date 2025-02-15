@@ -40,6 +40,7 @@ InputController *InputController::get_instance()
 
 void InputController::init()
 {
+    joystick_number = SDL_NumJoysticks();
 #ifdef ANDROID
     __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### INPUT::init_joystick - %i joysticks were found.", SDL_NumJoysticks() );
         __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### INPUT::init_joystick - The names of the joysticks are:");
@@ -47,21 +48,23 @@ void InputController::init()
             __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### INPUT::init_joystick - joy[%d][%s]", i, SDL_JoystickName(i));
         }
 #else
-    printf("%i joysticks were found.\n\n", SDL_NumJoysticks());
+    printf("%i joysticks were found.\n\n", joystick_number);
     printf("The names of the joysticks are:\n");
 #endif
-    SDL_JoystickEventState(SDL_ENABLE);
-    joystick1 = SDL_JoystickOpen(SharedData::get_instance()->game_config.selected_input_device);
-    printf("Opened Joystick [%s]\n", SDL_JoystickName(joystick1));
+    if (joystick_number > 0) {
+        SDL_JoystickEventState(SDL_ENABLE);
+        joystick1 = SDL_JoystickOpen(SharedData::get_instance()->game_config.selected_input_device);
+        printf("Opened Joystick [%s]\n", SDL_JoystickName(joystick1));
 
-    // open haptic
-    joystick1_haptic = SDL_HapticOpenFromJoystick(joystick1);
-    if(joystick1_haptic == NULL) {
-        printf( "Warning: Controller does not support haptics! SDL Error: %s\n", SDL_GetError() );
-    } else {
-        //Get initialize rumble
-        if (SDL_HapticRumbleInit(joystick1_haptic) < 0) {
-            printf( "Warning: Unable to initialize rumble! SDL Error: %s\n", SDL_GetError() );
+        // open haptic
+        joystick1_haptic = SDL_HapticOpenFromJoystick(joystick1);
+        if(joystick1_haptic == NULL) {
+            printf( "Warning: Controller does not support haptics! SDL Error: %s\n", SDL_GetError() );
+        } else {
+            //Get initialize rumble
+            if (SDL_HapticRumbleInit(joystick1_haptic) < 0) {
+                printf( "Warning: Unable to initialize rumble! SDL Error: %s\n", SDL_GetError() );
+            }
         }
     }
 }
@@ -425,9 +428,11 @@ void InputController::clean_event_queue()
 
 void InputController::test_erumble()
 {
-    //Play rumble at 75% strenght for 500 milliseconds
-    if(SDL_HapticRumblePlay(joystick1_haptic, 0.75, 50 ) != 0 ) {
-        printf( "Warning: Unable to play rumble! %s\n", SDL_GetError() );
+    if (joystick_number > 0 && joystick1_haptic != nullptr) {
+        //Play rumble at 75% strenght for 500 milliseconds
+        if(SDL_HapticRumblePlay(joystick1_haptic, 0.75, 50 ) != 0 ) {
+            printf( "Warning: Unable to play rumble! %s\n", SDL_GetError() );
+        }
     }
 }
 

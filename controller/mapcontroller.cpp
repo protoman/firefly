@@ -908,7 +908,6 @@ void MapController::load_map_enemies_and_npcs()
         map_npc_list.pop_back();
     }
     // LOAD NPCS //
-    std::cout << "#### MapController::load_map_enemies_and_npcs - npcs.size[" << GameData::get_instance()->file_v5_stage_npc_map.at(SharedData::get_instance()->v6_selected_stage).size() << "]" << std::endl;
     for (unsigned int i=0; i<GameData::get_instance()->file_v5_stage_npc_map.at(SharedData::get_instance()->v6_selected_stage).size(); i++) {
         file_v5_map_npc& npc_ref = GameData::get_instance()->file_v5_stage_npc_map.at(SharedData::get_instance()->v6_selected_stage).at(i);
 
@@ -923,8 +922,6 @@ void MapController::load_map_enemies_and_npcs()
         }
         map_npc_list.push_back(new_npc); // insert new npc at the list-end
     }
-    std::cout << "#### MapController::load_map_enemies_and_npcs - map_npc_list.size[" << map_npc_list.size() << "]" << std::endl;
-
 }
 
 

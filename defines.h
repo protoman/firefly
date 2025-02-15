@@ -954,8 +954,8 @@ enum TERRAIN_TYPES {
     TERRAIN_SLOPE,
     TERRAIN_SCROLL_LOCK,
     TERRAIN_AREA_HSCROLL_LOCK,
-    TERRAIN_AREA_VSCROLL_LOCK,
-    // locks the scrolling but player can cross it (use with caution)
+    TERRAIN_AREA_VSCROLL_LOCK, // locks the scrolling but player can cross it (use with caution)
+    TERRAIN_PLATFORM,
     TERRAIN_TYPES_COUNT
 };
 
@@ -1034,6 +1034,7 @@ enum e_TILE_TYPE {
     TILE_TYPE_ANIM,
     TILE_TYPE_SLOPE,
     TILE_TYPE_UNUSED,
+    TILE_TYPE_PLATFORM,
     TILE_TYPE_COUNT
 };
 

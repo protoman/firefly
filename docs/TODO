@@ -3,16 +3,56 @@
 ########################################################
 https://store.steampowered.com/app/1802190/Puzzles_For_Clef/
 
+
+########################################################
+                     REFACTOR
+########################################################
+- IA deve incluir máquina de estados (ver em que pé parei)
+- mover detect_language da main para uma classe
+
 ########################################################
                      PRIORIDADE
 ########################################################
+- usar Box2D e Tiled para mapas e movimento/colisao.
+
+- corrigir slopes declive esquerda->direita
+- importar fixes do Rockbot
+
+- refazer character, simplificar parte de escadas/etc
+
+
+========================================================
+5. usar json como formato de arquivo para guardar dados
+    # vantagem é flexibilidade, pois não usa número limitado de dados (array)
+    # por exemplo, número de foregrounds e backgrounds de tela não precisa ser fixo
+========================================================
+- no firefly, cada anim-type deve ter sua vulnerable-area (opcional)
+    # fazer colisão com polígonos -> ver se vale usar uma lib
+    # poder setar "is-jump-frame", "is-turn-frame" (daí não precisa a imagem ter o mirror), etc. Pode chamar de key-frame.
+
+- não armazenar imagem dos sprites, só a posição lógica deles, assim não duplica se repetir frames
+
 - reorganizar dados
     # centralizar em uma classe, GameData que tanto o editor como o jogo usam,e  tem load/save como o mediator,
     # passar coisas do sharedData, mediator e gamemediator para esta nova classe.
     # a própria classe tem os métodos de save e load.
     # shareddata passa a conter apenas os objetos in-game/editor.
 
+- arrumar mini-mapa e mapa do menu
+
+- algumas vezes (pular nas 2 plataformas e voltar) a movimentação X fica bloqueada pelo site tipo platform
+    # tem que setar para não bloquear no xinc tb.
+
+- novos tipos de objetos:
+    # mensagem (tipo placas)
+    # give item (dá outro objeto, um de quest)
+        # pode ter uma mesg custom ao receber o objeto
+    # objeto de quest (tipo npcs, só que é um objeto qe dá outro qdo recebe um)
+
 - Começar a pensar básico da primeira fase.
+    # plataforma intangível de baixo para cima e lados
+        # só bloqueia Y qdo yinc > 0 e px+p.h >= tile.x
+        # permite pular para baixo
     # pântano com area-movediça
     # subterrânemos com esgotos ou algo assim
 

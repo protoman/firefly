@@ -1,7 +1,6 @@
 #include <cstring>
 #include <cstdlib>
 #include "GameManager.h"
-#include <fstream>
 
 #ifdef ANDROID
 #include <android/log.h>
@@ -11,11 +10,8 @@
 
 #include "view/option_picker.h"
 #include "view/textview.h"
-#include "file/format.h"
 #include "defines.h"
 #include "file/file_io.h"
-#include "file/fio_strings.h"
-#include "file/v6/file_npc_state_v6.h"
 #include "strings_map.h"
 
 #include "controller/inputcontroller.h"
@@ -25,7 +21,6 @@
 
 #include "view/ingame_presentation.h"
 
-#include "text/i18ntext.h"
 
 GameManager* GameManager::_instance = nullptr;
 
@@ -85,7 +80,7 @@ void GameManager::initHardwareLayer()
         std::cout << "SDL could not initialize! SDL_Error[" << SDL_GetError() << "]" << std::endl;
         exit(EXIT_FAILURE);
     }
-    SharedData::get_instance()->window = SDL_CreateWindow( "Project Firefly BETA v0.0.1", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, RES_W, RES_H, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL );
+    SharedData::get_instance()->window = SDL_CreateWindow( "Project Firefly ALPHA v0.0.1", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, RES_W, RES_H, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL );
     if (SharedData::get_instance()->window == nullptr) {
         std::cout << "Window could not be created! SDL_Error[" << SDL_GetError() << "]" << std::endl;
         exit(EXIT_FAILURE);
@@ -233,6 +228,13 @@ void GameManager::add_queue_dialog(st_dialog dialog)
     }
     dialog_queue.push_back(dialog);
     InputController::get_instance()->clean();
+}
+
+void GameManager::wait_until_dialog_is_consumed()
+{
+    while (dialog_queue.size() > 0) {
+        show_game(false, false);
+    }
 }
 
 st_position GameManager::get_player_relative_center_position()
@@ -1971,9 +1973,20 @@ void GameManager::talk_with_npc(int npc_id)
             } else {
                 npc->npc_activate_request_item_tooltip();
             }
-        } else if (main_npc->npc_dialog_id != -1) {
+        } else {
+            std::string npc_dialog_str = "DEBUG";
+            if (npc->get_dialog(SharedData::get_instance()->current_language).length() > 0) {
+                npc_dialog_str = npc->get_dialog(SharedData::get_instance()->current_language);
+            }
             std::cout << "TALK_WITH_NPC, dialog_id[" << main_npc->npc_dialog_id << "]" << std::endl;
-            // TODO: show npc dialog
+            zoom_in();
+            st_dialog dialog;
+            dialog.msgs.push_back(npc_dialog_str);
+            dialog.msgs.push_back(npc_dialog_str);
+            dialog.msgs.push_back(npc_dialog_str);
+            add_queue_dialog(dialog);
+            wait_until_dialog_is_consumed();
+            zoom_out();
         }
     }
 
@@ -2008,6 +2021,28 @@ bool GameManager::boss_show_intro_sprites(GameEnemy *npc_ref)
         npc_ref->set_animation_type(ANIM_TYPE_STAND);
     }
     return true;
+}
+
+void GameManager::zoom_in()
+{
+    for (float i=1.0; i<ZOOM_MAX; i+=ZOOM_STEP) {
+        ImageView::get_instance()->inc_scale(0.01);
+        show_game(false, false);
+        if (ImageView::get_instance()->get_scale() == ZOOM_MAX) { // inc-scale has some issue, this prevent is passing the desired value
+            break;
+        }
+    }
+}
+
+void GameManager::zoom_out()
+{
+    for (float i=ZOOM_MAX; i>=1.0; i-=ZOOM_STEP) {
+        ImageView::get_instance()->inc_scale(-0.01);
+        show_game(false, false);
+        if (ImageView::get_instance()->get_scale() == 1.0) { // inc-scale has some issue, this prevent is passing the desired value
+            break;
+        }
+    }
 }
 
 st_dialog_status *GameManager::get_dialog_status()

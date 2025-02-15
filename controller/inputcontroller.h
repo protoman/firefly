@@ -72,8 +72,8 @@ public:
 
 private:
     static InputController* _instance;
-    SDL_Joystick *joystick1;
-    SDL_Haptic *joystick1_haptic;
+    SDL_Joystick *joystick1 = nullptr;
+    SDL_Haptic *joystick1_haptic = nullptr;
     bool _used_keyboard;
     bool _show_btn_debug;
     int held_button_count;
@@ -86,6 +86,7 @@ private:
 
     bool alt_key = false;
     bool enter_key = false;
+    int joystick_number = 0;
 
 };
 

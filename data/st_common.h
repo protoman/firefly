@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "defines.h"
+#include "cereal/cereal.hpp"
 #include <SDL2/SDL.h>
 
 extern SDL_Renderer* gRenderer;
@@ -18,6 +19,13 @@ extern SDL_Renderer* gRenderer;
 struct st_position {
     int x;
     int y;
+
+    template<class Archive>
+    void serialize(Archive & archive)
+    {
+      archive(CEREAL_NVP(x), CEREAL_NVP(y));
+    }
+
     st_position() {
         x = 0;
         y = 0;
@@ -64,6 +72,12 @@ struct st_position {
 struct st_float_position {
     float x;
     float y;
+
+    template<class Archive>
+    void serialize(Archive & archive)
+    {
+      archive(CEREAL_NVP(x), CEREAL_NVP(y));
+    }
 
     st_float_position() {
         x = 0.0;
@@ -121,13 +135,15 @@ struct st_size {
 		width = w;
         height = h;
 	}
+
+    template<class Archive>
+    void serialize(Archive & archive)
+    {
+      archive(CEREAL_NVP(width), CEREAL_NVP(height));
+    }
 };
 
 
-/**
- * @brief
- *
- */
 struct st_rectangle {
     int x;
     int y;
@@ -174,6 +190,13 @@ struct st_rectangle {
         }
         return false;
     }
+
+    template<class Archive>
+    void serialize(Archive & archive)
+    {
+      archive(CEREAL_NVP(x), CEREAL_NVP(y), CEREAL_NVP(w), CEREAL_NVP(h));
+    }
+
 
 };
 
@@ -255,6 +278,13 @@ struct st_position_int8 {
         }
         return false;
     }
+
+    template<class Archive>
+    void serialize(Archive & archive)
+    {
+      archive(CEREAL_NVP(x), CEREAL_NVP(y));
+    }
+
 };
 
 

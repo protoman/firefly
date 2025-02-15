@@ -24,7 +24,8 @@ class GameEnemy;
 #include "ports/psp/psp_ram.h"
 #endif
 
-
+#define ZOOM_MAX 1.3
+#define ZOOM_STEP 0.01
 
 /**
  * @brief
@@ -121,12 +122,12 @@ public:
     bool check_map_link(int xinc, int yinc);
 
     void show_at_texture_renderer();
-
     void show_hud(bool update_room);
 
     // QUEUE HANDLERS //
     void consume_dialogs_from_queue();
     void add_queue_dialog(st_dialog dialog);
+    void wait_until_dialog_is_consumed();
 
     st_position get_player_relative_center_position();
 
@@ -137,9 +138,9 @@ public:
     void talk_with_npc(int npc_id);
     void morph_player_object(int new_obj_id);
     void remove_player_object();
-
     bool boss_show_intro_sprites(GameEnemy *npc_ref);
-
+    void zoom_in();
+    void zoom_out();
 
 private:
     GameManager();

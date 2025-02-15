@@ -1,7 +1,6 @@
 #include "artificial_inteligence.h"
 #include <cmath>
 #include <cstdlib>
-#include <algorithm>
 #include "character/classplayer.h"
 
 
@@ -13,9 +12,7 @@
 #include "game_data.h"
 #include "aux_tools/exception_manager.h"
 
-#include "data/shareddata.h"
 
-#include "view/animation.h"
 #include "view/imageview.h"
 #include "view/soundview.h"
 
@@ -1229,7 +1226,8 @@ void artificial_inteligence::execute_ai_action_trow_projectile(unsigned short n,
 // creates a projectile, return false if could not fire
 bool artificial_inteligence::throw_projectile(int projectile_type, bool invert_direction)
 {
-    file_projectilev3 temp_projectile = GameData::get_instance()->get_projectile(projectile_type);
+    //file_projectilev3 temp_projectile = GameData::get_instance()->get_projectile(projectile_type);
+    file_projectile_v0 temp_projectile = GameData::get_instance()->get_projectile(projectile_type);
     // some projectile types are limited to one
     if (temp_projectile.trajectory == TRAJECTORY_CENTERED && projectile_list.size() > 0) {
         _ai_state.sub_status = IA_ACTION_STATE_FINISHED;

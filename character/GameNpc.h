@@ -2,6 +2,7 @@
 #define GAMENPC_H
 
 #include "character/character.h"
+#include "file/fio_strings.h"
 
 class GameNPC : public character
 {
@@ -13,6 +14,7 @@ public:
     void show();
     void npc_activate_request_item_tooltip();
     int get_id();
+    std::string get_dialog(unsigned int language);
 
 protected:
     void death();
@@ -28,6 +30,8 @@ private:
     int walk_range = 120;
     st_size graphic_size;
     unsigned long npc_request_item_tooltip_timer = 0;
+    std::vector<std::string> npc_dialogs;
+    fio_strings f_strings;
 
 };
 

@@ -80,6 +80,7 @@ HEADERS += \
     character/custom/ai_boss_001.h \
     character/gamenpc.h \
     character/movement/moveslopes.h \
+    file/v0/file_area_v0.h \
     file/v4/file_save_v4.h \
     file/v5/struct_file_game_area_map.h \
     file/v6/file_area_v6.h \

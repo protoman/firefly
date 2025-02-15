@@ -42,9 +42,6 @@ void classjump::start(bool bigjump_mode, int terrain_type)
         acceleration = JUMP_ACCELERATION;
     }
     jumps_number++;
-
-    //std::cout << "CLASSJUMP::START::speed: " << speed << std::endl;
-
     moved = 0;
 }
 

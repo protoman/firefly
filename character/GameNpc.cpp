@@ -29,7 +29,6 @@ bool GameNPC::have_fly_movement()
 
 void GameNPC::initFrames()
 {
-    std::cout << "GameNPC::initFrames #1" << std::endl;
     file_npc_v3_1_2 *npc_ref = GameData::get_instance()->get_npc(_number);
     std::string temp_filename = SharedData::get_instance()->FILEPATH + "images/sprites/npcs/" + GameData::get_instance()->get_npc(_number)->graphic_filename;
     st_imageData npc_sprite_surface = ImageView::get_instance()->imageFromFile(temp_filename);
@@ -56,7 +55,6 @@ void GameNPC::initFrames()
 
         }
     }
-    std::cout << "GameNPC::initFrames #2" << std::endl;
 }
 
 void GameNPC::execute()
@@ -90,6 +88,14 @@ void GameNPC::npc_activate_request_item_tooltip()
 int GameNPC::get_id()
 {
     return _number;
+}
+
+std::string GameNPC::get_dialog(unsigned int language)
+{
+    if (language >= npc_dialogs.size()) {
+        return std::string("");
+    }
+    return npc_dialogs.at(language);
 }
 
 void GameNPC::death()
@@ -137,6 +143,11 @@ void GameNPC::build_basic_npc(int map_id, int main_id)
     last_execute_time = 0;
     can_fly = have_fly_movement();
     vulnerable_area_box = GameData::get_instance()->get_enemy(_number)->vulnerable_area;
+
+    npc_dialogs.clear();
+    for (int i=0; i<LANGUAGE_COUNT; i++) {
+        npc_dialogs.push_back(f_strings.load_npc_dialog(i, _number));
+    }
 }
 
 void GameNPC::addNpcSpriteFrame(int anim_type, int posX, st_imageData &spritesSurface, int delay)
