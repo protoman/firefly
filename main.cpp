@@ -2,7 +2,6 @@
 #include <SDL2/SDL.h>
 
 #if defined(LINUX) || defined(RASPBERRY)
-    #include <errno.h>
     #include <sys/stat.h>
     #include <unistd.h>
     #include <sys/param.h>
@@ -28,9 +27,9 @@ void get_filepath()
     delete[] buffer;
 #else
     char *buffer = new char[MAXPATHLEN];
-    char *res = getcwd(buffer, MAXPATHLEN);
+    getcwd(buffer, MAXPATHLEN);
 
-    if(buffer != nullptr){
+    if(buffer != nullptr) {
         SharedData::get_instance()->FILEPATH = std::string(buffer);
     }
     SharedData::get_instance()->GAMEPATH = std::string("/") + SharedData::get_instance()->FILEPATH + std::string("/");
@@ -43,6 +42,7 @@ void get_filepath()
 
 }
 
+// TODO: move to language class
 void detect_language() {
     std::cout << "CONFIG.LANGUAGE[" << (int)SharedData::get_instance()->current_language << "]" << std::endl;
     if (SharedData::get_instance()->current_language == LANGUAGE_AUTODETECT) {

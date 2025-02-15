@@ -8,6 +8,8 @@
 
 #include "defines.h"
 #include "data/shareddata.h"
+#include "game_data.h"
+#include "mediator.h"
 
 #define TILE_SHOW_SIZE 16
 
@@ -61,18 +63,18 @@ void worldMapEditorArea::paintEvent(QPaintEvent *event)
 
 
     // draw areas-points
-    for (unsigned int area_n=0; area_n<SharedData::get_instance()->v6_stage_list.size(); area_n++) {
-        if (SharedData::get_instance()->v6_level_map.find(area_n) != SharedData::get_instance()->v6_level_map.end()) {
-            for (unsigned int i=0; i<SharedData::get_instance()->v6_level_map.at(area_n).size(); i++) {
-                if (SharedData::get_instance()->v6_level_map.at(area_n).at(i).stage_number == currentStage) {
+    for (unsigned int area_n=0; area_n<GameData::get_instance()->v6_stage_list.size(); area_n++) {
+        if (Mediator::get_instance()->v6_level_map.find(area_n) != Mediator::get_instance()->v6_level_map.end()) {
+            for (unsigned int i=0; i<Mediator::get_instance()->v6_level_map.at(area_n).size(); i++) {
+                if (Mediator::get_instance()->v6_level_map.at(area_n).at(i).stage_number == currentStage) {
                     painter.setBrush(QColor(0, 0, 255, 180));
-                    if (SharedData::get_instance()->v6_level_map.at(area_n).at(i).area_number == currentArea) {
+                    if (Mediator::get_instance()->v6_level_map.at(area_n).at(i).area_number == currentArea) {
                         painter.setBrush(QColor(0, 255, 0, 180));
                     }
                     painter.setPen(QColor(0, 0, 180, 255));
-                    painter.drawRect(SharedData::get_instance()->v6_level_map.at(area_n).at(i).x*TILE_SHOW_SIZE, SharedData::get_instance()->v6_level_map.at(area_n).at(i).y*TILE_SHOW_SIZE, TILE_SHOW_SIZE, TILE_SHOW_SIZE);
+                    painter.drawRect(Mediator::get_instance()->v6_level_map.at(area_n).at(i).x*TILE_SHOW_SIZE, Mediator::get_instance()->v6_level_map.at(area_n).at(i).y*TILE_SHOW_SIZE, TILE_SHOW_SIZE, TILE_SHOW_SIZE);
                 } else {
-                    std::cout << ">>>>>>>>>> invalid area number[" << SharedData::get_instance()->v6_level_map.at(area_n).at(i).stage_number << "] in area[" << currentStage << "] data file" << std::endl;
+                    std::cout << ">>>>>>>>>> invalid area number[" << Mediator::get_instance()->v6_level_map.at(area_n).at(i).stage_number << "] in area[" << currentStage << "] data file" << std::endl;
                 }
             }
         }
@@ -112,42 +114,42 @@ void worldMapEditorArea::mousePressEvent(QMouseEvent *event)
     int current_area_rooms_count = 0;
     bool is_adjascent_point_to_same_area = false;
     bool is_adjascent_point = false;
-    for (unsigned int area_n=0; area_n<SharedData::get_instance()->v6_stage_list.size(); area_n++) {
+    for (unsigned int area_n=0; area_n<GameData::get_instance()->v6_stage_list.size(); area_n++) {
 
-        if (SharedData::get_instance()->v6_level_map.find(area_n) == SharedData::get_instance()->v6_level_map.end()) {
+        if (Mediator::get_instance()->v6_level_map.find(area_n) == Mediator::get_instance()->v6_level_map.end()) {
             std::vector<file_v6_level_point> point_list;
-            SharedData::get_instance()->v6_level_map.insert(std::pair<int, std::vector<file_v6_level_point>>(area_n, point_list));
+            Mediator::get_instance()->v6_level_map.insert(std::pair<int, std::vector<file_v6_level_point>>(area_n, point_list));
         }
 
-        for (unsigned int i=0; i<SharedData::get_instance()->v6_level_map.at(area_n).size(); i++) {
+        for (unsigned int i=0; i<Mediator::get_instance()->v6_level_map.at(area_n).size(); i++) {
             std::cout << "CLICK - area_n[" << area_n << "], i[" << i << "]" << std::endl;
-            std::cout << "CLICK - area.size[" << SharedData::get_instance()->v6_level_map.at(area_n).size() << "]" << std::endl;
+            std::cout << "CLICK - area.size[" << Mediator::get_instance()->v6_level_map.at(area_n).size() << "]" << std::endl;
             bool is_next_to_room = false;
 
-            if (editor_selectedTileX == SharedData::get_instance()->v6_level_map.at(area_n).at(i).x && editor_selectedTileY == SharedData::get_instance()->v6_level_map.at(area_n).at(i).y) {
+            if (editor_selectedTileX == Mediator::get_instance()->v6_level_map.at(area_n).at(i).x && editor_selectedTileY == Mediator::get_instance()->v6_level_map.at(area_n).at(i).y) {
                 QMessageBox msgBox;
-                msgBox.setText("Point already set with area[" + QString::number(SharedData::get_instance()->v6_level_map.at(area_n).at(i).area_number) + "]");
+                msgBox.setText("Point already set with area[" + QString::number(Mediator::get_instance()->v6_level_map.at(area_n).at(i).area_number) + "]");
                 msgBox.exec();
                 return;
             }
 
             // up
-            if (editor_selectedTileX == SharedData::get_instance()->v6_level_map.at(area_n).at(i).x && editor_selectedTileY == SharedData::get_instance()->v6_level_map.at(area_n).at(i).y-1) {
+            if (editor_selectedTileX == Mediator::get_instance()->v6_level_map.at(area_n).at(i).x && editor_selectedTileY == Mediator::get_instance()->v6_level_map.at(area_n).at(i).y-1) {
                 is_next_to_room = true;
             }
             // down
-            if (editor_selectedTileX == SharedData::get_instance()->v6_level_map.at(area_n).at(i).x && editor_selectedTileY == SharedData::get_instance()->v6_level_map.at(area_n).at(i).y+1) {
+            if (editor_selectedTileX == Mediator::get_instance()->v6_level_map.at(area_n).at(i).x && editor_selectedTileY == Mediator::get_instance()->v6_level_map.at(area_n).at(i).y+1) {
                 is_next_to_room = true;
             }
             // left
-            if (editor_selectedTileX == SharedData::get_instance()->v6_level_map.at(area_n).at(i).x-1 && editor_selectedTileY == SharedData::get_instance()->v6_level_map.at(area_n).at(i).y) {
+            if (editor_selectedTileX == Mediator::get_instance()->v6_level_map.at(area_n).at(i).x-1 && editor_selectedTileY == Mediator::get_instance()->v6_level_map.at(area_n).at(i).y) {
                 is_next_to_room = true;
             }
             // right
-            if (editor_selectedTileX == SharedData::get_instance()->v6_level_map.at(area_n).at(i).x+1 && editor_selectedTileY == SharedData::get_instance()->v6_level_map.at(area_n).at(i).y) {
+            if (editor_selectedTileX == Mediator::get_instance()->v6_level_map.at(area_n).at(i).x+1 && editor_selectedTileY == Mediator::get_instance()->v6_level_map.at(area_n).at(i).y) {
                 is_next_to_room = true;
             }
-            if (SharedData::get_instance()->v6_level_map.at(area_n).at(i).stage_number == currentStage) {
+            if (Mediator::get_instance()->v6_level_map.at(area_n).at(i).stage_number == currentStage) {
                 current_area_rooms_count++;
                 if (is_next_to_room == true) {
                     is_adjascent_point_to_same_area = true;
@@ -188,9 +190,9 @@ void worldMapEditorArea::mousePressEvent(QMouseEvent *event)
     point.y = editor_selectedTileY;
     point.stage_number = currentStage;
     point.area_number = currentArea;
-    SharedData::get_instance()->v6_level_map.at(currentStage).push_back(point);
-    SharedData::get_instance()->add_missing_area_rooms(currentStage, currentArea);
-    std::cout << "point added area[" << currentStage << "], list_size[" << SharedData::get_instance()->v6_level_map.size() << "]" << std::endl;
+    Mediator::get_instance()->v6_level_map.at(currentStage).push_back(point);
+    Mediator::get_instance()->add_missing_area_rooms(currentStage, currentArea);
+    std::cout << "point added area[" << currentStage << "], list_size[" << Mediator::get_instance()->v6_level_map.size() << "]" << std::endl;
 
     repaint();
 

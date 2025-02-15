@@ -12,7 +12,7 @@ RoomStylePreviewArea::RoomStylePreviewArea(QWidget *parent) : QWidget(parent)
 
 void RoomStylePreviewArea::update_files()
 {
-    file_v6_style style = SharedData::get_instance()->v6_style_list.at(SharedData::get_instance()->room_style_selected_style);
+    file_v6_style style = GameData::get_instance()->v6_style_list.at(SharedData::get_instance()->room_style_selected_style);
     std::string filename_str = SharedData::get_instance()->FILEPATH + std::string("/images/tilesets/") + style.tileset_filename;
     if (filename_str.length() == 0) {
         tileset_image = QPixmap();
@@ -36,7 +36,7 @@ void RoomStylePreviewArea::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
 
-    file_v6_style style = SharedData::get_instance()->v6_style_list.at(SharedData::get_instance()->room_style_selected_style);
+    file_v6_style style = GameData::get_instance()->v6_style_list.at(SharedData::get_instance()->room_style_selected_style);
 
     // DRAW BORDER //
     painter.setPen(Qt::black);

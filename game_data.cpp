@@ -1,6 +1,6 @@
 #include "game_data.h"
 
-#include "view/soundview.h"
+#include <data/shareddata.h>
 
 // Global static pointer used to ensure a single instance of the class.
 GameData* GameData::_instance = nullptr;
@@ -19,20 +19,20 @@ GameData::GameData()
     //load_data();
 }
 
-file_projectilev3 GameData::get_projectile(int n)
+file_projectile_v0 GameData::get_projectile(unsigned int n)
 {
-    if (n < 0 || n >= GameData::get_instance()->projectile_list_v3.size()) {
-        return GameData::get_instance()->projectile_list_v3.at(0);
+    if (n < 0 || n >= projectile_list_v0.size()) {
+        return projectile_list_v0.at(0);
     }
-    return GameData::get_instance()->projectile_list_v3.at(n);
+    return projectile_list_v0.at(n);
 }
 
 int GameData::get_projectile_list_size()
 {
-    return GameData::get_instance()->projectile_list_v3.size();
+    return projectile_list_v0.size();
 }
 
-file_enemy_v3_1_2* GameData::get_enemy(int n)
+file_enemy_v3_1_2* GameData::get_enemy(unsigned int n)
 {
     // boss not yet set
     if (n < 0 || n >= enemy_list.size()) {
@@ -122,6 +122,8 @@ void GameData::load_npc_list()
 
 void GameData::load_ai_list()
 {
+    ai_list_v0 = fio_cmm.load_json_data<file_artificial_inteligence_v0>(SharedData::get_instance()->FILEPATH + "data/game_ai_list_v0.json");
+
     ai_list = fio_cmm.load_from_disk<file_artificial_inteligence>(SharedData::get_instance()->FILEPATH + "/game_ai_list.dat");
     if (ai_list.size() == 0) { // add one first item to avoid errors
         for (unsigned int i=0; i<enemy_list.size(); i++) {
@@ -135,11 +137,7 @@ void GameData::load_ai_list()
 
 void GameData::load_projectile_list()
 {
-   projectile_list_v3 = fio_cmm.load_from_disk<file_projectilev3>(SharedData::get_instance()->FILEPATH + PROJECTILE_FILE_V3);
-    if (projectile_list_v3.size() == 0) {
-        projectile_list_v3.push_back(file_projectilev3());
-    }
-
+    projectile_list_v0 = fio_cmm.load_json_data<file_projectile_v0>(SharedData::get_instance()->FILEPATH + "data/projectiles_v0.json");
 }
 
 void GameData::load_slope_list()
@@ -186,7 +184,7 @@ void GameData::loadNpcStateData()
     if (fio.file_exists(SharedData::get_instance()->FILEPATH + "/game_npc_state_list_3_1_2.dat")) { // load list from disk
         npc_state_list = fio_cmm.load_from_disk<file_npc_state>(SharedData::get_instance()->FILEPATH + "/game_npc_state_list_3_1_3.dat");
     } else { // first-time list generation
-        for (int i=0; i<GameData::get_instance()->get_npc_list_size(); i++) {
+        for (int i=0; i<get_npc_list_size(); i++) {
             //file_npc_v3_1_2 npc = SharedData::get_instance()->'npc_list'.at(i);
             npc_state_list.push_back(file_npc_state(i, false));
         }
@@ -204,12 +202,10 @@ void GameData::loadNpcStateData()
 void GameData::loadMapData()
 {
     // FILE V5 //
+    stage_list_v0 = fio_cmm.load_json_data<file_stage_v0>(SharedData::get_instance()->FILEPATH + "data/stages_v0.json");
     v6_stage_list = fio_cmm.load_from_disk<file_v6_stage>(SharedData::get_instance()->FILEPATH + FILE_V6_MAP_LIST);
 
     for (unsigned int i=0; i<v6_stage_list.size(); i++) {
-
-        /// @TODO: load map links ///
-
         // load map objects
         char map_objects_name[FS_CHAR_FILENAME_SIZE];
         sprintf(map_objects_name, "/data/v6_map_%d_objects.dat", i);
@@ -246,15 +242,58 @@ void GameData::loadMapData()
         std::pair<int, std::vector<file_v6_area>> new_area_pair(i, stage_area_list);
         v6_area_map.insert(new_area_pair);
     }
+    load_map_data_v0();
+}
+
+void GameData::load_map_data_v0()
+{
+    // FILE V5 //
+    stage_list_v0 = fio_cmm.load_json_data<file_stage_v0>(SharedData::get_instance()->FILEPATH + "data/stages_v0.json");
+
+    for (unsigned int i=0; i<stage_list_v0.size(); i++) {
+        // load map objects
+        file_stage_objects_map_v0.clear();
+        std::string map_objects_filename = SharedData::get_instance()->FILEPATH + "/data/map_" + std::to_string(i) + "_objects_v0.json";
+        file_stage_objects_map_v0.insert(std::pair<unsigned int, std::vector<stage_object_v0>>(i, std::vector<stage_object_v0>()));
+        if (fio.file_exists(map_objects_filename)) {
+            file_stage_objects_map_v0.at(i) = fio_cmm.load_json_data<stage_object_v0>(map_objects_filename);
+        }
+        // map enemies //
+        std::string map_enemies_filename = SharedData::get_instance()->FILEPATH + "/data/map_" + std::to_string(i) + "_enemies_v0.json";
+        file_stage_enemy_map_v0.insert(std::pair<unsigned int, std::vector<file_map_npc_v0>>(i, std::vector<file_map_npc_v0>()));
+        if (fio.file_exists(map_enemies_filename)) {
+            file_stage_enemy_map_v0.at(i) = fio_cmm.load_json_data<file_map_npc_v0>(map_enemies_filename);
+        }
+        // map NPCs //
+        std::string map_npcs_filename = SharedData::get_instance()->FILEPATH + "/data/map_" + std::to_string(i) + "_npcs_v0.json";
+        file_stage_npc_map_v0.insert(std::pair<unsigned int, std::vector<file_map_npc_v0>>(i, std::vector<file_map_npc_v0>()));
+        if (fio.file_exists(map_npcs_filename)) {
+            file_stage_npc_map_v0.at(i) = fio_cmm.load_json_data<file_map_npc_v0>(map_npcs_filename);
+        }
+    }
+    // AREAS //
+    area_map_v0.clear();
+    for (unsigned int i=0; i<stage_list_v0.size(); i++) {
+        std::string area_filename = SharedData::get_instance()->FILEPATH + "data/v6_area_list_" + std::to_string(0) + ".json";
+        std::vector<file_area_v0> stage_area_list = fio_cmm.load_json_data<file_area_v0>(area_filename);
+        if (stage_area_list.size() == 0) {
+            stage_area_list.push_back(file_area_v0());
+        }
+        std::pair<int, std::vector<file_area_v0>> new_area_pair(i, stage_area_list);
+        area_map_v0.insert(new_area_pair);
+    }
 }
 
 void GameData::load_anim_tile_list()
 {
+    anim_tile_list_v0 = fio_cmm.load_json_data<file_anim_block_v0>(SharedData::get_instance()->FILEPATH + "data/anim_tile_list_v0.json");
     anim_tile_list = fio_cmm.load_from_disk<file_anim_block>(SharedData::get_instance()->FILEPATH + "/anim_block_list.dat");
 }
 
 void GameData::load_player_list()
 {
+    player_list_v0 = fio_cmm.load_json_data<file_player_v0>(SharedData::get_instance()->FILEPATH + "data/players_v0.json");
+
     player_list_v3_1 = fio_cmm.load_from_disk<file_player_v3_1_1>(SharedData::get_instance()->FILEPATH + "player_list_v3_1_1.dat");
     if (player_list_v3_1.size() == 0) {
         for (int i=0; i<FS_MAX_PLAYERS; i++) {

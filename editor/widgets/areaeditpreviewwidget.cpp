@@ -13,14 +13,14 @@ areaEditPreviewWidget::areaEditPreviewWidget(QWidget *parent) : QWidget(parent)
 
 void areaEditPreviewWidget::update_files()
 {
-    int style_n = SharedData::get_instance()->v6_area_map.find(SharedData::get_instance()->v6_selected_stage)->second.at(SharedData::get_instance()->v6_selected_area).style;
-    if (style_n >= SharedData::get_instance()->v6_style_list.size()) {
+    int style_n = GameData::get_instance()->v6_area_map.find(SharedData::get_instance()->v6_selected_stage)->second.at(SharedData::get_instance()->v6_selected_area).style;
+    if (style_n >= GameData::get_instance()->v6_style_list.size()) {
         style_n = 0;
     }
 
     std::cout << "### areaEditPreviewWidget - style_n[" << style_n << "]" << std::endl;
 
-    file_v6_style style = SharedData::get_instance()->v6_style_list.at(style_n);
+    file_v6_style style = GameData::get_instance()->v6_style_list.at(style_n);
     std::string filename_str = SharedData::get_instance()->FILEPATH + std::string("/images/tilesets/") + style.tileset_filename;
     if (filename_str.length() == 0) {
         tileset_image = QPixmap();
@@ -44,8 +44,8 @@ void areaEditPreviewWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
 
-    int style_n = SharedData::get_instance()->v6_area_map.find(SharedData::get_instance()->v6_selected_stage)->second.at(SharedData::get_instance()->v6_selected_area).style;
-    file_v6_style style = SharedData::get_instance()->v6_style_list.at(style_n);
+    int style_n = GameData::get_instance()->v6_area_map.find(SharedData::get_instance()->v6_selected_stage)->second.at(SharedData::get_instance()->v6_selected_area).style;
+    file_v6_style style = GameData::get_instance()->v6_style_list.at(style_n);
 
 
     // DRAW BORDER //

@@ -6,8 +6,11 @@
 #include <vector>
 #include <map>
 #include <stdio.h>
+#include <fstream>
 
 #include "aux_tools/exception_manager.h"
+#include "cereal/cereal.hpp"
+#include "cereal/archives/json.hpp"
 
 class fio_common
 {
@@ -28,6 +31,9 @@ public:
 
     template <class T> int get_list_size(std::string filename);
 
+
+    template <class T> std::vector<T> load_json_data(std::string file);
+    template <class T> void save_json_data(std::string file, std::vector<T> data);
 };
 
 template <class T> void fio_common::save_struct_data(std::string filename, T data) {
@@ -135,6 +141,7 @@ template <class T> std::vector<T> fio_common::load_from_disk(std::string filenam
 
 
 
+
 template <class T> T fio_common::load_single_object_from_disk(std::string filename)
 {
     T res;
@@ -201,6 +208,30 @@ template <class T> T fio_common::load_single_object_from_list(std::string filena
 
     fclose(fp);
     return res;
+}
+
+template <class T> std::vector<T> fio_common::load_json_data(std::string filename)
+{
+    std::vector<T> res;
+
+    // check if file exists
+    FILE *fp;
+    fp = fopen(filename.c_str(), "rb");
+    if (fp) {
+        fclose(fp);
+        std::ifstream os(filename);
+        cereal::JSONInputArchive archive(os);
+        archive(cereal::make_nvp("root", res));
+    }
+
+    return res;
+}
+
+template <class T> void fio_common::save_json_data(std::string filename, std::vector<T> data)
+{
+    std::ofstream os(filename);
+    cereal::JSONOutputArchive archive(os);
+    archive(cereal::make_nvp("root", data));
 }
 
 

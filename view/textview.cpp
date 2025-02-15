@@ -43,14 +43,13 @@ void TextView::renderText(int x, int y, st_color color, bool centered, std::stri
     }
 
     if (outline_font) {
-        SDL_Color black = {0, 0, 0};
+        SDL_Color black = {0, 0, 0, 255};
         if (font_color.r < 80 && font_color.g < 80 && font_color.b < 80) { // dark fonts needs white outline
             black.r = 255;
             black.g = 255;
             black.b = 255;
         }
         SDL_Surface* text_outlineSF = TTF_RenderUTF8_Blended(outline_font, text.c_str(), black);
-
 
         if (text_outlineSF) {
             if (centered == true && text.size() > 0) {

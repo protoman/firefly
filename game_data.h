@@ -6,6 +6,13 @@
 #include <vector>
 #include <map>
 
+#include "cereal/cereal.hpp"
+#include "cereal/archives/json.hpp"
+#include "cereal/types/vector.hpp"
+
+#include "file/v0/file_game_v0.h"
+#include "file/v0/file_area_v0.h"
+
 #include "file/format.h"
 #include "file/file_io.h"
 #include "file/fio_common.h"
@@ -22,10 +29,10 @@ class GameData
 public:
     static GameData* get_instance();
 
-    file_projectilev3 get_projectile(int n);
+    file_projectile_v0 get_projectile(unsigned int n);
     int get_projectile_list_size();
 
-    file_enemy_v3_1_2* get_enemy(int n);
+    file_enemy_v3_1_2* get_enemy(unsigned int n);
     int get_enemy_list_size();
     void add_enemy(file_enemy_v3_1_2 enemy);
 
@@ -51,17 +58,20 @@ private:
     void load_style_list();
     void loadGameData();
     void loadNpcStateData();
+
     void loadMapData();
+    void load_map_data_v0();
+
     void loadAreaListSize();
     void load_anim_tile_list();
     void load_player_list();
+
 
 public:
     file_game game_data;
     std::vector<file_artificial_inteligence> ai_list;
     std::vector<file_anim_block> anim_tile_list;
     std::vector<file_player_v3_1_1> player_list_v3_1;
-    std::vector<file_projectilev3> projectile_list_v3;
     std::vector<file_v6_stage> v6_stage_list;                                           // list of stages
     std::map<int, std::vector<file_v6_area>> v6_area_map;                               // map of areas, that are a sub-parts of the stage rooms that share same style
     std::map<st_position, file_v6_room> v6_area_room_list;                              // list of rooms for a given area mapped by their position on world-map
@@ -76,16 +86,20 @@ public:
     std::vector<file_npc_v3_1_2> npc_list;
 
 
-    /*
-    std::vector<file_enemy_v3_1_2> enemy_list;
-    std::vector<file_scene_list> scene_list;
-    std::vector<file_anim_block> anim_block_list;
-    std::vector<file_player_v3_1_1> player_list_v3_1;
-    std::vector<file_artificial_inteligence> ai_list;
-    std::vector<file_npc_v3_1_2> npc_list;
-    // FILE-V6 //
+    std::vector<file_projectile_v0> projectile_list_v0;
+    std::vector<file_player_v0> player_list_v0;
 
-    */
+
+    std::map<unsigned int, std::vector<stage_object_v0>>  file_stage_objects_map_v0;    // map objects
+    std::map<unsigned int, std::vector<file_map_npc_v0>>  file_stage_enemy_map_v0;      // map enemies
+    std::map<unsigned int, std::vector<file_map_npc_v0>>  file_stage_npc_map_v0;        // map NPCs
+
+
+    std::vector<file_artificial_inteligence_v0> ai_list_v0;
+    std::vector<file_anim_block_v0> anim_tile_list_v0;
+    std::vector<file_stage_v0> stage_list_v0;                                           // list of stages
+    std::map<int, std::vector<file_area_v0>> area_map_v0;                               // map of areas, that are a sub-parts of the stage rooms that share same style
+    std::map<st_position, file_room_v0> area_room_list_v0;                              // list of rooms for a given area mapped by their position on world-map
 
 private:
     static GameData* _instance;

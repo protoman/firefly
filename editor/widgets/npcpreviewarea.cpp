@@ -1,6 +1,7 @@
 #include "npcpreviewarea.h"
 
 #include <QPainter>
+#include "game_data.h"
 
 NpcPreviewArea::NpcPreviewArea(QWidget *parent) : QWidget(parent)
 {
@@ -19,12 +20,12 @@ void NpcPreviewArea::paintEvent(QPaintEvent *event)
     QRectF target, source;
     int i;
 
-    if (SharedData::get_instance()->npc_list.size() <= SharedData::get_instance()->selected_npc) {
+    if (GameData::get_instance()->npc_list.size() <= SharedData::get_instance()->selected_npc) {
         std::cout << "NpcPreviewArea::paintEvent::LEAVE#1" << std::endl;
         return;
     }
 
-    std::string graphic_filename = SharedData::get_instance()->FILEPATH + std::string("/images/sprites/npcs/") + std::string(SharedData::get_instance()->npc_list.at(SharedData::get_instance()->selected_npc).graphic_filename);
+    std::string graphic_filename = SharedData::get_instance()->FILEPATH + std::string("/images/sprites/npcs/") + std::string(GameData::get_instance()->npc_list.at(SharedData::get_instance()->selected_npc).graphic_filename);
     if (graphic_filename.find(".png") == std::string::npos) {
         std::cout << "NpcPreviewArea::paintEvent::LEAVE#2" << std::endl;
         return;
@@ -36,7 +37,7 @@ void NpcPreviewArea::paintEvent(QPaintEvent *event)
         return;
     }
 
-    file_npc_v3_1_2 npc_data = SharedData::get_instance()->npc_list.at(SharedData::get_instance()->selected_npc);
+    file_npc_v3_1_2 npc_data = GameData::get_instance()->npc_list.at(SharedData::get_instance()->selected_npc);
     int img_grid_w = npc_data.frame_width;
     int img_grid_h = image.height();
 

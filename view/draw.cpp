@@ -259,7 +259,6 @@ void Draw::update_screen()
         ImageView::get_instance()->renderTexturePortionAt(0, 0, RES_W, HUD_H, 0, AREA_H, ImageView::get_instance()->get_hud_texture());
     }
 
-
     // show overlay effects
     if (current_alpha != -1) {
         if (current_alpha < 254) {

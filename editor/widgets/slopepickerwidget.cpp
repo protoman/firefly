@@ -16,8 +16,8 @@ void SlopePickerWidget::paintEvent(QPaintEvent *event)
     int column = 0;
     int row = 0;
 
-    for (int i=0; i<SharedData::get_instance()->slope_list.size(); i++) {
-        file_v5_slope_tile* slope_data = &SharedData::get_instance()->slope_list.at(i);
+    for (int i=0; i<GameData::get_instance()->slope_list.size(); i++) {
+        file_v5_slope_tile* slope_data = &GameData::get_instance()->slope_list.at(i);
         std::string full_filename = SharedData::get_instance()->FILEPATH + "/images/tilesets/slope/" + slope_data->filename;
 
         QPixmap image(QString(full_filename.c_str()));

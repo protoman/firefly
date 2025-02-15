@@ -111,5 +111,7 @@
         <file>v_scroll_lock.png</file>
         <file>area_h_link.png</file>
         <file>area_v_link.png</file>
+        <file>platform.png</file>
     </qresource>
+    <qresource prefix="/"/>
 </RCC>

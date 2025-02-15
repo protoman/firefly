@@ -6,6 +6,8 @@
 #include "defines.h"
 #include "data/st_common.h"
 
+#include "cereal/cereal.hpp"
+
 #include "file/v4/file_save_v4.h"
 #include "file/v4/file_config_v4.h"
 #include "file/v4/file_scene_v4.h"
@@ -76,6 +78,13 @@ struct st_sprite_data {
         collision_rect = new_value.collision_rect;
         return *this;
     }
+
+    template<class Archive>
+    void serialize(Archive & archive)
+    {
+      archive(used, duration, sprite_graphic_pos_x, collision_rect);
+    }
+
 };
 
 
@@ -163,6 +172,33 @@ struct file_player_v3_1_1 {
         file_player_v3_1_1(0);
     }
 
+    // This method lets cereal know which data members to serialize
+    template<class Archive>
+    void serialize(Archive & archive)
+    {
+      archive( cereal::make_nvp("name", name),
+               cereal::make_nvp("graphic_filename", graphic_filename),
+               face_filename,
+               HP,
+               sprite_size,
+               sprite_hit_area,
+               move_speed,
+               sprites,
+               have_shield,
+               max_shots,
+               simultaneous_shots,
+               can_double_jump,
+               can_slide,
+               can_charge_shot,
+               full_charged_projectile_id,
+               can_air_dash,
+               damage_modifier,
+               can_shot_diagonal,
+               attack_arm_pos,
+               attack_frame,
+               double_shot,
+               normal_shot_projectile_id ); // serialize things by passing them to the archive
+    }
 
 };
 // **************************** PLAYER 3.1.1 **************************** //

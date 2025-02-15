@@ -152,7 +152,32 @@ void dialogs::show_timed_dialog(std::string face_file, bool is_left, std::string
 
 void dialogs::show_centered_dialog(std::vector<std::string> lines)
 {
-    /// TODO ///
+    if (lines[0].size() < 1) {
+        return;
+    }
+
+    GameManager::get_instance()->game_pause();
+
+    draw_dialog_bg();
+    Draw::get_instance()->update_screen();
+    st_position dialog_pos = Draw::get_instance()->get_dialog_pos();
+    std::cout << "DIALOGS::show_centered_dialog - dialog_pos[" << dialog_pos.x << "][" << dialog_pos.y << "]" << std::endl;
+    Draw::get_instance()->update_screen();
+
+    /// @TODO: usar show_config_bg e hide_config_bg da graphLib - modificar para aceitar centered (que é o atual) ou top ou bottom
+    for (unsigned int i=0; i<lines.size(); i++) {
+        TextView::get_instance()->renderText(dialog_pos.x+52, i*11+(dialog_pos.y+16), st_color(TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE, TEXT_DEFAUL_COLOR_VALUE), false, lines.at(i));
+        Draw::get_instance()->update_screen();
+        TimerView::get_instance()->delay(50);
+    }
+
+    Draw::get_instance()->show_dialog_button(1);
+    Draw::get_instance()->update_screen();
+
+
+    InputController::get_instance()->clean_confirm_button();
+    InputController::get_instance()->wait_keypress();
+    GameManager::get_instance()->game_unpause();
 }
 
 void dialogs::show_boss_dialog(int stage_n)

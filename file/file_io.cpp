@@ -49,8 +49,6 @@ void file_io::write_game(file_game& data_in) {
 
 
 void file_io::read_game(file_game& data_out) {
-    std::cout << ">>>>>>>>>>>> file_io::read_game" << std::endl;
-    FILE *fp;
     std::string filename = "";
 
 
