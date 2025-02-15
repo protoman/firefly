@@ -48,57 +48,57 @@ void enemy_edit::fill_data()
 
     common::fill_enemies_combo(ui->npc_edit_tab_selectnpccombo);
 
-    if (Mediator::get_instance()->enemy_list.size() > 0) {
+    if (GameData::get_instance()->enemy_list.size() > 0) {
         // GRAPHIC FILE //
-        ui->npc_edit_tab_graphiccombo->setCurrentIndex(ui->npc_edit_tab_graphiccombo->findText(QString(Mediator::get_instance()->enemy_list.at(0).graphic_filename)));
-        ui->npc_edit_tab_previewarea->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/")+std::string(Mediator::get_instance()->enemy_list.at(0).graphic_filename));
+        ui->npc_edit_tab_graphiccombo->setCurrentIndex(ui->npc_edit_tab_graphiccombo->findText(QString(GameData::get_instance()->enemy_list.at(0).graphic_filename)));
+        ui->npc_edit_tab_previewarea->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/")+std::string(GameData::get_instance()->enemy_list.at(0).graphic_filename));
         // BACKGROUND //
-        //std::cout << ">>>>> BACKGROUND[" << Mediator::get_instance()->enemy_list.at(0).bg_graphic_filename << "]" << std::endl;
-        ui->backgroundFileComboBox->setCurrentIndex(ui->backgroundFileComboBox->findText(QString(Mediator::get_instance()->enemy_list.at(0).bg_graphic_filename)));
-        ui->npc_edit_tab_previewarea->set_bg_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+std::string(Mediator::get_instance()->enemy_list.at(0).bg_graphic_filename));
-        ui->sprite_pos_x->setValue(Mediator::get_instance()->enemy_list.at(0).sprites_pos_bg.x);
-        ui->sprite_pos_y->setValue(Mediator::get_instance()->enemy_list.at(0).sprites_pos_bg.y);
+        //std::cout << ">>>>> BACKGROUND[" << GameData::get_instance()->enemy_list.at(0).bg_graphic_filename << "]" << std::endl;
+        ui->backgroundFileComboBox->setCurrentIndex(ui->backgroundFileComboBox->findText(QString(GameData::get_instance()->enemy_list.at(0).bg_graphic_filename)));
+        ui->npc_edit_tab_previewarea->set_bg_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+std::string(GameData::get_instance()->enemy_list.at(0).bg_graphic_filename));
+        ui->sprite_pos_x->setValue(GameData::get_instance()->enemy_list.at(0).sprites_pos_bg.x);
+        ui->sprite_pos_y->setValue(GameData::get_instance()->enemy_list.at(0).sprites_pos_bg.y);
 
-        ui->npc_edit_tab_previewarea->set_sprite_pos(Mediator::get_instance()->enemy_list.at(0).sprites_pos_bg);
+        ui->npc_edit_tab_previewarea->set_sprite_pos(GameData::get_instance()->enemy_list.at(0).sprites_pos_bg);
         ui->npc_edit_tab_previewarea->repaint();
 
         _data_loading = true;
 
-        if (Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).fly_flag == 0) {
+        if (GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).fly_flag == 0) {
             ui->checkBox->setChecked(false);
         } else {
             ui->checkBox->setChecked(true);
         }
 
-        ui->hitarea_x_spinBox->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.x);
-        ui->hitarea_y_spinBox->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.y);
+        ui->hitarea_x_spinBox->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.x);
+        ui->hitarea_y_spinBox->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.y);
 
-        if (Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.w != 0) {
-            ui->hitarea_w_spinBox->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.w);
+        if (GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.w != 0) {
+            ui->hitarea_w_spinBox->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.w);
         } else {
-            ui->hitarea_w_spinBox->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.width);
+            ui->hitarea_w_spinBox->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.width);
         }
-        if (Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.h != 0) {
-            ui->hitarea_h_spinBox->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.h);
+        if (GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.h != 0) {
+            ui->hitarea_h_spinBox->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.h);
         } else {
-            ui->hitarea_h_spinBox->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.height);
+            ui->hitarea_h_spinBox->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.height);
         }
 
-        ui->respawn_time_spinBox->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).respawn_delay);
+        ui->respawn_time_spinBox->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).respawn_delay);
 
-        ui->npc_edit_tab_graphicheight->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.height);
-        ui->npc_edit_tab_graphicwidth->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.width);
-        Mediator::get_instance()->npcGraphicSize_h = Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.height;
-        Mediator::get_instance()->npcGraphicSize_w = Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.width;
+        ui->npc_edit_tab_graphicheight->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.height);
+        ui->npc_edit_tab_graphicwidth->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.width);
+        Mediator::get_instance()->npcGraphicSize_h = GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.height;
+        Mediator::get_instance()->npcGraphicSize_w = GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.width;
 
-        ui->projectileOriginX_spinBox->setValue(Mediator::get_instance()->enemy_list.at(0).attack_arm_pos.x);
-        ui->projectileOriginY_spinBox->setValue(Mediator::get_instance()->enemy_list.at(0).attack_arm_pos.y);
+        ui->projectileOriginX_spinBox->setValue(GameData::get_instance()->enemy_list.at(0).attack_arm_pos.x);
+        ui->projectileOriginY_spinBox->setValue(GameData::get_instance()->enemy_list.at(0).attack_arm_pos.y);
 
-        ui->isNPC_checkBox->setChecked(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc);
-        ui->npcDialogId_comboBox->setCurrentIndex(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_dialog_id);
+        ui->isNPC_checkBox->setChecked(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc);
+        ui->npcDialogId_comboBox->setCurrentIndex(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_dialog_id);
 
-        ui->npc_requestedItem_comboBox->setCurrentIndex(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_requested_item_id+1);
-        ui->npc_givenItem_comboBox->setCurrentIndex(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_given_item_id+1);
+        ui->npc_requestedItem_comboBox->setCurrentIndex(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_requested_item_id+1);
+        ui->npc_givenItem_comboBox->setCurrentIndex(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_given_item_id+1);
     }
 
     ui->npcDialogId_comboBox->setEnabled(ui->isNPC_checkBox->isChecked());
@@ -110,7 +110,7 @@ void enemy_edit::fill_data()
 
 void enemy_edit::add_frame_one()
 {
-    file_enemy_v3_1_2* new_npc_ref = &Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n);
+    file_enemy_v3_1_2* new_npc_ref = &GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n);
     if (new_npc_ref->sprites[ANIM_TYPE_STAND][0].used == false) {
         new_npc_ref->sprites[ANIM_TYPE_STAND][0].used = true;
         new_npc_ref->sprites[ANIM_TYPE_STAND][0].duration = 100;
@@ -132,81 +132,81 @@ void enemy_edit::on_npc_edit_tab_selectnpccombo_currentIndexChanged(int index)
 
 	_npcedit_tab_selectednpc = index;
 
-    if (Mediator::get_instance()->enemy_list.size() == 0) {
+    if (GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
 
-    ui->npc_edit_tab_canshoot->setChecked(Mediator::get_instance()->enemy_list.at(index).is_ghost);
+    ui->npc_edit_tab_canshoot->setChecked(GameData::get_instance()->enemy_list.at(index).is_ghost);
     // GRAPHIC FILE //
-    std::string image_filename(Mediator::get_instance()->enemy_list.at(index).graphic_filename);
+    std::string image_filename(GameData::get_instance()->enemy_list.at(index).graphic_filename);
     if (image_filename.length() > 0) {
         ui->npc_edit_tab_graphiccombo->setCurrentIndex(ui->npc_edit_tab_graphiccombo->findText(QString(image_filename.c_str())));
     }
 
     // BACKGROUND FILE //
-    std::string bg_graphic_filename(Mediator::get_instance()->enemy_list.at(index).bg_graphic_filename);
+    std::string bg_graphic_filename(GameData::get_instance()->enemy_list.at(index).bg_graphic_filename);
     if (bg_graphic_filename.length() > 0) {
         ui->backgroundFileComboBox->setCurrentIndex(ui->backgroundFileComboBox->findText(QString(bg_graphic_filename.c_str())));
     }
-    ui->sprite_pos_x->setValue(Mediator::get_instance()->enemy_list.at(index).sprites_pos_bg.x);
-    ui->sprite_pos_y->setValue(Mediator::get_instance()->enemy_list.at(index).sprites_pos_bg.y);
+    ui->sprite_pos_x->setValue(GameData::get_instance()->enemy_list.at(index).sprites_pos_bg.x);
+    ui->sprite_pos_y->setValue(GameData::get_instance()->enemy_list.at(index).sprites_pos_bg.y);
 
 
-    ui->npc_edit_tab_graphicheight->setValue(Mediator::get_instance()->enemy_list.at(index).frame_size.height);
-    ui->npc_edit_tab_graphicwidth->setValue(Mediator::get_instance()->enemy_list.at(index).frame_size.width);
+    ui->npc_edit_tab_graphicheight->setValue(GameData::get_instance()->enemy_list.at(index).frame_size.height);
+    ui->npc_edit_tab_graphicwidth->setValue(GameData::get_instance()->enemy_list.at(index).frame_size.width);
 
-    ui->npc_edit_tab_previewarea->set_grid_w(Mediator::get_instance()->enemy_list.at(index).frame_size.width);
-    ui->npc_edit_tab_previewarea->set_grid_h(Mediator::get_instance()->enemy_list.at(index).frame_size.height);
+    ui->npc_edit_tab_previewarea->set_grid_w(GameData::get_instance()->enemy_list.at(index).frame_size.width);
+    ui->npc_edit_tab_previewarea->set_grid_h(GameData::get_instance()->enemy_list.at(index).frame_size.height);
 
-    Mediator::get_instance()->npcGraphicSize_h = Mediator::get_instance()->enemy_list.at(index).frame_size.height;
-    Mediator::get_instance()->npcGraphicSize_w = Mediator::get_instance()->enemy_list.at(index).frame_size.width;
-    ui->npc_edit_tab_movespeed->setValue(Mediator::get_instance()->enemy_list.at(index).speed);
-    ui->npc_edit_tab_NpcHP->setValue(Mediator::get_instance()->enemy_list.at(index).hp);
-    ui->npc_edit_tab_NpcName->setText(Mediator::get_instance()->enemy_list.at(index).name);
-    ui->npc_edit_tab_range->setValue(Mediator::get_instance()->enemy_list.at(index).walk_range);
-    ui->npc_edit_tab_shieldtype->setCurrentIndex(Mediator::get_instance()->enemy_list.at(index).shield_type);
+    Mediator::get_instance()->npcGraphicSize_h = GameData::get_instance()->enemy_list.at(index).frame_size.height;
+    Mediator::get_instance()->npcGraphicSize_w = GameData::get_instance()->enemy_list.at(index).frame_size.width;
+    ui->npc_edit_tab_movespeed->setValue(GameData::get_instance()->enemy_list.at(index).speed);
+    ui->npc_edit_tab_NpcHP->setValue(GameData::get_instance()->enemy_list.at(index).hp);
+    ui->npc_edit_tab_NpcName->setText(GameData::get_instance()->enemy_list.at(index).name);
+    ui->npc_edit_tab_range->setValue(GameData::get_instance()->enemy_list.at(index).walk_range);
+    ui->npc_edit_tab_shieldtype->setCurrentIndex(GameData::get_instance()->enemy_list.at(index).shield_type);
 	ui->npc_edit_tab_weakness_list->setCurrentIndex(0);
 
-    ui->npc_edit_tab_previewarea->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/")+std::string(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).graphic_filename));
+    ui->npc_edit_tab_previewarea->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/")+std::string(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).graphic_filename));
 
-    ui->npc_edit_tab_previewarea->set_bg_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+std::string(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename));
-    ui->npc_edit_tab_previewarea->set_sprite_pos(Mediator::get_instance()->enemy_list.at(index).sprites_pos_bg);
+    ui->npc_edit_tab_previewarea->set_bg_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+std::string(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename));
+    ui->npc_edit_tab_previewarea->set_sprite_pos(GameData::get_instance()->enemy_list.at(index).sprites_pos_bg);
     ui->npc_edit_tab_previewarea->repaint();
 	reload_frame_list(ui->frame_list_selector->currentIndex());
 	ui->sprites_preview_widget->repaint();
 
-    ui->isBoss_checkBox->setChecked(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_boss);
-    ui->isSubBoss_checkbox->setChecked(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_sub_boss);
+    ui->isBoss_checkBox->setChecked(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_boss);
+    ui->isSubBoss_checkbox->setChecked(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_sub_boss);
 
-    if (Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).fly_flag == 0) {
+    if (GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).fly_flag == 0) {
         ui->checkBox->setChecked(false);
     } else {
         ui->checkBox->setChecked(true);
     }
 
-    ui->hitarea_x_spinBox->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.x);
-    ui->hitarea_y_spinBox->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.y);
+    ui->hitarea_x_spinBox->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.x);
+    ui->hitarea_y_spinBox->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.y);
 
-    if (Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.w != 0) {
-        ui->hitarea_w_spinBox->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.w);
+    if (GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.w != 0) {
+        ui->hitarea_w_spinBox->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.w);
     } else {
-        ui->hitarea_w_spinBox->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.width);
+        ui->hitarea_w_spinBox->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.width);
     }
-    if (Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.h != 0) {
-        ui->hitarea_h_spinBox->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.h);
+    if (GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.h != 0) {
+        ui->hitarea_h_spinBox->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.h);
     } else {
-        ui->hitarea_h_spinBox->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.height);
+        ui->hitarea_h_spinBox->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).frame_size.height);
     }
 
-    ui->respawn_time_spinBox->setValue(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).respawn_delay);
+    ui->respawn_time_spinBox->setValue(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).respawn_delay);
 
-    ui->projectileOriginX_spinBox->setValue(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_arm_pos.x);
-    ui->projectileOriginY_spinBox->setValue(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_arm_pos.y);
+    ui->projectileOriginX_spinBox->setValue(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_arm_pos.x);
+    ui->projectileOriginY_spinBox->setValue(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_arm_pos.y);
 
-    ui->isNPC_checkBox->setChecked(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc);
+    ui->isNPC_checkBox->setChecked(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc);
 
-    ui->npc_requestedItem_comboBox->setCurrentIndex(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_requested_item_id+1);
-    ui->npc_givenItem_comboBox->setCurrentIndex(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_given_item_id+1);
+    ui->npc_requestedItem_comboBox->setCurrentIndex(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_requested_item_id+1);
+    ui->npc_givenItem_comboBox->setCurrentIndex(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_given_item_id+1);
 
     ui->npcDialogId_comboBox->setEnabled(ui->isNPC_checkBox->isChecked());
     ui->npc_requestedItem_comboBox->setEnabled(ui->isNPC_checkBox->isChecked());
@@ -217,10 +217,10 @@ void enemy_edit::on_npc_edit_tab_selectnpccombo_currentIndexChanged(int index)
 
 void enemy_edit::on_npc_edit_tab_graphiccombo_currentIndexChanged(const QString &arg1)
 {
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+    if (_data_loading || GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
-    sprintf(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).graphic_filename, "%s", arg1.toStdString().c_str());
+    sprintf(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).graphic_filename, "%s", arg1.toStdString().c_str());
     ui->npc_edit_tab_previewarea->set_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/")+arg1.toStdString());
     add_frame_one();
     ui->npc_edit_tab_previewarea->repaint();
@@ -228,22 +228,22 @@ void enemy_edit::on_npc_edit_tab_graphiccombo_currentIndexChanged(const QString 
 
 void enemy_edit::on_npc_edit_tab_graphicwidth_valueChanged(int arg1)
 {
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+    if (_data_loading || GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
     ui->npc_edit_tab_previewarea->set_grid_w(arg1);
     // if hitarea is zero or old value, update to new one
     _data_loading = true;
-    if (ui->hitarea_w_spinBox->value() == 0 || ui->hitarea_w_spinBox->value() == Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width) {
+    if (ui->hitarea_w_spinBox->value() == 0 || ui->hitarea_w_spinBox->value() == GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width) {
         ui->hitarea_w_spinBox->setValue(arg1);
-        if (Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width == Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.w) {
-            Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.w = arg1;
+        if (GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width == GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.w) {
+            GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.w = arg1;
         }
         ui->npc_edit_tab_previewarea->update();
         reload_frame_list(ui->frame_list_selector->currentIndex());
     }
     _data_loading = false;
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width = arg1;
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width = arg1;
 }
 
 void enemy_edit::on_npc_edit_tab_graphicheight_valueChanged(int arg1)
@@ -251,30 +251,30 @@ void enemy_edit::on_npc_edit_tab_graphicheight_valueChanged(int arg1)
     if (_data_loading) {
         return;
     }
-    if (Mediator::get_instance()->enemy_list.size() == 0) {
+    if (GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
     ui->npc_edit_tab_previewarea->set_grid_h(arg1);
     // if hitarea is zero or old value, update to new one
     _data_loading = true;
-    if (ui->hitarea_h_spinBox->value() == 0 || ui->hitarea_h_spinBox->value() == Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height) {
+    if (ui->hitarea_h_spinBox->value() == 0 || ui->hitarea_h_spinBox->value() == GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height) {
         ui->hitarea_h_spinBox->setValue(arg1);
 
-        if (Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height == Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.h) {
+        if (GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height == GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.h) {
             std::cout << "### SET collistion H" << std::endl;
-            Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.h = arg1;
+            GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.h = arg1;
         }
 
         ui->npc_edit_tab_previewarea->update();
         reload_frame_list(ui->frame_list_selector->currentIndex());
     }
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height = arg1;
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height = arg1;
     _data_loading = false;
 }
 
 void enemy_edit::on_npc_edit_tab_NpcName_textChanged(const QString &arg1)
 {
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+    if (_data_loading || GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
 
@@ -291,8 +291,8 @@ void enemy_edit::on_npc_edit_tab_NpcName_textChanged(const QString &arg1)
     }
     // check that it is not the name of another enemy
     bool name_error = false;
-    for (int i=0; i<Mediator::get_instance()->enemy_list.size(); i++) {
-        if (arg1.toStdString() == Mediator::get_instance()->enemy_list.at(i).name) {
+    for (int i=0; i<GameData::get_instance()->enemy_list.size(); i++) {
+        if (arg1.toStdString() == GameData::get_instance()->enemy_list.at(i).name) {
             name_error = true;
             break;
         }
@@ -304,83 +304,83 @@ void enemy_edit::on_npc_edit_tab_NpcName_textChanged(const QString &arg1)
     }
 
 
-    sprintf(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).name, "%s", arg1.toStdString().c_str());
+    sprintf(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).name, "%s", arg1.toStdString().c_str());
     QString temp_str = QString("[");
     if (_npcedit_tab_selectednpc < 10) {
         temp_str += QString("0");
     }
-    temp_str += QString::number(_npcedit_tab_selectednpc) + QString("] - ") + QString(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).name);
+    temp_str += QString::number(_npcedit_tab_selectednpc) + QString("] - ") + QString(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).name);
     ui->npc_edit_tab_selectnpccombo->setItemText(_npcedit_tab_selectednpc, temp_str);
 }
 
 void enemy_edit::on_npc_edit_tab_NpcHP_valueChanged(int arg1)
 {
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+    if (_data_loading || GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).hp = arg1;
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).hp = arg1;
 }
 
 void enemy_edit::on_npc_edit_tab_canshoot_toggled(bool checked)
 {
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_ghost = checked;
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_ghost = checked;
 }
 
 void enemy_edit::on_npc_edit_tab_shieldtype_currentIndexChanged(int index)
 {
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+    if (_data_loading || GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).shield_type = index;
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).shield_type = index;
 }
 
 void enemy_edit::on_npc_edit_tab_movespeed_valueChanged(int arg1)
 {
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+    if (_data_loading || GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).speed = arg1;
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).speed = arg1;
 }
 
 void enemy_edit::on_npc_edit_tab_range_valueChanged(int arg1)
 {
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+    if (_data_loading || GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).walk_range = arg1;
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).walk_range = arg1;
 }
 
 void enemy_edit::on_npc_edit_tab_frametype_currentIndexChanged(int index)
 {
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+    if (_data_loading || GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
     // @204
-    //Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frames[Mediator::get_instance()->getPalleteX()].state = index-1;
+    //GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frames[Mediator::get_instance()->getPalleteX()].state = index-1;
 }
 
 
 void enemy_edit::set_npc_frame() {
 	printf(">> DialogNPCEdit::setNPCFrame - CALLED\n");
     // @204
-    //ui->npc_edit_tab_frameduration->setValue(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frames[Mediator::get_instance()->getPalleteX()].duration);
-    //ui->npc_edit_tab_frametype->setCurrentIndex(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frames[Mediator::get_instance()->getPalleteX()].state+1);
+    //ui->npc_edit_tab_frameduration->setValue(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frames[Mediator::get_instance()->getPalleteX()].duration);
+    //ui->npc_edit_tab_frametype->setCurrentIndex(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frames[Mediator::get_instance()->getPalleteX()].state+1);
 }
 
 
 void enemy_edit::on_bg_graphic_combo_currentIndexChanged(const QString &arg1)
 {
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+    if (_data_loading || GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
     if (arg1.length() == 0) {
         //std::cout << "*************** on_bg_graphic_combo_currentIndexChanged - ZERO" << std::endl;
-        sprintf(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename, "%s", "");
+        sprintf(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename, "%s", "");
         ui->npc_edit_tab_previewarea->set_bg_graphicfile("");
     } else {
         //std::cout << "*************** on_bg_graphic_combo_currentIndexChanged - SET to '" << arg1.toStdString() << "'" << std::endl;
-        sprintf(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename, "%s", arg1.toStdString().c_str());
-        ui->npc_edit_tab_previewarea->set_bg_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+std::string(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename));
+        sprintf(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename, "%s", arg1.toStdString().c_str());
+        ui->npc_edit_tab_previewarea->set_bg_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+std::string(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename));
     }
 }
 
@@ -414,28 +414,28 @@ void enemy_edit::reload_frame_list(int index)
 
 
 	// insert all sprites for the given type into the combo
-    //std::cout << ">> Adding frames for NPC[" << SharedData::get_instance()->game_data.game_npcs[i].name << "] - type: " << index << std::endl;
-    std::string filename = SharedData::get_instance()->FILEPATH + "/images/sprites/enemies/" + Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).graphic_filename;
+    //std::cout << ">> Adding frames for NPC[" << GameData::get_instance()->game_data.game_npcs[i].name << "] - type: " << index << std::endl;
+    std::string filename = SharedData::get_instance()->FILEPATH + "/images/sprites/enemies/" + GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).graphic_filename;
     // @204
     for (int j=0; j<ANIM_FRAMES_COUNT; j++) {
-        if (Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[index][j].used == true) {
-            int calc_pos_x = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[index][j].sprite_graphic_pos_x * Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width;
-            //std::cout << "NPC[" << SharedData::get_instance()->game_data.game_npcs[i].name << "] - frame.pos_x: " << SharedData::get_instance()->game_data.game_npcs[i].sprites[index][j].sprite_graphic_pos_x << ", cal_pos_x: " << calc_pos_x << std::endl;
+        if (GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[index][j].used == true) {
+            int calc_pos_x = GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[index][j].sprite_graphic_pos_x * GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width;
+            //std::cout << "NPC[" << GameData::get_instance()->game_data.game_npcs[i].name << "] - frame.pos_x: " << GameData::get_instance()->game_data.game_npcs[i].sprites[index][j].sprite_graphic_pos_x << ", cal_pos_x: " << calc_pos_x << std::endl;
             QListWidgetItem* item = new QListWidgetItem;
-            QString temp_str(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).name + QString(" (") + QString::number(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[index][j].duration) + QString(")"));
+            QString temp_str(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).name + QString(" (") + QString::number(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[index][j].duration) + QString(")"));
             item->setText(temp_str);
-            //SharedData::get_instance()->game_data.game_npcs[i].name + " (" + QString::number(SharedData::get_instance()->game_data.game_npcs[i].sprites[index][j].duration).c_ + ")");
+            //GameData::get_instance()->game_data.game_npcs[i].name + " (" + QString::number(GameData::get_instance()->game_data.game_npcs[i].sprites[index][j].duration).c_ + ")");
             QPixmap image(filename.c_str());
             if (image.isNull() == false && image.width() > 0) {
-                image = image.copy(calc_pos_x, 0, Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width, Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height);
-                image = image.scaled(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width*2, Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height*2);
+                image = image.copy(calc_pos_x, 0, GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width, GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height);
+                image = image.scaled(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width*2, GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height*2);
                 item->setIcon(image);
             }
-            int h = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height*2+4;
+            int h = GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height*2+4;
             if (h < 24) {
                 h = 24;
             }
-            item->setSizeHint(QSize(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width*2, h));
+            item->setSizeHint(QSize(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width*2, h));
             ui->frameList_listWidget->addItem(item);
         }
     }
@@ -461,10 +461,10 @@ void enemy_edit::on_pushButton_clicked()
     }
     //copy next sprite to current position
     for (int j=ui->frameList_listWidget->currentRow(); j<ANIM_FRAMES_COUNT-1; j++) {
-        Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][j] = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][j+1];
+        GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][j] = GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][j+1];
     }
     // clear last sprite
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ANIM_FRAMES_COUNT-1].used = false;
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ANIM_FRAMES_COUNT-1].used = false;
     reload_frame_list(ui->frame_list_selector->currentIndex());
 }
 
@@ -476,9 +476,9 @@ void enemy_edit::on_frameUp_clicked()
     if (ui->frameList_listWidget->selectedItems().size() == 0) {
         return;
     }
-    st_sprite_data temp = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()-1];
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()-1] = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()];
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()] = temp;
+    st_sprite_data temp = GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()-1];
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()-1] = GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()];
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()] = temp;
     reload_frame_list(ui->frame_list_selector->currentIndex());
 }
 
@@ -490,27 +490,27 @@ void enemy_edit::on_frameDown_clicked()
     if (ui->frameList_listWidget->currentRow() >= ANIM_FRAMES_COUNT-1) {
         return;
     }
-    if (Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()+1].used == false) {
+    if (GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()+1].used == false) {
         return;
     }
-    st_sprite_data temp = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()+1];
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()+1] = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()];
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()] = temp;
+    st_sprite_data temp = GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()+1];
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()+1] = GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()];
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][ui->frameList_listWidget->currentRow()] = temp;
     reload_frame_list(ui->frame_list_selector->currentIndex());
 }
 
 void enemy_edit::on_frameList_listWidget_currentRowChanged(int currentRow)
 {
-    ui->sprite_duration_spinBox->setValue(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][currentRow].duration);
-    ui->sprite_collision_x->setValue(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][currentRow].collision_rect.x);
-    ui->sprite_collision_y->setValue(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][currentRow].collision_rect.y);
-    ui->sprite_collision_w->setValue(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][currentRow].collision_rect.w);
-    ui->sprite_collision_h->setValue(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][currentRow].collision_rect.h);
+    ui->sprite_duration_spinBox->setValue(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][currentRow].duration);
+    ui->sprite_collision_x->setValue(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][currentRow].collision_rect.x);
+    ui->sprite_collision_y->setValue(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][currentRow].collision_rect.y);
+    ui->sprite_collision_w->setValue(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][currentRow].collision_rect.w);
+    ui->sprite_collision_h->setValue(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[ui->frame_list_selector->currentIndex()][currentRow].collision_rect.h);
 
     if (ui->frame_list_selector->currentText() == "ATTACK") {
-        std::cout << "attack_frame: " << (int)Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_frame << ", currentRow: " << currentRow << std::endl;
+        std::cout << "attack_frame: " << (int)GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_frame << ", currentRow: " << currentRow << std::endl;
         _data_loading = true;
-        if (Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_frame == currentRow) {
+        if (GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_frame == currentRow) {
             ui->isAttackFrame_checkBox->setChecked(true);
         } else {
             ui->isAttackFrame_checkBox->setChecked(false);
@@ -523,7 +523,7 @@ void enemy_edit::on_frameList_listWidget_currentRowChanged(int currentRow)
 void enemy_edit::on_sprite_duration_spinBox_valueChanged(int arg1)
 {
     if (ui->frameList_listWidget->selectedItems().size() > 0) {
-        Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[Mediator::get_instance()->current_sprite_type][ui->frameList_listWidget->currentRow()].duration = arg1;
+        GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[Mediator::get_instance()->current_sprite_type][ui->frameList_listWidget->currentRow()].duration = arg1;
         if (_ignore_spritelist_row_changed == false) {
             reload_frame_list(ui->frame_list_selector->currentIndex());
         } else {
@@ -536,7 +536,7 @@ void enemy_edit::on_sprite_collision_x_valueChanged(int arg1)
 {
     if (_data_loading == true) { return; }
 	if (ui->frameList_listWidget->selectedItems().size() > 0) {
-        Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[Mediator::get_instance()->current_sprite_type][ui->frameList_listWidget->currentRow()].collision_rect.x = arg1;
+        GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[Mediator::get_instance()->current_sprite_type][ui->frameList_listWidget->currentRow()].collision_rect.x = arg1;
 	}
 	ui->sprites_preview_widget->repaint();
 }
@@ -545,7 +545,7 @@ void enemy_edit::on_sprite_collision_y_valueChanged(int arg1)
 {
     if (_data_loading == true) { return; }
 	if (ui->frameList_listWidget->selectedItems().size() > 0) {
-        Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[Mediator::get_instance()->current_sprite_type][ui->frameList_listWidget->currentRow()].collision_rect.y = arg1;
+        GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[Mediator::get_instance()->current_sprite_type][ui->frameList_listWidget->currentRow()].collision_rect.y = arg1;
 	}
 	ui->sprites_preview_widget->repaint();
 }
@@ -554,7 +554,7 @@ void enemy_edit::on_sprite_collision_w_valueChanged(int arg1)
 {
     if (_data_loading == true) { return; }
 	if (ui->frameList_listWidget->selectedItems().size() > 0) {
-        Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[Mediator::get_instance()->current_sprite_type][ui->frameList_listWidget->currentRow()].collision_rect.w = arg1;
+        GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[Mediator::get_instance()->current_sprite_type][ui->frameList_listWidget->currentRow()].collision_rect.w = arg1;
 	}
 	ui->sprites_preview_widget->repaint();
 
@@ -564,7 +564,7 @@ void enemy_edit::on_sprite_collision_h_valueChanged(int arg1)
 {
     if (_data_loading == true) { return; }
 	if (ui->frameList_listWidget->selectedItems().size() > 0) {
-        Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[Mediator::get_instance()->current_sprite_type][ui->frameList_listWidget->currentRow()].collision_rect.h = arg1;
+        GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[Mediator::get_instance()->current_sprite_type][ui->frameList_listWidget->currentRow()].collision_rect.h = arg1;
 	}
 	ui->sprites_preview_widget->repaint();
 
@@ -576,10 +576,10 @@ void enemy_edit::on_isBoss_checkBox_toggled(bool checked)
     if (_data_loading == true) {
         return;
     }
-    Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_boss = checked;
+    GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_boss = checked;
     // a sub-boss can't be a boss and vice-versa
-    if (checked == true && Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_sub_boss == true) {
-        Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_sub_boss = false;
+    if (checked == true && GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_sub_boss == true) {
+        GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_sub_boss = false;
         _data_loading = true;
         ui->isSubBoss_checkbox->setChecked(false);
         _data_loading = false;
@@ -589,10 +589,10 @@ void enemy_edit::on_isBoss_checkBox_toggled(bool checked)
 void enemy_edit::on_isSubBoss_checkbox_toggled(bool checked)
 {
     if (_data_loading == true) { return; }
-    Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_sub_boss = checked;
+    GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_sub_boss = checked;
     // a sub-boss can't be a boss and vice-versa
-    if (checked == true && Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_boss == true) {
-        Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_boss = false;
+    if (checked == true && GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_boss == true) {
+        GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).is_boss = false;
         _data_loading = true;
         ui->isBoss_checkBox->setChecked(false);
         _data_loading = false;
@@ -604,8 +604,8 @@ void enemy_edit::on_sprite_pos_x_valueChanged(int arg1)
     if (_data_loading == true) {
         return;
     }
-    Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).sprites_pos_bg.x = arg1;
-    ui->npc_edit_tab_previewarea->set_sprite_pos(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).sprites_pos_bg);
+    GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).sprites_pos_bg.x = arg1;
+    ui->npc_edit_tab_previewarea->set_sprite_pos(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).sprites_pos_bg);
     ui->npc_edit_tab_previewarea->update();
     reload_frame_list(ui->frame_list_selector->currentIndex());
 }
@@ -615,8 +615,8 @@ void enemy_edit::on_sprite_pos_y_valueChanged(int arg1)
     if (_data_loading == true) {
         return;
     }
-    Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).sprites_pos_bg.y = arg1;
-    ui->npc_edit_tab_previewarea->set_sprite_pos(Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).sprites_pos_bg);
+    GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).sprites_pos_bg.y = arg1;
+    ui->npc_edit_tab_previewarea->set_sprite_pos(GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).sprites_pos_bg);
     ui->npc_edit_tab_previewarea->update();
     reload_frame_list(ui->frame_list_selector->currentIndex());
 }
@@ -627,9 +627,9 @@ void enemy_edit::on_checkBox_toggled(bool checked)
         return;
     }
     if (checked == true) {
-        Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).fly_flag = 1;
+        GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).fly_flag = 1;
     } else {
-        Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).fly_flag = 0;
+        GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).fly_flag = 0;
     }
 }
 
@@ -639,7 +639,7 @@ void enemy_edit::on_hitarea_x_spinBox_valueChanged(int arg1)
 
     std::cout << "hi_area::change(x): " << arg1 << std::endl;
 
-    Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.x = arg1;
+    GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.x = arg1;
     ui->npc_edit_tab_previewarea->update();
 }
 
@@ -649,7 +649,7 @@ void enemy_edit::on_hitarea_y_spinBox_valueChanged(int arg1)
 
     std::cout << "hi_area::change(y): " << arg1 << std::endl;
 
-    Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.y = arg1;
+    GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.y = arg1;
     ui->npc_edit_tab_previewarea->update();
 }
 
@@ -659,7 +659,7 @@ void enemy_edit::on_hitarea_w_spinBox_valueChanged(int arg1)
 
     std::cout << "hi_area::change(w): " << arg1 << std::endl;
 
-    Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.w = arg1;
+    GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.w = arg1;
     ui->npc_edit_tab_previewarea->update();
 }
 
@@ -669,7 +669,7 @@ void enemy_edit::on_hitarea_h_spinBox_valueChanged(int arg1)
 
     std::cout << "hi_area::change(h): " << arg1 << std::endl;
 
-    Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.h = arg1;
+    GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).vulnerable_area.h = arg1;
     ui->npc_edit_tab_previewarea->update();
 }
 
@@ -678,7 +678,7 @@ void enemy_edit::on_hitarea_h_spinBox_valueChanged(int arg1)
 void enemy_edit::on_respawn_time_spinBox_valueChanged(int arg1)
 {
     if (_data_loading == true) { return; }
-    Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).respawn_delay = arg1;
+    GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).respawn_delay = arg1;
 }
 
 void enemy_edit::on_AddFrame_Button_clicked()
@@ -689,15 +689,15 @@ void enemy_edit::on_AddFrame_Button_clicked()
     std::cout << "## FOUND NPC!!!!" << std::endl;
     for (int j=0; j<ANIM_FRAMES_COUNT; j++) {
         int frame_type = ui->frame_list_selector->currentIndex();
-        if (Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].used == false) {
+        if (GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].used == false) {
             std::cout << "ADD-SPRITE-FRAME: FOUND EMPTY SLOT AT [" << j << "]" << std::endl;
-            Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].used = true;
-            Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].duration = 100;
-            Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].sprite_graphic_pos_x = Mediator::get_instance()->getPalleteX();
-            Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].collision_rect.w = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width;
-            Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].collision_rect.h = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height;
-            Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].collision_rect.x = Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).sprites_pos_bg.x;
-            Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].collision_rect.y = Mediator::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).sprites_pos_bg.y;
+            GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].used = true;
+            GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].duration = 100;
+            GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].sprite_graphic_pos_x = Mediator::get_instance()->getPalleteX();
+            GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].collision_rect.w = GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.width;
+            GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].collision_rect.h = GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).frame_size.height;
+            GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].collision_rect.x = GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).sprites_pos_bg.x;
+            GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[frame_type][j].collision_rect.y = GameData::get_instance()->enemy_list.at(Mediator::get_instance()->current_npc_n).sprites_pos_bg.y;
             reload_frame_list(ui->frame_list_selector->currentIndex());
             return;
         }
@@ -707,13 +707,13 @@ void enemy_edit::on_AddFrame_Button_clicked()
 void enemy_edit::on_addEnemy_pushButton_clicked()
 {
     _data_loading = true;
-    Mediator::get_instance()->enemy_list.push_back(file_enemy_v3_1_2());
+    GameData::get_instance()->enemy_list.push_back(file_enemy_v3_1_2());
     // add equivalent AI for enemy
-    Mediator::get_instance()->ai_list.push_back(file_artificial_inteligence());
-    ui->npc_edit_tab_selectnpccombo->addItem(QString("[") + QString::number(Mediator::get_instance()->enemy_list.size()-1) + QString("] Enemy Name"));
+    GameData::get_instance()->ai_list.push_back(file_artificial_inteligence());
+    ui->npc_edit_tab_selectnpccombo->addItem(QString("[") + QString::number(GameData::get_instance()->enemy_list.size()-1) + QString("] Enemy Name"));
     ui->npc_edit_tab_graphiccombo->setCurrentIndex(-1);
     _data_loading = false;
-    ui->npc_edit_tab_selectnpccombo->setCurrentIndex(Mediator::get_instance()->enemy_list.size()-1);
+    ui->npc_edit_tab_selectnpccombo->setCurrentIndex(GameData::get_instance()->enemy_list.size()-1);
 }
 
 void enemy_edit::on_isAttackFrame_checkBox_toggled(bool checked)
@@ -721,9 +721,9 @@ void enemy_edit::on_isAttackFrame_checkBox_toggled(bool checked)
     if (_data_loading == true) { return; }
     if (ui->frame_list_selector->currentText() == "ATTACK") {
         if (checked == true) {
-            Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_frame = ui->frameList_listWidget->currentRow();
+            GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_frame = ui->frameList_listWidget->currentRow();
         } else {
-            Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_frame = 0;
+            GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_frame = 0;
         }
     }
 }
@@ -731,13 +731,13 @@ void enemy_edit::on_isAttackFrame_checkBox_toggled(bool checked)
 void enemy_edit::on_projectileOriginX_spinBox_valueChanged(int arg1)
 {
     if (_data_loading == true) { return; }
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_arm_pos.x = arg1;
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_arm_pos.x = arg1;
 }
 
 void enemy_edit::on_projectileOriginY_spinBox_valueChanged(int arg1)
 {
     if (_data_loading == true) { return; }
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_arm_pos.y = arg1;
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).attack_arm_pos.y = arg1;
 }
 
 void enemy_edit::on_pushButton_2_clicked()
@@ -746,7 +746,7 @@ void enemy_edit::on_pushButton_2_clicked()
     if (ui->frameList_listWidget->selectedItems().size() > 0) {
         for (int i=0; i<ANIM_FRAMES_COUNT; i++) {
             if (i != ui->frameList_listWidget->currentRow()) {
-                Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[Mediator::get_instance()->current_sprite_type][i].collision_rect = Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[Mediator::get_instance()->current_sprite_type][ui->frameList_listWidget->currentRow()].collision_rect;
+                GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[Mediator::get_instance()->current_sprite_type][i].collision_rect = GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).sprites[Mediator::get_instance()->current_sprite_type][ui->frameList_listWidget->currentRow()].collision_rect;
             }
         }
         ui->sprites_preview_widget->repaint();
@@ -755,10 +755,10 @@ void enemy_edit::on_pushButton_2_clicked()
 
 void enemy_edit::on_backgroundFileComboBox_currentIndexChanged(const QString &arg1)
 {
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+    if (_data_loading || GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
-    sprintf(Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename, "%s", arg1.toStdString().c_str());
+    sprintf(GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).bg_graphic_filename, "%s", arg1.toStdString().c_str());
     ui->npc_edit_tab_previewarea->set_bg_graphicfile(SharedData::get_instance()->FILEPATH+std::string("/images/sprites/enemies/backgrounds/")+arg1.toStdString());
     add_frame_one();
     ui->npc_edit_tab_previewarea->repaint();
@@ -766,13 +766,13 @@ void enemy_edit::on_backgroundFileComboBox_currentIndexChanged(const QString &ar
 
 void enemy_edit::on_isNPC_checkBox_toggled(bool checked)
 {
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+    if (_data_loading || GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
-    if (Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc == true && checked == false) {
-        Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_dialog_id = -1;
+    if (GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc == true && checked == false) {
+        GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_dialog_id = -1;
     }
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc = checked;
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).is_npc = checked;
     ui->npcDialogId_comboBox->setEnabled(checked);
     ui->npc_requestedItem_comboBox->setEnabled(checked);
     ui->npc_givenItem_comboBox->setEnabled(checked);
@@ -781,16 +781,16 @@ void enemy_edit::on_isNPC_checkBox_toggled(bool checked)
 
 void enemy_edit::on_npc_requestedItem_comboBox_currentIndexChanged(int index)
 {
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+    if (_data_loading || GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_requested_item_id = index-1;
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_requested_item_id = index-1;
 }
 
 void enemy_edit::on_npc_givenItem_comboBox_currentIndexChanged(int index)
 {
-    if (_data_loading || Mediator::get_instance()->enemy_list.size() == 0) {
+    if (_data_loading || GameData::get_instance()->enemy_list.size() == 0) {
         return;
     }
-    Mediator::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_given_item_id = index-1;
+    GameData::get_instance()->enemy_list.at(_npcedit_tab_selectednpc).npc_given_item_id = index-1;
 }

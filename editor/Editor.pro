@@ -57,7 +57,8 @@ TARGET = ../build/editor
 TEMPLATE = app
 SOURCES += main.cpp \
     ../aux_tools/ability_name.cpp \
-    ../aux_tools/jsoncpp.cpp \
+    ../game_data.cpp \
+    aux_tools/dataconverter.cpp \
     dialogs/npcdialogeditor.cpp \
     mainwindow.cpp \
     editorarea.cpp \
@@ -132,7 +133,9 @@ SOURCES += main.cpp \
 
 HEADERS += mainwindow.h \
     ../aux_tools/ability_name.h \
-    ../aux_tools/json/json-forwards.h \
+    ../file/v0/file_game_v0.h \
+    ../game_data.h \
+    aux_tools/dataconverter.h \
     dialogs/npcdialogeditor.h \
     editorarea.h \
     editortilepallete.h \

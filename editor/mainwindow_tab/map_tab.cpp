@@ -36,7 +36,7 @@ void map_tab::reload()
 
     properties_hidden = true;
     ui->editArea->update_map_data();
-    file_v6_style style = SharedData::get_instance()->v6_style_list.at(SharedData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).style);
+    file_v6_style style = GameData::get_instance()->v6_style_list.at(GameData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).style);
     std::string pallete_filename = style.tileset_filename;
     if (pallete_filename.length() > 0) {
         Mediator::get_instance()->setPallete(pallete_filename);
@@ -76,15 +76,15 @@ void map_tab::fill_data()
 
 void map_tab::fill_area_combo()
 {
-    if (SharedData::get_instance()->v6_area_map.size() == 0) {
+    if (GameData::get_instance()->v6_area_map.size() == 0) {
         return;
     }
     _data_loading = true;
     SharedData::get_instance()->v6_selected_area = 0;
     ui->areaSelector_comboBox->clear();
 
-    auto it = SharedData::get_instance()->v6_area_map.find(SharedData::get_instance()->v6_selected_stage);
-    if (it != SharedData::get_instance()->v6_area_map.end()) {
+    auto it = GameData::get_instance()->v6_area_map.find(SharedData::get_instance()->v6_selected_stage);
+    if (it != GameData::get_instance()->v6_area_map.end()) {
         for (unsigned int i=0; i<it->second.size(); i++) {
             ui->areaSelector_comboBox->addItem(QString("[") + QString::number(i) + "] - " + QString(it->second.at(i).area_name));
         }
@@ -397,8 +397,8 @@ void map_tab::on_editModeSlope_Button_clicked()
 void map_tab::fill_map_selector()
 {
     ui->mapSelector_comboBox->clear();
-    for (unsigned int i=0; i<SharedData::get_instance()->v6_stage_list.size(); i++) {
-        QString itemName = QString("[") + QString::number(i) + QString("] - ") + QString(SharedData::get_instance()->v6_stage_list.at(i).stage_name);
+    for (unsigned int i=0; i<GameData::get_instance()->v6_stage_list.size(); i++) {
+        QString itemName = QString("[") + QString::number(i) + QString("] - ") + QString(GameData::get_instance()->v6_stage_list.at(i).stage_name);
         ui->mapSelector_comboBox->addItem(itemName);
     }
     ui->mapSelector_comboBox->setCurrentIndex(SharedData::get_instance()->v6_selected_stage);
@@ -408,7 +408,7 @@ void map_tab::fill_map_selector()
 void map_tab::on_mapSelector_comboBox_currentIndexChanged(int index)
 {
     if (_data_loading == true || index == -1) { return; }
-    file_v6_style style = SharedData::get_instance()->v6_style_list.at(SharedData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).style);
+    file_v6_style style = GameData::get_instance()->v6_style_list.at(GameData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).style);
     SharedData::get_instance()->v6_selected_stage = index;
     _data_loading = true;
     Mediator::get_instance()->load_area_rooms(SharedData::get_instance()->v6_selected_stage);

@@ -29,13 +29,13 @@ void remove_duplicated()
 }
 
 void adjust_sprites_size() {
-    for (int k=0; k<Mediator::get_instance()->enemy_list.size(); k++) {
+    for (int k=0; k<GameData::get_instance()->enemy_list.size(); k++) {
 		for (int l=0; l<ANIM_TYPE_COUNT; l++) {
 			for (int m=0; m<ANIM_FRAMES_COUNT; m++) {
-                Mediator::get_instance()->enemy_list.at(k).sprites[l][m].collision_rect.x = 0;
-                Mediator::get_instance()->enemy_list.at(k).sprites[l][m].collision_rect.y = 0;
-                Mediator::get_instance()->enemy_list.at(k).sprites[l][m].collision_rect.w = Mediator::get_instance()->enemy_list.at(k).frame_size.width;
-                Mediator::get_instance()->enemy_list.at(k).sprites[l][m].collision_rect.h = Mediator::get_instance()->enemy_list.at(k).frame_size.height;
+                GameData::get_instance()->enemy_list.at(k).sprites[l][m].collision_rect.x = 0;
+                GameData::get_instance()->enemy_list.at(k).sprites[l][m].collision_rect.y = 0;
+                GameData::get_instance()->enemy_list.at(k).sprites[l][m].collision_rect.w = GameData::get_instance()->enemy_list.at(k).frame_size.width;
+                GameData::get_instance()->enemy_list.at(k).sprites[l][m].collision_rect.h = GameData::get_instance()->enemy_list.at(k).frame_size.height;
 			}
 		}
 	}

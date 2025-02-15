@@ -128,7 +128,7 @@
            <enum>QFrame::NoFrame</enum>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <property name="tabSpacing">
            <number>6</number>
@@ -412,6 +412,16 @@
                <property name="icon">
                 <iconset>
                  <normalon>:/toolbar_icons/area_v_link.png</normalon>
+                </iconset>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Platform</string>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normalon>:/toolbar_icons/platform.png</normalon>
                 </iconset>
                </property>
               </item>

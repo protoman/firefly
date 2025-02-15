@@ -93,19 +93,19 @@ void DialogObjectEdit::on_objectListCombobox_currentIndexChanged(QString item)
 
 void DialogObjectEdit::loadObjectData(int object_n) {
 
-    ui->NpcName->setText(SharedData::get_instance()->v6_object_list.at(object_n).name);
-    ui->npcGraphicSizeSpin_w->setValue(SharedData::get_instance()->v6_object_list.at(object_n).size.width);
-    ui->npcGraphicSizeSpin_h->setValue(SharedData::get_instance()->v6_object_list.at(object_n).size.height);
-    ui->comboBoxType->setCurrentIndex(SharedData::get_instance()->v6_object_list.at(object_n).type);
+    ui->NpcName->setText(GameData::get_instance()->v6_object_list.at(object_n).name);
+    ui->npcGraphicSizeSpin_w->setValue(GameData::get_instance()->v6_object_list.at(object_n).size.width);
+    ui->npcGraphicSizeSpin_h->setValue(GameData::get_instance()->v6_object_list.at(object_n).size.height);
+    ui->comboBoxType->setCurrentIndex(GameData::get_instance()->v6_object_list.at(object_n).type);
 
-    ui->spinBox_timer->setValue(SharedData::get_instance()->v6_object_list.at(object_n).timer);
-    ui->spinBox_speed->setValue(SharedData::get_instance()->v6_object_list.at(object_n).speed);
-    ui->spinBox_limit->setValue(SharedData::get_instance()->v6_object_list.at(object_n).limit);
+    ui->spinBox_timer->setValue(GameData::get_instance()->v6_object_list.at(object_n).timer);
+    ui->spinBox_speed->setValue(GameData::get_instance()->v6_object_list.at(object_n).speed);
+    ui->spinBox_limit->setValue(GameData::get_instance()->v6_object_list.at(object_n).limit);
 
-    Mediator::get_instance()->npcGraphicSize_w = SharedData::get_instance()->v6_object_list.at(object_n).size.width;
-    Mediator::get_instance()->npcGraphicSize_h = SharedData::get_instance()->v6_object_list.at(object_n).size.height;
+    Mediator::get_instance()->npcGraphicSize_w = GameData::get_instance()->v6_object_list.at(object_n).size.width;
+    Mediator::get_instance()->npcGraphicSize_h = GameData::get_instance()->v6_object_list.at(object_n).size.height;
 	for (int i=0; i<ui->objectListCombobox->count(); i++) {
-        if (ui->objectListCombobox->itemText(i) == QString(SharedData::get_instance()->v6_object_list.at(object_n).graphic_filename)) {
+        if (ui->objectListCombobox->itemText(i) == QString(GameData::get_instance()->v6_object_list.at(object_n).graphic_filename)) {
 			ui->objectListCombobox->setCurrentIndex(i);
 			break;
 		}
@@ -115,14 +115,14 @@ void DialogObjectEdit::loadObjectData(int object_n) {
 
 
 void DialogObjectEdit::saveObjectData(int object_n) {
-    strcpy (SharedData::get_instance()->v6_object_list.at(object_n).name, ui->NpcName->text().toLatin1());
-    SharedData::get_instance()->v6_object_list.at(object_n).type = ui->comboBoxType->currentIndex();
-    SharedData::get_instance()->v6_object_list.at(object_n).size.width = ui->npcGraphicSizeSpin_w->value();
-    SharedData::get_instance()->v6_object_list.at(object_n).size.height = ui->npcGraphicSizeSpin_h->value();
-    strcpy (SharedData::get_instance()->v6_object_list.at(object_n).graphic_filename, ui->objectListCombobox->currentText().toLatin1());
-    SharedData::get_instance()->v6_object_list.at(object_n).timer = ui->spinBox_timer->value();
-    SharedData::get_instance()->v6_object_list.at(object_n).speed = ui->spinBox_speed->value();
-    SharedData::get_instance()->v6_object_list.at(object_n).limit = ui->spinBox_limit->value();
+    strcpy (GameData::get_instance()->v6_object_list.at(object_n).name, ui->NpcName->text().toLatin1());
+    GameData::get_instance()->v6_object_list.at(object_n).type = ui->comboBoxType->currentIndex();
+    GameData::get_instance()->v6_object_list.at(object_n).size.width = ui->npcGraphicSizeSpin_w->value();
+    GameData::get_instance()->v6_object_list.at(object_n).size.height = ui->npcGraphicSizeSpin_h->value();
+    strcpy (GameData::get_instance()->v6_object_list.at(object_n).graphic_filename, ui->objectListCombobox->currentText().toLatin1());
+    GameData::get_instance()->v6_object_list.at(object_n).timer = ui->spinBox_timer->value();
+    GameData::get_instance()->v6_object_list.at(object_n).speed = ui->spinBox_speed->value();
+    GameData::get_instance()->v6_object_list.at(object_n).limit = ui->spinBox_limit->value();
 }
 
 
