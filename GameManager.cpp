@@ -255,6 +255,10 @@ void GameManager::initGame()
     fps_manager.initialize();
     mapController.loadMap();
 
+    // IURI: IMPROVE LATER
+    std::string tiled_map_filename = SharedData::get_instance()->FILEPATH + "/data/tiled/swamp.tmx";
+    tiled_map.initialize(tiled_map_filename, gRenderer);
+    box2d_manager.add_stactic_body_rectangles(tiled_map.get_tiles_collision(0));
 
     init_map_and_player_to_bottom();
     InGamePresentation::get_instance()->start_show_ready();
@@ -332,8 +336,8 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
         InputController::get_instance()->p1_input[BTN_FULL_SCREEN] = 0;
     }
 
-    // TODO::IURI //
-    if (PauseMenu::get_instance()->execute_pause_menu() == false) { // game is paused
+    // TODO::IURI - move to its own class //
+    if (PauseMenu::get_instance()->execute_pause_menu() == false) { // game is not paused
         _is_paused = false;
         build_screen_area_lists();
 
@@ -354,6 +358,8 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
 
 
         if (TimerView::get_instance()->is_paused() == false) {
+            box2d_manager.execute();
+
             if (can_scroll_stage == true) {
                 update_stage_scrolling();
             }
@@ -363,6 +369,8 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
         if (_dark_mode == false) {
             mapController.show();
         }
+
+        tiled_map.draw(gRenderer, mapController.getMapScrolling());
 
         if (dialog_queue.size() == 0 && can_characters_move == true && SharedData::get_instance()->must_interrupt_character_execution == false) {
             player1.execute();
@@ -415,6 +423,10 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
             fps_manager.fps_count();
         }
         fps_manager.limit();
+
+        st_rectangle box2d_player_pos = box2d_manager.get_player_box();
+        ImageView::get_instance()->clearScreenArea(box2d_player_pos.x, box2d_player_pos.y, box2d_player_pos.w, box2d_player_pos.h, 200, 0, 0);
+        TimerView::get_instance()->udelay(2000);
 
 
         //std::cout << "$$$ clear_point_x[" << SharedData::get_instance()->clear_point_x << "], clear_point_y[" << SharedData::get_instance()->clear_point_y << "]" << std::endl;

@@ -683,7 +683,6 @@ void ImageView::place_anim_tile(int anim_tile_id, st_position pos_destiny)
     origin_rectangle.h = TILESIZE;
 
     renderTexturePortionAt(origin_rectangle.x, origin_rectangle.y, origin_rectangle.w, origin_rectangle.h, pos_destiny.x, pos_destiny.y, tile_ref->texture);
-
 }
 
 void ImageView::place_easymode_block_tile(st_position destiny, st_imageData &surface)

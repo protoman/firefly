@@ -6,6 +6,8 @@
 #include <sstream>
 #include <string>
 
+#include <tiled/TiledMap.h>
+
 class classPlayer;
 class GameEnemy;
 
@@ -19,6 +21,7 @@ class GameEnemy;
 #include "aux_tools/fps_control.h"
 #include "class_config.h"
 #include "text/npc_dialog_manager.h"
+#include "box2d/Box2dManager.h"
 
 #ifdef PSP
 #include "ports/psp/psp_ram.h"
@@ -181,6 +184,8 @@ private:
 
 
     MapController mapController;
+    TiledMap tiled_map;
+
     classPlayer player1;
     scenesLib scenes;
     std::stringstream fps_msg;
@@ -223,6 +228,8 @@ private:
     std::set<std::string> special_bosses_list = {"Rotate Test"};
 
     npcDialogManager npc_dialog_manager;
+
+    Box2dManager box2d_manager;
 
 #ifdef PSP
     psp_ram _ram_counter;

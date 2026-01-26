@@ -145,10 +145,10 @@ struct st_size {
 
 
 struct st_rectangle {
-    int x;
-    int y;
-    int w;
-    int h;
+    float x;
+    float y;
+    float w;
+    float h;
 	st_rectangle () {
 		x = 0;
 		y = 0;
@@ -156,7 +156,7 @@ struct st_rectangle {
 		h = 0;
 	}
 
-    st_rectangle (int setX, int setY, int setW, int setH) {
+    st_rectangle (float setX, float setY, float setW, float setH) {
 		x = setX;
 		y = setY;
 		w = setW;

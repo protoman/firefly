@@ -1,0 +1,44 @@
+{
+    "root": [
+        {
+            "name": "Projectile",
+            "graphic_filename": "projectile_normal.png",
+            "size": {
+                "width": 6,
+                "height": 6
+            },
+            "is_destructible": false,
+            "hp": 1,
+            "trajectory": 2,
+            "max_shots": 3,
+            "speed": 6,
+            "damage": 1,
+            "sfx_filename": "beam.wav",
+            "can_be_reflected": true,
+            "spawn_npc_id": -1,
+            "spawn_npc_n": 0,
+            "is_explosive": false,
+            "vanishes_on_hit": true
+        },
+        {
+            "name": "Projectile Dois",
+            "graphic_filename": "projectile_normal.png",
+            "size": {
+                "width": 6,
+                "height": 6
+            },
+            "is_destructible": false,
+            "hp": 1,
+            "trajectory": 0,
+            "max_shots": 3,
+            "speed": 6,
+            "damage": 1,
+            "sfx_filename": "",
+            "can_be_reflected": true,
+            "spawn_npc_id": -1,
+            "spawn_npc_n": 0,
+            "is_explosive": false,
+            "vanishes_on_hit": true
+        }
+    ]
+}

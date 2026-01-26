@@ -14,6 +14,8 @@
 #include "GameManager.h"
 #include "aux_tools/stringutils.h"
 
+#include "tiled/TiledMap.h"
+
 SDL_Renderer* gRenderer;
 
 void get_filepath()

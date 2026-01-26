@@ -1,5 +1,5 @@
 TEMPLATE = app
-CONFIG += console c++11
+CONFIG += console c++14
 CONFIG -= app_bundle
 CONFIG -= qt
 QT       -= core
@@ -10,13 +10,26 @@ CONFIG += linux
 
 linux {
     TARGET = fireflygame
-    LIBS = -L/usr/X11R6/lib -lX11 -lSDL2_mixer -lSDL2_image -lSDL2_ttf -lSDL2_gfx `sdl2-config --libs` -ldl
+    LIBS = -L/usr/X11R6/lib \
+    -L/usr/local/lib/ \
+    -L/usr/lib/x86_64-linux-gnu \
+    -ltmxlite \
+    -lbox2d \
+    -lX11 \
+    -lSDL2_mixer \
+    -lSDL2_image \
+    -lSDL2_ttf \
+    -lSDL2_gfx \
+    `sdl2-config --libs` \
+    -ldl
 
     INCLUDES = -I/usr/include/SDL2 \
             -I/usr/include \
             -I. \
             -I./include \
-            -L/usr/lib
+            -L/usr/lib \
+            -I/usr/local/include/tmxlite \
+            -I/usr/local/include/box2d/
     QMAKE_CCFLAGS += -DLINUX -DPC -Wno-reorder -Wno-ignored-qualifiers -fpermissive -Werror=return-type
     QMAKE_CXXFLAGS += -DLINUX -DPC -Wno-reorder -Wno-ignored-qualifiers -fpermissive -Werror=return-type -I/usr/include/SDL2
 }
@@ -25,6 +38,7 @@ linux {
 SOURCES += \
     GameManager.cpp \
     aux_tools/ability_name.cpp \
+    box2d/Box2dManager.cpp \
     character/GameEnemy.cpp \
     character/GameNpc.cpp \
     character/custom/ai_boss_001.cpp \
@@ -34,6 +48,9 @@ SOURCES += \
         main.cpp \
     text/i18ntext.cpp \
     text/npc_dialog_manager.cpp \
+    tiled/TiledMap.cpp \
+    tiled/TiledMapLayer.cpp \
+    tiled/TiledMapTexture.cpp \
     view/ingame_presentation.cpp \
     view/textview.cpp \
     view/imageview.cpp \
@@ -75,6 +92,7 @@ SOURCES += \
 HEADERS += \
     GameManager.h \
     aux_tools/ability_name.h \
+    box2d/Box2dManager.h \
     character/GameEnemy.h \
     character/GameNpc.h \
     character/custom/ai_boss_001.h \
@@ -94,6 +112,9 @@ HEADERS += \
     game_data.h \
     text/i18ntext.h \
     text/npc_dialog_manager.h \
+    tiled/TiledMap.h \
+    tiled/TiledMapLayer.h \
+    tiled/TiledMapTexture.h \
     view/ingame_presentation.h \
     view/textview.h \
     view/imageview.h \

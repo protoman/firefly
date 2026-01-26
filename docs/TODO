@@ -3,6 +3,11 @@
 ########################################################
 https://store.steampowered.com/app/1802190/Puzzles_For_Clef/
 
+https://github.com/obiot/mario-2d-jumps-box2dwasm-melonjs
+
+https://www.iforce2d.net/b2dtut/jumping
+
+https://www.youtube.com/watch?v=uaIQau4woSM
 
 ########################################################
                      REFACTOR
@@ -14,6 +19,7 @@ https://store.steampowered.com/app/1802190/Puzzles_For_Clef/
                      PRIORIDADE
 ########################################################
 - usar Box2D e Tiled para mapas e movimento/colisao.
+    # https://lyze.dev/2021/03/25/libGDX-Tiled-Box2D-example-tiles/
 
 - corrigir slopes declive esquerda->direita
 - importar fixes do Rockbot
