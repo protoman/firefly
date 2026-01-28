@@ -44,6 +44,7 @@ SOURCES += \
     character/custom/ai_boss_001.cpp \
     character/gamenpc.cpp \
     character/movement/moveslopes.cpp \
+    data/sharedmapdata.cpp \
     game_data.cpp \
         main.cpp \
     text/i18ntext.cpp \
@@ -98,6 +99,9 @@ HEADERS += \
     character/custom/ai_boss_001.h \
     character/gamenpc.h \
     character/movement/moveslopes.h \
+    data/sharedmapdata.h \
+    data/st_color.hpp \
+    data/st_imageData.hpp \
     file/v0/file_area_v0.h \
     file/v4/file_save_v4.h \
     file/v5/struct_file_game_area_map.h \

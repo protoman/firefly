@@ -9,6 +9,7 @@
 #include "defines.h"
 #include "data/st_common.h"
 #include "data/shareddata.h"
+#include "data/sharedmapdata.h"
 
 enum e_RENDER_TARGET {
     RENDER_TARGET_DIRECT_SCREEN,
@@ -127,6 +128,7 @@ class ImageView
 {
 public:
     void init();
+    void load_layers_data();
     static ImageView *get_instance();
 
     void copyScreenAreaToImage(int origin_x, int origin_y, int origin_w, int origin_h, int dest_x, int dest_y, st_imageData image);
@@ -271,6 +273,7 @@ private:
 
     float screen_scale = 1.0;
     SDL_Rect screen_scale_adjust;
+
 };
 
 #endif // IMAGEVIEW_H

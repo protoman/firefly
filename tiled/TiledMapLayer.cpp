@@ -43,6 +43,9 @@ bool TiledMapLayer::init(const tmx::Map& map, uint32_t layerIndex, const std::ve
         if (layers[layer_i]->getType() == tmx::Layer::Type::Tile) {
             layer_n = layer_i;
         }
+        if (layers[layer_i]->getType() == tmx::Layer::Type::Image) {
+            std::cout << "layer[" << layer_i << "].type = Image" << std::endl;
+        }
     }
     if (layer_n == -1) {
         return false;

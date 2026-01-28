@@ -3,6 +3,7 @@
 #include "GameManager.h"
 #include "objects/GameObject.h"
 #include "collision_detection.h"
+#include "data/sharedmapdata.h"
 
 MapController::MapController()
 {
@@ -132,7 +133,18 @@ void MapController::set_scroll_to_bottom()
 void MapController::show()
 {
     //std::cout << "MAP::show - scroll.x[" << scroll.x << "]" << std::endl;
-    drawLayers(false);
+    //drawLayers(false);
+
+    // this will replace most of the stuff below
+    for (auto const& item : map_data::SharedMapData::get_instance()->layer_order_map) {
+        if (item.second == map_data::map_layer_type_image) {
+            //std::cout << "MAP::SHOW - layer[" << item.first << "]" << std::endl;
+            show_image_layer(item.first);
+        }
+    }
+
+
+
     if (get_map_gfx_mode() == SCREEN_GFX_MODE_BACKGROUND) {
         Draw::get_instance()->show_gfx();
     }
@@ -164,6 +176,91 @@ void MapController::show()
     show_enemies();
 
     updated_visited_room();
+}
+
+void MapController::show_image_layer(std::string layer_name)
+{
+    int pos_x = map_data::SharedMapData::get_instance()->layer_data_map[layer_name].current_pos_x;
+    int pos_y = map_data::SharedMapData::get_instance()->layer_data_map[layer_name].current_pos_y;
+    int img_w = map_data::SharedMapData::get_instance()->layer_data_map[layer_name].image_size.width;
+    int img_h = map_data::SharedMapData::get_instance()->layer_data_map[layer_name].image_size.height;
+
+    //ImageView::get_instance()->renderTexturePortionAt(0, 0, img_w, img_h, pos_x, pos_y, map_data::SharedMapData::get_instance()->layer_data_map[layer_name].texture);
+    if (!map_data::SharedMapData::get_instance()->layer_data_map[layer_name].image_data.is_null()) {
+        //ImageView::get_instance()->renderTexturePortionAt(0, 0, img_w, img_h, 0, 0, map_data::SharedMapData::get_instance()->layer_data_map[layer_name].image_data.texture);
+
+
+        // TODO - IURI - must take in account the scrolling
+        unsigned int repeat_y_n = 1;
+        if (map_data::SharedMapData::get_instance()->layer_data_map[layer_name].repeat_y) {
+            repeat_y_n = AREA_H/img_h;
+            if (AREA_H % img_h) {
+                repeat_y_n++;
+            }
+        }
+
+        unsigned int repeat_x_n = 1;
+        if (map_data::SharedMapData::get_instance()->layer_data_map[layer_name].repeat_x) {
+            repeat_x_n = RES_W/img_w;
+            if (RES_W % img_w) {
+                repeat_x_n++;
+            }
+        }
+
+        int current_pos_x = map_data::SharedMapData::get_instance()->layer_data_map[layer_name].current_pos_x;
+        int current_pos_y = map_data::SharedMapData::get_instance()->layer_data_map[layer_name].current_pos_y;
+
+        std::cout << ">>>> MAP::show_image_layer[" << layer_name << "] - repeat-x[" << repeat_x_n << "], repeat-y[" << repeat_y_n << "]" << std::endl;
+
+        for (unsigned int j=0; j<repeat_y_n; j++) {
+            for (unsigned int i=0; i<repeat_x_n; i++) {
+                ImageView::get_instance()->renderTexturePortionAt(0, 0, img_w, img_h, current_pos_x + (i * img_w), current_pos_y + (j*img_h), map_data::SharedMapData::get_instance()->layer_data_map[layer_name].image_data.texture);
+            }
+        }
+
+        /*
+        for (unsigned int j=0; j<repeat_y_n; j++) {
+            // draw leftmost part
+            ImageView::get_instance()->renderTexturePortionAt(0, 0, img_w, img_h, x1, y1 + (j*img_h), map_data::SharedMapData::get_instance()->layer_data_map[layer_name].image_data.texture);
+            render_layer(x1, y1 + (j*img_h), map_data::SharedMapData::get_instance()->layer_data_map[layer_name].image_data.texture);
+            // draw rightmost part, if needed
+
+            if (abs(it->second.pos.x) > RES_W) {
+                //std::cout << "### MUST DRAW SECOND BG-POS-LEFT ###" << std::endl;
+                float bg_pos_x = RES_W - (abs(x1)-RES_W);
+                ImageView::get_instance()->renderTexturePortionAt(0, 0, img_w, img_h, bg_pos_x, y1+(j*img_h), map_data::SharedMapData::get_instance()->layer_data_map[layer_name].image_data.texture);
+                render_layer(bg_pos_x, y1 + (j*img_h), map_data::SharedMapData::get_instance()->layer_data_map[layer_name].image_data.texture);
+            }  else if (img_w - abs(it->second.pos.x) < RES_W) {
+                int repeat_x_n = 1;
+                if (map_data::SharedMapData::get_instance()->layer_data_map[layer_name].repeat_x) {
+                    int repeat_x_n = RES_W/img_w;
+                }
+                //std::cout << ">>>>>>>>>>>>>> repeat_x_n[" << repeat_x_n << "]" << std::endl;
+                for (unsigned int i=0; i<repeat_x_n; i++) {
+                    //std::cout << "### MUST DRAW SECOND BG-POS-RIGHT ###" << std::endl;
+                    float bg_pos_x = img_w - (int)abs(it->second.pos.x) + i*img_w;
+                    render_layer(bg_pos_x, y1 + (j*img_h), map_data::SharedMapData::get_instance()->layer_data_map[layer_name].image_data.texture);
+                    //ImageView::get_instance()->renderTexturePortionAt(0, 0, surface_bg->surface->w, surface_bg->surface->h, bg_pos_x, y1+(j*surface_bg->surface->h), surface_bg->texture);
+                }
+            }
+        }
+        */
+    }
+
+
+    // TODO - IURI - repeat x and y
+
+    // TODO - draw layers
+    /*
+        if (surface_bg->surface != nullptr && surface_bg->surface->w > 0) {
+
+        }
+        */
+}
+
+void MapController::show_tileset_layer(std::string layer_name)
+{
+
 }
 
 void MapController::updated_visited_room()
@@ -800,6 +897,17 @@ void MapController::incScrollValue(float xinc, float yinc)
 
 void MapController::changeLayerScroll(int x_change, int y_change)
 {
+    for (auto const& item : map_data::SharedMapData::get_instance()->layer_order_map) {
+        if (item.second == map_data::map_layer_type_image) {
+            float layer_speed_x = map_data::SharedMapData::get_instance()->layer_data_map[item.first].parallax_x;
+            map_data::SharedMapData::get_instance()->layer_data_map[item.first].current_pos_x -= x_change*layer_speed_x;
+            float layer_speed_y = map_data::SharedMapData::get_instance()->layer_data_map[item.first].parallax_y;
+            map_data::SharedMapData::get_instance()->layer_data_map[item.first].current_pos_y -= y_change*layer_speed_y;
+        }
+    }
+
+    // DEPRECATED //
+    /*
     file_v6_style& style = get_style();
     for (std::map<unsigned int, st_background>::iterator it = imageLayerMap.begin(); it != imageLayerMap.end(); ++it) {
         unsigned int bg_n = it->first;
@@ -812,7 +920,7 @@ void MapController::changeLayerScroll(int x_change, int y_change)
             layerScrollMap.at(bg_n).pos.x -= ((float)x_change*layer_speed);
         }
     }
-
+    */
 }
 
 
@@ -984,42 +1092,6 @@ void MapController::drawLayers(bool isFg)
         float y1 = it->second.pos.y + bg_ref.adjust_y;
 
 
-        if (surface_bg->surface != nullptr && surface_bg->surface->w > 0) {
-            int repeat_y_n = 1;
-            if (bg_ref.repeatY) {
-                repeat_y_n = AREA_H/surface_bg->surface->h;
-                if (AREA_H % surface_bg->surface->h) {
-                    repeat_y_n++;
-                }
-            }
-
-
-            for (unsigned int j=0; j<repeat_y_n; j++) {
-                // draw leftmost part
-                //ImageView::get_instance()->renderTexturePortionAt(0, 0, surface_bg->surface->w, surface_bg->surface->h, x1, y1+(j*surface_bg->surface->h), surface_bg->texture);
-                render_layer(x1, y1+(j*surface_bg->surface->h), surface_bg);
-                // draw rightmost part, if needed
-
-                if (abs(it->second.pos.x) > RES_W) {
-                    //std::cout << "### MUST DRAW SECOND BG-POS-LEFT ###" << std::endl;
-                    float bg_pos_x = RES_W - (abs(x1)-RES_W);
-                    //ImageView::get_instance()->renderTexturePortionAt(0, 0, surface_bg->surface->w, surface_bg->surface->h, bg_pos_x, y1+(j*surface_bg->surface->h), surface_bg->texture);
-                    render_layer(bg_pos_x, y1+(j*surface_bg->surface->h), surface_bg);
-                }  else if (surface_bg->surface->w - abs(it->second.pos.x) < RES_W) {
-                    int repeat_x_n = 1;
-                    if (bg_ref.repeatX) {
-                        int repeat_x_n = RES_W/surface_bg->surface->w;
-                    }
-                    //std::cout << ">>>>>>>>>>>>>> repeat_x_n[" << repeat_x_n << "]" << std::endl;
-                    for (unsigned int i=0; i<repeat_x_n; i++) {
-                        //std::cout << "### MUST DRAW SECOND BG-POS-RIGHT ###" << std::endl;
-                        float bg_pos_x = surface_bg->surface->w - (int)abs(it->second.pos.x) + i*surface_bg->surface->w;
-                        render_layer(bg_pos_x, y1+(j*surface_bg->surface->h), surface_bg);
-                        //ImageView::get_instance()->renderTexturePortionAt(0, 0, surface_bg->surface->w, surface_bg->surface->h, bg_pos_x, y1+(j*surface_bg->surface->h), surface_bg->texture);
-                    }
-                }
-            }
-        }
     }
 }
 

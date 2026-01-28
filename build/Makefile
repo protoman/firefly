@@ -60,6 +60,7 @@ SOURCES       = ../GameManager.cpp \
 		../character/custom/ai_boss_001.cpp \
 		../character/gamenpc.cpp \
 		../character/movement/moveslopes.cpp \
+		../data/sharedmapdata.cpp \
 		../game_data.cpp \
 		../main.cpp \
 		../text/i18ntext.cpp \
@@ -112,6 +113,7 @@ OBJECTS       = GameManager.o \
 		ai_boss_001.o \
 		gamenpc.o \
 		moveslopes.o \
+		sharedmapdata.o \
 		game_data.o \
 		main.o \
 		i18ntext.o \
@@ -249,6 +251,9 @@ DIST          = ../docs/TODO \
 		character/custom/ai_boss_001.h \
 		character/gamenpc.h \
 		character/movement/moveslopes.h \
+		data/sharedmapdata.h \
+		data/st_color.hpp \
+		data/st_imageData.hpp \
 		file/v0/file_area_v0.h \
 		file/v4/file_save_v4.h \
 		file/v5/struct_file_game_area_map.h \
@@ -322,6 +327,7 @@ DIST          = ../docs/TODO \
 		../character/custom/ai_boss_001.cpp \
 		../character/gamenpc.cpp \
 		../character/movement/moveslopes.cpp \
+		../data/sharedmapdata.cpp \
 		../game_data.cpp \
 		../main.cpp \
 		../text/i18ntext.cpp \
@@ -593,6 +599,8 @@ GameManager.o: ../GameManager.cpp ../GameManager.h \
 		../tiled/TiledMapLayer.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -684,6 +692,7 @@ GameManager.o: ../GameManager.cpp ../GameManager.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../character/GameNpc.h \
 		../view/animation.h \
 		../view/timerview.h \
@@ -707,6 +716,8 @@ ability_name.o: ../aux_tools/ability_name.cpp ../aux_tools/ability_name.h \
 Box2dManager.o: ../box2d/Box2dManager.cpp ../box2d/Box2dManager.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -723,6 +734,8 @@ GameEnemy.o: ../character/GameEnemy.cpp ../character/GameEnemy.h \
 		../character/character.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -816,6 +829,7 @@ GameEnemy.o: ../character/GameEnemy.cpp ../character/GameEnemy.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../character/GameNpc.h \
 		../view/animation.h \
 		../view/timerview.h \
@@ -833,6 +847,8 @@ GameNpc.o: ../character/GameNpc.cpp ../character/GameNpc.h \
 		../character/character.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -913,6 +929,7 @@ GameNpc.o: ../character/GameNpc.cpp ../character/GameNpc.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../view/timerview.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o GameNpc.o ../character/GameNpc.cpp
 
@@ -920,6 +937,8 @@ ai_boss_001.o: ../character/custom/ai_boss_001.cpp ../character/artificial_intel
 		../character/character.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -957,6 +976,7 @@ ai_boss_001.o: ../character/custom/ai_boss_001.cpp ../character/artificial_intel
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
+		../data/sharedmapdata.h \
 		../view/timerview.h \
 		../GameManager.h \
 		../tiled/TiledMap.h \
@@ -1031,6 +1051,8 @@ gamenpc.o: ../character/gamenpc.cpp ../character/gamenpc.h \
 		../character/character.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1065,6 +1087,8 @@ gamenpc.o: ../character/gamenpc.cpp ../character/gamenpc.h \
 moveslopes.o: ../character/movement/moveslopes.cpp ../character/movement/moveslopes.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1159,6 +1183,7 @@ moveslopes.o: ../character/movement/moveslopes.cpp ../character/movement/moveslo
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../character/GameNpc.h \
 		../view/animation.h \
 		../view/timerview.h \
@@ -1171,6 +1196,23 @@ moveslopes.o: ../character/movement/moveslopes.cpp ../character/movement/moveslo
 		../text/npc_dialog_manager.h \
 		../box2d/Box2dManager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moveslopes.o ../character/movement/moveslopes.cpp
+
+sharedmapdata.o: ../data/sharedmapdata.cpp ../data/sharedmapdata.h \
+		../data/st_common.h \
+		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
+		../cereal/cereal.hpp \
+		../cereal/macros.hpp \
+		../cereal/details/traits.hpp \
+		../cereal/access.hpp \
+		../cereal/specialize.hpp \
+		../cereal/details/helpers.hpp \
+		../cereal/details/static_object.hpp \
+		../cereal/types/base_class.hpp \
+		../cereal/details/polymorphic_impl_fwd.hpp \
+		../cereal/types/common.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sharedmapdata.o ../data/sharedmapdata.cpp
 
 game_data.o: ../game_data.cpp ../game_data.h \
 		../cereal/cereal.hpp \
@@ -1217,6 +1259,8 @@ game_data.o: ../game_data.cpp ../game_data.h \
 		../file/v0/file_game_v0.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/types/map.hpp \
 		../cereal/types/concepts/pair_associative_container.hpp \
 		../file/v0/file_area_v0.h \
@@ -1248,6 +1292,8 @@ main.o: ../main.cpp ../data/shareddata.h \
 		../file/v4/file_config_v4.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1341,6 +1387,7 @@ main.o: ../main.cpp ../data/shareddata.h \
 		../objects/GameObject.h \
 		../controller/mapcontroller.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../character/GameNpc.h \
 		../view/animation.h \
 		../view/timerview.h \
@@ -1360,6 +1407,8 @@ i18ntext.o: ../text/i18ntext.cpp ../text/i18ntext.h \
 		../data/shareddata.h \
 		../file/v4/file_config_v4.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1387,6 +1436,8 @@ i18ntext.o: ../text/i18ntext.cpp ../text/i18ntext.h \
 npc_dialog_manager.o: ../text/npc_dialog_manager.cpp ../text/npc_dialog_manager.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1482,6 +1533,7 @@ npc_dialog_manager.o: ../text/npc_dialog_manager.cpp ../text/npc_dialog_manager.
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../character/GameNpc.h \
 		../view/animation.h \
 		../view/timerview.h \
@@ -1499,6 +1551,8 @@ TiledMap.o: ../tiled/TiledMap.cpp ../tiled/TiledMap.h \
 		../tiled/TiledMapLayer.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1508,13 +1562,16 @@ TiledMap.o: ../tiled/TiledMap.cpp ../tiled/TiledMap.h \
 		../cereal/details/static_object.hpp \
 		../cereal/types/base_class.hpp \
 		../cereal/details/polymorphic_impl_fwd.hpp \
-		../cereal/types/common.hpp
+		../cereal/types/common.hpp \
+		../data/sharedmapdata.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o TiledMap.o ../tiled/TiledMap.cpp
 
 TiledMapLayer.o: ../tiled/TiledMapLayer.cpp ../tiled/TiledMapLayer.h \
 		../tiled/TiledMapTexture.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1540,7 +1597,8 @@ TiledMapLayer.o: ../tiled/TiledMapLayer.cpp ../tiled/TiledMapLayer.h \
 		../file/v6/file_style_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
-		../text/i18ntext.h
+		../text/i18ntext.h \
+		../data/sharedmapdata.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o TiledMapLayer.o ../tiled/TiledMapLayer.cpp
 
 TiledMapTexture.o: ../tiled/TiledMapTexture.cpp ../tiled/TiledMapTexture.h \
@@ -1550,6 +1608,8 @@ TiledMapTexture.o: ../tiled/TiledMapTexture.cpp ../tiled/TiledMapTexture.h \
 ingame_presentation.o: ../view/ingame_presentation.cpp ../view/ingame_presentation.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1577,6 +1637,7 @@ ingame_presentation.o: ../view/ingame_presentation.cpp ../view/ingame_presentati
 		../file/v6/file_style_v6.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
+		../data/sharedmapdata.h \
 		../view/soundview.h \
 		../view/timerview.h \
 		../controller/inputcontroller.h \
@@ -1629,6 +1690,8 @@ ingame_presentation.o: ../view/ingame_presentation.cpp ../view/ingame_presentati
 textview.o: ../view/textview.cpp ../view/textview.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1659,6 +1722,8 @@ textview.o: ../view/textview.cpp ../view/textview.h \
 imageview.o: ../view/imageview.cpp ../view/imageview.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1684,6 +1749,7 @@ imageview.o: ../view/imageview.cpp ../view/imageview.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
+		../data/sharedmapdata.h \
 		../view/timerview.h \
 		../view/textview.h \
 		../game_data.h \
@@ -1735,6 +1801,8 @@ shareddata.o: ../data/shareddata.cpp ../data/shareddata.h \
 		../file/v4/file_config_v4.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1765,6 +1833,8 @@ soundview.o: ../view/soundview.cpp ../view/soundview.h \
 		../file/v4/file_config_v4.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1794,6 +1864,8 @@ inputcontroller.o: ../controller/inputcontroller.cpp ../controller/inputcontroll
 		../file/v4/file_config_v4.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1832,6 +1904,8 @@ fps_control.o: ../aux_tools/fps_control.cpp ../aux_tools/fps_control.h \
 		../view/textview.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1900,6 +1974,8 @@ file_io.o: ../file/file_io.cpp ../file/file_io.h \
 		../file/format.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1965,6 +2041,8 @@ fio_scenes.o: ../file/fio_scenes.cpp ../file/fio_scenes.h \
 		../file/v4/file_scene_v4.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -1996,6 +2074,8 @@ fio_strings.o: ../file/fio_strings.cpp ../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -2059,6 +2139,8 @@ fio_strings.o: ../file/fio_strings.cpp ../file/fio_strings.h \
 mapcontroller.o: ../controller/mapcontroller.cpp ../view/animation.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -2087,6 +2169,7 @@ mapcontroller.o: ../controller/mapcontroller.cpp ../view/animation.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../character/GameEnemy.h \
 		../character/character.h \
 		../file/format/st_characterState.h \
@@ -2105,7 +2188,6 @@ mapcontroller.o: ../controller/mapcontroller.cpp ../view/animation.h \
 		../character/GameNpc.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
-		../objects/GameObject.h \
 		../view/draw.h \
 		../view/soundview.h \
 		../controller/inputcontroller.h \
@@ -2159,6 +2241,7 @@ mapcontroller.o: ../controller/mapcontroller.cpp ../view/animation.h \
 		../strings_map.h \
 		../view/option_picker.h \
 		../options/key_map.h \
+		../objects/GameObject.h \
 		../class_config.h \
 		../scenes/dialogs.h \
 		../aux_tools/fps_control.h \
@@ -2170,6 +2253,8 @@ mapcontroller.o: ../controller/mapcontroller.cpp ../view/animation.h \
 animation.o: ../view/animation.cpp ../view/animation.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -2186,6 +2271,8 @@ animation.o: ../view/animation.cpp ../view/animation.h \
 collision_detection.o: ../collision_detection.cpp ../collision_detection.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -2209,6 +2296,8 @@ artificial_inteligence.o: ../character/artificial_inteligence.cpp ../character/a
 		../character/character.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -2291,6 +2380,7 @@ artificial_inteligence.o: ../character/artificial_inteligence.cpp ../character/a
 		../file/v5/struct_file_game_area_map.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
+		../data/sharedmapdata.h \
 		../view/soundview.h \
 		../GameManager.h \
 		../tiled/TiledMap.h \
@@ -2318,6 +2408,8 @@ artificial_inteligence.o: ../character/artificial_inteligence.cpp ../character/a
 character.o: ../character/character.cpp ../character/character.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -2412,6 +2504,7 @@ character.o: ../character/character.cpp ../character/character.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../character/GameNpc.h \
 		../view/animation.h \
 		../view/timerview.h \
@@ -2429,6 +2522,8 @@ character_animation.o: ../character/character_animation.cpp ../character/charact
 		../defines.h \
 		../file/v4/file_game_v4.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -2497,6 +2592,7 @@ character_animation.o: ../character/character_animation.cpp ../character/charact
 		../file/v5/struct_file_game_area_map.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
+		../data/sharedmapdata.h \
 		../view/timerview.h \
 		../view/draw.h \
 		../view/soundview.h \
@@ -2507,6 +2603,8 @@ classplayer.o: ../character/classplayer.cpp ../character/classplayer.h \
 		../character/character.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -2548,12 +2646,12 @@ classplayer.o: ../character/classplayer.cpp ../character/classplayer.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
+		../data/sharedmapdata.h \
 		../view/soundview.h \
 		../controller/mapcontroller.h \
 		../character/GameNpc.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
-		../objects/GameObject.h \
 		../view/animation.h \
 		../view/timerview.h \
 		../view/draw.h \
@@ -2606,6 +2704,7 @@ classplayer.o: ../character/classplayer.cpp ../character/classplayer.h \
 		../strings_map.h \
 		../view/option_picker.h \
 		../options/key_map.h \
+		../objects/GameObject.h \
 		../class_config.h \
 		../scenes/dialogs.h \
 		../aux_tools/fps_control.h \
@@ -2617,6 +2716,8 @@ draw.o: ../view/draw.cpp ../view/draw.h \
 		../view/imageview.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -2642,6 +2743,7 @@ draw.o: ../view/draw.cpp ../view/draw.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
+		../data/sharedmapdata.h \
 		../view/soundview.h \
 		../view/timerview.h \
 		../controller/inputcontroller.h \
@@ -2728,6 +2830,8 @@ draw.o: ../view/draw.cpp ../view/draw.h \
 
 gfx_sin_wave.o: ../view/gfx_sin_wave.cpp ../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -2755,12 +2859,15 @@ gfx_sin_wave.o: ../view/gfx_sin_wave.cpp ../data/st_common.h \
 		../file/v6/file_object_v6.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
+		../data/sharedmapdata.h \
 		../view/timerview.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gfx_sin_wave.o ../view/gfx_sin_wave.cpp
 
 option_picker.o: ../view/option_picker.cpp ../view/option_picker.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -2794,6 +2901,7 @@ option_picker.o: ../view/option_picker.cpp ../view/option_picker.h \
 		../controller/inputcontroller.h \
 		../view/timerview.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../view/soundview.h \
 		../view/textview.h \
 		../view/draw.h \
@@ -2841,6 +2949,8 @@ option_picker.o: ../view/option_picker.cpp ../view/option_picker.h \
 projectilelib.o: ../projectilelib.cpp ../projectilelib.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -2936,6 +3046,7 @@ projectilelib.o: ../projectilelib.cpp ../projectilelib.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../character/GameNpc.h \
 		../view/animation.h \
 		../view/timerview.h \
@@ -2956,6 +3067,8 @@ sceneslib.o: ../sceneslib.cpp ../sceneslib.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -3029,6 +3142,7 @@ sceneslib.o: ../sceneslib.cpp ../sceneslib.h \
 		../view/timerview.h \
 		../view/draw.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../view/soundview.h \
 		../controller/inputcontroller.h \
 		../view/gfx_sin_wave.h \
@@ -3069,6 +3183,8 @@ strings_map.o: ../strings_map.cpp ../strings_map.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -3087,6 +3203,8 @@ game_menu.o: ../scenes/game_menu.cpp ../scenes/game_menu.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -3159,6 +3277,7 @@ game_menu.o: ../scenes/game_menu.cpp ../scenes/game_menu.h \
 		../text/i18ntext.h \
 		../view/timerview.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../view/draw.h \
 		../view/soundview.h \
 		../view/textview.h \
@@ -3196,6 +3315,8 @@ game_menu.o: ../scenes/game_menu.cpp ../scenes/game_menu.h \
 class_config.o: ../class_config.cpp ../class_config.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -3241,6 +3362,7 @@ class_config.o: ../class_config.cpp ../class_config.h \
 		../controller/inputcontroller.h \
 		../view/timerview.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../view/soundview.h \
 		../view/textview.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o class_config.o ../class_config.cpp
@@ -3249,6 +3371,8 @@ key_map.o: ../options/key_map.cpp ../options/key_map.h \
 		../file/format.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -3279,6 +3403,7 @@ key_map.o: ../options/key_map.cpp ../options/key_map.h \
 		../view/option_picker.h \
 		../file/file_io.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../view/textview.h \
 		../view/draw.h \
 		../view/soundview.h \
@@ -3331,6 +3456,8 @@ android_game_services.o: ../ports/android/android_game_services.cpp ../ports/and
 		../file/file_io.h \
 		../file/format.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -3352,6 +3479,8 @@ android_game_services.o: ../ports/android/android_game_services.cpp ../ports/and
 GameObject.o: ../objects/GameObject.cpp ../objects/GameObject.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -3379,6 +3508,7 @@ GameObject.o: ../objects/GameObject.cpp ../objects/GameObject.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../character/GameEnemy.h \
 		../character/character.h \
 		../file/format/st_characterState.h \
@@ -3462,6 +3592,8 @@ GameObject.o: ../objects/GameObject.cpp ../objects/GameObject.h \
 dialogs.o: ../scenes/dialogs.cpp ../scenes/dialogs.h \
 		../defines.h \
 		../data/st_common.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -3493,6 +3625,7 @@ dialogs.o: ../scenes/dialogs.cpp ../scenes/dialogs.h \
 		../view/option_picker.h \
 		../file/file_io.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../view/textview.h \
 		../strings_map.h \
 		../file/fio_strings.h \
@@ -3575,6 +3708,8 @@ pausemenu.o: ../options/pausemenu.cpp ../options/pausemenu.h \
 		../file/v4/file_config_v4.h \
 		../data/st_common.h \
 		../defines.h \
+		../data/st_imageData.hpp \
+		../data/st_color.hpp \
 		../cereal/cereal.hpp \
 		../cereal/macros.hpp \
 		../cereal/details/traits.hpp \
@@ -3601,6 +3736,7 @@ pausemenu.o: ../options/pausemenu.cpp ../options/pausemenu.h \
 		../text/i18ntext.h \
 		../view/timerview.h \
 		../view/imageview.h \
+		../data/sharedmapdata.h \
 		../view/draw.h \
 		../view/soundview.h \
 		../game_data.h \

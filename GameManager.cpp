@@ -259,6 +259,7 @@ void GameManager::initGame()
     std::string tiled_map_filename = SharedData::get_instance()->FILEPATH + "/data/tiled/swamp.tmx";
     tiled_map.initialize(tiled_map_filename, gRenderer);
     box2d_manager.add_stactic_body_rectangles(tiled_map.get_tiles_collision(0));
+    ImageView::get_instance()->load_layers_data();
 
     init_map_and_player_to_bottom();
     InGamePresentation::get_instance()->start_show_ready();
@@ -366,6 +367,9 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
             mapController.move_objects(TimerView::get_instance()->is_paused());
         }
 
+        // TODO - move this to map-controller
+        st_color bg_color = tiled_map.get_map_background_color();
+        ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, bg_color.r, bg_color.g, bg_color.b);
         if (_dark_mode == false) {
             mapController.show();
         }

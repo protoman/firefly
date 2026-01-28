@@ -49,6 +49,7 @@ public:
 
     st_game_config game_config;
     std::string FILEPATH = std::string("./games/FireFly/");
+    std::string FILEDATAPATH = std::string("./games/FireFly/data");
     std::string GAMEPATH = std::string("./");
     std::string GAMENAME = std::string("FireFly");
     std::string SAVEPATH = std::string("/home/iuri/.firefly"); // @TODO: use the same as in RockDroid

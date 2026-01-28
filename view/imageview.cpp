@@ -395,6 +395,23 @@ void ImageView::init()
     texture_render_target = SDL_CreateTexture( gRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, RES_W, AREA_H);
     hud_texture_render_target = SDL_CreateTexture( gRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, RES_W, HUD_H);
 
+
+
+}
+
+void ImageView::load_layers_data()
+{
+    // MAP-LAYERS //
+    //std::cout << ">>>>> ImageView::init - loadeding layers..." << std::endl;
+    for (auto const& item : map_data::SharedMapData::get_instance()->layer_order_map) {
+        if (item.second == map_data::map_layer_type_image) {
+            std::string filename = map_data::SharedMapData::get_instance()->layer_data_map[item.first].image_filename;
+            map_data::SharedMapData::get_instance()->layer_data_map[item.first].image_data = imageFromFile(filename);
+            int image_alpha = map_data::SharedMapData::get_instance()->layer_data_map[item.first].opacity * 255;
+            set_surface_alpha(image_alpha, map_data::SharedMapData::get_instance()->layer_data_map[item.first].image_data);
+            std::cout << ">>>>> ImageView::init - loaded layer[" << item.first << "]" << std::endl;
+        }
+    }
 }
 
 

@@ -9,7 +9,7 @@
 
 #include "character/GameEnemy.h"
 #include "character/GameNpc.h"
-#include "objects/GameObject.h"
+
 #include "view/animation.h"
 #include "view/draw.h"
 
@@ -78,7 +78,12 @@ class MapController
 public:
     MapController();
     void loadMap();
+
     void show();
+    void show_image_layer(std::string layer_name);
+    void show_tileset_layer(std::string layer_name);
+
+
     void updated_visited_room();
     int get_level_from_room(int x, int y);
 
