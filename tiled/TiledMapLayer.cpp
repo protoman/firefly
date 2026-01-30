@@ -199,5 +199,6 @@ void TiledMapLayer::draw(SDL_Renderer *renderer, st_float_position map_scroll) c
 
 std::vector<st_rectangle> TiledMapLayer::get_tiles_collision_rectangles_list()
 {
+    std::cout << "TiledMap::get_tiles_collision_rectangles_list - number of tiles [" << tiles_collision_rectangles_list.size() << "]" << std::endl;
     return tiles_collision_rectangles_list;
 }

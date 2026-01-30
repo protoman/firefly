@@ -210,11 +210,18 @@ void MapController::show_image_layer(std::string layer_name)
         int current_pos_x = map_data::SharedMapData::get_instance()->layer_data_map[layer_name].current_pos_x;
         int current_pos_y = map_data::SharedMapData::get_instance()->layer_data_map[layer_name].current_pos_y;
 
-        std::cout << ">>>> MAP::show_image_layer[" << layer_name << "] - repeat-x[" << repeat_x_n << "], repeat-y[" << repeat_y_n << "]" << std::endl;
+        //std::cout << ">>>> MAP::show_image_layer[" << layer_name << "] - repeat-x[" << repeat_x_n << "], repeat-y[" << repeat_y_n << "]" << std::endl;
 
         for (unsigned int j=0; j<repeat_y_n; j++) {
             for (unsigned int i=0; i<repeat_x_n; i++) {
+                // draw the right part on the left
+                int left_part_w = current_pos_x;
                 ImageView::get_instance()->renderTexturePortionAt(0, 0, img_w, img_h, current_pos_x + (i * img_w), current_pos_y + (j*img_h), map_data::SharedMapData::get_instance()->layer_data_map[layer_name].image_data.texture);
+
+                // draw the left part on the right
+                int right_part_pos_x = img_w + current_pos_x;
+                //std::cout << "MAP::show_image_layer - current_pos_x[" << current_pos_x << "], right-part-layer[" << layer_name << "].x[" << right_part_pos_x << "]" << std::endl;
+                ImageView::get_instance()->renderTexturePortionAt(0, 0, img_w, img_h, right_part_pos_x, current_pos_y + (j*img_h), map_data::SharedMapData::get_instance()->layer_data_map[layer_name].image_data.texture);
             }
         }
 
@@ -900,11 +907,29 @@ void MapController::changeLayerScroll(int x_change, int y_change)
     for (auto const& item : map_data::SharedMapData::get_instance()->layer_order_map) {
         if (item.second == map_data::map_layer_type_image) {
             float layer_speed_x = map_data::SharedMapData::get_instance()->layer_data_map[item.first].parallax_x;
-            map_data::SharedMapData::get_instance()->layer_data_map[item.first].current_pos_x -= x_change*layer_speed_x;
+            map_data::SharedMapData::get_instance()->layer_data_map[item.first].current_pos_x -= x_change * layer_speed_x;
             float layer_speed_y = map_data::SharedMapData::get_instance()->layer_data_map[item.first].parallax_y;
-            map_data::SharedMapData::get_instance()->layer_data_map[item.first].current_pos_y -= y_change*layer_speed_y;
+            map_data::SharedMapData::get_instance()->layer_data_map[item.first].current_pos_y -= y_change * layer_speed_y;
+
+            int diff_x = RES_W + map_data::SharedMapData::get_instance()->layer_data_map[item.first].current_pos_x;
+            //std::cout << "MAP::changeLayerScroll - diff_x[" << diff_x << "]" << std::endl;
+            if (diff_x <= 0) {
+                map_data::SharedMapData::get_instance()->layer_data_map[item.first].current_pos_x = diff_x;
+            } else if (diff_x > RES_W) {
+                map_data::SharedMapData::get_instance()->layer_data_map[item.first].current_pos_x = -RES_W;
+            }
+
+            int diff_y = RES_H + map_data::SharedMapData::get_instance()->layer_data_map[item.first].current_pos_y;
+            //std::cout << "MAP::changeLayerScroll - diff_y[" << diff_y << "]" << std::endl;
+            if (diff_y <= 0) {
+                map_data::SharedMapData::get_instance()->layer_data_map[item.first].current_pos_y = diff_y;
+            } else if (diff_y > RES_W) {
+                map_data::SharedMapData::get_instance()->layer_data_map[item.first].current_pos_y = -RES_H;
+            }
+
         }
     }
+
 
     // DEPRECATED //
     /*

@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "box2d/box2ddebugdraw.h"
 #include <map>
 #include <vector>
 #include <sstream>
@@ -230,6 +231,8 @@ private:
     npcDialogManager npc_dialog_manager;
 
     Box2dManager box2d_manager;
+
+    Box2dDebugDraw* box2dDebugDraw;
 
 #ifdef PSP
     psp_ram _ram_counter;

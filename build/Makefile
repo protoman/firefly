@@ -16,7 +16,7 @@ CC            = x86_64-linux-gnu-gcc
 CXX           = x86_64-linux-gnu-g++
 DEFINES       = -DQT_QML_DEBUG
 CFLAGS        = -pipe -g -Wall -Wextra -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -DLINUX -DPC -Wno-reorder -Wno-ignored-qualifiers -fpermissive -Werror=return-type -I/usr/include/SDL2 -g -std=gnu++1y -Wall -Wextra -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -DLINUX -g -DPC -Wno-reorder -Wno-ignored-qualifiers -fpermissive -Werror=return-type -I/usr/include/SDL2 -g -std=gnu++1y -Wall -Wextra -fPIC $(DEFINES)
 INCPATH       = -I../../firefly -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
@@ -55,6 +55,7 @@ OBJECTS_DIR   = ./
 SOURCES       = ../GameManager.cpp \
 		../aux_tools/ability_name.cpp \
 		../box2d/Box2dManager.cpp \
+		../box2d/box2ddebugdraw.cpp \
 		../character/GameEnemy.cpp \
 		../character/GameNpc.cpp \
 		../character/custom/ai_boss_001.cpp \
@@ -108,6 +109,7 @@ SOURCES       = ../GameManager.cpp \
 OBJECTS       = GameManager.o \
 		ability_name.o \
 		Box2dManager.o \
+		box2ddebugdraw.o \
 		GameEnemy.o \
 		GameNpc.o \
 		ai_boss_001.o \
@@ -246,6 +248,7 @@ DIST          = ../docs/TODO \
 		../../FireFlyGame.pro GameManager.h \
 		aux_tools/ability_name.h \
 		box2d/Box2dManager.h \
+		box2d/box2ddebugdraw.h \
 		character/GameEnemy.h \
 		character/GameNpc.h \
 		character/custom/ai_boss_001.h \
@@ -322,6 +325,7 @@ DIST          = ../docs/TODO \
 		file/v5/struct_file_map.h ../GameManager.cpp \
 		../aux_tools/ability_name.cpp \
 		../box2d/Box2dManager.cpp \
+		../box2d/box2ddebugdraw.cpp \
 		../character/GameEnemy.cpp \
 		../character/GameNpc.cpp \
 		../character/custom/ai_boss_001.cpp \
@@ -594,6 +598,7 @@ compiler_clean:
 ####### Compile
 
 GameManager.o: ../GameManager.cpp ../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -730,6 +735,9 @@ Box2dManager.o: ../box2d/Box2dManager.cpp ../box2d/Box2dManager.h \
 		../cereal/types/common.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Box2dManager.o ../box2d/Box2dManager.cpp
 
+box2ddebugdraw.o: ../box2d/box2ddebugdraw.cpp ../box2d/box2ddebugdraw.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o box2ddebugdraw.o ../box2d/box2ddebugdraw.cpp
+
 GameEnemy.o: ../character/GameEnemy.cpp ../character/GameEnemy.h \
 		../character/character.h \
 		../data/st_common.h \
@@ -814,6 +822,7 @@ GameEnemy.o: ../character/GameEnemy.cpp ../character/GameEnemy.h \
 		../file/v6/file_npc_state_v6.h \
 		../file/v6/file_object_v6.h \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -979,6 +988,7 @@ ai_boss_001.o: ../character/custom/ai_boss_001.cpp ../character/artificial_intel
 		../data/sharedmapdata.h \
 		../view/timerview.h \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -1101,6 +1111,7 @@ moveslopes.o: ../character/movement/moveslopes.cpp ../character/movement/moveslo
 		../cereal/types/common.hpp \
 		../file/v6/file_room_v6.h \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -1318,6 +1329,7 @@ main.o: ../main.cpp ../data/shareddata.h \
 		../file/v6/file_game_object_state.h \
 		../text/i18ntext.h \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -1449,6 +1461,7 @@ npc_dialog_manager.o: ../text/npc_dialog_manager.cpp ../text/npc_dialog_manager.
 		../cereal/details/polymorphic_impl_fwd.hpp \
 		../cereal/types/common.hpp \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -2232,6 +2245,7 @@ mapcontroller.o: ../controller/mapcontroller.cpp ../view/animation.h \
 		../aux_tools/exception_manager.h \
 		../file/v6/file_npc_state_v6.h \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -2383,6 +2397,7 @@ artificial_inteligence.o: ../character/artificial_inteligence.cpp ../character/a
 		../data/sharedmapdata.h \
 		../view/soundview.h \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -2437,6 +2452,7 @@ character.o: ../character/character.cpp ../character/character.h \
 		../file/v4/file_scene_v4.h \
 		../file/format/st_hitPoints.h \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -2696,6 +2712,7 @@ classplayer.o: ../character/classplayer.cpp ../character/classplayer.h \
 		../aux_tools/exception_manager.h \
 		../file/v6/file_npc_state_v6.h \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -2791,6 +2808,7 @@ draw.o: ../view/draw.cpp ../view/draw.h \
 		../file/v4/file_strings.h \
 		../file/v6/file_npc_state_v6.h \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -3028,6 +3046,7 @@ projectilelib.o: ../projectilelib.cpp ../projectilelib.h \
 		../file/v6/file_npc_state_v6.h \
 		../file/v6/file_object_v6.h \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -3149,6 +3168,7 @@ sceneslib.o: ../sceneslib.cpp ../sceneslib.h \
 		../view/textview.h \
 		../file/version.h \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -3283,6 +3303,7 @@ game_menu.o: ../scenes/game_menu.cpp ../scenes/game_menu.h \
 		../view/textview.h \
 		../scenes/dialogs.h \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -3573,6 +3594,7 @@ GameObject.o: ../objects/GameObject.cpp ../objects/GameObject.h \
 		../aux_tools/exception_manager.h \
 		../file/v6/file_npc_state_v6.h \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \
@@ -3631,6 +3653,7 @@ dialogs.o: ../scenes/dialogs.cpp ../scenes/dialogs.h \
 		../file/fio_strings.h \
 		../file/v4/file_strings.h \
 		../GameManager.h \
+		../box2d/box2ddebugdraw.h \
 		../tiled/TiledMap.h \
 		../tiled/TiledMapTexture.h \
 		../tiled/TiledMapLayer.h \

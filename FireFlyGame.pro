@@ -30,8 +30,8 @@ linux {
             -L/usr/lib \
             -I/usr/local/include/tmxlite \
             -I/usr/local/include/box2d/
-    QMAKE_CCFLAGS += -DLINUX -DPC -Wno-reorder -Wno-ignored-qualifiers -fpermissive -Werror=return-type
-    QMAKE_CXXFLAGS += -DLINUX -DPC -Wno-reorder -Wno-ignored-qualifiers -fpermissive -Werror=return-type -I/usr/include/SDL2
+    QMAKE_CCFLAGS += -DLINUX -g -DPC -Wno-reorder -Wno-ignored-qualifiers -fpermissive -Werror=return-type
+    QMAKE_CXXFLAGS += -DLINUX -g -DPC -Wno-reorder -Wno-ignored-qualifiers -fpermissive -Werror=return-type -I/usr/include/SDL2
 }
 
 
@@ -39,6 +39,7 @@ SOURCES += \
     GameManager.cpp \
     aux_tools/ability_name.cpp \
     box2d/Box2dManager.cpp \
+    box2d/box2ddebugdraw.cpp \
     character/GameEnemy.cpp \
     character/GameNpc.cpp \
     character/custom/ai_boss_001.cpp \
@@ -94,6 +95,7 @@ HEADERS += \
     GameManager.h \
     aux_tools/ability_name.h \
     box2d/Box2dManager.h \
+    box2d/box2ddebugdraw.h \
     character/GameEnemy.h \
     character/GameNpc.h \
     character/custom/ai_boss_001.h \

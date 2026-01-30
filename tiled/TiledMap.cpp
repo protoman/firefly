@@ -61,6 +61,7 @@ void TiledMap::draw(SDL_Renderer *renderer, st_float_position map_scroll)
 std::vector<st_rectangle> TiledMap::get_tiles_collision(int layer_n)
 {
     if (layer_n < 0 || layer_n >= renderLayers.size()) {
+        std::cout << "TiledMap::get_tiles_collision - no tiles" << std::endl;
         return std::vector<st_rectangle>();
     }
     return renderLayers.at(layer_n)->get_tiles_collision_rectangles_list();
@@ -88,6 +89,8 @@ void TiledMap::build_map_image_layer_data(const tmx::Layer::Ptr& layer)
     map_data::SharedMapData::get_instance()->layer_data_map[layer->getName()].opacity = layer->getOpacity();
     map_data::SharedMapData::get_instance()->layer_data_map[layer->getName()].shift_x = image_layer.getOffset().x;
     map_data::SharedMapData::get_instance()->layer_data_map[layer->getName()].shift_y = layer->getOffset().y;
+    map_data::SharedMapData::get_instance()->layer_data_map[layer->getName()].current_pos_x = image_layer.getOffset().x;
+    map_data::SharedMapData::get_instance()->layer_data_map[layer->getName()].current_pos_y = layer->getOffset().y;
     map_data::SharedMapData::get_instance()->layer_data_map[layer->getName()].parallax_x = layer->getParallaxFactor().x;
     map_data::SharedMapData::get_instance()->layer_data_map[layer->getName()].parallax_y = layer->getParallaxFactor().y;
     map_data::SharedMapData::get_instance()->layer_data_map[layer->getName()].repeat_x = image_layer.hasRepeatX();

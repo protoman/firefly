@@ -258,6 +258,11 @@ void GameManager::initGame()
     // IURI: IMPROVE LATER
     std::string tiled_map_filename = SharedData::get_instance()->FILEPATH + "/data/tiled/swamp.tmx";
     tiled_map.initialize(tiled_map_filename, gRenderer);
+
+    box2dDebugDraw = new Box2dDebugDraw(gRenderer);
+    box2dDebugDraw->drawShapes = false;
+    box2dDebugDraw->drawBounds = true;
+
     box2d_manager.add_stactic_body_rectangles(tiled_map.get_tiles_collision(0));
     ImageView::get_instance()->load_layers_data();
 
@@ -378,6 +383,16 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
 
         if (dialog_queue.size() == 0 && can_characters_move == true && SharedData::get_instance()->must_interrupt_character_execution == false) {
             player1.execute();
+            // TODO - move to another part of the code
+            //std::cout << "GAMEMANAGER::show_game.player1.getMoveCommands().right[" << player1.getMoveCommands().right << "]" << std::endl;
+            if (player1.getMoveCommands().right == 1) {
+                box2d_manager.change_player_position(st_float_position(2.0f, 0.0f));
+            } else if (player1.getMoveCommands().left == 1) {
+                box2d_manager.change_player_position(st_float_position(-2.0f, 0.0f));
+            }
+            if (player1.getMoveCommands().jump == 1) {
+                box2d_manager.player_jump();
+            }
             st_position p1_real_pos = get_player_relative_center_position();
             SharedData::get_instance()->lightpoint_list.push_back(st_light_point(p1_real_pos.x, p1_real_pos.y, LIGHT_POINT_COLOR_WHITE));
             mapController.move_enemies();
@@ -429,7 +444,11 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
         fps_manager.limit();
 
         st_rectangle box2d_player_pos = box2d_manager.get_player_box();
-        ImageView::get_instance()->clearScreenArea(box2d_player_pos.x, box2d_player_pos.y, box2d_player_pos.w, box2d_player_pos.h, 200, 0, 0);
+        box2d_manager.run_debug_draw(box2dDebugDraw);
+
+
+        st_float_position mapScroll = mapController.getMapScrolling();
+        ImageView::get_instance()->clearScreenArea(box2d_player_pos.x - mapScroll.x, box2d_player_pos.y - mapScroll.y, box2d_player_pos.w, box2d_player_pos.h, 200, 0, 0);
         TimerView::get_instance()->udelay(2000);
 
 
@@ -1532,6 +1551,7 @@ void GameManager::update_stage_scrolling()
     //std::cout << "p_pos.x: " << p_pos.x << std::endl;
     //if (p_pos.x < 0.0) {
     if (p_pos.x < -TILESIZE/2) {
+        std::cout << "GameManager::update_stage_scrolling.change_position_x" << std::endl;
         player1.change_position_x(1);
         // out of screen, probably because was pushed out on a autoscroll stage
         if (p_pos.x < -(TILESIZE-2)) {
@@ -1593,14 +1613,17 @@ void GameManager::show_player()
 
 void GameManager::set_player_position(st_position pos)
 {
+    std::cout << "#### GameManager::set_player_position" << std::endl;
     player1.set_position(pos);
     player1.char_update_real_position();
 }
 
 void GameManager::change_player_position(short xinc, short yinc)
 {
+    std::cout << "#### GameManager::change_player_position[" << xinc << "][" << yinc << "]" << std::endl;
     player1.change_position(xinc, yinc);
     player1.char_update_real_position();
+    box2d_manager.change_player_position(st_float_position(xinc, yinc));
 }
 
 void GameManager::set_player_anim_type(ANIM_TYPE anim_type)

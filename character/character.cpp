@@ -221,7 +221,6 @@ void character::charMove() {
         }
     }
 
-
     if (moveCommands.left == 1 && position.x > -TILESIZE && state.animation_type != ANIM_TYPE_SLIDE && is_in_stairs_frame() == false) {
         // check inverting direction
         if (state.animation_type != ANIM_TYPE_HIT && state.direction != ANIM_DIRECTION_LEFT) {
@@ -3044,6 +3043,11 @@ void character::reset_animation_type()
     if (get_anim_type() != ANIM_TYPE_STAND || get_anim_type() != ANIM_TYPE_WALK) {
         set_animation_type(ANIM_TYPE_STAND);
     }
+}
+
+st_characterMovements character::getMoveCommands()
+{
+    return moveCommands;
 }
 
 bool character::is_in_stairs_frame() const
