@@ -7,6 +7,9 @@ https://github.com/eder13/Box2D-SDL2-Demo
 https://forums.solar2d.com/t/box2d-or-custom-collision-system/354054
 
 
+- Add readme.md
+- Add license.txt
+
 - Refactow map::draw
     # loop through layers, draw each one in order
         # methods for image, object and tileset layers

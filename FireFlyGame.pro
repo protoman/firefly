@@ -172,6 +172,8 @@ HEADERS += \
     file/v5/struct_file_map.h
 
 DISTFILES += \
+    LICENSE \
     docs/TODO \
     docs/planning_characters.txt \
-    docs/planning_objects.txt
+    docs/planning_objects.txt \
+    readme.md
