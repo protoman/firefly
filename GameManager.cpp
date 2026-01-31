@@ -259,9 +259,13 @@ void GameManager::initGame()
     std::string tiled_map_filename = SharedData::get_instance()->FILEPATH + "/data/tiled/swamp.tmx";
     tiled_map.initialize(tiled_map_filename, gRenderer);
 
-    box2dDebugDraw = new Box2dDebugDraw(gRenderer);
-    box2dDebugDraw->drawShapes = false;
-    box2dDebugDraw->drawBounds = true;
+    //box2dDebugDraw.drawShapes = false;
+    //box2dDebugDraw.drawBounds = true;
+
+    Box2dDebugDraw::setRenderer(gRenderer);
+    debugDrawer = b2DefaultDebugDraw();
+    debugDrawer.drawShapes = true;
+    debugDrawer.DrawSolidPolygonFcn = Box2dDebugDraw::DrawSolidPolygon;
 
     box2d_manager.add_stactic_body_rectangles(tiled_map.get_tiles_collision(0));
     ImageView::get_instance()->load_layers_data();
@@ -444,7 +448,7 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
         fps_manager.limit();
 
         st_rectangle box2d_player_pos = box2d_manager.get_player_box();
-        box2d_manager.run_debug_draw(box2dDebugDraw);
+        box2d_manager.run_debug_draw(&debugDrawer);
 
 
         st_float_position mapScroll = mapController.getMapScrolling();
@@ -1940,6 +1944,11 @@ void GameManager::init_map_and_player_to_bottom()
     //std::cout << "@@@@@@@@@@@@@@@@@@@ player_initial_x[" << player_initial_x << "]" << std::endl;
     player1.set_position(st_position(player_initial_x, bottom_y));
     player1.set_animation_type(ANIM_TYPE_STAND);
+}
+
+void GameManager::drawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexCount, float radius,
+    b2HexColor color, void *context) {
+    std::cout << "GameManager::drawSolidPolygon" << std::endl;
 }
 
 st_size GameManager::calc_area_tile_size(int area_n)

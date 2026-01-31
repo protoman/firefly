@@ -13,7 +13,7 @@ areaEditPreviewWidget::areaEditPreviewWidget(QWidget *parent) : QWidget(parent)
 
 void areaEditPreviewWidget::update_files()
 {
-    int style_n = GameData::get_instance()->v6_area_map.find(SharedData::get_instance()->v6_selected_stage)->second.at(SharedData::get_instance()->v6_selected_area).style;
+    unsigned int style_n = GameData::get_instance()->v6_area_map.find(SharedData::get_instance()->v6_selected_stage)->second.at(SharedData::get_instance()->v6_selected_area).style;
     if (style_n >= GameData::get_instance()->v6_style_list.size()) {
         style_n = 0;
     }

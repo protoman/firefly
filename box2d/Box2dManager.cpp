@@ -110,7 +110,7 @@ void Box2dManager::player_jump()
     if (jump_started == false) {
         jump_started = true;
         std::cout << ">>> Box2dManager::player_jump::START" << std::endl;
-        // check that volocity is not already applied
+        // check that velocity is not already applied
         b2Vec2 currentVelocity = b2Body_GetLinearVelocity(playerBodyId);
         if (currentVelocity.y < -10.0f) {
             return;
