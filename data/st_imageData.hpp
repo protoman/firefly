@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "defines.h";
+#include "defines.h"
 #include "data/st_color.hpp"
 
 extern SDL_Renderer* gRenderer;

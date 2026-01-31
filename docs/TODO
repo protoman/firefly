@@ -6,9 +6,11 @@ https://github.com/obiot/mario-2d-jumps-box2dwasm-melonjs
 https://github.com/eder13/Box2D-SDL2-Demo
 https://forums.solar2d.com/t/box2d-or-custom-collision-system/354054
 
+- split data into a sub-repo
+- create an "open" data with placeholders, and then an official data repo that is private
 
-- Add readme.md
-- Add license.txt
+- get rid of qt and use CMake or another build tool.
+- Move IDE to CLion
 
 - Refactow map::draw
     # loop through layers, draw each one in order
