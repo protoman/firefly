@@ -4,6 +4,7 @@
 - remove all build warnings
 - use a tool for code-cleaning like SonarCube
 
+
 - move all the scrolling logic from map to its own class
     # scroll and scrolled can be stored in shared_map_data
 

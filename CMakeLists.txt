@@ -1,15 +1,14 @@
 cmake_minimum_required(VERSION 3.16)
 project(FireFlyGame VERSION 1.0 LANGUAGES C CXX)
 
+set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_C_COMPILER "clang")
+set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
 
-# Set up AUTOMOC and some sensible defaults for runtime execution
-# When using Qt 6.3, you can replace the code block below with
-# qt_standard_project_setup()
-set(CMAKE_AUTOMOC ON)
 include(GNUInstallDirs)
 
-find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
@@ -18,7 +17,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
 
-qt_add_executable(FireFlyGame
+add_executable(FireFlyGame
     GameManager.cpp GameManager.h
     aux_tools/ability_name.cpp aux_tools/ability_name.h
     aux_tools/exception_manager.cpp aux_tools/exception_manager.h
@@ -132,7 +131,3 @@ install(TARGETS FireFlyGame
     BUNDLE DESTINATION .
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-
-# Consider using qt_generate_deploy_app_script() for app deployment if
-# the project can use Qt 6.3. In that case rerun qmake2cmake with
-# --min-qt-version=6.3.

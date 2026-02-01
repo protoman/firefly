@@ -64,9 +64,6 @@ bool TiledMapLayer::init(const tmx::Map& map, uint32_t layerIndex, const std::ve
     //std::vector<tiled_tile_data> tile_list;
     std::map<int, tiled_tile_data> tile_map;
 
-    int tileCountX = 0;
-    int tileCountY = 0;
-
     for (auto i = 0u; i < tileSets.size(); ++i) {
         //check tile ID to see if it falls within the current tile set
         const auto& ts = tileSets[i];
@@ -83,20 +80,17 @@ bool TiledMapLayer::init(const tmx::Map& map, uint32_t layerIndex, const std::ve
         int tileset_w_tiles = texSize.x / mapTileSize.y;
 
         for (auto tile_piece : ts.getTiles()) {
-            tileCountX = texSize.x / mapTileSize.x;
-            tileCountY = texSize.y / mapTileSize.y;
-
             //push back to vert array
             tiled_tile_data tile;
             tile.origin_x = tile_piece.imagePosition.x;
             tile.origin_y = tile_piece.imagePosition.y;
 
-            int tile_pos_x = tile.origin_x / ts.getTileSize().x;
-            int tile_pos_y = tile.origin_y / mapTileSize.y;
-            int calculated_array_pos = tile_pos_x + (tile_pos_y * tileset_w_tiles);
+            unsigned int tile_pos_x = tile.origin_x / ts.getTileSize().x;
+            unsigned int tile_pos_y = tile.origin_y / mapTileSize.y;
+            unsigned int calculated_array_pos = tile_pos_x + (tile_pos_y * tileset_w_tiles);
 
             tmx::ObjectGroup objectGroup = tile_piece.objectGroup;
-            int objectSize = objectGroup.getObjects().size();
+            unsigned int objectSize = objectGroup.getObjects().size();
 
             for (int i_object=0; i_object<objectSize; i_object++) {
                 tmx::Object object = objectGroup.getObjects().at(0);
