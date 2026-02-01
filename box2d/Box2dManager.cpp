@@ -17,6 +17,7 @@ Box2dManager::Box2dManager() {
 
     // create player, dynamic body
     playerBodyDef.type = b2_dynamicBody;
+    playerBodyDef.fixedRotation = true; // Set this to true to prevent rotation
     playerBodyDef.position = (b2Vec2){10.0f, 0.0f};
     playerBodyId = b2CreateBody(worldId, &playerBodyDef);
     playerShapeDef.density = 1.0f;
@@ -72,20 +73,24 @@ st_rectangle Box2dManager::get_player_box() {
     return res;
 }
 
-void Box2dManager::add_stactic_body_rectangles(std::vector<st_rectangle> rectangles) {
-    std::cout << ">> Box2dManager::add_stactic_body_rectangles.size[" << rectangles.size() << "]" << std::endl;
+void Box2dManager::add_static_body_rectangles(std::vector<st_rectangle> rectangles) {
+    //std::cout << ">> Box2dManager::add_static_body_rectangles.size[" << rectangles.size() << "]" << std::endl;
     for (st_rectangle rectangle : rectangles) {
         static_object_struct object;
-        object.bodyDef.position = (b2Vec2){rectangle.x/PIXELS_PER_METER, rectangle.y/PIXELS_PER_METER};
+        float calc_half_w = rectangle.w/PIXELS_PER_METER/2;
+        float calc_half_h = rectangle.h/PIXELS_PER_METER/2;
+        float calc_pos_x = rectangle.x/PIXELS_PER_METER + calc_half_w;
+        float calc_pos_y = rectangle.y/PIXELS_PER_METER + calc_half_h;
+        object.bodyDef.position = (b2Vec2){calc_pos_x, calc_pos_y};
         object.id = b2CreateBody(worldId, &object.bodyDef);
-        object.box = b2MakeBox(rectangle.w/PIXELS_PER_METER, rectangle.h/PIXELS_PER_METER);
+        object.box = b2MakeBox(calc_half_w, calc_half_h);
         b2CreatePolygonShape(object.id, &object.shapeDef, &object.box);
-        std::cout << "Added static body at[" << object.bodyDef.position.x << "][" << object.bodyDef.position.y << "]" << std::endl;
+        std::cout << "Added static body at[" << object.bodyDef.position.x << "][" << object.bodyDef.position.y << "][" << ", rectangle[" << rectangle.x << "][" << rectangle.y << "][" << rectangle.w << "][" << rectangle.h << "]" << std::endl;
         staticObjects.push_back(object);
     }
 }
 
-void Box2dManager::add_stactic_body_polygon(std::vector<st_float_position> points) {
+void Box2dManager::add_static_body_polygon(std::vector<st_float_position> points) {
     static_object_struct object;
     object.bodyDef.position = (b2Vec2){0.0f, -10.0f};
     object.id = b2CreateBody(worldId, &groundBodyDef);

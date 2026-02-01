@@ -21,8 +21,8 @@ public:
     void execute();
     st_rectangle get_ground_box();
     st_rectangle get_player_box();
-    void add_stactic_body_rectangles(std::vector<st_rectangle> rectangles);
-    void add_stactic_body_polygon(std::vector<st_float_position> points);
+    void add_static_body_rectangles(std::vector<st_rectangle> rectangles);
+    void add_static_body_polygon(std::vector<st_float_position> points);
     void change_player_position(st_float_position inc);
     void player_jump();
     void run_debug_draw(b2DebugDraw* draw);

@@ -11,7 +11,7 @@ class Box2dDebugDraw : public b2DebugDraw
 public:
     Box2dDebugDraw();
 
-    static void DrawPolygonFcn(const b2Vec2* vertices, int vertexCount, b2HexColor color, void* context);
+    static void DrawPolygonFcn(b2Transform transform, const b2Vec2* vertices, int vertexCount, b2HexColor color, void* context);
 
     /// Draw a solid closed polygon provided in CCW order.
     static void DrawSolidPolygon(b2Transform transform, const b2Vec2* vertices, int vertexCount, float radius, b2HexColor color,
@@ -38,7 +38,7 @@ public:
     /// Draw a string in world space
     static void DrawStringFcn( b2Vec2 p, const char* s, b2HexColor color, void* context );
 
-    static void DrawPolygon(const b2Vec2* vertices, int vertexCount, const b2HexColor color);
+    static void DrawPolygon(b2Transform transform, const b2Vec2* vertices, int vertexCount, const b2HexColor color);
 
     static void setRenderer(SDL_Renderer *renderer);
 

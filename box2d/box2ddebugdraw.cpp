@@ -8,16 +8,16 @@ SDL_Renderer *Box2dDebugDraw::sdl_renderer = nullptr; // forward declaration and
 Box2dDebugDraw::Box2dDebugDraw() : b2DebugDraw() {
 }
 
-void Box2dDebugDraw::DrawPolygonFcn(const b2Vec2 *vertices, int vertexCount, b2HexColor color, void *context)
+void Box2dDebugDraw::DrawPolygonFcn(b2Transform transform, const b2Vec2 *vertices, int vertexCount, b2HexColor color, void *context)
 {
     std::cout << "Box2dDebugDraw::DrawPolygonFcn" << std::endl;
-    DrawPolygon(vertices, vertexCount, color);
+    DrawPolygon(transform, vertices, vertexCount, color);
 }
 
 void Box2dDebugDraw::DrawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexCount, float radius, b2HexColor color, void *context)
 {
-    std::cout << "Box2dDebugDraw::DrawSolidPolygonFcn" << std::endl;
-    DrawPolygon(vertices, vertexCount, color);
+    //std::cout << "Box2dDebugDraw::DrawSolidPolygonFcn" << std::endl;
+    DrawPolygon(transform, vertices, vertexCount, color);
 }
 
 void Box2dDebugDraw::DrawCircleFcn(b2Vec2 center, float radius, b2HexColor color, void *context)
@@ -55,14 +55,19 @@ void Box2dDebugDraw::DrawStringFcn(b2Vec2 p, const char *s, b2HexColor color, vo
     std::cout << "Box2dDebugDraw::DrawStringFcn" << std::endl;
 }
 
-void Box2dDebugDraw::DrawPolygon(const b2Vec2 *vertices, int vertexCount, const b2HexColor color)
+void Box2dDebugDraw::DrawPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexCount, const b2HexColor color)
 {
     //SDL_SetRenderDrawColor(sdl_renderer, 250, 0, 0);
     SDL_Point* sdlPoints = new SDL_Point[vertexCount + 1];
-    std::cout << "Box2dDebugDraw::DrawPolygon - vertexCount[" << vertexCount << "]" << std::endl;
     for (int i = 0; i < vertexCount; ++i) {
-        sdlPoints[i] = { (int)vertices[i].x*PIXELS_PER_METER, (int)vertices[i].y*PIXELS_PER_METER };
-        std::cout << "Box2dDebugDraw::DrawPolygon point[" << i << "][" << sdlPoints[i].x << "][" << sdlPoints[i].y << "]" << std::endl;
+        int next_index = (i + 1 == vertexCount) ? 0 : i + 1;
+        b2Vec2 p0 = b2TransformPoint(transform, vertices[i]);
+        b2Vec2 p1 = b2TransformPoint(transform, vertices[next_index]);
+        float x0 = p0.x * PIXELS_PER_METER;
+        float y0 = p0.y * PIXELS_PER_METER;
+        float x1 = p1.x * PIXELS_PER_METER;
+        float y1 = p1.y * PIXELS_PER_METER;
+        sdlPoints[i] = { (int)x0, (int)y0 };
     }
     sdlPoints[vertexCount] = sdlPoints[0]; // Close the polygon
     SDL_RenderDrawLines(sdl_renderer, sdlPoints, vertexCount + 1);

@@ -267,7 +267,7 @@ void GameManager::initGame()
     debugDrawer.drawShapes = true;
     debugDrawer.DrawSolidPolygonFcn = Box2dDebugDraw::DrawSolidPolygon;
 
-    box2d_manager.add_stactic_body_rectangles(tiled_map.get_tiles_collision(0));
+    box2d_manager.add_static_body_rectangles(tiled_map.get_tiles_collision(0));
     ImageView::get_instance()->load_layers_data();
 
     init_map_and_player_to_bottom();
