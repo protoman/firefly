@@ -58,7 +58,7 @@ st_rectangle Box2dManager::get_player_box() {
             for (int i=0; i<2; i++) {
                 if (areFloatsEqual(contactData.manifold.points[i].point.y, player_feet, 0.2f)) {
                     jump_started = false;
-                    std::cout << "Box2dManager::get_player_box - finish-jump - contactData.pointsCount[" << contactData.manifold.pointCount << "], point[" << i << "].y[" << contactData.manifold.points[i].point.y << "], player_feet[" << player_feet << "]" << std::endl;
+                    //std::cout << "Box2dManager::get_player_box - finish-jump - contactData.pointsCount[" << contactData.manifold.pointCount << "], point[" << i << "].y[" << contactData.manifold.points[i].point.y << "], player_feet[" << player_feet << "]" << std::endl;
                     break;
                 }
             }
@@ -100,7 +100,7 @@ void Box2dManager::add_static_body_polygon(std::vector<st_float_position> points
     staticObjects.push_back(object);
 }
 
-void Box2dManager::change_player_position(st_float_position inc)  {
+void Box2dManager::change_player_position(st_float_position inc) {
     b2Vec2 vel = b2Body_GetLinearVelocity(playerBodyId);
     if (inc.x < 0 && vel.x < -HORIZONTAL_SPEED_LIMIT) {
         return;
@@ -124,7 +124,7 @@ void Box2dManager::player_jump()
 {
     if (jump_started == false) {
         jump_started = true;
-        std::cout << ">>> Box2dManager::player_jump::START" << std::endl;
+        //std::cout << ">>> Box2dManager::player_jump::START" << std::endl;
         // check that velocity is not already applied
         b2Vec2 currentVelocity = b2Body_GetLinearVelocity(playerBodyId);
         if (currentVelocity.y < -10.0f) {

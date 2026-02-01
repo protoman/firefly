@@ -81,7 +81,6 @@ void MapController::loadMap()
 
     preload_slope_images();
 
-    draw_map_tiles();
     GameManager::get_instance()->start_stage_music();
 }
 
@@ -132,9 +131,6 @@ void MapController::set_scroll_to_bottom()
 
 void MapController::show()
 {
-    //std::cout << "MAP::show - scroll.x[" << scroll.x << "]" << std::endl;
-    //drawLayers(false);
-
     // this will replace most of the stuff below
     for (auto const& item : map_data::SharedMapData::get_instance()->layer_order_map) {
         if (item.second == map_data::map_layer_type_image) {
@@ -142,8 +138,6 @@ void MapController::show()
             show_image_layer(item.first);
         }
     }
-
-
 
     if (get_map_gfx_mode() == SCREEN_GFX_MODE_BACKGROUND) {
         Draw::get_instance()->show_gfx();
@@ -153,12 +147,7 @@ void MapController::show()
     //std::cout << "_show_map_pos_y[" << _show_map_pos_y << "], scroll.y[" << scroll.y << "]" << std::endl;
 
     // redraw screen, if needed
-    if (_show_map_pos_x == -1 || abs(_show_map_pos_x - map_data::SharedMapData::get_instance()->scroll.x) > TILESIZE) {
-        draw_map_tiles();
-    // use memory screen
-    } else if (_show_map_pos_y == -1 || abs(_show_map_pos_y - map_data::SharedMapData::get_instance()->scroll.y) > TILESIZE) {
-        draw_map_tiles();
-    }
+
     int diff_scroll_x = map_data::SharedMapData::get_instance()->scroll.x - _show_map_pos_x;
     int diff_scroll_y = map_data::SharedMapData::get_instance()->scroll.y - _show_map_pos_y;
 
@@ -265,11 +254,6 @@ void MapController::show_image_layer(std::string layer_name)
         */
 }
 
-void MapController::show_tileset_layer(std::string layer_name)
-{
-
-}
-
 void MapController::updated_visited_room()
 {
     SharedData::get_instance()->current_room_pos.x = SharedData::get_instance()->leftmost_room + (map_data::SharedMapData::get_instance()->scroll.x+RES_W/2)/(AREA_ROOM_TILES_W*TILESIZE);
@@ -346,12 +330,6 @@ void MapController::get_map_area_surface(st_imageData& mapSurface)
 
     draw_dynamic_backgrounds_into_surface(mapSurface);
 
-    // redraw screen, if needed
-    if (_show_map_pos_x == -1 || abs(_show_map_pos_x - map_data::SharedMapData::get_instance()->scroll.x) > TILESIZE) {
-        draw_map_tiles();
-    } else if (_show_map_pos_y == -1 || abs(_show_map_pos_y - map_data::SharedMapData::get_instance()->scroll.y) > TILESIZE) {
-        draw_map_tiles();
-    }
     // use memory screen
     int diff_scroll_x = map_data::SharedMapData::get_instance()->scroll.x - _show_map_pos_x;
     int diff_scroll_y = map_data::SharedMapData::get_instance()->scroll.y - _show_map_pos_y;
@@ -361,80 +339,6 @@ void MapController::get_map_area_surface(st_imageData& mapSurface)
     // @TODO-Iuri //
     //draw_animated_tiles(mapSurface);
 }
-
-void MapController::draw_map_tiles()
-{
-    _show_map_pos_x = map_data::SharedMapData::get_instance()->scroll.x;
-    _show_map_pos_y = map_data::SharedMapData::get_instance()->scroll.y;
-
-    int tile_x_ini = map_data::SharedMapData::get_instance()->scroll.x/TILESIZE-1;
-    if (tile_x_ini < 0) {
-        tile_x_ini = 0;
-    }
-
-    int tile_y_ini = map_data::SharedMapData::get_instance()->scroll.y/TILESIZE-1;
-    if (tile_y_ini < 0) {
-        tile_y_ini = 0;
-    }
-
-
-    // TODO::IURI //
-    ImageView::get_instance()->clear_surface(map_screen);
-
-    // draw the tiles of the screen region
-    struct st_position pos_origin;
-    struct st_position pos_destiny;
-    int n = -1;
-
-
-    int tile_end_x = tile_x_ini+(RES_W/TILESIZE)+3;
-    int tile_end_y = tile_y_ini+(AREA_H/TILESIZE)+2;
-    if (tile_end_x > map_tiles_w) {
-        tile_end_x = map_tiles_w;
-    }
-    if (tile_end_y > map_tiles_h) {
-        tile_end_y = map_tiles_h;
-    }
-    //std::cout << "MapController::draw_map_tiles - tile_y_ini[" << tile_y_ini << "], tile_end_y[" << tile_end_y << "]" << std::endl;
-    //std::cout << "MapController::draw_map_tiles - RES_W/TILESIZE[" << RES_W/TILESIZE << ", start[" << tile_x_ini << "], end[" << tile_end << "]" << std::endl;
-
-    for (int i=tile_x_ini; i<tile_end_x; i++) {
-        int diff_x = map_data::SharedMapData::get_instance()->scroll.x - (tile_x_ini+1)*TILESIZE;
-        pos_destiny.x = n*TILESIZE - diff_x + TILESIZE;
-        for (int j=tile_y_ini; j<tile_end_y; j++) {
-
-            // don't draw easy-mode blocks if game difficulty not set to easy
-            int diff_y = map_data::SharedMapData::get_instance()->scroll.y - (tile_y_ini+1)*TILESIZE;
-            pos_destiny.y = j*TILESIZE - map_data::SharedMapData::get_instance()->scroll.y + TILESIZE;
-            //std::cout << "pos_destiny.y[" << pos_destiny.y << "]" << std::endl;
-
-
-            if (getTileFromPosition(i, j).tile_underlay.type == TILE_TYPE_SLOPE) {
-                //std::cout << "FOUND-SLOPE #1 i[" << i << "], j[" << j << "]" << std::endl;
-                draw_slope_tile(getTileFromPosition(i, j).tile_underlay.x,getTileFromPosition(i, j).tile_underlay.y, pos_destiny.x, pos_destiny.y);
-            } else {
-                pos_origin.x = getTileFromPosition(i, j).tile_underlay.x;
-                pos_origin.y = getTileFromPosition(i, j).tile_underlay.y;
-
-                if (pos_origin.x >= 0 && pos_origin.y >= 0) {
-                    if (map_screen.surface == nullptr) {
-                        std::cout << "map_screen is NULL" << std::endl;
-                    }
-                    /*
-                    if (i == 5) {
-                        std::cout << ">>>>> MapController::draw_map_tiles #2 diff_y[" << diff_y << "], scroll.y[" << scroll.y << "], tile_y_ini[" << tile_y_ini << "], x[" << i << "], y[" << j << "], tile.x[" << getTileFromPosition(i, j).tile_underlay.x << "], tile.y[" << getTileFromPosition(i, j).tile_underlay.x << "], dest.y[" << pos_destiny.y << "] <<<<<<<<" << std::endl;
-                    }
-                    */
-                    ImageView::get_instance()->placeTile(pos_origin, pos_destiny, map_screen);
-                }
-            }
-        }
-        n++;
-    }
-    // re-generate texture
-    ImageView::get_instance()->rebuildTexture(map_screen);
-}
-
 
 
 void MapController::draw_animated_tiles()

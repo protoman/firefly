@@ -81,8 +81,6 @@ public:
 
     void show();
     void show_image_layer(std::string layer_name);
-    void show_tileset_layer(std::string layer_name);
-
 
     void updated_visited_room();
     int get_level_from_room(int x, int y);
@@ -113,8 +111,6 @@ public:
     void clearLayers();
     void drawLayers(bool isFg);
     void render_layer(float x, float y, st_imageData* surface_bg);
-
-    void draw_map_tiles();
 
     void draw_animated_tiles();
 
