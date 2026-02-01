@@ -5,7 +5,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang++")
-set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+#set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
 
 include(GNUInstallDirs)
 

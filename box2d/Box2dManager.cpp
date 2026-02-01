@@ -5,9 +5,9 @@
 
 Box2dManager::Box2dManager() : groundId(), groundBox() {
     // create world
-    worldDef.gravity = (b2Vec2){0.0f, 9.8f};
+    worldDef.gravity = (b2Vec2){0.0f, GRAVITY};
     worldId = b2CreateWorld(&worldDef);
-    b2World_SetMaximumLinearSpeed(worldId, 6.0f);
+    b2World_SetMaximumLinearSpeed(worldId, MAX_SPEED);
 
     // create ground, static body
     //groundBodyDef.position = (b2Vec2){0.0f, 720.0f};
@@ -20,8 +20,8 @@ Box2dManager::Box2dManager() : groundId(), groundBox() {
     playerBodyDef.fixedRotation = true; // Set this to true to prevent rotation
     playerBodyDef.position = (b2Vec2){10.0f, 0.0f};
     playerBodyId = b2CreateBody(worldId, &playerBodyDef);
-    playerShapeDef.density = 1.0f;
-    playerShapeDef.material.friction = 0.3f;
+    playerShapeDef.density = PLAYER_DENSITY;
+    playerShapeDef.material.friction = PLAYER_FRICTION;
     b2CreatePolygonShape(playerBodyId, &playerShapeDef, &dynamicBox);
 }
 
@@ -102,13 +102,22 @@ void Box2dManager::add_static_body_polygon(std::vector<st_float_position> points
 
 void Box2dManager::change_player_position(st_float_position inc)  {
     b2Vec2 vel = b2Body_GetLinearVelocity(playerBodyId);
+    if (inc.x < 0 && vel.x < -HORIZONTAL_SPEED_LIMIT) {
+        return;
+    }
+    if (inc.x > 0 && vel.x > HORIZONTAL_SPEED_LIMIT) {
+        return;
+    }
     b2Vec2 velocity;
-    //velocity.x = b2MaxFloat( vel.x + 0.1f, 5.0f );
-    velocity.x = inc.x;
-    //velocity.y = worldDef.gravity.y;
+    if (inc.x > 0) {
+        velocity.x = HORIZONTAL_MOVE_FORCE;
+    } else if (inc.x < 0) {
+        velocity.x = -HORIZONTAL_MOVE_FORCE;
+    } else {
+        velocity.x = 0.0f;
+    }
     velocity.y = 0.0f;
-    b2Body_SetLinearVelocity(playerBodyId, velocity);
-    //b2Body_ApplyLinearImpulseToCenter(playerBodyId, velocity, true);
+    b2Body_ApplyLinearImpulseToCenter(playerBodyId, velocity, true);
 }
 
 void Box2dManager::player_jump()
@@ -124,7 +133,7 @@ void Box2dManager::player_jump()
 
         b2Vec2 velocity;
         velocity.x = 0.0f;
-        velocity.y = -22.0f;
+        velocity.y = -8.0f;
         b2Body_ApplyLinearImpulseToCenter(playerBodyId, velocity, true);
     }
 }

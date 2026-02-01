@@ -34,6 +34,13 @@ private:
     // configuration
     float timeStep = 1.0f / 60.0f;
     int subStepCount = 4;
+    float GRAVITY = 19.6f;
+    float MAX_SPEED = 15.0f;
+    float HORIZONTAL_SPEED_LIMIT = 2.5f;
+    float HORIZONTAL_MOVE_FORCE = 1.0f;
+    float PLAYER_DENSITY = 1.0f;
+    float PLAYER_FRICTION = 0.0f;
+
     // world
     b2WorldDef worldDef = b2DefaultWorldDef();
     b2WorldId worldId{};

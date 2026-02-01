@@ -69,17 +69,15 @@ bool TiledMapLayer::init(const tmx::Map& map, uint32_t layerIndex, const std::ve
         const auto& ts = tileSets[i];
 
         // ignore tilkesets with no image
-        if (ts.getImagePath().length() == 0) {
+        if (ts.getImagePath().empty()) {
             continue;
         }
 
-        auto terrains = ts.getTerrainTypes();
-
         const auto texSize = textures[i]->getSize();
 
-        int tileset_w_tiles = texSize.x / mapTileSize.y;
+        unsigned int tileset_w_tiles = texSize.x / mapTileSize.y;
 
-        for (auto tile_piece : ts.getTiles()) {
+        for (const auto& tile_piece : ts.getTiles()) {
             //push back to vert array
             tiled_tile_data tile;
             tile.origin_x = tile_piece.imagePosition.x;
@@ -124,7 +122,7 @@ bool TiledMapLayer::init(const tmx::Map& map, uint32_t layerIndex, const std::ve
         std::vector<tiled_tile_data> map_tile_list;
 
         // TODO - não está dando correspondência de map_tiles com a lista de tiles.
-        for (auto map_chunk : layer_chunks) {
+        for (const auto& map_chunk : layer_chunks) {
             std::cout << "### map_chunk.size[" << map_chunk.size.x << "][" << map_chunk.size.y << "], position[" << map_chunk.position.x << "][" << map_chunk.position.y << "]" << std::endl;
 
 
