@@ -1,6 +1,12 @@
 ########################################################
                      INSPIRACÃO
 ########################################################
+- remove all build warnings
+- use a tool for code-cleaning like SonarCube
+
+- move all the scrolling logic from map to its own class
+    # scroll and scrolled can be stored in shared_map_data
+
 https://discourse.libsdl.org/t/box2d-and-sdl2-no-collision-after-rendering/26436/5
 https://github.com/obiot/mario-2d-jumps-box2dwasm-melonjs
 https://github.com/eder13/Box2D-SDL2-Demo

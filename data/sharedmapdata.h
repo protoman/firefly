@@ -71,6 +71,8 @@ public:
     std::map<std::string, map_tileset> tileset_layer_data;
     std::map<std::string, map_image_layer_data> layer_data_map;   // index is the layer name
     std::map<std::string, map_layer_type> layer_order_map;
+    st_float_position scroll;
+    st_float_position scrolled;                                             // stores the value the map scrolled in this cycle. used for character movement control (it should move taking the scroll in account)
 
 private:
     static SharedMapData* instance;

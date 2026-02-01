@@ -124,7 +124,7 @@ void MapController::set_scroll_to_bottom()
     if (scrollY < 0) {
         scrollY = 0;
     }
-    scroll.y = scrollY;
+    map_data::SharedMapData::get_instance()->scroll.y = scrollY;
     //std::cout << "### MapController::set_scroll_to_bottom, y[" << scroll.y << "], lockY[" << lockY << "]" << std::endl;
 
 }
@@ -153,14 +153,14 @@ void MapController::show()
     //std::cout << "_show_map_pos_y[" << _show_map_pos_y << "], scroll.y[" << scroll.y << "]" << std::endl;
 
     // redraw screen, if needed
-    if (_show_map_pos_x == -1 || abs(_show_map_pos_x - scroll.x) > TILESIZE) {
+    if (_show_map_pos_x == -1 || abs(_show_map_pos_x - map_data::SharedMapData::get_instance()->scroll.x) > TILESIZE) {
         draw_map_tiles();
     // use memory screen
-    } else if (_show_map_pos_y == -1 || abs(_show_map_pos_y - scroll.y) > TILESIZE) {
+    } else if (_show_map_pos_y == -1 || abs(_show_map_pos_y - map_data::SharedMapData::get_instance()->scroll.y) > TILESIZE) {
         draw_map_tiles();
     }
-    int diff_scroll_x = scroll.x - _show_map_pos_x;
-    int diff_scroll_y = scroll.y - _show_map_pos_y;
+    int diff_scroll_x = map_data::SharedMapData::get_instance()->scroll.x - _show_map_pos_x;
+    int diff_scroll_y = map_data::SharedMapData::get_instance()->scroll.y - _show_map_pos_y;
 
     //std::cout << "MapController::show, diff_scroll_y.y[" << diff_scroll_y << "]" << std::endl;
     //ImageView::get_instance()->renderTexturePortionAt(diff_scroll_x+TILESIZE, diff_scroll_y+TILESIZE, RES_W, AREA_H, 0, 0, map_screen.texture);
@@ -272,8 +272,8 @@ void MapController::show_tileset_layer(std::string layer_name)
 
 void MapController::updated_visited_room()
 {
-    SharedData::get_instance()->current_room_pos.x = SharedData::get_instance()->leftmost_room + (scroll.x+RES_W/2)/(AREA_ROOM_TILES_W*TILESIZE);
-    SharedData::get_instance()->current_room_pos.y = SharedData::get_instance()->topmost_room + (scroll.y+AREA_H/2)/(AREA_ROOM_TILES_H*TILESIZE);
+    SharedData::get_instance()->current_room_pos.x = SharedData::get_instance()->leftmost_room + (map_data::SharedMapData::get_instance()->scroll.x+RES_W/2)/(AREA_ROOM_TILES_W*TILESIZE);
+    SharedData::get_instance()->current_room_pos.y = SharedData::get_instance()->topmost_room + (map_data::SharedMapData::get_instance()->scroll.y+AREA_H/2)/(AREA_ROOM_TILES_H*TILESIZE);
 }
 
 int MapController::get_level_from_room(int x, int y)
@@ -347,14 +347,14 @@ void MapController::get_map_area_surface(st_imageData& mapSurface)
     draw_dynamic_backgrounds_into_surface(mapSurface);
 
     // redraw screen, if needed
-    if (_show_map_pos_x == -1 || abs(_show_map_pos_x - scroll.x) > TILESIZE) {
+    if (_show_map_pos_x == -1 || abs(_show_map_pos_x - map_data::SharedMapData::get_instance()->scroll.x) > TILESIZE) {
         draw_map_tiles();
-    } else if (_show_map_pos_y == -1 || abs(_show_map_pos_y - scroll.y) > TILESIZE) {
+    } else if (_show_map_pos_y == -1 || abs(_show_map_pos_y - map_data::SharedMapData::get_instance()->scroll.y) > TILESIZE) {
         draw_map_tiles();
     }
     // use memory screen
-    int diff_scroll_x = scroll.x - _show_map_pos_x;
-    int diff_scroll_y = scroll.y - _show_map_pos_y;
+    int diff_scroll_x = map_data::SharedMapData::get_instance()->scroll.x - _show_map_pos_x;
+    int diff_scroll_y = map_data::SharedMapData::get_instance()->scroll.y - _show_map_pos_y;
     ImageView::get_instance()->copyArea(st_rectangle(diff_scroll_x+TILESIZE, diff_scroll_y+TILESIZE, RES_W, RES_H), st_position(0, 0), map_screen, mapSurface);
 
     // draw animated tiles
@@ -364,15 +364,15 @@ void MapController::get_map_area_surface(st_imageData& mapSurface)
 
 void MapController::draw_map_tiles()
 {
-    _show_map_pos_x = scroll.x;
-    _show_map_pos_y = scroll.y;
+    _show_map_pos_x = map_data::SharedMapData::get_instance()->scroll.x;
+    _show_map_pos_y = map_data::SharedMapData::get_instance()->scroll.y;
 
-    int tile_x_ini = scroll.x/TILESIZE-1;
+    int tile_x_ini = map_data::SharedMapData::get_instance()->scroll.x/TILESIZE-1;
     if (tile_x_ini < 0) {
         tile_x_ini = 0;
     }
 
-    int tile_y_ini = scroll.y/TILESIZE-1;
+    int tile_y_ini = map_data::SharedMapData::get_instance()->scroll.y/TILESIZE-1;
     if (tile_y_ini < 0) {
         tile_y_ini = 0;
     }
@@ -399,13 +399,13 @@ void MapController::draw_map_tiles()
     //std::cout << "MapController::draw_map_tiles - RES_W/TILESIZE[" << RES_W/TILESIZE << ", start[" << tile_x_ini << "], end[" << tile_end << "]" << std::endl;
 
     for (int i=tile_x_ini; i<tile_end_x; i++) {
-        int diff_x = scroll.x - (tile_x_ini+1)*TILESIZE;
+        int diff_x = map_data::SharedMapData::get_instance()->scroll.x - (tile_x_ini+1)*TILESIZE;
         pos_destiny.x = n*TILESIZE - diff_x + TILESIZE;
         for (int j=tile_y_ini; j<tile_end_y; j++) {
 
             // don't draw easy-mode blocks if game difficulty not set to easy
-            int diff_y = scroll.y - (tile_y_ini+1)*TILESIZE;
-            pos_destiny.y = j*TILESIZE - scroll.y + TILESIZE;
+            int diff_y = map_data::SharedMapData::get_instance()->scroll.y - (tile_y_ini+1)*TILESIZE;
+            pos_destiny.y = j*TILESIZE - map_data::SharedMapData::get_instance()->scroll.y + TILESIZE;
             //std::cout << "pos_destiny.y[" << pos_destiny.y << "]" << std::endl;
 
 
@@ -446,7 +446,7 @@ void MapController::draw_animated_tiles()
     for (int i=0; i<anim_tile_list.size(); i++) {
         //std::cout << "draw-anim-tile[" << i << "][" << anim_tile_list.at(i).anim_tile_id << "], x[" << anim_tile_list.at(i).dest_x << "], y[" << anim_tile_list.at(i).dest_y << "]" << std::endl;
 
-        int pos_x = anim_tile_list.at(i).dest_x-scroll.x;
+        int pos_x = anim_tile_list.at(i).dest_x-map_data::SharedMapData::get_instance()->scroll.x;
         if (pos_x >= -TILESIZE && pos_x <= RES_W+1) {
             //std::cout << "## scroll.x[" << scroll.x << "], dest.x[" << anim_tile_list.at(i).dest_x << "]" << std::endl;
             st_position dest_pos(pos_x, anim_tile_list.at(i).dest_y);
@@ -521,7 +521,7 @@ void MapController::init_animated_tiles()
 // ********************************************************************************************** //
 void MapController::showAbove(int scroll_y, int temp_scroll_x, bool show_fg)
 {
-    int scroll_x = scroll.x;
+    int scroll_x = map_data::SharedMapData::get_instance()->scroll.x;
     if (temp_scroll_x != -99999) {
         scroll_x = temp_scroll_x;
     }
@@ -532,9 +532,9 @@ void MapController::showAbove(int scroll_y, int temp_scroll_x, bool show_fg)
     if (end_point_x < map_tiles_w-1) { end_point_x++; }
     //std::cout << "showAbove - start_point: " << start_point << ", end_point: " << end_point << std::endl;
 
-    short start_point_y = scroll.y/TILESIZE;
+    short start_point_y = map_data::SharedMapData::get_instance()->scroll.y/TILESIZE;
     if (start_point_y > 0) { start_point_y--; }
-    short end_point_y = (scroll.y+AREA_H)/TILESIZE;
+    short end_point_y = (map_data::SharedMapData::get_instance()->scroll.y+AREA_H)/TILESIZE;
     if (end_point_y < map_tiles_h-1) { end_point_y++; }
 
 
@@ -549,7 +549,7 @@ void MapController::showAbove(int scroll_y, int temp_scroll_x, bool show_fg)
         int pos_y = (*tile3_it).tileset_pos.y;
         // only show tile if it is on the screen range
 
-        ImageView::get_instance()->place_3rd_level_tile(pos_x, pos_y, ((*tile3_it).map_position.x*TILESIZE)-scroll_x, ((*tile3_it).map_position.y*TILESIZE)-scroll.y);
+        ImageView::get_instance()->place_3rd_level_tile(pos_x, pos_y, ((*tile3_it).map_position.x*TILESIZE)-scroll_x, ((*tile3_it).map_position.y*TILESIZE)-map_data::SharedMapData::get_instance()->scroll.y);
         //ImageView::get_instance()->clearScreenArea(pos_x, pos_y, TILESIZE, TILESIZE, 100, 0, 0);
     }
 
@@ -570,7 +570,7 @@ void MapController::showAbove(int scroll_y, int temp_scroll_x, bool show_fg)
         if ((pos_x >= start_point_x && pos_x <= end_point_x) && (pos_y >= start_point_y && pos_y <= end_point_y)) {
             // only show tile if it is on the screen range
             int dest_x = pos_x*TILESIZE-scroll_x;
-            int dest_y = pos_y*TILESIZE-scroll.y;
+            int dest_y = pos_y*TILESIZE-map_data::SharedMapData::get_instance()->scroll.y;
             //std::cout << "$$$$$$$$$$$$$$$$$$$$$ tile.water[" << pos_x << "][" << pos_y << "], scroll_x[" << scroll_x << "], scroll_y[" << scroll_y << "], dest[" << dest_x << "][" << dest_y << "]" << std::endl;
 
             //ImageView::get_instance()->clearScreenArea(dest_x, dest_y, TILESIZE, TILESIZE, 100, 0, 0);
@@ -695,7 +695,7 @@ bool MapController::tile_room_exists(int x, int y)
 int MapController::get_first_bottom_lock(int initialY)
 {
     bool isLockedY = true;
-    int initX = scroll.x/TILESIZE;
+    int initX = map_data::SharedMapData::get_instance()->scroll.x/TILESIZE;
     int endX = initX + RES_W/TILESIZE;
     int lockedRow = map_tiles_h/TILESIZE;
 
@@ -736,9 +736,9 @@ bool MapController::isEdgeRowLocked(int incY, bool first)
 {
 
 
-    int y = (scroll.y+AREA_H-TILESIZE)/TILESIZE;
+    int y = (map_data::SharedMapData::get_instance()->scroll.y+AREA_H-TILESIZE)/TILESIZE;
     if (first == true) {
-        y = (scroll.y-TILESIZE+TILESIZE)/TILESIZE;
+        y = (map_data::SharedMapData::get_instance()->scroll.y-TILESIZE+TILESIZE)/TILESIZE;
     }
 
     //std::cout << "MapController::isEdgeRowLocked - y[" << y << "], scroll.y[" << scroll.y << "]" << std::endl;
@@ -747,7 +747,7 @@ bool MapController::isEdgeRowLocked(int incY, bool first)
         //std::cout << "MapController::isEdgeRowLocked - OUT OF SCREEN" << std::endl;
         return true;
     }
-    int initX = scroll.x/TILESIZE;
+    int initX = map_data::SharedMapData::get_instance()->scroll.x/TILESIZE;
     int endX = initX + RES_W/TILESIZE;
 
     //std::cout << "########### MapController::isEdgeRowLocked - calc_endX[" << endX << "], map_tiles_w[" << map_tiles_w << "]" << std::endl;
@@ -773,9 +773,9 @@ bool MapController::isEdgeColumnLocked(int incX, bool first)
 {
 
 
-    int tileX = (scroll.x + incX + RES_W)/TILESIZE - 1;
+    int tileX = (map_data::SharedMapData::get_instance()->scroll.x + incX + RES_W)/TILESIZE - 1;
     if (incX < 0) {
-        tileX = (scroll.x + incX)/TILESIZE + 1;
+        tileX = (map_data::SharedMapData::get_instance()->scroll.x + incX)/TILESIZE + 1;
     }
 
     if (tileX < 0 || tileX > SharedData::get_instance()->rightmost_room*AREA_ROOM_TILES_W) {
@@ -783,7 +783,7 @@ bool MapController::isEdgeColumnLocked(int incX, bool first)
         return true;
     }
 
-    int inity = scroll.y/TILESIZE;
+    int inity = map_data::SharedMapData::get_instance()->scroll.y/TILESIZE;
     int endY = inity + AREA_H/TILESIZE;
     if (endY >= map_tiles_w) {
         endY = map_tiles_w-1;
@@ -828,13 +828,13 @@ void MapController::changeScrolling(st_float_position pos, bool check_lock)
     }
     // moving player to right, screen to left
     if (pos.x > 0) {
-        int current_tile_x = (scroll.x/TILESIZE+RES_W/TILESIZE)-1;
+        int current_tile_x = (map_data::SharedMapData::get_instance()->scroll.x/TILESIZE+RES_W/TILESIZE)-1;
         if (current_tile_x < map_tiles_w-1) {
             int x_change = pos.x;
             if (pos.x >= TILESIZE) { // if change is too big, do not update (TODO: must check all wall until lock)
                 x_change = 1;
             }
-            int tile_x = (scroll.x+RES_W-TILESIZE+2)/TILESIZE;
+            int tile_x = (map_data::SharedMapData::get_instance()->scroll.x+RES_W-TILESIZE+2)/TILESIZE;
             // this means there is a scroll-lock, so we ignore the excess
             if (check_lock == false || isEdgeColumnLocked(pos.x, tile_x) == false) {
                 //std::cout << "MapController::changeScrolling #1, pos.x[" << pos.x << "], tile_x[" << tile_x << "]" << std::endl;
@@ -847,8 +847,8 @@ void MapController::changeScrolling(st_float_position pos, bool check_lock)
         }
     } else if (pos.x < 0) {
         int x_change = pos.x;
-        if (scroll.x/TILESIZE >= 0) { // if change is too big, do not update (TODO: must check all wall until lock)
-            int tile_x = (scroll.x+TILESIZE-2)/TILESIZE;
+        if (map_data::SharedMapData::get_instance()->scroll.x/TILESIZE >= 0) { // if change is too big, do not update (TODO: must check all wall until lock)
+            int tile_x = (map_data::SharedMapData::get_instance()->scroll.x+TILESIZE-2)/TILESIZE;
             //std::cout << "#2 LEFT changeScrolling - scroll.x: " << scroll.x << ", testing tile_x: " << tile_x << std::endl;
             if (check_lock == false || isEdgeColumnLocked(pos.x, tile_x) == false) {
                 //std::cout << "MapController::changeScrolling - 2" << std::endl;
@@ -881,16 +881,16 @@ void MapController::changeScrolling(st_float_position pos, bool check_lock)
 
 void MapController::incScrollValue(float xinc, float yinc)
 {
-    scroll.x += xinc;
-    scroll.y += yinc;
+    map_data::SharedMapData::get_instance()->scroll.x += xinc;
+    map_data::SharedMapData::get_instance()->scroll.y += yinc;
     SharedData::get_instance()->area_scroll_x += xinc;
     SharedData::get_instance()->area_scroll_y += yinc;
 
-    if (scroll.x < 0) {
-        scroll.x = 0;
+    if (map_data::SharedMapData::get_instance()->scroll.x < 0) {
+        map_data::SharedMapData::get_instance()->scroll.x = 0;
     }
-    if (scroll.y < 0) {
-        scroll.y = 0;
+    if (map_data::SharedMapData::get_instance()->scroll.y < 0) {
+        map_data::SharedMapData::get_instance()->scroll.y = 0;
     }
     if (SharedData::get_instance()->area_scroll_x < 0) {
         SharedData::get_instance()->area_scroll_x = 0;
@@ -960,17 +960,17 @@ void MapController::set_scrolling(st_float_position pos)
     if (pos.y < 0) {
         pos.y = 0;
     }
-    scrolled = pos;
-    scroll.x = pos.x;
-    scroll.y = pos.y;
+    map_data::SharedMapData::get_instance()->scrolled = pos;
+    map_data::SharedMapData::get_instance()->scroll.x = pos.x;
+    map_data::SharedMapData::get_instance()->scroll.y = pos.y;
     //std::cout << "------- MapController::set_scrolling - map: " << SharedData::get_instance()->v6_selected_area << ", pos.x: " << pos.x << "-------" << std::endl;
 }
 
 void MapController::reset_scrolling()
 {
-    scrolled = st_position(0, 0);
-    scroll.x = 0;
-    scroll.y = 0;
+    map_data::SharedMapData::get_instance()->scrolled = st_position(0, 0);
+    map_data::SharedMapData::get_instance()->scroll.x = 0;
+    map_data::SharedMapData::get_instance()->scroll.y = 0;
 }
 
 
@@ -982,7 +982,7 @@ void MapController::reset_scrolling()
 st_float_position MapController::getMapScrolling() const
 {
     //std::cout << "getMapScrolling, x: " << scroll.x << ", y: " << scroll.y << std::endl;
-    return scroll;
+    return map_data::SharedMapData::get_instance()->scroll;
 }
 
 st_size MapController::get_size()
@@ -1177,7 +1177,7 @@ void MapController::adjust_dynamic_backgrounds_position()
 
 bool MapController::must_show_static_bg()
 {
-    if (static_bg.is_null() == false && static_bg_pos.x >= scroll.x-1 && static_bg_pos.x < scroll.x+RES_W) {
+    if (static_bg.is_null() == false && static_bg_pos.x >= map_data::SharedMapData::get_instance()->scroll.x-1 && static_bg_pos.x < map_data::SharedMapData::get_instance()->scroll.x+RES_W) {
         return true;
     }
     return false;
@@ -1366,7 +1366,7 @@ int MapController::get_first_lock_on_left(int x_pos)
 
 int MapController::get_first_lock_on_right(int x_pos)
 {
-    int limit = (scroll.x+RES_W)/TILESIZE;
+    int limit = (map_data::SharedMapData::get_instance()->scroll.x+RES_W)/TILESIZE;
     x_pos += 1;
     std::cout << "MapController::get_first_lock_on_right - x_pos: " << x_pos << ", limit: " << limit << std::endl;
     for (int i=x_pos; i<=limit; i++) {
@@ -1750,7 +1750,7 @@ void MapController::load_map_objects() {
 
 st_float_position MapController::get_last_scrolled() const
 {
-    return scrolled;
+    return map_data::SharedMapData::get_instance()->scrolled;
 }
 
 // ********************************************************************************************** //
@@ -1758,8 +1758,8 @@ st_float_position MapController::get_last_scrolled() const
 // ********************************************************************************************** //
 void MapController::reset_scrolled()
 {
-    scrolled.x = 0;
-    scrolled.y = 0;
+    map_data::SharedMapData::get_instance()->scrolled.x = 0;
+    map_data::SharedMapData::get_instance()->scrolled.y = 0;
 }
 
 bool MapController::value_in_range(int value, int min, int max) const
@@ -2116,7 +2116,7 @@ void MapController::collision_char_object(character* charObj, const float x_inc,
                     charObj->damage(TOUCH_DAMAGE_BIG, false);
                     continue;
                 } else if (charObj->is_player() == true && temp_obj.get_state() != 0 && (temp_obj.get_type() == OBJ_DEATHRAY_VERTICAL || temp_obj.get_type() == OBJ_DEATHRAY_HORIZONTAL)) {
-                    std::cout << "DEATHRAY(damage) - player.x: " << char_rect.x << ", map.scroll_x: " << scroll.x << ", pos.x: " << temp_obj.get_position().x << ", size.w: " << temp_obj.get_size().width << std::endl;
+                    std::cout << "DEATHRAY(damage) - player.x: " << char_rect.x << ", map.scroll_x: " << map_data::SharedMapData::get_instance()->scroll.x << ", pos.x: " << temp_obj.get_position().x << ", size.w: " << temp_obj.get_size().width << std::endl;
                     charObj->damage(999, false);
                     continue;
                 }
@@ -2339,7 +2339,7 @@ bool MapController::get_map_point_wall_lock(int x)
 
 void MapController::move_map(const short int move_x, const short int move_y)
 {
-    set_scrolling(st_float_position(scroll.x+move_x, scroll.y+move_y));
+    set_scrolling(st_float_position(map_data::SharedMapData::get_instance()->scroll.x+move_x, map_data::SharedMapData::get_instance()->scroll.y+move_y));
 }
 
 

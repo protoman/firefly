@@ -36,7 +36,7 @@ private:
     int subStepCount = 4;
     // world
     b2WorldDef worldDef = b2DefaultWorldDef();
-    b2WorldId worldId;
+    b2WorldId worldId{};
     // ground
     b2BodyDef groundBodyDef = b2DefaultBodyDef();
     b2BodyId groundId;
@@ -46,7 +46,7 @@ private:
     float player_w = 0.9f;
     float player_h = 1.8f;
     b2BodyDef playerBodyDef = b2DefaultBodyDef();
-    b2BodyId playerBodyId;
+    b2BodyId playerBodyId{};
     b2Polygon dynamicBox = b2MakeBox(player_w/2, player_h/2);
     b2ShapeDef playerShapeDef = b2DefaultShapeDef();
 

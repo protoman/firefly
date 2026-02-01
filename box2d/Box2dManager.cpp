@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-Box2dManager::Box2dManager() {
+Box2dManager::Box2dManager() : groundId(), groundBox() {
     // create world
     worldDef.gravity = (b2Vec2){0.0f, 9.8f};
     worldId = b2CreateWorld(&worldDef);
@@ -45,6 +45,7 @@ st_rectangle Box2dManager::get_ground_box()
 st_rectangle Box2dManager::get_player_box() {
     b2Vec2 position = b2Body_GetPosition(playerBodyId);
 
+    // TODO - move to an 'execute' method
     // check contact events
     if (jump_started == true) {
         b2ContactData contactDataArray[10];
@@ -68,7 +69,7 @@ st_rectangle Box2dManager::get_player_box() {
     }
 
 
-    st_rectangle res = st_rectangle(position.x * PIXELS_PER_METER, position.y * PIXELS_PER_METER, player_w * PIXELS_PER_METER, player_h * PIXELS_PER_METER);
+    st_rectangle res = st_rectangle((position.x - player_w/2) * PIXELS_PER_METER, (position.y - player_h/2) * PIXELS_PER_METER, player_w * PIXELS_PER_METER, player_h * PIXELS_PER_METER);
     //std::cout << "Box2dManager::get_player_box[" << res.x << "][" << res.y << "][" << res.w << "][" << res.h << "]" << std::endl;
     return res;
 }

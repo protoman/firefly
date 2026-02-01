@@ -3,6 +3,8 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 
+#include "data/sharedmapdata.h"
+
 SDL_Renderer *Box2dDebugDraw::sdl_renderer = nullptr; // forward declaration and initializationf or static member
 
 Box2dDebugDraw::Box2dDebugDraw() : b2DebugDraw() {
@@ -60,13 +62,9 @@ void Box2dDebugDraw::DrawPolygon(b2Transform transform, const b2Vec2 *vertices, 
     //SDL_SetRenderDrawColor(sdl_renderer, 250, 0, 0);
     SDL_Point* sdlPoints = new SDL_Point[vertexCount + 1];
     for (int i = 0; i < vertexCount; ++i) {
-        int next_index = (i + 1 == vertexCount) ? 0 : i + 1;
         b2Vec2 p0 = b2TransformPoint(transform, vertices[i]);
-        b2Vec2 p1 = b2TransformPoint(transform, vertices[next_index]);
-        float x0 = p0.x * PIXELS_PER_METER;
-        float y0 = p0.y * PIXELS_PER_METER;
-        float x1 = p1.x * PIXELS_PER_METER;
-        float y1 = p1.y * PIXELS_PER_METER;
+        float x0 = p0.x * PIXELS_PER_METER - map_data::SharedMapData::get_instance()->scroll.x;
+        float y0 = p0.y * PIXELS_PER_METER - map_data::SharedMapData::get_instance()->scroll.y;
         sdlPoints[i] = { (int)x0, (int)y0 };
     }
     sdlPoints[vertexCount] = sdlPoints[0]; // Close the polygon

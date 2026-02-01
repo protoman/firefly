@@ -280,9 +280,6 @@ public:
     // vector objects
 
 private:
-    struct st_float_position scroll;
-    st_float_position scrolled;                                             // stores the value the map scrolled in this cycle. used for character movement control (it should move taking the scroll in account)
-
     std::map<unsigned int, st_layer_pos> layerScrollMap;
     st_imageData static_bg;
     st_position static_bg_pos;
