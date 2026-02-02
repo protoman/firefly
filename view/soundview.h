@@ -56,16 +56,16 @@ private:
 
 
 private:
-    MIX_Mixer *mixer;
-    MIX_Track *sfx_track;
-    MIX_Track *repeat_track;
-    MIX_Track *music_track;
-    MIX_Track *boss_music_track;
-    MIX_Track *shared_music_track;
+    MIX_Mixer *mixer = nullptr;
+    MIX_Track *sfx_track = nullptr;
+    MIX_Track *repeat_track = nullptr;
+    MIX_Track *music_track = nullptr;
+    MIX_Track *boss_music_track = nullptr;
+    MIX_Track *shared_music_track = nullptr;
 
-    MIX_Audio *sfx_list[SFX_COUNT]; /**< TODO */
-    MIX_Audio *music; /**< TODO */
-    MIX_Audio *boss_music; /**< TODO */
+    MIX_Audio *sfx_list[SFX_COUNT];
+    MIX_Audio *music = nullptr;
+    MIX_Audio *boss_music = nullptr;
 
     bool is_playing_repeat = false;
     int repeating_sfx_number = -1;

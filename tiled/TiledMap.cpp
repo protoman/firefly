@@ -25,11 +25,6 @@ void TiledMap::initialize(std::string filename, SDL_Renderer* renderer)
             if (ts.getTileCount() > 0 && ts.getImagePath().length() > 0) {
                 textures.emplace_back(std::make_unique<TiledMapTexture>());
                 textures.back()->set_image_data(ImageView::get_instance()->imageFromFile(ts.getImagePath()));
-                /*
-                if (!textures.back()->loadFromFile(ts.getImagePath(), renderer)) {
-                    std::cerr << "Failed opening " << ts.getImagePath() << "\n";
-                }
-                */
             }
         }
 

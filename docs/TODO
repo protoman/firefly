@@ -1,6 +1,10 @@
 ########################################################
                      TODO LIST
 ########################################################
+- Converto to SDL3
+    # fix sfx
+    # fix sfx and music volume (distortion, needs to convert 0-255 to to 0.0f->1.0f->1.Xf)
+
 - Split SDL3 code better
     # there should be no SDL code outside SDL-layer ones.
     # minimize the use of SDL functions, avoiding duplication.

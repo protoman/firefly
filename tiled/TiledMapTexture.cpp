@@ -1,11 +1,5 @@
 #include "TiledMapTexture.h"
 
-#include <iostream>
-#include <cstdint>
-
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 TiledMapTexture::TiledMapTexture() {}
 
 TiledMapTexture::~TiledMapTexture()

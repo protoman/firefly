@@ -271,7 +271,9 @@ void GameManager::initGame()
 void GameManager::start_stage_music()
 {
     SoundView::get_instance()->stop_music();
-    SoundView::get_instance()->load_music(GameData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
+    //SoundView::get_instance()->load_music(GameData::get_instance()->v6_stage_list.at(SharedData::get_instance()->v6_selected_stage).music_filename);
+    SoundView::get_instance()->unload_music();
+    SoundView::get_instance()->load_music("porto_alegre.mod.mp3");
     SoundView::get_instance()->play_music();
 }
 
