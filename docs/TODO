@@ -1,39 +1,58 @@
 ########################################################
-                     INSPIRACÃO
+                     TODO LIST
 ########################################################
+- Split SDL3 code better.
+
+
+1. Load the Audio (MIX_Audio)
+First, load your audio data from a file or IOStream, which produces a MIX_Audio object.
+c
+// Example: Load an Ogg file
+MIX_Audio *audio = MIX_LoadAudio("sound.ogg", NULL, false, true);
+2. Create a Track (MIX_Track)
+Create a track on your mixer where the audio will play. Think of tracks as individual slots on a mixing board.
+c
+// Assume 'mixer' is a valid MIX_Mixer*
+MIX_Track *track = MIX_CreateTrack(mixer);
+3. Assign Audio to Track (MIX_SetTrackAudio)
+Use MIX_SetTrackAudio() to assign the loaded audio data to that track.
+c
+// Assign the audio to the track
+bool success = MIX_SetTrackAudio(track, audio);
+Note: A single MIX_Audio can be assigned to multiple tracks simultaneously, allowing you to play the same sound effect multiple times, possibly with different effects or panning.
+4. Play the Track
+Once assigned, call MIX_PlayTrack() to start playback.
+c
+// Play the track
+MIX_PlayTrack(track, NULL, 0); // NULL props, 0 loops
+5. Cleanup
+You can destroy the MIX_Audio object while the track is still using it; the track holds a reference and will free the resources automatically when it is done with it.
+c
+MIX_DestroyAudio(audio);
+
+
+
 - remove all build warnings
 - use a tool for code-cleaning like SonarCube
 
+- move to SDL3
+
+- created a method that will determine after witch layer the player will be added
+    # it should look for a "PLAYER" layer
+    # if none is found player should be draw before the tileset layer
 
 - move all the scrolling logic from map to its own class
     # scroll and scrolled can be stored in shared_map_data
 
-https://discourse.libsdl.org/t/box2d-and-sdl2-no-collision-after-rendering/26436/5
-https://github.com/obiot/mario-2d-jumps-box2dwasm-melonjs
-https://github.com/eder13/Box2D-SDL2-Demo
-https://forums.solar2d.com/t/box2d-or-custom-collision-system/354054
-
 - split data into a sub-repo
 - create an "open" data with placeholders, and then an official data repo that is private
 
-- get rid of qt and use CMake or another build tool.
-- Move IDE to CLion
-
-- Refactow map::draw
+- Refactor map::draw
     # loop through layers, draw each one in order
         # methods for image, object and tileset layers
     # that way we can have infinite image, object and tileset layers
     # need to figure out how to draw player, probably after first objects layer
 
-- Player movement: https://www.iforce2d.net/b2dtut/constant-speed
-
-https://store.steampowered.com/app/1802190/Puzzles_For_Clef/
-
-https://github.com/obiot/mario-2d-jumps-box2dwasm-melonjs
-
-https://www.iforce2d.net/b2dtut/jumping
-
-https://www.youtube.com/watch?v=uaIQau4woSM
 
 Fazer um arquivo de "shared-data" para cada tipo de coisa.
 Por exemplo:
@@ -47,6 +66,25 @@ Resolution indepedance
 
 separar em headersa diferentes st_rectanble, st_point, st_size, etc
 
+##########################################################################################################################################
+
+https://discourse.libsdl.org/t/box2d-and-sdl2-no-collision-after-rendering/26436/5
+https://github.com/obiot/mario-2d-jumps-box2dwasm-melonjs
+https://github.com/eder13/Box2D-SDL2-Demo
+https://forums.solar2d.com/t/box2d-or-custom-collision-system/354054
+
+- Player movement: https://www.iforce2d.net/b2dtut/constant-speed
+
+https://store.steampowered.com/app/1802190/Puzzles_For_Clef/
+
+https://github.com/obiot/mario-2d-jumps-box2dwasm-melonjs
+
+https://www.iforce2d.net/b2dtut/jumping
+
+https://www.youtube.com/watch?v=uaIQau4woSM
+
+
+
 ########################################################
                      REFACTOR
 ########################################################
@@ -58,12 +96,6 @@ separar em headersa diferentes st_rectanble, st_point, st_size, etc
 ########################################################
 - usar Box2D e Tiled para mapas e movimento/colisao.
     # https://lyze.dev/2021/03/25/libGDX-Tiled-Box2D-example-tiles/
-
-- corrigir slopes declive esquerda->direita
-- importar fixes do Rockbot
-
-- refazer character, simplificar parte de escadas/etc
-
 
 ========================================================
 5. usar json como formato de arquivo para guardar dados

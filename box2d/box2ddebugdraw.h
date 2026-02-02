@@ -2,7 +2,7 @@
 #define BOX2DDEBUGDRAW_H
 
 #include <box2d/types.h>
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 #define PIXELS_PER_METER 40
 

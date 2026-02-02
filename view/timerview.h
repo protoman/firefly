@@ -1,7 +1,7 @@
 #ifndef TIMERVIEW_H
 #define TIMERVIEW_H
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 #ifdef WIN32
 #include <Windows.h>

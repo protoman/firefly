@@ -432,7 +432,8 @@ void projectile::set_target_position(st_float_position *pos)
 
         std::cout << "### AJUDSTED-ANGLE[" << angle << "],dist_y[" << dist_y << "]" << std::endl;
         if (angle != 0.0) {
-            ImageView::get_instance()->rotate_image(rotated_surface, angle);
+            // TODO - implement in SDL 3 //
+            //ImageView::get_instance()->rotate_image(rotated_surface, angle);
         }
 
 
@@ -489,8 +490,6 @@ void projectile::play_sfx(bool called_from_npc)
 
 
     if (projectile_sfx.length() > 0) {
-        //Mix_Chunk* sfx = GameMediator::get_instance()->get_sfx(projectile_sfx);
-        //SoundView::get_instance()->play_sfx_from_chunk(sfx, 1);
         SoundView::get_instance()->play_sfx_from_file(projectile_sfx, 1);
     } else if (called_from_npc == false) { // game enemies should not play default fire sound
         SoundView::get_instance()->play_sfx(SFX_PLAYER_SHOT);

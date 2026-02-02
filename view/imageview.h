@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <map>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 
 #include "defines.h"
 #include "data/st_common.h"
@@ -180,11 +180,6 @@ public:
 
     st_imageData* get_preloaded_image(e_PRELOADED_IMAGES image_n);
 
-
-
-    void zoom_image(st_position dest, st_imageData& picture, int smooth);
-    void rotate_image(st_imageData& picture, double angle);
-    st_imageData rotated_from_image(st_imageData& picture, double angle);
 
 
     void draw_explosion(st_position pos);

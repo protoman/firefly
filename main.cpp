@@ -1,5 +1,5 @@
 #include <iostream>
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 #if defined(LINUX) || defined(RASPBERRY)
     #include <sys/stat.h>

@@ -2,10 +2,6 @@
 #include <cstdlib>
 #include "GameManager.h"
 
-#ifdef ANDROID
-#include <android/log.h>
-#endif
-
 #include "data/shareddata.h"
 
 #include "view/option_picker.h"
@@ -80,13 +76,14 @@ void GameManager::initHardwareLayer()
         std::cout << "SDL could not initialize! SDL_Error[" << SDL_GetError() << "]" << std::endl;
         exit(EXIT_FAILURE);
     }
-    SharedData::get_instance()->window = SDL_CreateWindow( "Project Firefly ALPHA v0.0.1", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, RES_W, RES_H, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL );
+    SharedData::get_instance()->window = SDL_CreateWindow( "Project Firefly ALPHA v0.0.1", RES_W, RES_H, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL );
     if (SharedData::get_instance()->window == nullptr) {
         std::cout << "Window could not be created! SDL_Error[" << SDL_GetError() << "]" << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    gRenderer = SDL_CreateRenderer(SharedData::get_instance()->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE );
+    //SDL_Window *window, const char *name
+    gRenderer = SDL_CreateRenderer(SharedData::get_instance()->window, nullptr);
     if (gRenderer == nullptr) {
         std::cout << "Renderer could not be created! SDL Error: [" << SDL_GetError() << "]" << std::endl;
         exit(EXIT_FAILURE);
@@ -259,9 +256,6 @@ void GameManager::initGame()
     std::string tiled_map_filename = SharedData::get_instance()->FILEPATH + "/data/tiled/swamp.tmx";
     tiled_map.initialize(tiled_map_filename, gRenderer);
 
-    //box2dDebugDraw.drawShapes = false;
-    //box2dDebugDraw.drawBounds = true;
-
     Box2dDebugDraw::setRenderer(gRenderer);
     debugDrawer = b2DefaultDebugDraw();
     debugDrawer.drawShapes = true;
@@ -272,22 +266,6 @@ void GameManager::initGame()
 
     init_map_and_player_to_bottom();
     InGamePresentation::get_instance()->start_show_ready();
-
-
-    /*
-    std::vector<st_dialog> dialog_list = InGamePresentation::get_instance()->get_game_dialog(GAME_DIALOG_INTRO_STAGE_SWAMP_ARRIVAL);
-
-    if (dialog_list.size() > 0) {
-
-        dialog_queue.insert(dialog_queue.end(), dialog_list.begin(), dialog_list.end());
-
-        std::cout << ">>>>>>>>>>>>>>>>>>> dialog[0].msgs.size[" << dialog_queue.at(0).msgs.size() << "]" << std::endl;
-        for (int i=0; i<dialog_queue.at(0).msgs.size(); i++) {
-            std::cout << ">>>>>>>>>>>>>> dialog[0].msgs[" << i << "][" << dialog_queue.at(0).msgs.at(i) << "]" << std::endl;
-            dialog_queue.at(0).face_name = SharedData::get_instance()->get_player_face_file();
-        }
-    }
-    */
 }
 
 void GameManager::start_stage_music()

@@ -1,5 +1,7 @@
 #include "inputcontroller.h"
 
+#include <SDL2/SDL_events.h>
+
 InputController* InputController::_instance = nullptr;
 
 InputController::InputController()  : _used_keyboard(false), held_button_count(0), held_button_timer(0), cheat_input_count(0), cheat_input_previous(-1)
@@ -40,7 +42,7 @@ InputController *InputController::get_instance()
 
 void InputController::init()
 {
-    joystick_number = SDL_NumJoysticks();
+    SDL_GetJoysticks(&joystick_number);
 #ifdef ANDROID
     __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### INPUT::init_joystick - %i joysticks were found.", SDL_NumJoysticks() );
         __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### INPUT::init_joystick - The names of the joysticks are:");
@@ -52,17 +54,17 @@ void InputController::init()
     printf("The names of the joysticks are:\n");
 #endif
     if (joystick_number > 0) {
-        SDL_JoystickEventState(SDL_ENABLE);
-        joystick1 = SDL_JoystickOpen(SharedData::get_instance()->game_config.selected_input_device);
-        printf("Opened Joystick [%s]\n", SDL_JoystickName(joystick1));
+        SDL_SetJoystickEventsEnabled(true);
+        joystick1 = SDL_OpenJoystick(SharedData::get_instance()->game_config.selected_input_device);
+        printf("Opened Joystick [%s]\n", SDL_GetJoystickNameForID(SharedData::get_instance()->game_config.selected_input_device));
 
         // open haptic
-        joystick1_haptic = SDL_HapticOpenFromJoystick(joystick1);
+        joystick1_haptic = SDL_OpenHapticFromJoystick(joystick1);
         if(joystick1_haptic == NULL) {
             printf( "Warning: Controller does not support haptics! SDL Error: %s\n", SDL_GetError() );
         } else {
             //Get initialize rumble
-            if (SDL_HapticRumbleInit(joystick1_haptic) < 0) {
+            if (!SDL_InitHapticRumble(joystick1_haptic)) {
                 printf( "Warning: Unable to initialize rumble! SDL Error: %s\n", SDL_GetError() );
             }
         }
@@ -72,13 +74,13 @@ void InputController::init()
 void InputController::change_joystick()
 {
     close_joystick();
-    joystick1 = SDL_JoystickOpen(SharedData::get_instance()->game_config.selected_input_device);
+    joystick1 = SDL_OpenJoystick(SharedData::get_instance()->game_config.selected_input_device);
 }
 
 void InputController::close_joystick()
 {
-    SDL_HapticClose(joystick1_haptic);
-    SDL_JoystickClose(joystick1);
+    SDL_CloseHaptic(joystick1_haptic);
+    SDL_CloseJoystick(joystick1);
 }
 
 // ********************************************************************************************** //
@@ -139,10 +141,10 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
 
     while (SDL_PollEvent(&SharedData::get_instance()->event)) {
 
-        if (SharedData::get_instance()->event.type == SDL_WINDOWEVENT) {
+        if (SharedData::get_instance()->event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
             SDL_Event event = SharedData::get_instance()->event;
             //std::cout << "WINDOW-EVENT[" << (int)SharedData::get_instance()->event.window.event << "], SDL_WINDOWEVENT_RESIZED[" << (int)SDL_WINDOWEVENT_RESIZED << "], SDL_WINDOWEVENT_SIZE_CHANGED[" << (int)SDL_WINDOWEVENT_SIZE_CHANGED << "]" << std::endl;
-            if (SharedData::get_instance()->event.window.event == SDL_WINDOWEVENT_RESIZED) {
+            if (SharedData::get_instance()->event.window.type == SDL_EVENT_WINDOW_RESIZED) {
                 SDL_Log("Window %d resized to %dx%d", event.window.windowID, event.window.data1, event.window.data2);
                 SharedData::get_instance()->window_size = st_size(SharedData::get_instance()->event.window.data1, SharedData::get_instance()->event.window.data2);
                 SharedData::get_instance()->window_size_changed = true;
@@ -156,9 +158,9 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
 
         if (SharedData::get_instance()->game_config.input_type == INPUT_TYPE_DOUBLE || SharedData::get_instance()->game_config.input_type == INPUT_TYPE_KEYBOARD) {
             int *key_config_tmp = SharedData::get_instance()->game_config.keys_codes;
-            if (SharedData::get_instance()->event.type == SDL_KEYDOWN || SharedData::get_instance()->event.type == SDL_KEYUP) {
+            if (SharedData::get_instance()->event.type == SDL_EVENT_KEY_DOWN || SharedData::get_instance()->event.type == SDL_EVENT_KEY_UP) {
 
-                //std::cout << "InputController::read_input - SDL_KEYDOWN[" << SharedData::get_instance()->event.key.keysym.scancode << "]" << std::endl;
+                //std::cout << "InputController::read_input - SDL_EVENT_KEY_DOWN[" << SharedData::get_instance()->event.key.keysym.scancode << "]" << std::endl;
 
 #ifdef ANDROID
                 __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### SharedData::get_instance()->event.key.which[%d] ###", SharedData::get_instance()->event.key.which);
@@ -171,9 +173,9 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
                 }
 #endif
             }
-            if (SharedData::get_instance()->event.type == SDL_KEYDOWN) {
+            if (SharedData::get_instance()->event.type == SDL_EVENT_KEY_DOWN) {
                 for (int i=0; i<BTN_COUNT; i++) {
-                    if (key_config_tmp[i] != -1 && key_config_tmp[i] == SharedData::get_instance()->event.key.keysym.sym) {
+                    if (key_config_tmp[i] != -1 && key_config_tmp[i] == SharedData::get_instance()->event.key.key) {
                         p1_input[i] = 1;
                         _used_keyboard = true;
                         if (i == BTN_JUMP) {
@@ -182,17 +184,17 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
                     }
                 }
 
-                if (SharedData::get_instance()->event.key.keysym.sym == SDLK_LALT) {
+                if (SharedData::get_instance()->event.key.key == SDLK_LALT) {
                     alt_key = true;
                 }
-                if (SharedData::get_instance()->event.key.keysym.sym == SDLK_RETURN) {
+                if (SharedData::get_instance()->event.key.key == SDLK_RETURN) {
                     enter_key = true;
                 }
 
 
-            } else if (SharedData::get_instance()->event.type == SDL_KEYUP) {
+            } else if (SharedData::get_instance()->event.type == SDL_EVENT_KEY_UP) {
                 for (int i=0; i<BTN_COUNT; i++) {
-                    if (key_config_tmp[i] != -1 && key_config_tmp[i] == SharedData::get_instance()->event.key.keysym.sym) {
+                    if (key_config_tmp[i] != -1 && key_config_tmp[i] == SharedData::get_instance()->event.key.key) {
                         //if (i == BTN_ATTACK) std::cout << "INPUT::readInput::KEYUP::ATTACK" << std::endl;
                         p1_input[i] = 0;
                         _used_keyboard = true;
@@ -202,17 +204,17 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
                     }
                 }
 
-                if (SharedData::get_instance()->event.key.keysym.sym == SDLK_LALT) {
+                if (SharedData::get_instance()->event.key.key == SDLK_LALT) {
                     alt_key = false;
                 }
-                if (SharedData::get_instance()->event.key.keysym.sym == SDLK_RETURN) {
+                if (SharedData::get_instance()->event.key.key == SDLK_RETURN) {
                     enter_key = false;
                 }
 
             }
             SDL_PumpEvents(); // check keyboard events
 #if !defined(PLAYSTATION2) && !defined(PSP) && !defined(WII) && !defined(DREAMCAST)
-            if (SharedData::get_instance()->event.type == SDL_QUIT) {
+            if (SharedData::get_instance()->event.type == SDL_EVENT_QUIT) {
                 std::cout << "LEAVE #1" << std::endl;
                 SharedData::get_instance()->leave_game = true;
             }
@@ -236,7 +238,7 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
 
 
         if (SharedData::get_instance()->game_config.input_type == INPUT_TYPE_DOUBLE || SharedData::get_instance()->game_config.input_type == INPUT_TYPE_JOYSTICK) {
-            if (SharedData::get_instance()->event.type == SDL_JOYBUTTONDOWN) {
+            if (SharedData::get_instance()->event.type == SDL_EVENT_JOYSTICK_BUTTON_DOWN) {
 
 
                 if (check_input_reset) {
@@ -257,7 +259,7 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
                         //break;
                     }
                 }
-            } else if (SharedData::get_instance()->event.type == SDL_JOYBUTTONUP) {
+            } else if (SharedData::get_instance()->event.type == SDL_EVENT_JOYSTICK_BUTTON_UP) {
 
 
                 if (check_input_reset) {
@@ -285,9 +287,9 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
 
 
         // check AXIS buttons //
-        if (SharedData::get_instance()->event.type == SDL_JOYAXISMOTION && (SharedData::get_instance()->game_config.input_mode == INPUT_MODE_ANALOG || SharedData::get_instance()->game_config.input_mode == INPUT_MODE_DOUBLE || SharedData::get_instance()->game_config.input_mode == INPUT_MODE_DIGITAL)) {
+        if (SharedData::get_instance()->event.type == SDL_EVENT_JOYSTICK_AXIS_MOTION && (SharedData::get_instance()->game_config.input_mode == INPUT_MODE_ANALOG || SharedData::get_instance()->game_config.input_mode == INPUT_MODE_DOUBLE || SharedData::get_instance()->game_config.input_mode == INPUT_MODE_DIGITAL)) {
 
-            //std::cout << "INPUT::read_input - SharedData::get_instance()->event.SDL_JOYAXISMOTION, axis[" << (int)SharedData::get_instance()->event.jaxis.axis << "], j.value[" << SharedData::get_instance()->event.jaxis.value << "]" << std::endl;
+            //std::cout << "INPUT::read_input - SharedData::get_instance()->event.SDL_EVENT_JOYSTICK_AXIS_MOTION, axis[" << (int)SharedData::get_instance()->event.jaxis.axis << "], j.value[" << SharedData::get_instance()->event.jaxis.value << "]" << std::endl;
 
 
             // value is the axis (0 is X, 1 is Y)
@@ -334,9 +336,9 @@ void InputController::read_input(bool check_input_reset, bool check_input_cheat)
             }
         }
 
-        if ((SharedData::get_instance()->game_config.input_mode == INPUT_MODE_DIGITAL || SharedData::get_instance()->game_config.input_mode == INPUT_MODE_DOUBLE) && SharedData::get_instance()->event.type == SDL_JOYHATMOTION) {
+        if ((SharedData::get_instance()->game_config.input_mode == INPUT_MODE_DIGITAL || SharedData::get_instance()->game_config.input_mode == INPUT_MODE_DOUBLE) && SharedData::get_instance()->event.type == SDL_EVENT_JOYSTICK_HAT_MOTION) {
             // check HAT input //
-            if (SharedData::get_instance()->event.type == SDL_JOYAXISMOTION && (SharedData::get_instance()->game_config.input_mode == INPUT_MODE_ANALOG || SharedData::get_instance()->game_config.input_mode == INPUT_MODE_DOUBLE)) {
+            if (SharedData::get_instance()->event.type == SDL_EVENT_JOYSTICK_AXIS_MOTION && (SharedData::get_instance()->game_config.input_mode == INPUT_MODE_ANALOG || SharedData::get_instance()->game_config.input_mode == INPUT_MODE_DOUBLE)) {
                 for (int i=0; i<BTN_COUNT; i++) {
                     if (SharedData::get_instance()->game_config.button_codes[i].type == JOYSTICK_INPUT_TYPE_AXIS && SharedData::get_instance()->game_config.button_codes[i].value != -1 && SharedData::get_instance()->game_config.button_codes[i].value == SharedData::get_instance()->event.jaxis.axis) {
                         if (SharedData::get_instance()->game_config.button_codes[i].axis_type > 0 && SharedData::get_instance()->event.jaxis.value > JOYVAL) {
@@ -430,7 +432,7 @@ void InputController::test_erumble()
 {
     if (joystick_number > 0 && joystick1_haptic != nullptr) {
         //Play rumble at 75% strenght for 500 milliseconds
-        if(SDL_HapticRumblePlay(joystick1_haptic, 0.75, 50 ) != 0 ) {
+        if(SDL_PlayHapticRumble(joystick1_haptic, 0.75, 50 ) != 0 ) {
             printf( "Warning: Unable to play rumble! %s\n", SDL_GetError() );
         }
     }
@@ -524,13 +526,13 @@ bool InputController::pick_key_or_button(st_game_config &game_config_copy, INPUT
 #ifdef ANDROID
 __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### INPUT::pick_key_or_button - SharedData::get_instance()->type[%d] ###", (int)SharedData::get_instance()->event.type);
 #else
-std::cout << "### INPUT::pick_key_or_button[SDL_KEYDOWN][" << (int)SharedData::get_instance()->event.key.keysym.sym << "]" << std::endl;
+std::cout << "### INPUT::pick_key_or_button[SDL_EVENT_KEY_DOWN][" << (int)SharedData::get_instance()->event.key.key << "]" << std::endl;
 #endif
 
             if (SharedData::get_instance()->game_config.input_type == INPUT_TYPE_DOUBLE || SharedData::get_instance()->game_config.input_type == INPUT_TYPE_KEYBOARD) {
-                if (SharedData::get_instance()->event.type == SDL_KEYDOWN) {
+                if (SharedData::get_instance()->event.type == SDL_EVENT_KEY_DOWN) {
                     // do not allow user to reassign ESCAPE key
-                    if (SharedData::get_instance()->event.key.keysym.sym == SDLK_ESCAPE) {
+                    if (SharedData::get_instance()->event.key.key == SDLK_ESCAPE) {
                         #ifdef ANDROID
                         __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### ERROR: Can't reassign ESCAPE key ###");
                         #else
@@ -538,28 +540,28 @@ std::cout << "### INPUT::pick_key_or_button[SDL_KEYDOWN][" << (int)SharedData::g
                         #endif
                         return false;
                     }
-                    game_config_copy.keys_codes[key] = (int)SharedData::get_instance()->event.key.keysym.sym;
+                    game_config_copy.keys_codes[key] = (int)SharedData::get_instance()->event.key.key;
                     #ifdef ANDROID
-                    __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### INPUT::pick_key_or_button[SDL_KEYDOWN][%d] ###", (int)SharedData::get_instance()->event.key.keysym.sym);
+                    __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### INPUT::pick_key_or_button[SDL_EVENT_KEY_DOWN][%d] ###", (int)SharedData::get_instance()->event.key.key);
                     #else
-                    std::cout << "### INPUT::pick_key_or_button[SDL_KEYDOWN][" << (int)SharedData::get_instance()->event.key.keysym.sym << "]" << std::endl;
+                    std::cout << "### INPUT::pick_key_or_button[SDL_EVENT_KEY_DOWN][" << (int)SharedData::get_instance()->event.key.key << "]" << std::endl;
                     #endif
                     return false;
                 }
                 SDL_PumpEvents();
             }
             if (SharedData::get_instance()->game_config.input_type == INPUT_TYPE_DOUBLE || SharedData::get_instance()->game_config.input_type == INPUT_TYPE_JOYSTICK) {
-                if (SharedData::get_instance()->event.type == SDL_JOYBUTTONDOWN) {
+                if (SharedData::get_instance()->event.type == SDL_EVENT_JOYSTICK_BUTTON_DOWN) {
                     //std::cout << "INPUT::pick_key_or_button - key[" << (int)key << "], current.BTN[" << (int)SharedData::get_instance()->game_config_copy.button_codes[key] << "], SET JOYBTN TO[" << (int)SharedData::get_instance()->event.jbutton.button << "]" << std::endl;
                     game_config_copy.button_codes[key].type = JOYSTICK_INPUT_TYPE_BUTTON;
                     game_config_copy.button_codes[key].value = (int)SharedData::get_instance()->event.jbutton.button;
                     #ifdef ANDROID
-                    __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### INPUT::pick_key_or_button[SDL_JOYBUTTONDOWN][%d] ###", (int)SharedData::get_instance()->event.jbutton.button);
+                    __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### INPUT::pick_key_or_button[SDL_EVENT_JOYSTICK_BUTTON_DOWN][%d] ###", (int)SharedData::get_instance()->event.jbutton.button);
                     #else
-                    std::cout << "### INPUT::pick_key_or_button[SDL_JOYBUTTONDOWN][" << (int)SharedData::get_instance()->event.jbutton.button << "]" << std::endl;
+                    std::cout << "### INPUT::pick_key_or_button[SDL_EVENT_JOYSTICK_BUTTON_DOWN][" << (int)SharedData::get_instance()->event.jbutton.button << "]" << std::endl;
                     #endif
                     return true;
-                } else if (SharedData::get_instance()->event.type == SDL_JOYHATMOTION) { //joy-hat events
+                } else if (SharedData::get_instance()->event.type == SDL_EVENT_JOYSTICK_HAT_MOTION) { //joy-hat events
                     game_config_copy.button_codes[key].type = JOYSTICK_INPUT_TYPE_HAT;
                     game_config_copy.button_codes[key].value = SharedData::get_instance()->event.jhat.value;
                     #ifdef ANDROID
@@ -568,7 +570,7 @@ std::cout << "### INPUT::pick_key_or_button[SDL_KEYDOWN][" << (int)SharedData::g
                     std::cout << "### ### INPUT::pick_key_or_button[JOYSTICK_INPUT_TYPE_HAT][" << SharedData::get_instance()->event.jhat.value << "] ###" << std::endl;
                     #endif
                     return true;
-                } else if (SharedData::get_instance()->event.type == SDL_JOYAXISMOTION) { // joy-axis event
+                } else if (SharedData::get_instance()->event.type == SDL_EVENT_JOYSTICK_AXIS_MOTION) { // joy-axis event
                     // axis_type: indicate axis positive or negative
                     // value: indicate what is the axis (1 vertical, 0 horizontal)
                     if (SharedData::get_instance()->event.jaxis.value < -JOYVAL) {
@@ -577,9 +579,9 @@ std::cout << "### INPUT::pick_key_or_button[SDL_KEYDOWN][" << (int)SharedData::g
                         game_config_copy.button_codes[key].value = (int)SharedData::get_instance()->event.jaxis.axis;
                         game_config_copy.button_codes[key].axis_type = -1;
                         #ifdef ANDROID
-                        __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### INPUT::pick_key_or_button[SDL_JOYAXISMOTION-][%d] ###", (int)SharedData::get_instance()->event.jaxis.axis);
+                        __android_log_print(ANDROID_LOG_INFO, "###ROCKBOT###", "### INPUT::pick_key_or_button[SDL_EVENT_JOYSTICK_AXIS_MOTION-][%d] ###", (int)SharedData::get_instance()->event.jaxis.axis);
                         #else
-                        std::cout << "### INPUT::pick_key_or_button[SDL_JOYAXISMOTION-][" << (int)SharedData::get_instance()->event.jaxis.axis << "]" << std::endl;
+                        std::cout << "### INPUT::pick_key_or_button[SDL_EVENT_JOYSTICK_AXIS_MOTION-][" << (int)SharedData::get_instance()->event.jaxis.axis << "]" << std::endl;
                         #endif
                         return true;
                     } else if (SharedData::get_instance()->event.jaxis.value > JOYVAL) {
@@ -587,7 +589,7 @@ std::cout << "### INPUT::pick_key_or_button[SDL_KEYDOWN][" << (int)SharedData::g
                         game_config_copy.button_codes[key].type = JOYSTICK_INPUT_TYPE_AXIS;
                         game_config_copy.button_codes[key].value = (int)SharedData::get_instance()->event.jaxis.axis;
                         game_config_copy.button_codes[key].axis_type = 1;
-                        std::cout << "### INPUT::pick_key_or_button[SDL_JOYAXISMOTION+][" << (int)SharedData::get_instance()->event.jaxis.axis << "]" << std::endl;
+                        std::cout << "### INPUT::pick_key_or_button[SDL_EVENT_JOYSTICK_AXIS_MOTION+][" << (int)SharedData::get_instance()->event.jaxis.axis << "]" << std::endl;
                         return true;
                     }
                 } else {
@@ -605,7 +607,9 @@ std::cout << "### INPUT::pick_key_or_button[SDL_KEYDOWN][" << (int)SharedData::g
 
 int InputController::get_joysticks_number()
 {
-    return SDL_NumJoysticks();
+    int number_value = 0;
+    SDL_GetJoysticks(&number_value);
+    return number_value;
 }
 
 std::string InputController::get_key_name(int key)

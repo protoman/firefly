@@ -35,7 +35,13 @@ bool TiledMapTexture::loadFromFile(const std::string& path, SDL_Renderer* render
         constexpr std::int32_t bmask = 0x00ff0000;
         const std::int32_t amask = c == 4 ? 0xff000000 : 0;
 
-        auto* surface = SDL_CreateRGBSurfaceFrom(data, x, y, c * 8, pitch, rmask, gmask, bmask, amask);
+        //SDL_CreateRGBSurfaceFrom(void *pixels, int width, int height, int depth, int pitch, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
+        //auto* surface = SDL_CreateRGBSurfaceFrom(data, x, y, c * 8, pitch, rmask, gmask, bmask, amask);
+        // width = x, height = y, depth = c*8, pitch = pitch, rmask = rmask, gmask = gmask, bmask = bmask, amask = amask
+
+        //SDL_CreateSurfaceFrom(int width, int height, SDL_PixelFormat format, void *pixels, int pitch);
+        SDL_PixelFormat format = SDL_PIXELFORMAT_BGRA64;
+        auto* surface = SDL_CreateSurfaceFrom(x, y, format, data, pitch);
 
         if (!surface)
         {
@@ -46,7 +52,7 @@ bool TiledMapTexture::loadFromFile(const std::string& path, SDL_Renderer* render
 
         m_texture = SDL_CreateTextureFromSurface(renderer, surface);
 
-        SDL_FreeSurface(surface);
+        SDL_DestroySurface(surface);
         stbi_image_free(data);
 
         if (!m_texture)

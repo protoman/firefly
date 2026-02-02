@@ -2,8 +2,8 @@
 #define TEXTVIEW_H
 
 #include <string>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 #include "defines.h"
 #include "data/st_common.h"

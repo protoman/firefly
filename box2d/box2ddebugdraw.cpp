@@ -1,7 +1,7 @@
 #include "box2ddebugdraw.h"
 
 #include <iostream>
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 #include "data/sharedmapdata.h"
 
@@ -60,15 +60,15 @@ void Box2dDebugDraw::DrawStringFcn(b2Vec2 p, const char *s, b2HexColor color, vo
 void Box2dDebugDraw::DrawPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexCount, const b2HexColor color)
 {
     //SDL_SetRenderDrawColor(sdl_renderer, 250, 0, 0);
-    SDL_Point* sdlPoints = new SDL_Point[vertexCount + 1];
+    SDL_FPoint* sdlPoints = new SDL_FPoint[vertexCount + 1];
     for (int i = 0; i < vertexCount; ++i) {
         b2Vec2 p0 = b2TransformPoint(transform, vertices[i]);
         float x0 = p0.x * PIXELS_PER_METER - map_data::SharedMapData::get_instance()->scroll.x;
         float y0 = p0.y * PIXELS_PER_METER - map_data::SharedMapData::get_instance()->scroll.y;
-        sdlPoints[i] = { (int)x0, (int)y0 };
+        sdlPoints[i] = { x0, y0 };
     }
     sdlPoints[vertexCount] = sdlPoints[0]; // Close the polygon
-    SDL_RenderDrawLines(sdl_renderer, sdlPoints, vertexCount + 1);
+    SDL_RenderLines(sdl_renderer, sdlPoints, vertexCount + 1);
     delete[] sdlPoints;
 }
 

@@ -18,9 +18,8 @@ TextView *TextView::get_instance()
 void TextView::init()
 {
     //Initialize SDL_ttf
-    if( TTF_Init() == -1 )
-    {
-       printf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError() );
+    if (TTF_Init() == false) {
+       printf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", SDL_GetError() );
        exit(-1);
     }
 
@@ -31,14 +30,14 @@ void TextView::init()
 
 void TextView::renderText(int x, int y, st_color color, bool centered, std::string text)
 {
-    SDL_Rect text_pos={x, y, 0, 0};
+    SDL_FRect text_pos={(float)x, (float)y, 0.0f, 0.0f};
     SDL_Color font_color = SDL_Color();
     font_color.r = color.r;
     font_color.g = color.g;
     font_color.b = color.b;
 
     if (!font) {
-        printf("graphicsLib::draw_text - TTF_OpenFont: %s\n", TTF_GetError());
+        printf("graphicsLib::draw_text - TTF_OpenFont: %s\n", SDL_GetError());
         exit(-1);
     }
 
@@ -49,7 +48,7 @@ void TextView::renderText(int x, int y, st_color color, bool centered, std::stri
             black.g = 255;
             black.b = 255;
         }
-        SDL_Surface* text_outlineSF = TTF_RenderUTF8_Blended(outline_font, text.c_str(), black);
+        SDL_Surface* text_outlineSF = TTF_RenderText_Blended(outline_font, text.c_str(), 0, black);
 
         if (text_outlineSF) {
             if (centered == true && text.size() > 0) {
@@ -58,12 +57,12 @@ void TextView::renderText(int x, int y, st_color color, bool centered, std::stri
             text_pos.w = text_outlineSF->w;
             text_pos.h = text_outlineSF->h;
             SDL_Texture* outlineTexture = SDL_CreateTextureFromSurface(gRenderer, text_outlineSF);
-            SDL_RenderCopy(gRenderer, outlineTexture, nullptr, &text_pos);
-            SDL_FreeSurface(text_outlineSF);
+            SDL_RenderTexture(gRenderer, outlineTexture, nullptr, &text_pos);
+            SDL_DestroySurface(text_outlineSF);
             SDL_DestroyTexture(outlineTexture);
         }
     }
-    SDL_Surface* textSF = TTF_RenderUTF8_Blended(font, text.c_str(), font_color);
+    SDL_Surface* textSF = TTF_RenderText_Blended(font, text.c_str(), 0, font_color);
 
     if (textSF) {
         if (centered == true && text.size() > 0) {
@@ -74,8 +73,8 @@ void TextView::renderText(int x, int y, st_color color, bool centered, std::stri
         text_pos.w = textSF->w;
         text_pos.h = textSF->h;
         SDL_Texture* textTexture = SDL_CreateTextureFromSurface(gRenderer, textSF);
-        SDL_RenderCopy(gRenderer, textTexture, nullptr, &text_pos);
-        SDL_FreeSurface(textSF);
+        SDL_RenderTexture(gRenderer, textTexture, nullptr, &text_pos);
+        SDL_DestroySurface(textSF);
         SDL_DestroyTexture(textTexture);
     }
 }
@@ -98,7 +97,8 @@ void TextView::renderCenteredText(int y, st_color color, std::string text)
 st_size TextView::get_text_size(std::string text)
 {
     SDL_Color black = {0, 0, 0};
-    SDL_Surface* text_outlineSF = TTF_RenderUTF8_Blended(outline_font, text.c_str(), black);
+    //TTF_Font *font, const char *text, size_t length, SDL_Color fg
+    SDL_Surface* text_outlineSF = TTF_RenderText_Blended(outline_font, text.c_str(), 0, black);
     return st_size(text_outlineSF->w, text_outlineSF->h);
 }
 

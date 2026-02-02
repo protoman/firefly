@@ -64,7 +64,8 @@ void scenesLib::draw_main()
     st_imageData intro_screen;
     std::string intro_path = SharedData::get_instance()->FILEPATH + "/images/logo.png";
     intro_screen = ImageView::get_instance()->imageFromFile(intro_path);
-    ImageView::get_instance()->zoom_image(st_position(0, 20), intro_screen, false);
+    // TODO - implement in SDL3 //
+    //ImageView::get_instance()->zoom_image(st_position(0, 20), intro_screen, false);
 
     TextView::get_instance()->renderText(8, 8, VERSION_NUMBER);
 

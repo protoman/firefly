@@ -1,7 +1,7 @@
 #ifndef FILE_CONFIG_301_H
 #define FILE_CONFIG_301_H
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 #include "data/st_common.h"
 
@@ -40,12 +40,12 @@ struct st_game_config {
     Sint8 CONFIG_PLACEHOLDER_010 = 0;
 
     void get_default_keys(int (&keys_codes_copy)[BTN_COUNT]) {
-    keys_codes_copy[BTN_ATTACK] = SDLK_a;
-    keys_codes_copy[BTN_JUMP] = SDLK_x;
-    keys_codes_copy[BTN_DASH] = SDLK_c;
-    keys_codes_copy[BTN_ITEM] = SDLK_z;
-    keys_codes_copy[BTN_L] = SDLK_q;
-    keys_codes_copy[BTN_R] = SDLK_w;
+    keys_codes_copy[BTN_ATTACK] = SDLK_A;
+    keys_codes_copy[BTN_JUMP] = SDLK_X;
+    keys_codes_copy[BTN_DASH] = SDLK_C;
+    keys_codes_copy[BTN_ITEM] = SDLK_Z;
+    keys_codes_copy[BTN_L] = SDLK_Q;
+    keys_codes_copy[BTN_R] = SDLK_W;
     keys_codes_copy[BTN_QUIT] = SDLK_ESCAPE;
     keys_codes_copy[BTN_START] = SDLK_RETURN;
     keys_codes_copy[BTN_LEFT] = SDLK_LEFT;

@@ -18,6 +18,8 @@ public:
     void build_map_image_layer_data(const tmx::Layer::Ptr &layer);
     st_color get_map_background_color();
 
+    void build_map_player_data(const tmx::Layer::Ptr &layer);
+
 private:
     tmx::Map map;
     std::vector<std::unique_ptr<TiledMapTexture>> textures;

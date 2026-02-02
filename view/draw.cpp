@@ -296,7 +296,8 @@ void Draw::set_gfx(Uint8 gfx, short mode)
     screen_gfx_mode = mode;
     // free train sfx if not using it
     if (_train_sfx != nullptr && screen_gfx != SCREEN_GFX_TRAIN) {
-        Mix_FreeChunk(_train_sfx);
+        // TODO - this should be done my soundlib itself //
+        MIX_DestroyAudio(_train_sfx);
         _train_sfx = nullptr;
     }
     if (screen_gfx == SCREEN_GFX_INFERNO) {
@@ -796,56 +797,7 @@ void Draw::remove_fade_out_effect()
 
 void Draw::pixelate_screen()
 {
-    st_imageData res_surface = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
-    st_imageData screen_copy = ImageView::get_instance()->initSurface(st_size(RES_W, RES_H));
-    ImageView::get_instance()->copyScreenAreaToImage(0, 0, RES_W, RES_H, 0, 0, screen_copy);
-
-    for (int pixelationAmount=2; pixelationAmount<8; pixelationAmount++) {
-        for (int x = 0; x < RES_W; x+= pixelationAmount) { // do the whole image
-            for (int y = 0; y < RES_H; y+= pixelationAmount) {
-
-                int avR = 0;
-                int avG = 0;
-                int avB =0;
-
-
-                int pointsCount = 0;
-                for (int i=0; i<pixelationAmount; i++) {
-                    for (int j=0; j<pixelationAmount; j++) {
-                        st_color pt_color = screen_copy.get_point_color(x+i, y+j);
-                        //res_surface.set_point_color((i+x), (j+y), pt_color.r, pt_color.g, pt_color.b);
-
-                        avR += (int) (pt_color.r);
-                        avG+= (int) (pt_color.g);
-                        avB += (int) (pt_color.b);
-                        if (pt_color.r != 0 && pt_color.g != 0 && pt_color.g != 0) {
-                            pointsCount++;
-                        }
-                    }
-                    //std::cout << "x[" << x << "], y[" << y << "], xx[" << (i+x) << "]" << std::endl;
-                }
-                if (pointsCount != 0) {
-                    avR = avR/pointsCount; //divide all by the amount of samples taken to get an average
-                    avG = avG/pointsCount;
-                    avB = avB/pointsCount;
-                }
-
-                for (int i=0; i<pixelationAmount; i++) {
-                    for (int j=0; j<pixelationAmount; j++) {
-                        res_surface.set_point_color(x+i, y+j, avR, avG, avB);
-                    }
-                }
-
-            }
-        }
-        //std::cout << "pixelationAmount[" << pixelationAmount << "]" << std::endl;
-        ImageView::get_instance()->renderImageAt(0, 0, res_surface);
-        ImageView::get_instance()->updateRender();
-        TimerView::get_instance()->delay(20);
-    }
-    std::cout << "END" << std::endl;
-    res_surface.freeGraphic();
-
+    // TODO - implement in SDL 3 //
 }
 
 void Draw::add_weapon_tooltip(short weapon_n, const st_position &player_pos, const Uint8 &direction)
@@ -1393,17 +1345,20 @@ void Draw::show_train_effect()
         _train_effect_state = 0;
         if (_train_sfx == nullptr) {
             _train_sfx = SoundView::get_instance()->sfx_from_file("train.wav");
+            if (!MIX_SetTrackAudio(train_track, _train_sfx)) {
+                SDL_Log("Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
+            }
         }
     } else {
         if (_train_effect_timer < TimerView::get_instance()->getTimer()) {
             if (_train_effect_state == 0) {
                 _train_effect_timer = TimerView::get_instance()->getTimer() + TRAIN_EFFECT_DELAY;
                 _train_effect_state++;
-                SoundView::get_instance()->play_sfx_from_chunk(_train_sfx, 1);
+                SoundView::get_instance()->play_sfx_from_chunk(train_track, 1);
             } else {
                 _train_effect_timer = TimerView::get_instance()->getTimer() + TRAIN_DELAY;
                 _train_effect_state = 0;
-                SoundView::get_instance()->play_sfx_from_chunk(_train_sfx, 1);
+                SoundView::get_instance()->play_sfx_from_chunk(train_track, 1);
             }
         }
     }

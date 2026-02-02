@@ -1,9 +1,9 @@
 #ifndef INPUTCONTROLLER_H
 #define INPUTCONTROLLER_H
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_joystick.h>
-#include <SDL2/SDL_haptic.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_joystick.h>
+#include <SDL3/SDL_haptic.h>
 #include <iostream>
 #include <vector>
 

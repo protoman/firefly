@@ -7,10 +7,17 @@ set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang++")
 #set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 include(GNUInstallDirs)
 
-find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS})
+# Find the SDL3 package
+find_package(SDL3 REQUIRED)
+find_package(SDL3_image REQUIRED)
+find_package(SDL3_mixer REQUIRED)
+find_package(SDL3_ttf REQUIRED)
+include_directories(${SDL3_INCLUDE_DIRS})
 
 set(OUTPUT_DIR "${CMAKE_SOURCE_DIR}/build")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
@@ -97,6 +104,8 @@ add_executable(FireFlyGame
     view/soundview.cpp view/soundview.h
     view/textview.cpp view/textview.h
     view/timerview.cpp view/timerview.h
+        data/SharedGameData.cpp
+        data/SharedGameData.hpp
 )
 
 if(LINUX)
@@ -112,19 +121,18 @@ if(LINUX)
     )
 
     target_link_libraries(FireFlyGame PRIVATE
+        SDL3::SDL3
         # Remove flag: --libs`
-        SDL2_gfx
-        SDL2_image
-        SDL2_mixer
-        SDL2_ttf
-        ${SDL2_LIBRARIES}
+        SDL3_image::SDL3_image
+        SDL3_mixer::SDL3_mixer
+        SDL3_ttf::SDL3_ttf
         X11
         box2d
         dl
         tmxlite
     )
 
-    target_compile_options(FireFlyGame PRIVATE -I/usr/include/SDL2 -Werror=return-type -Wno-ignored-qualifiers -Wno-reorder -fpermissive -g)
+    target_compile_options(FireFlyGame PRIVATE -I/usr/local/include/SDL3 -Werror=return-type -Wno-ignored-qualifiers -Wno-reorder -fpermissive -g)
 endif()
 
 install(TARGETS FireFlyGame

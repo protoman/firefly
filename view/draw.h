@@ -174,7 +174,8 @@ private:
     // USED IN TRAIN EFFECT
     int _train_effect_timer;
     int _train_effect_state;
-    Mix_Chunk* _train_sfx;
+    MIX_Audio* _train_sfx;
+    MIX_Track* train_track;
 
     // USED IN LIGHTINGBOLT
     int _lightingbolt_effect_timer;

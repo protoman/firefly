@@ -1855,18 +1855,15 @@ void artificial_inteligence::execute_ai_rotate_graphic()
                 previous_w = rotated_graphic_frame.surface->w;
                 previous_h = rotated_graphic_frame.surface->h;
             }
-            rotated_graphic_frame = ImageView::get_instance()->rotated_from_image((ImageView::get_instance()->character_graphics_list.find(name)->second).frames[state.direction][state.animation_type][state.animation_state].frameSurface, rotated_graphic_total);
+            // TODO - implement in SDL 3 //
+            //rotated_graphic_frame = ImageView::get_instance()->rotated_from_image((ImageView::get_instance()->character_graphics_list.find(name)->second).frames[state.direction][state.animation_type][state.animation_state].frameSurface, rotated_graphic_total);
 
-            //std::cout << "artificial_inteligence::execute_ai_rotate_graphic::EXECUTE - angle[" << angle << "], rotated_graphic_target[" << rotated_graphic_target << "], rotated_graphic_total[" << rotated_graphic_total << "]" << std::endl;
-            //std::cout << "original_img.w[" << (ImageView::get_instance()->character_graphics_list.find(name)->second).frames[state.direction][state.animation_type][state.animation_state].frameSurface.surface->w << "], rotated_img_w[" << rotated_graphic_frame.surface->w << "]" << std::endl;
             if (rotated_graphic_total == rotated_graphic_target) {
-                //std::cout << "artificial_inteligence::execute_ai_rotate_graphic::LEAVE#2" << std::endl;
                 _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
                 rotated_graphic_target = 0;
             }
             rotated_timer = TimerView::get_instance()->getTimer() + 10;
             // adjust center of image
-            std::cout << ">>>>>>>>> previous_h[" << previous_h << "], new_h[" << rotated_graphic_frame.surface->h << "]" << std::endl;
             position.x += (previous_w - rotated_graphic_frame.surface->w)/2;
             position.y += (previous_h - rotated_graphic_frame.surface->h)/2;
         }

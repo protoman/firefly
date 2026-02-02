@@ -7,7 +7,7 @@
 #include "data/st_common.h"
 #include "data/st_imageData.hpp"
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 namespace map_data {
 

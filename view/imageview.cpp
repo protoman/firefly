@@ -1,12 +1,10 @@
 #include "imageview.h"
 
-#include <SDL2/SDL2_rotozoom.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
-
 extern SDL_Renderer* gRenderer;
 
 ImageView* ImageView::_instance = nullptr;
 
+#include <SDL3/SDL_surface.h>
 #include "data/st_common.h"
 
 #include "view/timerview.h"
@@ -41,8 +39,7 @@ void ImageView::copySDLPortion(st_rectangle original_rect, st_rectangle destiny_
         return;
     }
     if (!surfaceDestiny) {
-        std::cout << "FAILR: copySDLPortion - ERROR surfaceDestiny is nullptr - ignoring..." << std::endl;
-        //return;
+        std::cout << "FAIL: copySDLPortion - ERROR surfaceDestiny is nullptr - ignoring..." << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -140,9 +137,9 @@ void ImageView::blend_images(st_imageData &source, st_imageData &dest, int x, in
     SDL_SetRenderTarget(gRenderer, dest.texture);
 
     SDL_SetTextureBlendMode(source.texture, SDL_BLENDMODE_ADD);
-    SDL_Rect origin = {0, 0, source.surface->w, source.surface->h};
-    SDL_Rect destiny  = {x, y, w, h};
-    SDL_RenderCopy(gRenderer, source.texture, &origin, &destiny);
+    SDL_FRect origin = {0.0f, 0.0f, (float)source.surface->w, (float)source.surface->h};
+    SDL_FRect destiny  = {(float)x, (float)y, (float)w, (float)h};
+    SDL_RenderTexture(gRenderer, source.texture, &origin, &destiny);
 
     restore_render_target();
 }
@@ -173,7 +170,8 @@ void ImageView::rebuildTexture(st_imageData &origin)
 
 void ImageView::clear_surface(st_imageData &image)
 {
-    SDL_FillRect(image.surface, nullptr, SDL_MapRGBA(image.surface->format, 0, 0, 0, SDL_ALPHA_TRANSPARENT));
+    //SDL_Surface *dst, const SDL_Rect *rect, Uint32 color
+    SDL_FillSurfaceRect(image.surface, nullptr, SDL_MapSurfaceRGB(image.surface, 0, 0, 0));
 }
 
 void ImageView::copyArea(st_rectangle rect, st_position dest_pos, st_imageData& origin, st_imageData& dest)
@@ -199,6 +197,10 @@ st_imageData ImageView::imageFromRegion(st_rectangle area, st_imageData &origin)
 
 void ImageView::set_spriteframe_surface(st_spriteFrame *frame_dest, st_imageData &originSurface)
 {
+    if (originSurface.is_null()) {
+        std::cout << "ERROR: set_spriteframe_surface, originSurface is null" <<std::endl;
+        exit(-1);
+    }
     frame_dest->frameSurface = initSurface(st_size(originSurface.surface->w, originSurface.surface->h));
     copyArea(st_rectangle(0, 0, originSurface.surface->w, originSurface.surface->h), st_position(0, 0), originSurface, frame_dest->frameSurface);
 }
@@ -255,77 +257,6 @@ st_imageData *ImageView::get_preloaded_image(e_PRELOADED_IMAGES image_n)
     return &preloaded_images[image_n];
 }
 
-void ImageView::zoom_image(st_position dest, st_imageData &picture, int smooth)
-{
-    SDL_Surface *rotozoom_picture;
-    st_position center(dest.x+picture.surface->w/2, dest.y+picture.surface->h/2);
-    std::cout << ">>>>>>>>>>> dest[" << dest.x << "][" << dest.y << "]" << std::endl;
-    std::cout << "center[" << center.x << "][" << center.y << "]" << std::endl;
-
-    for (float i=0.1; i<1.0; i+=0.03) {
-        if ((rotozoom_picture = zoomSurface(picture.surface, i, i, smooth)) != NULL) {
-        //double angle = 360*i;
-        //if ((rotozoom_picture = rotozoomSurface(picture.get_surface(), angle, 1.0, smooth)) != NULL) {
-            std::cout << "GRAPHLIB::ZOOM #1 [" << i << "]" << std::endl;
-            struct st_rectangle origin_rectangle(0, 0, rotozoom_picture->w, rotozoom_picture->h);
-
-            st_position dest_zoom(center.x-rotozoom_picture->w/2, center.y-rotozoom_picture->h/2);
-            std::cout << "rotozoom_picture[" << rotozoom_picture->w << "][" << rotozoom_picture->h << "]" << std::endl;
-            std::cout << "dest_zoom[" << dest_zoom.x << "][" << dest_zoom.y << "]" << std::endl;
-
-            // clear area
-            clearScreenArea(dest_zoom.x, dest_zoom.y, rotozoom_picture->w, rotozoom_picture->h, CONFIG_BGCOLOR_R, CONFIG_BGCOLOR_G, CONFIG_BGCOLOR_B);
-
-            SDL_Texture* newTexture = nullptr;
-            newTexture = SDL_CreateTextureFromSurface(gRenderer, rotozoom_picture);
-            renderTexturePortionAt(origin_rectangle.x, origin_rectangle.y, origin_rectangle.w, origin_rectangle.h, dest_zoom.x, dest_zoom.y, newTexture);
-            updateRender();
-            TimerView::get_instance()->delay(20);
-            SDL_FreeSurface(rotozoom_picture);
-            SDL_DestroyTexture(newTexture);
-        } else {
-            std::cout << "Error creating zoomed surface" << std::endl;
-        }
-    }
-
-    /* Pause for a sec */
-    SDL_Delay(100);
-}
-
-void ImageView::rotate_image(st_imageData &picture, double angle)
-{
-    SDL_Surface *rotozoom_picture;
-    if (picture.texture == nullptr) {
-        std::cout << "ImageView::rotate_image - WARNING: origin texture is null #1" << std::endl;
-    }
-
-    std::cout << "ImageView::rotate_image - WARNING: angle[" << angle << "]" << std::endl;
-    if ((rotozoom_picture = rotozoomSurface(picture.surface, angle, 1.0, true)) != nullptr) {
-        if (picture.texture != nullptr) {
-            std::cout << "ImageView::rotate_image - WARNING: erase origin texture" << std::endl;
-            SDL_DestroyTexture(picture.texture);
-        } else {
-            std::cout << "ImageView::rotate_image - WARNING: origin texture is null #2" << std::endl;
-        }
-        picture.texture = SDL_CreateTextureFromSurface(gRenderer, rotozoom_picture);
-    } else {
-        std::cout << "GRAPHLIB::rotate_image - Error generating rotated image" << std::endl;
-    }
-}
-
-st_imageData ImageView::rotated_from_image(st_imageData &picture, double angle)
-{
-    st_imageData dest;
-    SDL_Surface *rotozoom_picture;
-    if ((rotozoom_picture = rotozoomSurface(picture.surface, angle, 1.0, true)) != nullptr) {
-        dest.surface = rotozoom_picture;
-        dest.texture = SDL_CreateTextureFromSurface(gRenderer, rotozoom_picture);
-    } else {
-        std::cout << "GRAPHLIB::rotate_image - Error generating rotated image" << std::endl;
-    }
-    return dest;
-}
-
 void ImageView::draw_explosion(st_position pos)
 {
     st_size explosion_size(56, 56);
@@ -349,13 +280,6 @@ void ImageView::draw_explosion(st_position pos)
 
 void ImageView::init()
 {
-    //Initialize PNG loading
-    int imgFlags = IMG_INIT_PNG;
-    if (!(IMG_Init(imgFlags) & imgFlags)) {
-        std::cout << "SDL_image could not initialize! SDL_image Error[" << IMG_GetError() << "]" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
     load_icons();
 
     std::string filename = SharedData::get_instance()->FILEPATH + "/images/tilesets/swamp.png";
@@ -367,7 +291,7 @@ void ImageView::init()
         std::cout << "ERROR::GRAPHLIB::loadTileset: Could not find file '" << filename << "'\n";
     }
 
-    // explision used in death and bosses
+    // explosion used in death and bosses
     filename = SharedData::get_instance()->FILEPATH + "images/animations/explosion_boss.png";
     small_explosion = imageFromFile(filename);
 
@@ -519,7 +443,7 @@ void ImageView::change_render_size()
         scaleY = scaleX;
     }
 
-    SDL_RenderSetScale(gRenderer, scaleX, scaleY);
+    SDL_SetRenderScale(gRenderer, scaleX, scaleY);
     SDL_SetWindowSize(SharedData::get_instance()->window, RES_W*scaleX, RES_H*scaleY);
 }
 
@@ -549,14 +473,14 @@ st_imageData ImageView::imageFromFile(std::string filename)
     //Load image at specified path
     SDL_Surface* loadedSurface = IMG_Load( filename.c_str() );
     if( loadedSurface == nullptr ) {
-        printf( "FAIL: Unable to load image %s! SDL_image Error: %s\n", filename.c_str(), IMG_GetError() );
+        printf( "FAIL: Unable to load image %s! SDL_image Error: %s\n", filename.c_str(), SDL_GetError() );
         exit(EXIT_FAILURE);
     } else {
         //Create texture from surface pixels
         newTexture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
         if (newTexture == nullptr) {
             printf( "FAIL: Unable to create texture from [%s]. SDL Error: %s\n", filename.c_str(), SDL_GetError() );
-            SDL_FreeSurface( loadedSurface );
+            SDL_DestroySurface( loadedSurface );
             exit(EXIT_FAILURE);
         }
         res.surface = loadedSurface;
@@ -568,9 +492,9 @@ st_imageData ImageView::imageFromFile(std::string filename)
 
 void ImageView::renderTexturePortionAt(int origin_x, int origin_y, int origin_w, int origin_h, int dest_x, int dest_y, SDL_Texture *texture)
 {
-    SDL_Rect origin = {origin_x, origin_y, origin_w, origin_h};
-    SDL_Rect dest  = {dest_x, dest_y, origin_w, origin_h};
-    SDL_RenderCopy(gRenderer, texture, &origin, &dest);
+    SDL_FRect origin = {(float)origin_x, (float)origin_y, (float)origin_w, (float)origin_h};
+    SDL_FRect dest  = {(float)dest_x, (float)dest_y, (float)origin_w, (float)origin_h};
+    SDL_RenderTexture(gRenderer, texture, &origin, &dest);
 }
 
 void ImageView::renderImageAt(int dest_x, int dest_y, st_imageData &image)
@@ -581,7 +505,7 @@ void ImageView::renderImageAt(int dest_x, int dest_y, st_imageData &image)
 
 void ImageView::clearScreenArea(short x, short y, short w, short h, short r, short g, short b)
 {
-    SDL_Rect rect;
+    SDL_FRect rect;
     rect.x = x;
     rect.y = y;
     rect.w = w;
@@ -602,7 +526,7 @@ void ImageView::updateRender()
 st_imageData ImageView::initSurface(st_size size)
 {
     st_imageData res;
-    res.surface = SDL_CreateRGBSurface(SDL_RLEACCEL , size.width, size.height, VIDEO_MODE_COLORS, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+    res.surface = SDL_CreateSurface(size.width, size.height, SDL_GetPixelFormatForMasks(VIDEO_MODE_COLORS, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000));
     if (res.surface == nullptr) {
         exit(EXIT_FAILURE);
     }
@@ -613,7 +537,7 @@ st_imageData ImageView::initSurface(st_size size)
 
 void ImageView::init_target_image(st_imageData& image, int w, int h)
 {
-    image.surface = SDL_CreateRGBSurface(SDL_RLEACCEL, w, h, VIDEO_MODE_COLORS, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+    image.surface = SDL_CreateSurface(w, h, SDL_GetPixelFormatForMasks(VIDEO_MODE_COLORS, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000));
     if (image.surface == nullptr) {
         exit(EXIT_FAILURE);
     }
@@ -624,21 +548,21 @@ void ImageView::init_target_image(st_imageData& image, int w, int h)
 void ImageView::clear_surface_area(short x, short y, short w, short h, short r, short g, short b, st_imageData &image)
 {
     SDL_Rect dest;
-    if (image.surface == nullptr || image.surface->format == nullptr) {
+    if (image.surface == nullptr) {
         return;
     }
     dest.x = x;
     dest.y = y;
     dest.w = w;
     dest.h = h;
-    SDL_FillRect(image.surface, &dest, SDL_MapRGB(image.surface->format, r, g, b));
+    SDL_FillSurfaceRect(image.surface, &dest, SDL_MapSurfaceRGB(image.surface, r, g, b));
     rebuildTexture(image);
 }
 
 void ImageView::clear_texture_area(short x, short y, short w, short h, Uint8 r, Uint8 g, Uint8 b, Uint8 alpha, st_imageData &image)
 {
     SDL_SetRenderTarget(gRenderer, image.texture);
-    SDL_Rect dest;
+    SDL_FRect dest;
     dest.x = x;
     dest.y = y;
     dest.w = w;
@@ -801,36 +725,9 @@ void ImageView::load_icons()
 
 void ImageView::flip_image(st_imageData &original, st_imageData &res, e_flip_type flip_mode)
 {
-    res = original;
-
-    //If the surface must be locked
-    if (SDL_MUSTLOCK( original.surface )) {
-        //Lock the surface
-        SDL_LockSurface( original.surface );
-    }
-
-    //Go through columns
-    for (int x = 0, rx = original.surface->w - 1; x < original.surface->w; x++, rx-- ) {
-        //Go through rows
-        for (int y = 0, ry = original.surface->h - 1; y < original.surface->h; y++, ry-- ) {
-            //Get pixel
-            Uint32 pixel = original.get_pixel(x, y);
-
-            //Copy pixel
-            if ((flip_mode == flip_type_both)) {
-                res.put_pixel(rx, ry, pixel);
-            } else if (flip_mode == flip_type_horizontal) {
-                res.put_pixel(rx, y, pixel );
-            } else if(flip_mode == flip_type_vertical) {
-                res.put_pixel(x, ry, pixel );
-            } else {
-                std::cout << "UNKNOWN flip mode [" << flip_mode << "]" << std::endl;
-                char enum_str[20];
-                sprintf(enum_str, "%d", flip_mode);
-                exception_manager::throw_param_exception(std::string("graphicsLib::flip_image, invalid mode"), std::string(enum_str));
-            }
-        }
-    }
+    // TODO - SDL3 version, for now just copy it //
+    res = initSurface(st_size(original.surface->w, original.surface->h));
+    copyArea(original, res);
 }
 
 void ImageView::blink_screen(int r, int g, int b)

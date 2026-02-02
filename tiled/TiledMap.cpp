@@ -41,6 +41,9 @@ void TiledMap::initialize(std::string filename, SDL_Renderer* renderer)
                 map_layer_type = map_data::map_layer_type::map_layer_type_image;
             } else if (mapLayers[i]->getType() == tmx::Layer::Type::Object) {
                 map_layer_type = map_data::map_layer_type::map_layer_type_object;
+                if (mapLayers[i]->getName() == "PLAYER") {
+
+                }
             }
             map_data::SharedMapData::get_instance()->layer_order_map[mapLayers[i]->getName()] = map_layer_type;
         }
@@ -104,4 +107,12 @@ void TiledMap::build_map_image_layer_data(const tmx::Layer::Ptr& layer)
 st_color TiledMap::get_map_background_color()
 {
     return st_color(map.getBackgroundColour().r, map.getBackgroundColour().g, map.getBackgroundColour().b);
+}
+
+void TiledMap::build_map_player_data(const tmx::Layer::Ptr& layer) {
+    tmx::ObjectGroup object_layer = layer->getLayerAs<tmx::ObjectGroup>();
+    std::vector<tmx::Object> object_list = object_layer.getObjects();
+    for (tmx::Object object : object_list) {
+        //object.getPoints()
+    }
 }

@@ -2,7 +2,7 @@
 #define SOUNDVIEW_H
 
 #include <iostream>
-#include <SDL2/SDL_mixer.h>
+#include <SDL3_mixer/SDL_mixer.h>
 
 #include "data/shareddata.h"
 
@@ -41,10 +41,12 @@ public:
     void update_volumes();
     void play_sfx_from_file(std::string filename, int repeat_n);
     void play_shared_sfx(std::string filename);
-    void play_sfx_from_chunk(Mix_Chunk* chunk, int repeat_n);
-    Mix_Chunk *sfx_from_file(std::string filename);
+    void play_sfx_from_chunk(MIX_Track *chunk, int repeat_n);
+
+    MIX_Audio *sfx_from_file(std::string filename);
     bool get_is_playing_boss_music();
-    Mix_Chunk *get_sfx(std::string filename);
+
+    MIX_Audio *get_sfx(std::string filename);
 
 private:
     SoundView();
@@ -54,13 +56,23 @@ private:
 
 
 private:
-    Mix_Chunk *sfx_list[SFX_COUNT]; /**< TODO */
-    Mix_Music *music; /**< TODO */
-    Mix_Music *boss_music; /**< TODO */
-    Sint8 _repeated_sfx_channel; /**< TODO */
-    Uint8 _repeated_sfx; /**< TODO */
+    MIX_Mixer *mixer;
+    MIX_Track *sfx_track;
+    MIX_Track *repeat_track;
+    MIX_Track *music_track;
+    MIX_Track *boss_music_track;
+    MIX_Track *shared_music_track;
+
+    MIX_Audio *sfx_list[SFX_COUNT]; /**< TODO */
+    MIX_Audio *music; /**< TODO */
+    MIX_Audio *boss_music; /**< TODO */
+
+    bool is_playing_repeat = false;
+    int repeating_sfx_number = -1;
     bool is_playing_boss_music;
-    std::map<std::string, Mix_Chunk*> sfx_map;                                               // map of sfx files loaded, used in projectiles to avoid loading from disk every time
+    std::map<std::string, MIX_Audio*> sfx_map; // map of sfx files loaded, used in projectiles to avoid loading from disk every time
+    SDL_PropertiesID music_properties = SDL_CreateProperties();
+    SDL_PropertiesID sfx_options = SDL_CreateProperties();
 };
 
 #endif // SOUNDVIEW_H

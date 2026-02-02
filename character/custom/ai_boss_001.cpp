@@ -248,7 +248,8 @@ void artificial_inteligence::boss_001_init() {
     // HEAD - store rotated images //
     boss_sprite_image_list.insert(std::pair<int, std::vector<st_imageData>>(BOSS_SPRITE_IMAGE_HEAD, std::vector<st_imageData>()));
     for (int i=0; i<HEAD_ANIMATION_MAX_FRAME; i++) {
-        boss_sprite_image_list.at(BOSS_SPRITE_IMAGE_HEAD).push_back(ImageView::get_instance()->rotated_from_image(img_boss_head, i));
+        // TODO - implement in SDL3 //
+        //boss_sprite_image_list.at(BOSS_SPRITE_IMAGE_HEAD).push_back(ImageView::get_instance()->rotated_from_image(img_boss_head, i));
     }
 
 

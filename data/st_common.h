@@ -9,7 +9,7 @@
 #include "defines.h"
 #include "data/st_imageData.hpp"
 #include "cereal/cereal.hpp"
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 extern SDL_Renderer* gRenderer;
 
