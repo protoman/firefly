@@ -85,7 +85,7 @@ int main()
 
     while (SharedData::get_instance()->run_game) {
         game_manager_instance->show_game(true, true);
-        SDL_Delay(10);
+        SDL_Delay(5);
     }
 
     SDL_Quit();

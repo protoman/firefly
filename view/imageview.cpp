@@ -318,9 +318,6 @@ void ImageView::init()
 
     texture_render_target = SDL_CreateTexture( gRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, RES_W, AREA_H);
     hud_texture_render_target = SDL_CreateTexture( gRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, RES_W, HUD_H);
-
-
-
 }
 
 void ImageView::load_layers_data()
@@ -333,7 +330,6 @@ void ImageView::load_layers_data()
             map_data::SharedMapData::get_instance()->layer_data_map[item.first].image_data = imageFromFile(filename);
             int image_alpha = map_data::SharedMapData::get_instance()->layer_data_map[item.first].opacity * 255;
             set_surface_alpha(image_alpha, map_data::SharedMapData::get_instance()->layer_data_map[item.first].image_data);
-            std::cout << ">>>>> ImageView::init - loaded layer[" << item.first << "]" << std::endl;
         }
     }
 }
@@ -447,7 +443,6 @@ void ImageView::change_render_size()
     SDL_SetWindowSize(SharedData::get_instance()->window, RES_W*scaleX, RES_H*scaleY);
 }
 
-
 ImageView* ImageView::get_instance()
 {
     if (!_instance) {
@@ -456,17 +451,14 @@ ImageView* ImageView::get_instance()
     return _instance;
 }
 
-void ImageView::copyScreenAreaToImage(int origin_x, int origin_y, int origin_w, int origin_h, int dest_x, int dest_y, st_imageData image)
-{
-    copySDLPortion(st_rectangle(origin_x, origin_y, origin_w, origin_h), st_rectangle(dest_x, dest_y, origin_w, origin_h), SharedData::get_instance()->screenSurface, image.surface);
+void ImageView::copyScreenAreaToImage(int origin_x, int origin_y, int origin_w, int origin_h, int dest_x, int dest_y, st_imageData image) {
+    SDL_FRect origin_rect = SDL_FRect(origin_x, origin_y, origin_w, origin_h);
+    SDL_FRect destiny_rect = SDL_FRect(dest_x, dest_y, origin_w, origin_h);
+    SDL_RenderTexture(gRenderer, image.texture, &origin_rect, &destiny_rect);
     rebuildTexture(image);
-
 }
 
-
-
-st_imageData ImageView::imageFromFile(std::string filename)
-{
+st_imageData ImageView::imageFromFile(std::string filename) {
     st_imageData res;
     //The final texture
     SDL_Texture* newTexture = nullptr;

@@ -88,7 +88,7 @@ void GameManager::initHardwareLayer()
         std::cout << "Renderer could not be created! SDL Error: [" << SDL_GetError() << "]" << std::endl;
         exit(EXIT_FAILURE);
     }
-
+    SDL_SetRenderVSync(gRenderer, 1);
 
     InputController::get_instance()->init();
     ImageView::get_instance()->init();
