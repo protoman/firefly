@@ -86,7 +86,7 @@ void Box2dManager::add_static_body_rectangles(std::vector<st_rectangle> rectangl
         object.id = b2CreateBody(worldId, &object.bodyDef);
         object.box = b2MakeBox(calc_half_w, calc_half_h);
         b2CreatePolygonShape(object.id, &object.shapeDef, &object.box);
-        std::cout << "Added static body at[" << object.bodyDef.position.x << "][" << object.bodyDef.position.y << "][" << ", rectangle[" << rectangle.x << "][" << rectangle.y << "][" << rectangle.w << "][" << rectangle.h << "]" << std::endl;
+        //std::cout << "Added static body at[" << object.bodyDef.position.x << "][" << object.bodyDef.position.y << "][" << ", rectangle[" << rectangle.x << "][" << rectangle.y << "][" << rectangle.w << "][" << rectangle.h << "]" << std::endl;
         staticObjects.push_back(object);
     }
 }

@@ -4,6 +4,8 @@
 #include <SDL.h>
 #include <string>
 
+#include "data/st_imageData.hpp"
+
 class TiledMapTexture
 {
 public:
@@ -17,17 +19,18 @@ public:
     TiledMapTexture& operator = (const TiledMapTexture&) = delete;
     TiledMapTexture& operator = (TiledMapTexture&&) = delete;
 
-    bool loadFromFile(const std::string&, SDL_Renderer*);
-    SDL_Point getSize() const { return m_size; }
+    void set_image_data(const st_imageData& new_image_data);
+
+    SDL_Point getSize() const {
+        return SDL_Point(image_data.surface->w, image_data.surface->h);
+    }
 
     operator SDL_Texture* () {
-        return m_texture;
+        return image_data.texture;
     }
 
 private:
-
-    SDL_Texture* m_texture;
-    SDL_Point m_size;
+    st_imageData image_data;
 };
 
 #endif // TILEDMAPTEXTURE_H

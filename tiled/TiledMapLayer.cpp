@@ -95,10 +95,10 @@ bool TiledMapLayer::init(const tmx::Map& map, uint32_t layerIndex, const std::ve
                 tmx::Object::Shape objectShape = object.getShape();
 
                 if (objectShape == tmx::Object::Shape::Polygon) {
-                    std::cout << "#### Tile[" << tile_pos_x << "][" << tile_pos_y << "].shape[Polygon]" << std::endl;
+                    //std::cout << "#### Tile[" << tile_pos_x << "][" << tile_pos_y << "].shape[Polygon]" << std::endl;
                     std::vector<tmx::Vector2f> objectPoints = object.getPoints();
                 } else if (objectShape == tmx::Object::Shape::Rectangle) {
-                    std::cout << "#### Tile[" << tile_pos_x << "][" << tile_pos_y << "].shape[Rectangle]" << std::endl;
+                    //std::cout << "#### Tile[" << tile_pos_x << "][" << tile_pos_y << "].shape[Rectangle]" << std::endl;
                     tileset_collision_rectangles_map[calculated_array_pos] = st_rectangle(0, 0, tile.w, tile.h);
                 }
             }

@@ -1,8 +1,19 @@
 ########################################################
                      TODO LIST
 ########################################################
-- Split SDL3 code better.
+- Split SDL3 code better
+    # there should be no SDL code outside SDL-layer ones.
+    # minimize the use of SDL functions, avoiding duplication.
 
+- Editors will be separate projects
+    # player, objects, projectile and weapons can be hardcoded as in old times
+    # on first run, ask where is data directory
+    # name is the link between tiled and the data
+    # enemy (including AI)
+    # friendly npc -> include dialogs
+    # cutscenes (movie)
+
+- Configure build system on github
 
 1. Load the Audio (MIX_Audio)
 First, load your audio data from a file or IOStream, which produces a MIX_Audio object.
