@@ -56,8 +56,8 @@ void SoundView::play_sfx(Uint8 sfx) {
     }
 
     if (sfx_list[sfx] != nullptr) {
-        if (!MIX_SetTrackAudio(sfx_track, music)) {
-            SDL_Log("Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
+        if (!MIX_SetTrackAudio(sfx_track, sfx_list[sfx])) {
+            SDL_Log("SoundView::play_sfx - Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
         }
         //MIX_SetTrackGain(sfx_track, SharedData::get_instance()->game_config.volume_sfx);
         MIX_PlayTrack(sfx_track, sfx_options);
@@ -75,7 +75,7 @@ void SoundView::play_repeated_sfx(Uint8 sfx, Uint8 loops) {
         }
 
         if (!MIX_SetTrackAudio(repeat_track, sfx_list[sfx])) {
-            SDL_Log("Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
+            SDL_Log("SoundView::play_repeated_sfx - Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
             return;
         }
         //MIX_SetTrackGain(repeat_track, SharedData::get_instance()->game_config.volume_sfx);
@@ -260,8 +260,12 @@ void SoundView::load_music(std::string music_file) {
         std::cout << "Error in soundLib::load_music::Mix_LoadMUS('" << filename << "': '" << SDL_GetError() << "'\n";
         return;
     }
+    if (music_track == nullptr) {
+        music_track = MIX_CreateTrack(mixer);
+    }
+
     if (!MIX_SetTrackAudio(music_track, music)) {
-        SDL_Log("Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
+        SDL_Log("SoundView::load_music - Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
     }
 }
 
@@ -276,7 +280,7 @@ void SoundView::load_shared_music(std::string music_file)
         std::cout << "Error in soundLib::load_music::Mix_LoadMUS('" << filename << "': '" << SDL_GetError() << "'\n";
     } else {
         if (!MIX_SetTrackAudio(shared_music_track, music)) {
-            SDL_Log("Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
+            SDL_Log("SoundView::load_shared_music - Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
         }
     }
 }
@@ -296,7 +300,7 @@ void SoundView::load_boss_music(std::string music_file) {
         std::cout << "Error in soundLib::load_boss_music::Mix_LoadMUS('" << filename << "': '" << SDL_GetError() << "'\n";
     } else {
         if (!MIX_SetTrackAudio(boss_music_track, music)) {
-            SDL_Log("Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
+            SDL_Log("SoundView::load_boss_music - Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
         }
     }
 }
@@ -432,7 +436,7 @@ void SoundView::play_sfx_from_file(std::string filename, int repeat_n)
     }
 
     if (!MIX_SetTrackAudio(sfx_track, sfx)) {
-        SDL_Log("Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
+        SDL_Log("SoundView::play_sfx_from_file - Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
     }
     //MIX_SetTrackGain(sfx_track, SharedData::get_instance()->game_config.volume_sfx);
     MIX_PlayTrack(sfx_track, sfx_options);
@@ -448,7 +452,7 @@ void SoundView::play_shared_sfx(std::string filename)
     }
 
     if (!MIX_SetTrackAudio(sfx_track, sfx)) {
-        SDL_Log("Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
+        SDL_Log("SoundView::play_shared_sfx - Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
     }
     //MIX_SetTrackGain(sfx_track, SharedData::get_instance()->game_config.volume_sfx);
     MIX_PlayTrack(sfx_track, sfx_options);
