@@ -1,0 +1,45 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "swamp.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        ":/automap-tiles.tsx": {
+            "scaleInDock": 1
+        },
+        "swamp.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": -475.33333333333326,
+                "y": 329.3333333333333
+            }
+        },
+        "swamp.tsx": {
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        }
+    },
+    "last.imagePath": "/home/iuri/Desenvolvimento/firefly/build/games/FireFly/images/tilesets",
+    "last.worldFilePath": "/home/iuri/Desenvolvimento/firefly/build/games/FireFly/data/tiled",
+    "loadedWorlds": [
+        "/home/iuri/Desenvolvimento/firefly/build/games/FireFly/data/tiled/firefly.world",
+        "/home/iuri/Desenvolvimento/firefly/build/games/FireFly/data/tiled/firefly.world"
+    ],
+    "map.fixedSize": false,
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+        "swamp.tsx",
+        "swamp.tmx"
+    ],
+    "project": "firefly.tiled-project",
+    "recentFiles": [
+        "swamp.tsx",
+        "swamp.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx"
+}

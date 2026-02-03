@@ -458,7 +458,7 @@ void ImageView::copyScreenAreaToImage(int origin_x, int origin_y, int origin_w, 
     rebuildTexture(image);
 }
 
-st_imageData ImageView::imageFromFile(std::string filename) {
+st_imageData ImageView::imageFromFile(const std::string &filename) {
     st_imageData res;
     //The final texture
     SDL_Texture* newTexture = nullptr;

@@ -1,0 +1,3 @@
+[submodule "editors/npc"]
+	path = editors/npc
+	url = git@github.com:protoman/firefly-npc-editor.git

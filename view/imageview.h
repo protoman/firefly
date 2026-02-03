@@ -144,7 +144,7 @@ public:
     void rebuildTexture(st_imageData &origin);
 
     void clear_surface(struct st_imageData& image);
-    st_imageData imageFromFile(std::string filename);
+    st_imageData imageFromFile(const std::string &filename);
     void renderTexturePortionAt(int origin_x, int origin_y, int origin_w, int origin_h, int dest_x, int dest_y, SDL_Texture* texture);
     void renderImageAt(int dest_x, int dest_y, st_imageData& image);
     void clearScreenArea(short int x, short int y, short int w, short int h, short int r, short int g, short int b);

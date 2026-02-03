@@ -40,3 +40,11 @@ qrc_*.cpp
 *.pro.user
 .qmake.stash
 build/fireflygame
+build/CMakeCache.txt
+build/CMakeFiles/
+build/FireFlyGame
+build/FireFly_00.sav
+build/cmake_install.cmake
+.idea/
+
+
