@@ -1,5 +1,7 @@
 #include "soundview.h"
 
+#include <iomanip>
+
 SoundView* SoundView::_instance = nullptr;
 
 SoundView::SoundView() {
@@ -29,13 +31,7 @@ void SoundView::init()
         SDL_Log("SDL_mixer is ready!");
     }
 
-    int bitrate = 44100;
-    int channels = 2;
-    //SDL_AudioDeviceID devid, const SDL_AudioSpec *spec
     SDL_AudioSpec* audioSpec = nullptr; // Use system defaults
-    //audioSpec.channels = channels;
-    //audioSpec.format = SDL_AUDIO_F32;
-    //audioSpec.freq = bitrate;
 
     mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, audioSpec);
     if (!mixer) {
@@ -59,7 +55,8 @@ void SoundView::play_sfx(Uint8 sfx) {
         if (!MIX_SetTrackAudio(sfx_track, sfx_list[sfx])) {
             SDL_Log("SoundView::play_sfx - Failed to set track audio! SDL_mixer Error: %s\n", SDL_GetError());
         }
-        //MIX_SetTrackGain(sfx_track, SharedData::get_instance()->game_config.volume_sfx);
+        float volume = calculate_volume(SharedData::get_instance()->game_config.volume_sfx);
+        MIX_SetTrackGain(sfx_track, volume);
         MIX_PlayTrack(sfx_track, sfx_options);
     }
 }
@@ -335,7 +332,8 @@ void SoundView::play_music() {
             std::cout << "<<<<<<<<<<<<< Mix_PlayMusic Error: " << SDL_GetError() << std::endl;
         }
         //std::cout << "SOUNDLIB::play_music" << std::endl;
-        //MIX_SetTrackGain(music_track, SharedData::get_instance()->game_config.volume_music);
+        float volume = calculate_volume(SharedData::get_instance()->game_config.volume_music);
+        MIX_SetTrackGain(music_track, volume);
     } else {
         std::cout << ">> play_music ERROR: music is null" << std::endl;
     }
@@ -490,5 +488,11 @@ MIX_Audio *SoundView::get_sfx(std::string filename)
     } else {
         return it->second;
     }
+}
+
+float SoundView::calculate_volume(int volume) {
+    float value = (1.0f / 128.0f) * volume;
+    std::cout << std::fixed << std::setprecision(4) << "SoundView::calculate_volume - value[" << value << "], original[" << volume << "]" << std::endl;
+    return value;
 }
 

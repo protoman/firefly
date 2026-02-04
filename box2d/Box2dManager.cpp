@@ -22,7 +22,8 @@ Box2dManager::Box2dManager() : groundId(), groundBox() {
     playerBodyId = b2CreateBody(worldId, &playerBodyDef);
     playerShapeDef.density = PLAYER_DENSITY;
     playerShapeDef.material.friction = PLAYER_FRICTION;
-    b2CreatePolygonShape(playerBodyId, &playerShapeDef, &dynamicBox);
+    b2CreatePolygonShape(playerBodyId, &playerShapeDef, &dynamicBox2);
+    //b2CreateCircleShape(playerBodyId, &playerShapeDef, &dynamicCircle);
 }
 
 Box2dManager::~Box2dManager()
@@ -92,12 +93,24 @@ void Box2dManager::add_static_body_rectangles(std::vector<st_rectangle> rectangl
 }
 
 void Box2dManager::add_static_body_polygon(std::vector<st_float_position> points) {
-    static_object_struct object;
-    object.bodyDef.position = (b2Vec2){0.0f, -10.0f};
-    object.id = b2CreateBody(worldId, &groundBodyDef);
-    object.box = b2MakeBox(50.0f, 10.0f);
-    b2CreatePolygonShape(object.id, &object.shapeDef, &object.box);
-    staticObjects.push_back(object);
+    unsigned int points_size = points.size();
+    b2Vec2 vertices[points_size];
+    for (int i=0; i<points_size; i++) {
+        vertices[i] = {points.at(i).x, points.at(i).y};
+    }
+    b2Hull hull = b2ComputeHull(vertices, points_size);
+    b2Polygon polygonShape = b2MakePolygon(&hull, 0.0f); // 0.0f radius for sharp corners
+    staticObjects.push_back(static_object_struct());
+
+    staticObjects.back().bodyDef.position = {0.0f, 10.0f};
+    staticObjects.back().bodyDef.type = b2BodyType::b2_staticBody;
+    staticObjects.back().id = b2CreateBody(worldId, &groundBodyDef);
+
+    staticObjects.back().shapeDef.density = 1.0f;
+    //shapeDef.friction = 0.5f;
+    //shapeDef.restitution = 0.1f;
+
+    b2CreatePolygonShape(staticObjects.back().id, &staticObjects.back().shapeDef, &polygonShape);
 }
 
 void Box2dManager::change_player_position(st_float_position inc) {

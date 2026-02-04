@@ -350,17 +350,17 @@ void ImageView::preload()
         }
     }
 
-    int max = GameData::get_instance()->anim_tile_list.size();
+    unsigned int max = GameData::get_instance()->anim_tile_list.size();
     //std::cout << "graphicsLib::preload_anim_tiles - max: " << max << std::endl;
     for (int i=0; i<max; i++) {
         std::string file(GameData::get_instance()->anim_tile_list.at(i).filename);
-        if (file.length() < 1) {
+        if (file.empty()) {
             //std::cout << "### graphicsLib::preload_anim_tiles::STOP, file: " << file << std::endl;
             break;
         } else {
             std::string filename = SharedData::get_instance()->FILEPATH + std::string("images/tilesets/anim/") + file;
 
-            ANIM_TILES_SURFACES.push_back(st_imageData());
+            ANIM_TILES_SURFACES.emplace_back();
             ANIM_TILES_SURFACES.at(ANIM_TILES_SURFACES.size()-1) = imageFromFile(filename);
 
             int frames_n = ANIM_TILES_SURFACES.at(ANIM_TILES_SURFACES.size()-1).surface->w / TILESIZE;

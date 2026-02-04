@@ -10,6 +10,7 @@
 
 #include <data/sharedmapdata.h>
 
+#include "TiledMapObjectLayer.hpp"
 #include "view/imageview.h"
 
 TiledMap::TiledMap() {}
@@ -41,8 +42,9 @@ void TiledMap::initialize(std::string filename, SDL_Renderer* renderer)
                 map_layer_type = map_data::map_layer_type::map_layer_type_image;
             } else if (mapLayers[i]->getType() == tmx::Layer::Type::Object) {
                 map_layer_type = map_data::map_layer_type::map_layer_type_object;
-                if (mapLayers[i]->getName() == "PLAYER") {
-
+                if (mapLayers[i]->getName() == "COLLISION") {
+                    TiledMapObjectLayer objectLayer;
+                    objects_collision = objectLayer.init(map, i);
                 }
             }
             map_data::SharedMapData::get_instance()->layer_order_map[mapLayers[i]->getName()] = map_layer_type;
@@ -68,6 +70,10 @@ std::vector<st_rectangle> TiledMap::get_tiles_collision(int layer_n)
         return std::vector<st_rectangle>();
     }
     return renderLayers.at(layer_n)->get_tiles_collision_rectangles_list();
+}
+
+std::vector<st_float_position> TiledMap::get_objects_collision() {
+    return objects_collision;
 }
 
 void TiledMap::build_map_image_layer_data(const tmx::Layer::Ptr& layer)

@@ -55,6 +55,8 @@ private:
     b2BodyDef playerBodyDef = b2DefaultBodyDef();
     b2BodyId playerBodyId{};
     b2Polygon dynamicBox = b2MakeBox(player_w/2, player_h/2);
+    b2Polygon dynamicBox2 = b2MakeRoundedBox(player_w/2, player_h/2, player_w/40);
+    //b2Circle dynamicCircle = {{0.0f, 0.0f}, player_w/2}; // TODO create an elippse or a rounded box instead
     b2ShapeDef playerShapeDef = b2DefaultShapeDef();
 
     bool jump_started = false;

@@ -9,6 +9,8 @@
 
 TiledMapLayer::TiledMapLayer() {}
 
+#define PIXELS_PER_METER 40
+
 /*
 
 map
@@ -140,7 +142,17 @@ bool TiledMapLayer::init(const tmx::Map& map, uint32_t layerIndex, const std::ve
                     tile.dest_x = map_x * tile.w;
                     tile.dest_y = map_y * tile.h;
                     map_tile_list.push_back(tile);
-                    tiles_collision_rectangles_list.push_back(st_rectangle(tile.dest_x, tile.dest_y, tile.w, tile.h));
+                    //tiles_collision_rectangles_list.push_back(st_rectangle(tile.dest_x, tile.dest_y, tile.w, tile.h));
+
+                    // trying to make simple, just points in the map for the check
+                    if (tiles_collision_adjacent_check_list.find(map_y) == std::end(tiles_collision_adjacent_check_list)) {
+                        tiles_collision_adjacent_check_list.insert(std::pair<int, std::vector<st_collision_data>>(map_y, std::vector<st_collision_data>()));
+                    }
+                    st_collision_data collision_data;
+                    collision_data.pos_x = map_x;
+                    collision_data.map_rect = st_rectangle(tile.dest_x, tile.dest_y, tile.w, tile.h);
+
+                    tiles_collision_adjacent_check_list.at(map_y).push_back(collision_data);
 
                     // add box2d shapes
                     //BodyDef bodyDef = getBodyDef(x * tileSize + tileSize / 2f + rectangle.getX() - (tileSize - rectangle.getWidth()) / 2f, y * tileSize + tileSize / 2f + rectangle.getY() - (tileSize - rectangle.getHeight()) / 2f);
@@ -148,10 +160,7 @@ bool TiledMapLayer::init(const tmx::Map& map, uint32_t layerIndex, const std::ve
                     //float box2d_y = tile.dest_y + float(tile.h/2);
                     //b2BodyDef bodyDef = getBodyDef(box2d_x, box2d_y);
 
-                    //std::cout << "map_tile[" << map_x << "][" << map_y << "].id[" << map_tile.ID << "], origin_x[" << tile.origin_x << "], origin_y[" << tile.origin_y << "]" << std::endl;
-
-
-
+                    std::cout << "map_tile[" << map_x << "][" << map_y << "].id[" << map_tile.ID << "], origin_x[" << tile.origin_x << "], origin_y[" << tile.origin_y << "]" << std::endl;
                 }
 
                 map_x++;
@@ -171,7 +180,7 @@ bool TiledMapLayer::init(const tmx::Map& map, uint32_t layerIndex, const std::ve
         }
     }
 
-
+    optimize_tiles_collision_rectangles_list();
     return true;
 }
 
@@ -194,3 +203,45 @@ std::vector<st_rectangle> TiledMapLayer::get_tiles_collision_rectangles_list()
     std::cout << "TiledMap::get_tiles_collision_rectangles_list - number of tiles [" << tiles_collision_rectangles_list.size() << "]" << std::endl;
     return tiles_collision_rectangles_list;
 }
+
+void TiledMapLayer::optimize_tiles_collision_rectangles_list() {
+    for (const auto& pair : tiles_collision_adjacent_check_list) {
+        int initial_pos_x = -1;
+        int adjacent_pos = -1;
+        float real_initial_pos_x = -1.0f;
+        std::vector<st_collision_data> sorted_list = pair.second;
+        std::sort(sorted_list.begin(), sorted_list.end(), [](const st_collision_data& a, const st_collision_data& b) {
+            return a.pos_x < b.pos_x;
+        });
+        for (int i=0; i<sorted_list.size(); i++) {
+            int pos_x = sorted_list.at(i).pos_x;
+            //std::cout << "TiledMapLayer::optimize_tiles_collision_rectangles_list - checking tile[" << pos_x << "][" << pair.first << "]" << std::endl;
+            if (initial_pos_x == -1) {
+                initial_pos_x = pos_x;
+                real_initial_pos_x = sorted_list.at(i).map_rect.x;
+                adjacent_pos = pos_x + 1;
+            }
+            if (i < sorted_list.size()-1) {
+                if (sorted_list.at(i+1).pos_x != pos_x+1) { // broken continuity
+                    if (adjacent_pos >= pos_x) {
+                        std::cout << "#1 Sequence - initial_pos_x[" << initial_pos_x << "], pos_x[" << pos_x << "], adjacent_pos[" << adjacent_pos << "]" << std::endl;
+                        tiles_collision_rectangles_list.push_back(st_rectangle(real_initial_pos_x, sorted_list.at(i).map_rect.y, (sorted_list.at(i).map_rect.x - real_initial_pos_x + sorted_list.at(i).map_rect.w), sorted_list.at(i).map_rect.h));
+                    }
+                    initial_pos_x = -1;
+                } else {
+                    adjacent_pos++;
+                }
+            } else {
+                if (adjacent_pos >= pos_x) {
+                    std::cout << "#2 Sequence - initial_pos_x[" << initial_pos_x << "], pos_x[" << pos_x << "], adjacent_pos[" << adjacent_pos << "]" << std::endl;
+                    tiles_collision_rectangles_list.push_back(st_rectangle(real_initial_pos_x, sorted_list.at(i).map_rect.y, (sorted_list.at(i).map_rect.x - real_initial_pos_x + sorted_list.at(i).map_rect.w), sorted_list.at(i).map_rect.h));
+                }
+                initial_pos_x = -1;
+                adjacent_pos = pos_x + 1;
+            }
+        }
+    }
+    std::cout << "FINISH" << std::endl;
+}
+
+

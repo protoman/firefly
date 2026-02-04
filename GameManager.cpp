@@ -260,8 +260,10 @@ void GameManager::initGame()
     debugDrawer = b2DefaultDebugDraw();
     debugDrawer.drawShapes = true;
     debugDrawer.DrawSolidPolygonFcn = Box2dDebugDraw::DrawSolidPolygon;
+    debugDrawer.DrawPolygonFcn = Box2dDebugDraw::DrawClosedPolygon;
 
     box2d_manager.add_static_body_rectangles(tiled_map.get_tiles_collision(0));
+    box2d_manager.add_static_body_polygon(tiled_map.get_objects_collision());
     ImageView::get_instance()->load_layers_data();
 
     init_map_and_player_to_bottom();
@@ -1924,11 +1926,6 @@ void GameManager::init_map_and_player_to_bottom()
     //std::cout << "@@@@@@@@@@@@@@@@@@@ player_initial_x[" << player_initial_x << "]" << std::endl;
     player1.set_position(st_position(player_initial_x, bottom_y));
     player1.set_animation_type(ANIM_TYPE_STAND);
-}
-
-void GameManager::drawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexCount, float radius,
-    b2HexColor color, void *context) {
-    std::cout << "GameManager::drawSolidPolygon" << std::endl;
 }
 
 st_size GameManager::calc_area_tile_size(int area_n)

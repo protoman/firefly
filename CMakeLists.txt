@@ -106,6 +106,8 @@ add_executable(FireFlyGame
     view/timerview.cpp view/timerview.h
         data/SharedGameData.cpp
         data/SharedGameData.hpp
+        tiled/TiledMapObjectLayer.cpp
+        tiled/TiledMapObjectLayer.hpp
 )
 
 if(LINUX)

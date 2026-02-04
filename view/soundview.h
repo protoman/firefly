@@ -53,6 +53,7 @@ private:
     SoundView(SoundView const&){};             // copy constructor is private
     SoundView& operator=(SoundView const&){ return *this; };  // assignment operator is private
     static SoundView* _instance;
+    float calculate_volume(int volume);
 
 
 private:

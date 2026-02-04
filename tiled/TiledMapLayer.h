@@ -10,6 +10,11 @@
 #include <data/st_common.h>
 #include <tmxlite/Map.hpp>
 
+struct st_collision_data {
+    int pos_x;
+    st_rectangle map_rect;
+};
+
 class TiledMapLayer
 {
 public:
@@ -18,6 +23,9 @@ public:
     bool init(const tmx::Map&map, std::uint32_t layerIndex, const std::vector<std::unique_ptr<TiledMapTexture>>& textures);
     void draw(SDL_Renderer* renderer, st_float_position map_scroll) const;
     std::vector<st_rectangle> get_tiles_collision_rectangles_list();
+    void optimize_tiles_collision_rectangles_list();
+
+    float has_tile_adjacent_on_right(int pos_x, int pos_y);
 
 private:
     struct tiled_tile_data {
@@ -41,6 +49,8 @@ private:
 
     std::map<int, st_rectangle> tileset_collision_rectangles_map;
     std::vector<st_rectangle> tiles_collision_rectangles_list;
+
+    std::map<int, std::vector<st_collision_data>> tiles_collision_adjacent_check_list;
 
 };
 

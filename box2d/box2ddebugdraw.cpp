@@ -16,6 +16,21 @@ void Box2dDebugDraw::DrawPolygonFcn(b2Transform transform, const b2Vec2 *vertice
     DrawPolygon(transform, vertices, vertexCount, color);
 }
 
+void Box2dDebugDraw::DrawClosedPolygon(const b2Vec2 *vertices, int vertexCount, b2HexColor color, void *context) {
+    std::cout << "Box2dDebugDraw::DrawClosedPolygon" << std::endl;
+    //SDL_SetRenderDrawColor(sdl_renderer, 250, 0, 0);
+    SDL_FPoint* sdlPoints = new SDL_FPoint[vertexCount + 1];
+    for (int i = 0; i < vertexCount; ++i) {
+        b2Vec2 p0 = {vertices[i].x, vertices[i].y};
+        float x0 = p0.x * PIXELS_PER_METER - map_data::SharedMapData::get_instance()->scroll.x;
+        float y0 = p0.y * PIXELS_PER_METER - map_data::SharedMapData::get_instance()->scroll.y;
+        sdlPoints[i] = { x0, y0 };
+    }
+    sdlPoints[vertexCount] = sdlPoints[0]; // Close the polygon
+    SDL_RenderLines(sdl_renderer, sdlPoints, vertexCount + 1);
+    delete[] sdlPoints;
+}
+
 void Box2dDebugDraw::DrawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexCount, float radius, b2HexColor color, void *context)
 {
     //std::cout << "Box2dDebugDraw::DrawSolidPolygonFcn" << std::endl;

@@ -13,6 +13,8 @@ public:
 
     static void DrawPolygonFcn(b2Transform transform, const b2Vec2* vertices, int vertexCount, b2HexColor color, void* context);
 
+    static void DrawClosedPolygon(const b2Vec2* vertices, int vertexCount, b2HexColor color, void* context);
+
     /// Draw a solid closed polygon provided in CCW order.
     static void DrawSolidPolygon(b2Transform transform, const b2Vec2* vertices, int vertexCount, float radius, b2HexColor color,
                                     void* context );
