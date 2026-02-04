@@ -11,7 +11,7 @@
 
 class TiledMapObjectLayer {
 public:
-    std::vector<st_float_position> init(const tmx::Map &map, unsigned int layerIndex);
+    std::vector<std::vector<st_float_position>> init(const tmx::Map &map, unsigned int layerIndex);
 };
 
 

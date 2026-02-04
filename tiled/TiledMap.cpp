@@ -72,7 +72,7 @@ std::vector<st_rectangle> TiledMap::get_tiles_collision(int layer_n)
     return renderLayers.at(layer_n)->get_tiles_collision_rectangles_list();
 }
 
-std::vector<st_float_position> TiledMap::get_objects_collision() {
+std::vector<std::vector<st_float_position>> TiledMap::get_objects_collision() {
     return objects_collision;
 }
 

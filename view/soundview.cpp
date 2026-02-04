@@ -492,7 +492,7 @@ MIX_Audio *SoundView::get_sfx(std::string filename)
 
 float SoundView::calculate_volume(int volume) {
     float value = (1.0f / 128.0f) * volume;
-    std::cout << std::fixed << std::setprecision(4) << "SoundView::calculate_volume - value[" << value << "], original[" << volume << "]" << std::endl;
+    //std::cout << std::fixed << std::setprecision(4) << "SoundView::calculate_volume - value[" << value << "], original[" << volume << "]" << std::endl;
     return value;
 }
 

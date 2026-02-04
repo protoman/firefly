@@ -6,8 +6,8 @@
 
 #include <iostream>
 
-std::vector<st_float_position> TiledMapObjectLayer::init(const tmx::Map &map, unsigned int layerIndex) {
-    std::vector<st_float_position> res;
+std::vector<std::vector<st_float_position>> TiledMapObjectLayer::init(const tmx::Map &map, unsigned int layerIndex) {
+    std::vector<std::vector<st_float_position>> res;
     const auto& layers = map.getLayers();
     assert(layers[layerIndex]->getType() == tmx::Layer::Type::Object);
 
@@ -17,8 +17,11 @@ std::vector<st_float_position> TiledMapObjectLayer::init(const tmx::Map &map, un
         std::cout << "Object[" << object.getName() << "]" << std::endl;
         if (object.getShape() == tmx::Object::Shape::Polygon) {
             std::vector<tmx::Vector2f> points = object.getPoints();
-            for (tmx::Vector2f point : points) {
-                res.emplace_back(st_float_position(point.x + object.getPosition().x, point.y + object.getPosition().y));
+            if (points.size() > 0) {
+                res.emplace_back(std::vector<st_float_position>());
+                for (tmx::Vector2f point : points) {
+                    res.back().emplace_back(st_float_position(point.x + object.getPosition().x, point.y + object.getPosition().y));
+                }
             }
         }
     }
