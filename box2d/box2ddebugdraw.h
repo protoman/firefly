@@ -42,7 +42,14 @@ public:
 
     static void DrawPolygon(b2Transform transform, const b2Vec2* vertices, int vertexCount, const b2HexColor color);
 
+    static void DrawPolygonWithNoTransform(const b2Vec2* vertices, int vertexCount, const b2HexColor color);
+
     static void setRenderer(SDL_Renderer *renderer);
+
+    static void DrawCircle(SDL_Point center, float radius);
+
+    static int roundUpToMultipleOfEight( int v );
+
 
 private:
     static SDL_Renderer *sdl_renderer;

@@ -23,6 +23,7 @@ Box2dManager::Box2dManager() : groundId(), groundBox() {
     playerShapeDef.density = PLAYER_DENSITY;
     playerShapeDef.material.friction = PLAYER_FRICTION;
 
+    /*
     b2Vec2 vertices[6];
     vertices[0] = {player_w/2 - 0.1f, 0.0f }; // top-left-center
     vertices[1] = {player_w/2 + 0.1f, 0.0f }; // top-right-center
@@ -33,6 +34,13 @@ Box2dManager::Box2dManager() : groundId(), groundBox() {
     b2Hull hull = b2ComputeHull(vertices, 6);
     playerPolygonShape = b2MakePolygon(&hull, 0.0f); // 0.0f radius for sharp corners
     b2CreatePolygonShape(playerBodyId, &playerShapeDef, &playerPolygonShape);
+    */
+
+
+    playerCapsule.center1 = b2Vec2(player_w/2, -player_h/2); // Bottom center
+    playerCapsule.center2 = b2Vec2(player_w/2, 0.0f); // Top center
+    playerCapsule.radius = player_w/2;                // Radius of the semicircles
+    b2CreateCapsuleShape(playerBodyId, &playerShapeDef, &playerCapsule);
 }
 
 Box2dManager::~Box2dManager()
@@ -96,6 +104,7 @@ void Box2dManager::add_static_body_rectangles(std::vector<st_rectangle> rectangl
         object.id = b2CreateBody(worldId, &object.bodyDef);
         object.box = b2MakeBox(calc_half_w, calc_half_h);
         b2CreatePolygonShape(object.id, &object.shapeDef, &object.box);
+        object.shapeDef.material.restitution = 0.0f;
         //std::cout << "Added static body at[" << object.bodyDef.position.x << "][" << object.bodyDef.position.y << "][" << ", rectangle[" << rectangle.x << "][" << rectangle.y << "][" << rectangle.w << "][" << rectangle.h << "]" << std::endl;
         staticObjects.push_back(object);
     }
@@ -123,7 +132,7 @@ void Box2dManager::add_static_body_polygon(std::vector<std::vector<st_float_posi
 
         staticObjects.back().shapeDef.density = 1.0f;
         staticObjects.back().shapeDef.material.friction = 1.0f;
-        //shapeDef.restitution = 0.1f;
+        staticObjects.back().shapeDef.material.restitution = 0.0f;
 
         b2CreatePolygonShape(staticObjects.back().id, &staticObjects.back().shapeDef, &polygonShape);
     }
@@ -172,7 +181,7 @@ void Box2dManager::player_jump()
 
         b2Vec2 velocity;
         velocity.x = 0.0f;
-        velocity.y = -8.0f;
+        velocity.y = PLAYER_JUMP_VELOCITY;
         b2Body_ApplyLinearImpulseToCenter(playerBodyId, velocity, true);
     }
 }

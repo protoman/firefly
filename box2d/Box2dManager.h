@@ -45,10 +45,11 @@ private:
     int subStepCount = 4;
     float GRAVITY = 19.6f;
     float MAX_SPEED = 15.0f;
-    float HORIZONTAL_SPEED_LIMIT = 2.5f;
-    float HORIZONTAL_MOVE_FORCE = 2.0f;
+    float HORIZONTAL_SPEED_LIMIT = 10.0f;
+    float HORIZONTAL_MOVE_FORCE = 4.0f;
     float PLAYER_DENSITY = 1.0f;
-    float PLAYER_FRICTION = 0.2f;
+    float PLAYER_FRICTION = 0.8f;
+    float PLAYER_JUMP_VELOCITY = -12.0f;
 
     // world
     b2WorldDef worldDef = b2DefaultWorldDef();
@@ -66,6 +67,9 @@ private:
     b2Polygon dynamicBox = b2MakeBox(player_w/2, player_h/2);
     b2Polygon playerPolygonShape;
     b2ShapeDef playerShapeDef = b2DefaultShapeDef();
+
+    b2Capsule playerCapsule;
+
 
     bool jump_started = false;
     // static objects
