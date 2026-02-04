@@ -375,6 +375,8 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
                 box2d_manager.change_player_position(st_float_position(2.0f, 0.0f));
             } else if (player1.getMoveCommands().left == 1) {
                 box2d_manager.change_player_position(st_float_position(-2.0f, 0.0f));
+            } else {
+                box2d_manager.change_player_position(st_float_position(0.0f, 0.0f));
             }
             if (player1.getMoveCommands().jump == 1) {
                 box2d_manager.player_jump();

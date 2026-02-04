@@ -93,27 +93,40 @@ void Box2dManager::add_static_body_rectangles(std::vector<st_rectangle> rectangl
 }
 
 void Box2dManager::add_static_body_polygon(std::vector<st_float_position> points) {
+    if (points.size() == 0) {
+        return;
+    }
     unsigned int points_size = points.size();
     b2Vec2 vertices[points_size];
     for (int i=0; i<points_size; i++) {
-        vertices[i] = {points.at(i).x, points.at(i).y};
+        vertices[i] = {points.at(i).x/PIXELS_PER_METER, points.at(i).y/PIXELS_PER_METER};
     }
     b2Hull hull = b2ComputeHull(vertices, points_size);
     b2Polygon polygonShape = b2MakePolygon(&hull, 0.0f); // 0.0f radius for sharp corners
     staticObjects.push_back(static_object_struct());
 
-    staticObjects.back().bodyDef.position = {0.0f, 10.0f};
+    staticObjects.back().bodyDef.position = {points.front().x/PIXELS_PER_METER, points.front().y/PIXELS_PER_METER};
     staticObjects.back().bodyDef.type = b2BodyType::b2_staticBody;
     staticObjects.back().id = b2CreateBody(worldId, &groundBodyDef);
 
     staticObjects.back().shapeDef.density = 1.0f;
-    //shapeDef.friction = 0.5f;
+    staticObjects.back().shapeDef.material.friction = 1.0f;
     //shapeDef.restitution = 0.1f;
 
     b2CreatePolygonShape(staticObjects.back().id, &staticObjects.back().shapeDef, &polygonShape);
 }
 
 void Box2dManager::change_player_position(st_float_position inc) {
+    if (inc.x == 0.0f) {
+        e_player_on_ground ground_type = is_player_on_ground();
+        if (ground_type == PLAYER_GROUND_SLOPE && jump_started == false) {
+            b2Body_SetLinearVelocity(playerBodyId, {0.0f, 0.0f});
+        }
+        //playerShapeDef.material.friction = 1.0f;
+        //b2Body_SetLinearVelocity(playerBodyId, {0.0f, 1.0f});
+        //std::cout << "Box2dManager::change_player_position - no move, friction[" << playerShapeDef.material.friction << "]" << std::endl;
+        return;
+    }
     b2Vec2 vel = b2Body_GetLinearVelocity(playerBodyId);
     if (inc.x < 0 && vel.x < -HORIZONTAL_SPEED_LIMIT) {
         return;
@@ -154,6 +167,37 @@ void Box2dManager::player_jump()
 void Box2dManager::run_debug_draw(b2DebugDraw *draw)
 {
     b2World_Draw(worldId, draw);
+}
+
+e_player_on_ground Box2dManager::is_player_on_ground() {
+    b2Vec2 position = b2Body_GetPosition(playerBodyId);
+    // check contact events
+    b2ContactData contactDataArray[10];
+    int contact_count = b2Body_GetContactData(playerBodyId, contactDataArray, 10);
+    float player_feet = position.y + (player_h/2);
+    //std::cout << "###################################################################################" << std::endl;
+
+    for (int n=0; n<contact_count; n++) {
+        b2ContactData contactData = contactDataArray[n];
+        //std::cout << "Box2dManager::is_player_on_ground - contact[" << n << "], pointCount[" << contactData.manifold.pointCount << "], normal[" << contactData.manifold.normal.x << "][" << contactData.manifold.normal.y << "]" << std::endl;
+        if (contactData.manifold.pointCount != 2) {
+            continue;
+        }
+        for (int i=0; i<2; i++) {
+            if (areFloatsEqual(contactData.manifold.points[i].point.y, player_feet, 0.2f)) {
+                if (contactData.manifold.normal.x > 0.0f && contactData.manifold.normal.x < 1.0f && contactData.manifold.normal.y > 0.0f && contactData.manifold.normal.y < 1.0f) {
+                    std::cout << "Box2dManager::is_player_on_ground - Is on slope[TRUE] - normal[" << contactData.manifold.normal.x << "][" << contactData.manifold.normal.y << "]" << std::endl;
+                    return PLAYER_GROUND_SLOPE;
+                } else {
+                    return PLAYER_GROUND_LINEAR;
+                }
+            }
+        }
+    }
+    return PLAYER_GROUND_NONE;
+}
+
+void Box2dManager::execute_player_physics() {
 }
 
 bool Box2dManager::areFloatsEqual(float a, float b, float tolerance)

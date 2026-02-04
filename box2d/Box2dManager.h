@@ -6,6 +6,13 @@
 
 #define PIXELS_PER_METER 40
 
+
+enum e_player_on_ground {
+    PLAYER_GROUND_NONE,
+    PLAYER_GROUND_LINEAR,
+    PLAYER_GROUND_SLOPE
+};
+
 struct static_object_struct {
     b2BodyDef bodyDef = b2DefaultBodyDef();
     b2BodyId id;
@@ -26,6 +33,8 @@ public:
     void change_player_position(st_float_position inc);
     void player_jump();
     void run_debug_draw(b2DebugDraw* draw);
+    e_player_on_ground is_player_on_ground();
+    void execute_player_physics();
 
 private:
     bool areFloatsEqual(float a, float b, float tolerance = 1e-5f);
@@ -39,7 +48,7 @@ private:
     float HORIZONTAL_SPEED_LIMIT = 2.5f;
     float HORIZONTAL_MOVE_FORCE = 1.0f;
     float PLAYER_DENSITY = 1.0f;
-    float PLAYER_FRICTION = 0.0f;
+    float PLAYER_FRICTION = 0.2f;
 
     // world
     b2WorldDef worldDef = b2DefaultWorldDef();

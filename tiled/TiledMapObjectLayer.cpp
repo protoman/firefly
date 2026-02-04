@@ -18,7 +18,7 @@ std::vector<st_float_position> TiledMapObjectLayer::init(const tmx::Map &map, un
         if (object.getShape() == tmx::Object::Shape::Polygon) {
             std::vector<tmx::Vector2f> points = object.getPoints();
             for (tmx::Vector2f point : points) {
-                res.emplace_back(st_float_position(point.x, point.y));
+                res.emplace_back(st_float_position(point.x + object.getPosition().x, point.y + object.getPosition().y));
             }
         }
     }
