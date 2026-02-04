@@ -438,8 +438,8 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
 
 
         st_float_position mapScroll = mapController.getMapScrolling();
-        ImageView::get_instance()->clearScreenArea(box2d_player_pos.x - mapScroll.x, box2d_player_pos.y - mapScroll.y, box2d_player_pos.w, box2d_player_pos.h, 200, 0, 0);
-        TimerView::get_instance()->udelay(2000);
+        //ImageView::get_instance()->clearScreenArea(box2d_player_pos.x - mapScroll.x, box2d_player_pos.y - mapScroll.y, box2d_player_pos.w, box2d_player_pos.h, 200, 0, 0);
+        //TimerView::get_instance()->udelay(2000);
 
 
         //std::cout << "$$$ clear_point_x[" << SharedData::get_instance()->clear_point_x << "], clear_point_y[" << SharedData::get_instance()->clear_point_y << "]" << std::endl;

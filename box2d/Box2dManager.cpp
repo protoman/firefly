@@ -22,8 +22,17 @@ Box2dManager::Box2dManager() : groundId(), groundBox() {
     playerBodyId = b2CreateBody(worldId, &playerBodyDef);
     playerShapeDef.density = PLAYER_DENSITY;
     playerShapeDef.material.friction = PLAYER_FRICTION;
-    b2CreatePolygonShape(playerBodyId, &playerShapeDef, &dynamicBox2);
-    //b2CreateCircleShape(playerBodyId, &playerShapeDef, &dynamicCircle);
+
+    b2Vec2 vertices[6];
+    vertices[0] = {player_w/2 - 0.1f, 0.0f }; // top-left-center
+    vertices[1] = {player_w/2 + 0.1f, 0.0f }; // top-right-center
+    vertices[2] = {0.0f, player_h/2 }; // left-middle
+    vertices[3] = {player_w, player_h/2 }; // right-middle
+    vertices[4] = {player_w/2 - 0.1f, player_h }; // bottom-left-center
+    vertices[5] = {player_w/2 + 0.1f, player_h }; // bottom-right-center
+    b2Hull hull = b2ComputeHull(vertices, 6);
+    playerPolygonShape = b2MakePolygon(&hull, 0.0f); // 0.0f radius for sharp corners
+    b2CreatePolygonShape(playerBodyId, &playerShapeDef, &playerPolygonShape);
 }
 
 Box2dManager::~Box2dManager()
@@ -57,7 +66,7 @@ st_rectangle Box2dManager::get_player_box() {
                 continue;
             }
             for (int i=0; i<2; i++) {
-                if (areFloatsEqual(contactData.manifold.points[i].point.y, player_feet, 0.2f)) {
+                if (areFloatsEqual(contactData.manifold.points[i].point.y, player_feet, 0.9f)) {
                     jump_started = false;
                     //std::cout << "Box2dManager::get_player_box - finish-jump - contactData.pointsCount[" << contactData.manifold.pointCount << "], point[" << i << "].y[" << contactData.manifold.points[i].point.y << "], player_feet[" << player_feet << "]" << std::endl;
                     break;
@@ -176,8 +185,8 @@ void Box2dManager::run_debug_draw(b2DebugDraw *draw)
 e_player_on_ground Box2dManager::is_player_on_ground() {
     b2Vec2 position = b2Body_GetPosition(playerBodyId);
     // check contact events
-    b2ContactData contactDataArray[10];
-    int contact_count = b2Body_GetContactData(playerBodyId, contactDataArray, 10);
+    b2ContactData contactDataArray[20];
+    int contact_count = b2Body_GetContactData(playerBodyId, contactDataArray, 20);
     float player_feet = position.y + (player_h/2);
     //std::cout << "###################################################################################" << std::endl;
 
@@ -188,12 +197,12 @@ e_player_on_ground Box2dManager::is_player_on_ground() {
             continue;
         }
         for (int i=0; i<2; i++) {
-            if (areFloatsEqual(contactData.manifold.points[i].point.y, player_feet, 0.2f)) {
+            if (areFloatsEqual(contactData.manifold.points[i].point.y, player_feet, 0.9f)) {
                 if (contactData.manifold.normal.x > 0.0f && contactData.manifold.normal.x < 1.0f && contactData.manifold.normal.y > 0.0f && contactData.manifold.normal.y < 1.0f) {
                     std::cout << "#1 - Box2dManager::is_player_on_ground - Is on slope[TRUE] - normal[" << contactData.manifold.normal.x << "][" << contactData.manifold.normal.y << "]" << std::endl;
                     return PLAYER_GROUND_SLOPE;
                 } else if (contactData.manifold.normal.x < 0.0f && contactData.manifold.normal.x > -1.0f && contactData.manifold.normal.y > 0.0f && contactData.manifold.normal.y < 1.0f) {
-                    std::cout << "#2 - Box2dManager::is_player_on_ground - Is on slope[TRUE] - normal[" << contactData.manifold.normal.x << "][" << contactData.manifold.normal.y << "]" << std::endl;
+                    //std::cout << "#2 - Box2dManager::is_player_on_ground - Is on slope[TRUE] - normal[" << contactData.manifold.normal.x << "][" << contactData.manifold.normal.y << "]" << std::endl;
                     return PLAYER_GROUND_SLOPE;
                 } else {
                     return PLAYER_GROUND_LINEAR;
@@ -209,7 +218,10 @@ void Box2dManager::execute_player_physics() {
 
 bool Box2dManager::areFloatsEqual(float a, float b, float tolerance)
 {
-    return std::abs(a - b) < tolerance;
+    float diff = std::abs(a - b) - tolerance;
+    bool result = diff < tolerance;
+    //std::cout << "Box2dManager::areFloatsEqual - a[" << a << "], b[" << b << "], tolerance[" << tolerance << "], diff[" << diff << "], result[" << result << "]" << std::endl;
+    return result;
 }
 
 
