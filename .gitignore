@@ -46,5 +46,7 @@ build/FireFlyGame
 build/FireFly_00.sav
 build/cmake_install.cmake
 .idea/
+./editors/
+./editors/npc
 
 
