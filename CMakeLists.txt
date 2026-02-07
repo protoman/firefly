@@ -108,6 +108,8 @@ add_executable(FireFlyGame
         data/SharedGameData.hpp
         tiled/TiledMapObjectLayer.cpp
         tiled/TiledMapObjectLayer.hpp
+        data/SharedPlayerData.cpp
+        data/SharedPlayerData.hpp
 )
 
 if(LINUX)

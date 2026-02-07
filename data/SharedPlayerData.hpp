@@ -1,0 +1,29 @@
+//
+// Created by iuri on 07/02/2026.
+//
+
+#ifndef FIREFLYGAME_SHAREDPLAYERDATA_HPP
+#define FIREFLYGAME_SHAREDPLAYERDATA_HPP
+#include "st_common.h"
+
+
+namespace player_data {
+    class SharedPlayerData {
+    public:
+        static SharedPlayerData* get_instance();
+        st_float_position getPosition();
+        void setPosition(const st_float_position &position);
+
+    private:
+        SharedPlayerData();
+        SharedPlayerData(SharedPlayerData const&)= default;                       // copy constructor is private
+        SharedPlayerData& operator=(SharedPlayerData const&){ return *this; };    // assignment operator is private
+
+    private:
+        static SharedPlayerData* instance;
+        st_float_position position;
+
+    };
+}
+
+#endif //FIREFLYGAME_SHAREDPLAYERDATA_HPP

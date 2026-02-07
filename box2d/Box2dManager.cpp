@@ -1,6 +1,7 @@
 #include "Box2dManager.h"
 
 #include <iostream>
+#include "data/SharedPlayerData.hpp"
 
 
 Box2dManager::Box2dManager() : groundId(), groundBox() {
@@ -89,6 +90,8 @@ st_rectangle Box2dManager::get_player_box() {
 
     st_rectangle res = st_rectangle((position.x - player_w/2) * PIXELS_PER_METER, (position.y - player_h/2) * PIXELS_PER_METER, player_w * PIXELS_PER_METER, player_h * PIXELS_PER_METER);
     //std::cout << "Box2dManager::get_player_box[" << res.x << "][" << res.y << "][" << res.w << "][" << res.h << "]" << std::endl;
+
+    player_data::SharedPlayerData::get_instance()->setPosition(st_float_position((position.x - player_w) * PIXELS_PER_METER, (position.y - player_h) * PIXELS_PER_METER));
     return res;
 }
 

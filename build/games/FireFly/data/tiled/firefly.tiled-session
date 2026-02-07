@@ -12,11 +12,11 @@
             "scaleInDock": 1
         },
         "swamp.tmx": {
-            "scale": 0.75,
+            "scale": 1,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": -475.33333333333326,
-                "y": 329.3333333333333
+                "x": 1010.5,
+                "y": 326
             }
         },
         "swamp.tsx": {

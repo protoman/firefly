@@ -15,6 +15,7 @@
 #define JUMP_X_SPEED_MULTIPLIER 1.2
 
 #include "data/shareddata.h"
+#include "data/SharedPlayerData.hpp"
 
 #include "view/imageview.h"
 #include "view/soundview.h"
@@ -1068,7 +1069,13 @@ void character::show() {
 
     show_previous_sprites();
 
-    show_at(relativePosition);
+    if (is_player()) {
+        st_float_position player_pos = player_data::SharedPlayerData::get_instance()->getPosition();
+        show_at(st_position(player_pos.x - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x, player_pos.y - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().y));
+    } else {
+        show_at(relativePosition);
+    }
+
 
     // TODO: move zoom in/out logic to gameManager
     if (is_player() && state.animation_type == ANIM_TYPE_GOT_ITEM) {
