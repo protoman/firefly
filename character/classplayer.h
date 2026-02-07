@@ -2,7 +2,6 @@
 #define CLASSPLAYER_H
 
 #include "character/character.h"
-#include "character/GameEnemy.h"
 #include "file/file_io.h"
 
 class GameEnemy; // advance declaration

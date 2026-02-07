@@ -60,8 +60,8 @@ private:
     b2Polygon groundBox;
     b2ShapeDef groundShapeDef = b2DefaultShapeDef();
     // player
-    float player_w = 0.9f;
-    float player_h = 1.8f;
+    float player_w = 54 / PIXELS_PER_METER;
+    float player_h = 160 / PIXELS_PER_METER;
     b2BodyDef playerBodyDef = b2DefaultBodyDef();
     b2BodyId playerBodyId{};
     b2Polygon dynamicBox = b2MakeBox(player_w/2, player_h/2);

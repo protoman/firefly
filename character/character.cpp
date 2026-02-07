@@ -1071,7 +1071,7 @@ void character::show() {
 
     if (is_player()) {
         st_float_position player_pos = player_data::SharedPlayerData::get_instance()->getPosition();
-        show_at(st_position(player_pos.x - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x, player_pos.y - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().y));
+        show_at(st_position(player_pos.x - 54/3 - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().x, player_pos.y + (54/3) - GameManager::get_instance()->get_current_map_obj()->getMapScrolling().y));
     } else {
         show_at(relativePosition);
     }
