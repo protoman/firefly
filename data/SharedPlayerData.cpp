@@ -22,6 +22,23 @@ namespace player_data {
         this->position = position;
     }
 
+    void SharedPlayerData::addPlayerCollision(int anim_type, st_size collision) {
+        collision_map[anim_type] = collision;
+    }
+
+    st_size SharedPlayerData::getPlayerCollision(int anim_type) {
+        if (!collision_map.contains(anim_type)) {
+            if (collision_map.contains(ANIM_TYPE_WALK)) {
+                return collision_map[ANIM_TYPE_WALK];
+            } else if (collision_map.contains(ANIM_TYPE_STAND)) {
+                return collision_map[ANIM_TYPE_STAND];
+            } else {
+                return {54, 160}; // default size for player
+            }
+        }
+        return collision_map[anim_type];
+    }
+
     SharedPlayerData::SharedPlayerData() = default;
 
 }

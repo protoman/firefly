@@ -2,16 +2,21 @@
                      TODO LIST
 ########################################################
 - Each player sprite needs its own size (w/h)
-
-- Converto to SDL3
-    # fix sfx
-    # fix sfx and music volume (distortion, needs to convert 0-255 to to 0.0f->1.0f->1.Xf)
+    # setting the sprite must be done ONLY through a method, so it can update the size in box2d
+    # improve the way we place the player sprite on screen
+    # move player position in player class to player-shared-data, use box2d only for the movement
+    # add an "execute" method in box2d that moves player/etc
 
 - Split SDL3 code better
     # there should be no SDL code outside SDL-layer ones.
     # minimize the use of SDL functions, avoiding duplication.
 
-- Editors will be separate projects
+- Organize data with JSon
+    # npcs
+    # quests
+    # enemies
+
+- After data is organized, editors will be separate projects
     # player, objects, projectile and weapons can be hardcoded as in old times
     # on first run, ask where is data directory
     # name is the link between tiled and the data
@@ -20,34 +25,6 @@
     # cutscenes (movie)
 
 - Configure build system on github
-
-1. Load the Audio (MIX_Audio)
-First, load your audio data from a file or IOStream, which produces a MIX_Audio object.
-c
-// Example: Load an Ogg file
-MIX_Audio *audio = MIX_LoadAudio("sound.ogg", NULL, false, true);
-2. Create a Track (MIX_Track)
-Create a track on your mixer where the audio will play. Think of tracks as individual slots on a mixing board.
-c
-// Assume 'mixer' is a valid MIX_Mixer*
-MIX_Track *track = MIX_CreateTrack(mixer);
-3. Assign Audio to Track (MIX_SetTrackAudio)
-Use MIX_SetTrackAudio() to assign the loaded audio data to that track.
-c
-// Assign the audio to the track
-bool success = MIX_SetTrackAudio(track, audio);
-Note: A single MIX_Audio can be assigned to multiple tracks simultaneously, allowing you to play the same sound effect multiple times, possibly with different effects or panning.
-4. Play the Track
-Once assigned, call MIX_PlayTrack() to start playback.
-c
-// Play the track
-MIX_PlayTrack(track, NULL, 0); // NULL props, 0 loops
-5. Cleanup
-You can destroy the MIX_Audio object while the track is still using it; the track holds a reference and will free the resources automatically when it is done with it.
-c
-MIX_DestroyAudio(audio);
-
-
 
 - remove all build warnings
 - use a tool for code-cleaning like SonarCube

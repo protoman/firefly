@@ -4,6 +4,8 @@
 
 #ifndef FIREFLYGAME_SHAREDPLAYERDATA_HPP
 #define FIREFLYGAME_SHAREDPLAYERDATA_HPP
+#include <map>
+
 #include "st_common.h"
 
 
@@ -13,6 +15,8 @@ namespace player_data {
         static SharedPlayerData* get_instance();
         st_float_position getPosition();
         void setPosition(const st_float_position &position);
+        void addPlayerCollision(int anim_type, st_size collision);
+        st_size getPlayerCollision(int anim_type);
 
     private:
         SharedPlayerData();
@@ -22,6 +26,7 @@ namespace player_data {
     private:
         static SharedPlayerData* instance;
         st_float_position position;
+        std::map<int, st_size> collision_map;
 
     };
 }

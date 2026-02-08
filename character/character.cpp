@@ -2730,8 +2730,6 @@ void character::addSpriteFrame(int anim_type, int posX, st_imageData &spritesSur
 
     // ANIM_TYPE_STAIRS_MOVE and ANIM_TYPE_STAIRS_SEMI have an extra frame that is the mirror of the first one
 
-    if (is_player()) std::cout << "delay: " << delay << std::endl;
-
     for (int anim_direction=0; anim_direction<=1; anim_direction++) {
         for (int i=0; i<ANIM_FRAMES_COUNT; i++) { // find the last free frame
             if ((ImageView::get_instance()->character_graphics_list.find(name)->second).frames[anim_direction][anim_type][i].frameSurface.surface == nullptr) {

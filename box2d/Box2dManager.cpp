@@ -19,6 +19,7 @@ Box2dManager::Box2dManager() : groundId(), groundBox() {
     // create player, dynamic body
     playerBodyDef.type = b2_dynamicBody;
     playerBodyDef.fixedRotation = true; // Set this to true to prevent rotation
+    //playerBodyDef.linearDamping = 1.0f;
     playerBodyDef.position = (b2Vec2){10.0f, 0.0f};
     playerBodyId = b2CreateBody(worldId, &playerBodyDef);
     playerShapeDef.density = PLAYER_DENSITY;
@@ -108,6 +109,7 @@ void Box2dManager::add_static_body_rectangles(std::vector<st_rectangle> rectangl
         object.box = b2MakeBox(calc_half_w, calc_half_h);
         b2CreatePolygonShape(object.id, &object.shapeDef, &object.box);
         object.shapeDef.material.restitution = 0.0f;
+        object.shapeDef.material.friction = SCENARIO_FRICTION;
         //std::cout << "Added static body at[" << object.bodyDef.position.x << "][" << object.bodyDef.position.y << "][" << ", rectangle[" << rectangle.x << "][" << rectangle.y << "][" << rectangle.w << "][" << rectangle.h << "]" << std::endl;
         staticObjects.push_back(object);
     }
@@ -134,7 +136,7 @@ void Box2dManager::add_static_body_polygon(std::vector<std::vector<st_float_posi
         staticObjects.back().id = b2CreateBody(worldId, &groundBodyDef);
 
         staticObjects.back().shapeDef.density = 1.0f;
-        staticObjects.back().shapeDef.material.friction = 1.0f;
+        staticObjects.back().shapeDef.material.friction = SCENARIO_FRICTION;
         staticObjects.back().shapeDef.material.restitution = 0.0f;
 
         b2CreatePolygonShape(staticObjects.back().id, &staticObjects.back().shapeDef, &polygonShape);
@@ -142,6 +144,15 @@ void Box2dManager::add_static_body_polygon(std::vector<std::vector<st_float_posi
 }
 
 void Box2dManager::change_player_position(st_float_position inc) {
+    /*
+    if ((inc.x != 0 || inc.y != 0) && is_player_on_ground()) {
+        b2Body_SetLinearDamping(playerBodyId, 5.0f);
+        //playerBodyDef.linearDamping = 5.0f;
+    } else {
+        b2Body_SetLinearDamping(playerBodyId, 0.0f);
+        //playerBodyDef.linearDamping = 5.0f;
+    }
+    */
     if (inc.x == 0.0f) {
         e_player_on_ground ground_type = is_player_on_ground();
         if (ground_type == PLAYER_GROUND_SLOPE && jump_started == false) {
@@ -226,6 +237,10 @@ e_player_on_ground Box2dManager::is_player_on_ground() {
 }
 
 void Box2dManager::execute_player_physics() {
+}
+
+void Box2dManager::updatePlayerCollision(st_size size) {
+    // TBD //
 }
 
 bool Box2dManager::areFloatsEqual(float a, float b, float tolerance)

@@ -492,6 +492,8 @@ void classPlayer::initFrames()
     //animation_obj.init(name, filename, frameSize, GameMediator::get_instance()->player_list_v3_1.at(0).sprites);
 
 
+    // TODO - add collision for player
+
     // @TODO - automatically add inverse direction (right) sprites
 
 	// STAND

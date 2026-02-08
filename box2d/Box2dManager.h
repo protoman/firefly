@@ -35,6 +35,7 @@ public:
     void run_debug_draw(b2DebugDraw* draw);
     e_player_on_ground is_player_on_ground();
     void execute_player_physics();
+    void updatePlayerCollision(st_size size);
 
 private:
     bool areFloatsEqual(float a, float b, float tolerance = 1e-5f);
@@ -43,13 +44,14 @@ private:
     // configuration
     float timeStep = 1.0f / 60.0f;
     int subStepCount = 4;
-    float GRAVITY = 19.6f;
-    float MAX_SPEED = 15.0f;
+    float GRAVITY = 39.6f;
+    float MAX_SPEED = 45.0f;
     float HORIZONTAL_SPEED_LIMIT = 10.0f;
     float HORIZONTAL_MOVE_FORCE = 4.0f;
     float PLAYER_DENSITY = 1.0f;
-    float PLAYER_FRICTION = 0.8f;
-    float PLAYER_JUMP_VELOCITY = -12.0f;
+    float PLAYER_FRICTION = 1.0f;
+    float SCENARIO_FRICTION = 0.5f;
+    float PLAYER_JUMP_VELOCITY = -22.0f;
 
     // world
     b2WorldDef worldDef = b2DefaultWorldDef();

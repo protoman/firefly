@@ -96,7 +96,7 @@ public:
     struct st_position get_real_position() const;
     void set_position(struct st_position);
     void inc_position(float inc_x, float inc_y);
-    void addSpriteFrame(int, int, st_imageData&, int);
+    void addSpriteFrame(int anim_type, int posX, st_imageData &spritesSurface, int delay);
     void set_is_player(bool set_player);
     bool is_player() const;
     void advance_frameset(); // changes the state for the next (or previous) frame

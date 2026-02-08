@@ -123,6 +123,8 @@ private:
 
     bool shoryuken();
 
+    void addPlayerSpriteFrame(int anim_type, int posX, st_rectangle collision_box, st_imageData &spritesSurface, int delay);
+
 
 private:
     file_io fio;
