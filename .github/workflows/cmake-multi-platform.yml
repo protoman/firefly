@@ -71,17 +71,12 @@ jobs:
         cmake --build .
         sudo make install
 
-    - name: Checkout TmxLite repository
-      uses: actions/checkout@v4
-      with:
-        repository: fallahn/tmxlite
-        path: tmxlite
-
-
-    - name: Configure and build TmxLite
+    - name: Download Configure and build TmxLite
       if: runner.os == 'Linux'
       run: |
-        cd tmxlite/tmxlite
+        wget -c https://github.com/fallahn/tmxlite/archive/refs/tags/v1.4.4.tar.gz
+        tar -zxvf v1.4.4.tar.gz
+        cd tmxlite-1.4.4/tmxlite
         mkdir build
         cd build
         cmake ..
