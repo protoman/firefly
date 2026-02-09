@@ -6,7 +6,7 @@
 
 #include "defines.h"
 #include <vector>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <data/st_common.h>
 #include <tmxlite/Map.hpp>
 

@@ -1,8 +1,7 @@
 #ifndef TILEDMAPTEXTURE_H
 #define TILEDMAPTEXTURE_H
 
-#include <SDL.h>
-#include <string>
+#include <SDL3/SDL.h>
 
 #include "data/st_imageData.hpp"
 
