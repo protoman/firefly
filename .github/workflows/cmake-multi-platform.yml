@@ -81,7 +81,7 @@ jobs:
     - name: Configure and build TmxLite
       if: runner.os == 'Linux'
       run: |
-        cd tmxlite
+        cd tmxlite/tmxlite
         mkdir build
         cd build
         cmake ..
