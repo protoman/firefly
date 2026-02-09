@@ -1,7 +1,7 @@
 #ifndef ST_IMAGEDATA_HPP
 #define ST_IMAGEDATA_HPP
 
-#include <SDL_surface.h>
+#include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL.h>
 
