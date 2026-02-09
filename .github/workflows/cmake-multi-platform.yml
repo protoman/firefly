@@ -23,20 +23,19 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        #os: [ubuntu-latest, windows-latest]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         build_type: [Release]
         c_compiler: [gcc, clang, cl]
         include:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
-          - os: ubuntu-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-          - os: ubuntu-latest
-            c_compiler: clang
-            cpp_compiler: clang++
+          #- os: ubuntu-latest
+          #  c_compiler: gcc
+          #  cpp_compiler: g++
+          #- os: ubuntu-latest
+          #  c_compiler: clang
+          #  cpp_compiler: clang++
         exclude:
           - os: windows-latest
             c_compiler: gcc
@@ -78,11 +77,11 @@ jobs:
         cmake --build .
         sudo make install
 
-    - name: Install dependencies (Windows)
-      if: runner.os == 'Windows'
-      # Windows can use Choco for package management, or vcpkg with CMake integration
-      run: |
-        choco install harfbuzz freetype box2d
+#    - name: Install dependencies (Windows)
+#      if: runner.os == 'Windows'
+#      # Windows can use Choco for package management, or vcpkg with CMake integration
+#      run: |
+#        choco install harfbuzz freetype box2d
     
     - uses: libsdl-org/setup-sdl@v1
       with:
