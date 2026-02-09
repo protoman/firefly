@@ -49,6 +49,9 @@ jobs:
     - uses: libsdl-org/setup-sdl@v1
       with:
         version: '3-latest' # Specifies using the latest SDL3 release
+        version-sdl-image: '3-latest'
+        version-sdl-mixer: '3-latest'
+        version-sdl-ttf: '3-latest'
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
