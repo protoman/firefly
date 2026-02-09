@@ -46,18 +46,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: libsdl-org/setup-sdl@v1
-      with:
-        version: '3-latest' # Specifies using the latest SDL3 release
-        version-sdl-image: '3-latest'
-        version-sdl-mixer: '3-latest'
-        version-sdl-ttf: '3-latest'
 
     - name: Install dependencies Linux
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
         sudo apt-get install -y libharfbuzz-dev libfribidi-dev libfreetype-dev
+    
+    - uses: libsdl-org/setup-sdl@v1
+      with:
+        version: '3-latest' # Specifies using the latest SDL3 release
+        version-sdl-image: '3-latest'
+        version-sdl-mixer: '3-latest'
+        version-sdl-ttf: '3-latest'
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
