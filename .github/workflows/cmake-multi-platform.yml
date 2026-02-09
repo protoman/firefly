@@ -47,11 +47,37 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        repository: erincatto/box2d # Use the official repository or your fork
+        path: Box2D_source
+
+    - name: Install CMake
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install cmake -y
+
+    - name: Configure and build Box2D
+      if: runner.os == 'Linux'
+      run: |
+        cd Box2D_source
+        mkdir build
+        cd build
+        cmake ..
+        cmake --build .
+        sudo make install
+
     - name: Install dependencies Linux
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
         sudo apt-get install -y libharfbuzz-dev libfribidi-dev libfreetype-dev libbox2d-dev
+
+    - name: Install dependencies (Windows)
+      if: runner.os == 'Windows'
+      # Windows can use Choco for package management, or vcpkg with CMake integration
+      run: |
+        choco install harfbuzz freetype box2d
     
     - uses: libsdl-org/setup-sdl@v1
       with:
