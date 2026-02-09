@@ -52,19 +52,14 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get update && sudo apt-get install -y cmake libglu-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxkbcommon-dev libwayland-dev wayland-protocols libharfbuzz-dev libfribidi-dev libfreetype-dev libbox2d-dev 
+        sudo apt-get update && sudo apt-get install -y cmake libglu-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxkbcommon-dev libwayland-dev wayland-protocols libharfbuzz-dev libfribidi-dev libfreetype-dev 
 
-    - name: Checkout Box2D Repository
-      uses: actions/checkout@v4
-      with:
-        repository: erincatto/box2d # Use the official repository or your fork
-        path: Box2D_source
-
-
-    - name: Configure and build Box2D
+    - name: Download Configure and build Box2D
       if: runner.os == 'Linux'
       run: |
-        cd Box2D_source
+        wget -c https://github.com/erincatto/box2d/archive/refs/tags/v3.1.1.tar.gz
+        tar -zxvf v3.1.1.tar.gz
+        cd box2d-3.1.1
         mkdir build
         cd build
         cmake ..
