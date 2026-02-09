@@ -55,7 +55,7 @@ jobs:
 
     - name: Install CMake
       if: runner.os == 'Linux'
-      run: sudo apt-get update && sudo apt-get install cmake -y
+      run: sudo apt-get update && sudo apt-get install cmake libwayland-dev wayland-protocols -y
 
     - name: Configure and build Box2D
       if: runner.os == 'Linux'
