@@ -28,15 +28,15 @@ jobs:
         build_type: [Release]
         c_compiler: [gcc, clang, cl]
         include:
-#          - os: windows-latest
-#            c_compiler: cl
-#            cpp_compiler: cl
+          - os: windows-latest
+            c_compiler: cl
+            cpp_compiler: cl
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
-#          - os: ubuntu-latest
-#            c_compiler: clang
-#            cpp_compiler: clang++
+          - os: ubuntu-latest
+            c_compiler: clang
+            cpp_compiler: clang++
         exclude:
           - os: windows-latest
             c_compiler: gcc
@@ -48,15 +48,18 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Checkout repository
+    - name: Install CMake and Dependencies Linux
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get update && sudo apt-get install -y cmake libglu-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxkbcommon-dev libwayland-dev wayland-protocols libharfbuzz-dev libfribidi-dev libfreetype-dev libbox2d-dev 
+
+    - name: Checkout Box2D Repository
       uses: actions/checkout@v4
       with:
         repository: erincatto/box2d # Use the official repository or your fork
         path: Box2D_source
 
-    - name: Install CMake
-      if: runner.os == 'Linux'
-      run: sudo apt-get update && sudo apt-get install cmake libglu-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxkbcommon-dev libwayland-dev wayland-protocols -y
 
     - name: Configure and build Box2D
       if: runner.os == 'Linux'
@@ -68,11 +71,22 @@ jobs:
         cmake --build .
         sudo make install
 
-    - name: Install dependencies Linux
+    - name: Checkout TmxLite repository
+      uses: actions/checkout@v4
+      with:
+        repository: fallahn/tmxlite
+        path: tmxlite
+
+
+    - name: Configure and build TmxLite
       if: runner.os == 'Linux'
       run: |
-        sudo apt-get update
-        sudo apt-get install -y libharfbuzz-dev libfribidi-dev libfreetype-dev libbox2d-dev
+        cd tmxlite
+        mkdir build
+        cd build
+        cmake ..
+        cmake --build .
+        sudo make install
 
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows'
