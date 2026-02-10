@@ -11,11 +11,15 @@
         ":/automap-tiles.tsx": {
             "scaleInDock": 1
         },
+        "enemies1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
         "swamp.tmx": {
             "scale": 1,
-            "selectedLayer": 2,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 1010.5,
+                "x": 855,
                 "y": 326
             }
         },
@@ -24,21 +28,22 @@
             "scaleInEditor": 1
         }
     },
-    "last.imagePath": "/home/iuri/Desenvolvimento/firefly/build/games/FireFly/images/tilesets",
+    "last.imagePath": "/home/iuri/Desenvolvimento/firefly/build/games/FireFly/images/sprites/enemies",
     "last.worldFilePath": "/home/iuri/Desenvolvimento/firefly/build/games/FireFly/data/tiled",
     "loadedWorlds": [
-        "/home/iuri/Desenvolvimento/firefly/build/games/FireFly/data/tiled/firefly.world",
         "/home/iuri/Desenvolvimento/firefly/build/games/FireFly/data/tiled/firefly.world"
     ],
     "map.fixedSize": false,
     "map.lastUsedFormat": "tmx",
     "openFiles": [
         "swamp.tsx",
-        "swamp.tmx"
+        "swamp.tmx",
+        "enemies1.tsx"
     ],
     "project": "firefly.tiled-project",
     "recentFiles": [
         "swamp.tsx",
+        "enemies1.tsx",
         "swamp.tmx"
     ],
     "tileset.lastUsedFormat": "tsx"

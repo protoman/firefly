@@ -1,3 +1,3 @@
 [submodule "editors/npc"]
-	path = editors/npc
+	path = editors/enemies
 	url = git@github.com:protoman/firefly-npc-editor.git

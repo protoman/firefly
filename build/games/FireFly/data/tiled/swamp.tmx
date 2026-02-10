@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="20" tilewidth="32" tileheight="32" infinite="1" backgroundcolor="#aaffff" nextlayerid="10" nextobjectid="6">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="20" tilewidth="32" tileheight="32" infinite="1" backgroundcolor="#aaffff" nextlayerid="11" nextobjectid="8">
  <editorsettings>
   <chunksize width="40" height="20"/>
  </editorsettings>
  <tileset firstgid="1" source="swamp.tsx"/>
+ <tileset firstgid="971" source="enemies1.tsx"/>
  <imagelayer id="3" name="BG1" offsetx="0" offsety="200" parallaxx="0.9" repeatx="1">
   <image source="../../images/map_backgrounds/bg1_003.png" width="1280" height="295"/>
  </imagelayer>
@@ -71,7 +72,10 @@
    <polygon points="0,0 -2,-32.7273 -2,-65.0909 1.45455,-96.3636 29.4545,-96.1818 31.8182,-64.7273 32,-31.6364 29.8182,0"/>
   </object>
  </objectgroup>
- <objectgroup id="5" name="NPCs"/>
+ <objectgroup id="5" name="NPCs">
+  <object id="6" gid="971" x="749" y="234" width="48" height="64"/>
+  <object id="7" gid="971" x="1321" y="410" width="48" height="64"/>
+ </objectgroup>
  <imagelayer id="4" name="FG1" opacity="0.6" offsetx="0" offsety="35" parallaxx="0.8" repeatx="1">
   <image source="../../images/map_backgrounds/bg1_004.png" width="1280" height="219"/>
  </imagelayer>
