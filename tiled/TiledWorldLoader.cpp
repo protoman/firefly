@@ -17,6 +17,19 @@ void TiledWorldLoader::loadMap(std::string filename) {
         std::cout << "Error loading map" << std::endl;
         return;
     }
+
+    map_properties.chunk_w = map.getTileCount().x;
+    map_properties.chunk_h = map.getTileCount().y;
+    // TODO - those are meant to be different, need to foind out witch is witch
+    map_properties.map_w = map.getTileCount().x;
+    map_properties.map_h = map.getTileCount().y;
+    map_properties.tile_w = map.getTileSize().x;
+    map_properties.tile_h = map.getTileSize().y;
+    map_properties.bg_color.r = map.getBackgroundColour().r;
+    map_properties.bg_color.g = map.getBackgroundColour().g;
+    map_properties.bg_color.b = map.getBackgroundColour().b;
+    map_properties.directory = map.getWorkingDirectory();
+
     //load the textures as they're shared between layers
     const auto& tileSets = map.getTilesets();
     assert(!tileSets.empty());
@@ -113,9 +126,9 @@ std::vector<tiled_world_tileset_origin_data> TiledWorldLoader::buildTileLayerDat
     std::vector<tiled_world_tileset_origin_data> map_tile_list;
 
     // This part builds the map tiles
+    int map_x_multi = 0;
     for (const auto& map_chunk : layer_chunks) {
-        std::cout << "### map_chunk.size[" << map_chunk.size.x << "][" << map_chunk.size.y << "], position[" << map_chunk.position.x << "][" << map_chunk.position.y << "]" << std::endl;
-
+        //std::cout << "### map_chunk.size[" << map_chunk.size.x << "][" << map_chunk.size.y << "], position[" << map_chunk.position.x << "][" << map_chunk.position.y << "]" << std::endl;
 
         for (auto map_tile : map_chunk.tiles) {
             if (map_tile.ID != 0) {
@@ -126,16 +139,24 @@ std::vector<tiled_world_tileset_origin_data> TiledWorldLoader::buildTileLayerDat
                 tile.origin_y = tile_map[map_tile_index].origin_y;
                 tile.w = mapTileSize.x;
                 tile.h = mapTileSize.y;
-                tile.dest_x = map_x * tile.w;
+
+
+                int map_x_adjust = map_x_multi * mapSize.x * tile.w;
+                tile.dest_x = map_x * tile.w + map_x_adjust;
                 tile.dest_y = map_y * tile.h;
                 map_tile_list.push_back(tile);
-                std::cout << "map_tile_index[" << map_tile_index << "], map_tile[" << map_x << "][" << map_y << "].id[" << map_tile.ID << "], origin_x[" << tile.origin_x << "], origin_y[" << tile.origin_y << "]" << std::endl;
+                //std::cout << "map_tile_index[" << map_tile_index << "], map_x_multi[" << map_x_multi << "], map_x_adjust[" << map_x_adjust << "], ""map_tile[" << map_x << "][" << map_y << "].id[" << map_tile.ID << "], origin_x[" << tile.origin_x << "], origin_y[" << tile.origin_y << "], dest[" << tile.dest_x << "][" << tile.dest_y << "]" << std::endl;
             }
 
             map_x++;
             if (map_x >= mapSize.x) {
                 map_x = 0;
                 map_y++;
+            }
+            if (map_y >= mapSize.y) {
+                // TODO - need to add an X multiplier because the map moved to the next one on the right
+                map_y = 0;
+                map_x_multi++;
             }
         }
     }
@@ -149,20 +170,6 @@ tiled_world_image_layer_data TiledWorldLoader::buildImageLayerData(unsigned int 
 
     tmx::ImageLayer image_layer = layers[layerIndex]->getLayerAs<tmx::ImageLayer>();
     tiled_world_image_layer_data image_layer_data;
-    /*
-    bool visible = true;
-    float opacity = 1.00f;
-    float shift_x = 0.00f;
-    float shift_y = 0.00f;
-    float parallax_x = 0.00f;
-    float parallax_y = 0.00f;
-    bool repeat_x = true;
-    bool repeat_y = false;
-    float current_pos_x = 0.0f;
-    float current_pos_y = 0.0f;
-    std::string image_filename = "";
-    SDL_Texture* texture = nullptr;
-    */
     image_layer_data.visible = image_layer.getVisible();
     image_layer_data.opacity = image_layer.getOpacity();
     image_layer_data.shift_x = image_layer.getOffset().x;
@@ -196,4 +203,8 @@ std::map<int, std::vector<tiled_world_tileset_origin_data> > TiledWorldLoader::g
 
 std::vector<tiled_world_tileset_data> TiledWorldLoader::getTilesetsInfo() {
     return tilesets;
+}
+
+tiled_world_map_properties TiledWorldLoader::getMapProperties() {
+    return map_properties;
 }

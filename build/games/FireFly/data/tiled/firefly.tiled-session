@@ -16,11 +16,11 @@
             "scaleInEditor": 1
         },
         "swamp.tmx": {
-            "scale": 1,
+            "scale": 0.25,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 165,
-                "y": 326
+                "x": -170,
+                "y": 416
             }
         },
         "swamp.tsx": {
