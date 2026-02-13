@@ -37,7 +37,7 @@
 #define FILE_V5_MAP_SLOPE_LIST "data/slope_list.dat"
 #define FILE_V5_AREA_LIST "data/area_list.dat"
 #define FILE_V5_ROOM_LIST "data/room_list.dat"
-#define MAXPATHLEN 1024
+#define MAX_PATH_LENGTH 1024
 #define FS_FILENAME_SIZE 30
 
 #define LAYERS_COUNT 10

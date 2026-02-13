@@ -53,7 +53,7 @@ void classPlayer::initialize()
 {
     _number = SharedData::get_instance()->game_save.selected_player;
     char temp_name[30];
-    sprintf(temp_name, "PLAYER_%d", _number);
+    sprintf(temp_name, "PLAYER_%lu", _number);
     name = std::string(temp_name);
 
     max_projectiles = GameData::get_instance()->player_list_v3_1[_number].max_shots;
@@ -478,7 +478,7 @@ void classPlayer::initFrames()
 
 	st_imageData playerSpriteSurface;
     char filename[512];
-    sprintf(filename, "%s/images/sprites/p%d.png", SharedData::get_instance()->FILEPATH.c_str(), _number+1);
+    sprintf(filename, "%s/images/sprites/p%lu.png", SharedData::get_instance()->FILEPATH.c_str(), _number+1);
 
     //std::cout << "FILEPATH[" << SharedData::get_instance()->FILEPATH << "]" << std::endl;
     //std::cout << "p1.filename[" << filename << "]" << std::endl;

@@ -28,8 +28,8 @@ void get_filepath()
     }
     delete[] buffer;
 #else
-    char *buffer = new char[MAXPATHLEN];
-    getcwd(buffer, MAXPATHLEN);
+    char *buffer = new char[MAX_PATH_LENGTH];
+    getcwd(buffer, MAX_PATH_LENGTH);
 
     if(buffer != nullptr) {
         SharedData::get_instance()->FILEPATH = std::string(buffer);

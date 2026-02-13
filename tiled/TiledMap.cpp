@@ -13,7 +13,7 @@
 #include "TiledMapObjectLayer.hpp"
 #include "view/imageview.h"
 
-TiledMap::TiledMap() {}
+TiledMap::TiledMap() = default;
 
 void TiledMap::initialize(std::string filename, SDL_Renderer* renderer)
 {

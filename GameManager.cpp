@@ -14,6 +14,7 @@
 #include "options/pausemenu.h"
 
 #include "aux_tools/fps_control.h"
+#include "tiled/TiledWorldLoader.hpp"
 
 #include "view/ingame_presentation.h"
 
@@ -72,7 +73,7 @@ GameManager *GameManager::get_instance()
 
 void GameManager::initHardwareLayer()
 {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO | SDL_INIT_HAPTIC) < 0) {
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO | SDL_INIT_HAPTIC)) {
         std::cout << "SDL could not initialize! SDL_Error[" << SDL_GetError() << "]" << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -253,6 +254,9 @@ void GameManager::initGame()
     mapController.loadMap();
 
     // IURI: IMPROVE LATER
+    TiledWorldLoader loader;
+    loader.loadMap(SharedData::get_instance()->FILEPATH + "/data/tiled/swamp.tmx");
+
     std::string tiled_map_filename = SharedData::get_instance()->FILEPATH + "/data/tiled/swamp.tmx";
     tiled_map.initialize(tiled_map_filename, gRenderer);
 

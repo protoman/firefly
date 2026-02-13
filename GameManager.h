@@ -28,8 +28,8 @@ class GameEnemy;
 #include "ports/psp/psp_ram.h"
 #endif
 
-#define ZOOM_MAX 1.3
-#define ZOOM_STEP 0.01
+#define ZOOM_MAX 1.3f
+#define ZOOM_STEP 0.01f
 
 /**
  * @brief

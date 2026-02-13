@@ -1573,8 +1573,7 @@ Uint8 MapController::get_map_gfx()
 
 Uint8 MapController::get_map_gfx_mode()
 {
-    get_style().gfx_mode;
-    return 0;
+    return get_style().gfx_mode;
 }
 
 st_float_position MapController::get_bg_scroll()

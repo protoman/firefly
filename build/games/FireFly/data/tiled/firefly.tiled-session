@@ -17,9 +17,9 @@
         },
         "swamp.tmx": {
             "scale": 1,
-            "selectedLayer": 4,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 855,
+                "x": 165,
                 "y": 326
             }
         },
