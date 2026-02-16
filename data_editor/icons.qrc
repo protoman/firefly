@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/action-albumfolder-importdir2.svg</file>
+        <file>icons/add-files-to-archive-symbolic.svg</file>
+        <file>icons/amarok_artist.svg</file>
+        <file>icons/arrow-up-dark.svg</file>
+        <file>icons/arrow-down-dark.svg</file>
+        <file>icons/bqm-remove.svg</file>
+        <file>icons/arrow-left.svg</file>
+        <file>icons/arrow-right.svg</file>
+        <file>icons/showerthoughts2.svg</file>
+        <file>icons/exit.svg</file>
+        <file>icons/extension-symbolic.svg</file>
+        <file>icons/file-save.svg</file>
+    </qresource>
+</RCC>
