@@ -10,21 +10,129 @@
 #include <vector>
 #include "cereal/cereal.hpp"
 #include "cereal/archives/json.hpp"
-#include "cereal/types/polymorphic.hpp"
 #include "cereal/types/vector.hpp"
 
 
+
 namespace data {
+
+    enum frame_types {
+        frame_type_stand,
+        frame_type_walk,
+        frame_type_walk_attack,
+        frame_type_walk_on_air,
+        frame_type_flying,
+        frame_type_jump,
+        frame_type_jump_attack,
+        frame_type_attack1,
+        frame_type_attack2,
+        frame_type_attack3,
+        frame_type_attack4,
+        frame_type_attack5,
+        frame_type_attack6,
+        frame_type_attack7,
+        frame_type_attack8,
+        frame_type_teleport,
+        frame_type_hit,
+        frame_type_stairs,
+        frame_type_stairs_semi,
+        frame_type_stairs_attack,
+        frame_type_stairs_move,
+        frame_type_throw,
+        frame_type_turning,
+        frame_type_presenting,
+        frame_type_sliding,
+        frame_type_dashing,
+        frame_type_shielded,
+        frame_type_looking_up,
+        frame_type_looking_down,
+        frame_type_wall_grabbing,
+        frame_type_damage,
+        frame_type_celebrating,
+    };
+
+    enum enemy_shield_modes {
+        enemy_shield_mode_none,
+        enemy_shield_mode_full,
+        enemy_shield_mode_front,
+        enemy_shield_mode_stand,
+        enemy_shield_mode_disguise,
+        enemy_shield_mode_stand_front,
+        enemy_shield_mode_stand_and_walk,
+        enemy_shield_mode_back,
+        enemy_shield_mode_using_shield
+    };
+
+    struct file_enemy_size {
+        int w;
+        int h;
+
+        template <class Archive>
+        void serialize(Archive & ar) {
+            ar(CEREAL_NVP(w), CEREAL_NVP(h));
+        }
+    };
+
+    struct file_enemy_point {
+        int x;
+        int y;
+
+        template <class Archive>
+        void serialize(Archive & ar) {
+            ar(CEREAL_NVP(x), CEREAL_NVP(y));
+        }
+
+    };
+
+    struct file_enemy_frame {
+        bool is_attack_frame;
+        long duration;
+        int origin;
+
+        template <class Archive>
+        void serialize(Archive & ar) {
+            ar(CEREAL_NVP(is_attack_frame), CEREAL_NVP(duration), CEREAL_NVP(origin));
+        }
+
+    };
+
+    struct file_enemy_frameset {
+        frame_types type;
+        std::vector<file_enemy_frame> frames;
+
+        template <class Archive>
+        void serialize(Archive & ar) {
+            ar(CEREAL_NVP(type), CEREAL_NVP(frames));
+        }
+    };
+
     struct file_enemy {
         int id;
         std::string name;
         int hp;
 
+        enemy_shield_modes shield_mode;
+        float speed;
+        float jump_speed;
+        int range;
+        std::string graphic_filename;
+        file_enemy_size sprite_size;
+        file_enemy_point projectile_origin_point;
+        std::vector<file_enemy_frameset> framesets;
+
         template <class Archive>
         void serialize(Archive & ar) {
             ar(CEREAL_NVP(id),
                 CEREAL_NVP(name),
-                CEREAL_NVP(hp));
+                CEREAL_NVP(hp),
+                CEREAL_NVP(shield_mode),
+                CEREAL_NVP(speed),
+                CEREAL_NVP(jump_speed),
+                CEREAL_NVP(range),
+                CEREAL_NVP(graphic_filename),
+                CEREAL_NVP(sprite_size),
+                CEREAL_NVP(projectile_origin_point),
+                CEREAL_NVP(framesets));
         }
     };
 

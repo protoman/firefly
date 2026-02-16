@@ -10,15 +10,12 @@ EnemyEdit::EnemyEdit(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QComboBox* myComboBox = new QComboBox();
-    // Add items to the combo box
-    myComboBox->addItem("Option 1");
-    myComboBox->addItem("Option 2");
-    // Add the combobox to the mainToolBar
-    ui->toolBar->addWidget(myComboBox);
-    // Connect signals and slots as needed
-    //connect(myComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(handleComboBoxIndexChanged(int)));
+    selectorCombobox = new QComboBox();
+    ui->toolBar->addWidget(selectorCombobox); // Add the combobox to the mainToolBar
+    connect(selectorCombobox, SIGNAL(currentIndexChanged(int)), this, SLOT(handleSelectorIndexChanged(int))); // Connect signals and slots as needed
     loadData();
+    fillSelectorCombobox();
+    fillFormWithData(0);
 }
 
 EnemyEdit::~EnemyEdit()
@@ -33,6 +30,7 @@ void EnemyEdit::start()
 
 void EnemyEdit::loadData()
 {
+    enemies = data::loadEnemies();
     // need at least one npc
     if (enemies.enemy_list.size() == 0) {
         data::file_enemy enemy = data::file_enemy();
@@ -41,25 +39,40 @@ void EnemyEdit::loadData()
         enemy.name = "NPC #0";
         enemies.enemy_list.emplace_back(enemy);
     }
-    enemies = data::loadEnemies();
+}
 
+void EnemyEdit::handleSelectorIndexChanged(int index) {
+    fillFormWithData(index);
 }
 
 void EnemyEdit::on_actionAdd_triggered()
 {
-    data::map_elements new_data;
-    data::map_element_pos enemy1 = data::map_element_pos(1, 10, 10, false, false);
-    data::map_element_pos npc1 = data::map_element_pos(2, 20, 20, false, false);
-    data::map_element_pos object1 = data::map_element_pos(3, 30, 30, false, false);
-    new_data.enemies.emplace_back(enemy1);
-    new_data.npcs.emplace_back(npc1);
-    new_data.objects.emplace_back(object1);
-    data::saveMapElements(new_data);
+    int new_number = enemies.enemy_list.size();
+    data::file_enemy enemy = data::file_enemy();
+    enemy.id = 0;
+    enemy.hp = 1;
+    enemy.name = "NPC #" + std::to_string(new_number);
+    enemies.enemy_list.emplace_back(enemy);
+    fillSelectorCombobox();
+    selectorCombobox->setCurrentIndex(new_number);
 }
 
 
 void EnemyEdit::on_actionSave_triggered()
 {
     data::saveEnemies(enemies);
+}
+
+void EnemyEdit::fillSelectorCombobox() {
+    selectorCombobox->blockSignals(true);
+    selectorCombobox->clear();
+    for (data::file_enemy enemy : enemies.enemy_list) {
+        selectorCombobox->addItem(enemy.name.c_str());
+    }
+    selectorCombobox->blockSignals(false);
+}
+
+void EnemyEdit::fillFormWithData(int selected_enemy) {
+    ui->nameLineEdit->setText(enemies.enemy_list.at(selected_enemy).name.c_str());
 }
 
