@@ -48,13 +48,16 @@ namespace data {
     }
 
     inline file_enemies loadEnemies() {
+        std::string filename = "data_enemies.json";
         std::vector<file_enemy> enemies;
-        std::ifstream is("data_enemies.json");
-        cereal::JSONInputArchive iarchive(is); // Create an input archive
-        iarchive(enemies); // Read the data from the archive
-
+        std::ifstream is(filename);
         file_enemies result;
-        result.enemy_list = enemies;
+
+        if (is.is_open()) {
+            cereal::JSONInputArchive iarchive(is); // Create an input archive
+            iarchive(enemies); // Read the data from the archive
+            result.enemy_list = enemies;
+        }
 
         return result;
     }
