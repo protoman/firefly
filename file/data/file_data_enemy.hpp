@@ -146,17 +146,17 @@ namespace data {
     };
 
 
-    inline void saveEnemies(file_enemies enemies) {
+    inline void saveEnemies(std::string base_directory, file_enemies enemies) {
         //std::stringstream ss; // any stream can be used
         //cereal::JSONOutputArchive oarchive(std::cout);
         //cereal::JSONOutputArchive oarchive(ss);
-        std::ofstream os("data_enemies.json");
+        std::ofstream os(base_directory + "/data/enemies/data_enemies.json");
         cereal::JSONOutputArchive oarchive(os);
         oarchive(enemies.enemy_list);
     }
 
-    inline file_enemies loadEnemies() {
-        std::string filename = "data_enemies.json";
+    inline file_enemies loadEnemies(std::string base_directory) {
+        std::string filename = base_directory + "/data/enemies/data_enemies.json";
         std::vector<file_enemy> enemies;
         std::ifstream is(filename);
         file_enemies result;

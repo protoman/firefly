@@ -9,13 +9,11 @@ EnemyEdit::EnemyEdit(QWidget *parent)
     , ui(new Ui::EnemyEdit)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Enemies Editor");
 
     selectorCombobox = new QComboBox();
     ui->toolBar->addWidget(selectorCombobox); // Add the combobox to the mainToolBar
     connect(selectorCombobox, SIGNAL(currentIndexChanged(int)), this, SLOT(handleSelectorIndexChanged(int))); // Connect signals and slots as needed
-    loadData();
-    fillSelectorCombobox();
-    fillFormWithData(0);
 }
 
 EnemyEdit::~EnemyEdit()
@@ -23,14 +21,18 @@ EnemyEdit::~EnemyEdit()
     delete ui;
 }
 
-void EnemyEdit::start()
+void EnemyEdit::start(std::string data_directory)
 {
+    game_data_directory = data_directory;
     this->show();
+    loadData();
+    fillSelectorCombobox();
+    fillFormWithData(0);
 }
 
 void EnemyEdit::loadData()
 {
-    enemies = data::loadEnemies();
+    enemies = data::loadEnemies(game_data_directory);
     // need at least one npc
     if (enemies.enemy_list.size() == 0) {
         data::file_enemy enemy = data::file_enemy();
@@ -60,7 +62,7 @@ void EnemyEdit::on_actionAdd_triggered()
 
 void EnemyEdit::on_actionSave_triggered()
 {
-    data::saveEnemies(enemies);
+    data::saveEnemies(game_data_directory, enemies);
 }
 
 void EnemyEdit::fillSelectorCombobox() {

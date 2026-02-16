@@ -1,0 +1,80 @@
+{
+    "value0": [
+        {
+            "id": 0,
+            "name": "NPC #0",
+            "hp": 1,
+            "shield_mode": 0,
+            "speed": 0.0,
+            "jump_speed": 0.0,
+            "range": 0,
+            "graphic_filename": "",
+            "sprite_size": {
+                "w": 0,
+                "h": 0
+            },
+            "projectile_origin_point": {
+                "x": 0,
+                "y": 0
+            },
+            "framesets": []
+        },
+        {
+            "id": 0,
+            "name": "NPC #1",
+            "hp": 1,
+            "shield_mode": 0,
+            "speed": 0.0,
+            "jump_speed": 0.0,
+            "range": 0,
+            "graphic_filename": "",
+            "sprite_size": {
+                "w": 0,
+                "h": 0
+            },
+            "projectile_origin_point": {
+                "x": 0,
+                "y": 0
+            },
+            "framesets": []
+        },
+        {
+            "id": 0,
+            "name": "NPC #2",
+            "hp": 1,
+            "shield_mode": 0,
+            "speed": 0.0,
+            "jump_speed": 0.0,
+            "range": 0,
+            "graphic_filename": "",
+            "sprite_size": {
+                "w": 0,
+                "h": 0
+            },
+            "projectile_origin_point": {
+                "x": 0,
+                "y": 0
+            },
+            "framesets": []
+        },
+        {
+            "id": 0,
+            "name": "NPC #3",
+            "hp": 1,
+            "shield_mode": 0,
+            "speed": 0.0,
+            "jump_speed": 0.0,
+            "range": 0,
+            "graphic_filename": "",
+            "sprite_size": {
+                "w": 0,
+                "h": 0
+            },
+            "projectile_origin_point": {
+                "x": 0,
+                "y": 0
+            },
+            "framesets": []
+        }
+    ]
+}

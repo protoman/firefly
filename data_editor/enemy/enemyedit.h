@@ -3,6 +3,8 @@
 
 #include <QComboBox>
 #include <QMainWindow>
+#include "cereal/cereal.hpp"
+#include "cereal/archives/json.hpp"
 #include "file/data/file_data_enemy.hpp"
 
 namespace Ui {
@@ -16,7 +18,7 @@ class EnemyEdit : public QMainWindow
 public:
     explicit EnemyEdit(QWidget *parent = nullptr);
     ~EnemyEdit();
-    void start();
+    void start(std::string data_directory);
     void loadData();
 
 public slots:
@@ -34,6 +36,7 @@ private:
     Ui::EnemyEdit *ui;
     data::file_enemies enemies;
     QComboBox* selectorCombobox;
+    std::string game_data_directory;
 };
 
 #endif // ENEMYEDIT_H
