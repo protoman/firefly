@@ -5,7 +5,6 @@
 #ifndef FIREFLYGAME_TILEDWORLDLOADER_HPP
 #define FIREFLYGAME_TILEDWORLDLOADER_HPP
 
-#include <list>
 #include <map>
 #include <string>
 #include <tmxlite/Map.hpp>
