@@ -104,14 +104,16 @@ add_executable(FireFlyGame
     view/soundview.cpp view/soundview.h
     view/textview.cpp view/textview.h
     view/timerview.cpp view/timerview.h
-        data/SharedGameData.cpp
-        data/SharedGameData.hpp
-        tiled/TiledMapObjectLayer.cpp
-        tiled/TiledMapObjectLayer.hpp
-        data/SharedPlayerData.cpp
-        data/SharedPlayerData.hpp
-        tiled/TiledWorldLoader.cpp
-        tiled/TiledWorldLoader.hpp
+    data/SharedGameData.cpp
+    data/SharedGameData.hpp
+    tiled/TiledMapObjectLayer.cpp
+    tiled/TiledMapObjectLayer.hpp
+    data/SharedPlayerData.cpp
+    data/SharedPlayerData.hpp
+    tiled/TiledWorldLoader.cpp
+    tiled/TiledWorldLoader.hpp
+    file/data/map_elements.hpp
+        file/data/file_data_enemy.hpp
 )
 
 if(LINUX)
