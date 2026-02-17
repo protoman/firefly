@@ -27,6 +27,8 @@ public slots:
 private slots:
     void on_actionAdd_triggered();
     void on_actionSave_triggered();
+    void on_GraphicFilenameComboBox_currentTextChanged(const QString &arg1);
+    void on_nameLineEdit_textChanged(const QString &arg1);
 
 private:
     void fillSelectorCombobox();

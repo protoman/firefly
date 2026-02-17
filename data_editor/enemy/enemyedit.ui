@@ -18,7 +18,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -40,28 +40,12 @@
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_4">
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_3">
               <property name="text">
-               <string>Speed:</string>
+               <string>Shield:</string>
               </property>
              </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="nameLineEdit"/>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>Name:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QComboBox" name="shieldTypeComboBox"/>
-            </item>
-            <item row="1" column="1">
-             <widget class="QSpinBox" name="HPSpinBox"/>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_2">
@@ -70,12 +54,57 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>Shield:</string>
-              </property>
+            <item row="2" column="1">
+             <widget class="QComboBox" name="shieldTypeComboBox">
+              <item>
+               <property name="text">
+                <string>None</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Full</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Front</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Stand</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Disguise</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Stand Front</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Stand and Walk</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Back</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>While Using Shield</string>
+               </property>
+              </item>
              </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="HPSpinBox"/>
             </item>
             <item row="4" column="0">
              <widget class="QLabel" name="label_5">
@@ -83,6 +112,9 @@
                <string>Range:</string>
               </property>
              </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QSpinBox" name="rangeSpinBox"/>
             </item>
             <item row="3" column="1">
              <layout class="QGridLayout" name="gridLayout_4">
@@ -108,8 +140,22 @@
               </item>
              </layout>
             </item>
-            <item row="4" column="1">
-             <widget class="QSpinBox" name="rangeSpinBox"/>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Name:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>Speed:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="nameLineEdit"/>
             </item>
            </layout>
           </widget>
@@ -275,6 +321,9 @@
                 <height>200</height>
                </size>
               </property>
+              <property name="styleSheet">
+               <string notr="true">border: 1px solid black;</string>
+              </property>
              </widget>
             </item>
             <item row="1" column="0">
@@ -302,7 +351,163 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="framesetTypeComboBox"/>
+                     <widget class="QComboBox" name="framesetTypeComboBox">
+                      <item>
+                       <property name="text">
+                        <string>Stand</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Walk</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Walk-Attack</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Walk-On-Air</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Flying</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Jump</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Jump Attack</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Attack #1</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Attack #2</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Attack #3</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Attack #4</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Attack #5</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Attack #6</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Attack #7</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Attack #8</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Hit</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Ladder</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Lader-Semi</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Ladder-Attack</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Ladder-Move</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Throwing</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Turning</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Presenting</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Sliding</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Dashing</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Shielded</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Looking Up</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Looking Down</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Wall-Grabbing</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Damaged</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Celebrating</string>
+                       </property>
+                      </item>
+                     </widget>
                     </item>
                    </layout>
                   </item>
@@ -381,9 +586,9 @@
                    </layout>
                   </item>
                   <item>
-                   <widget class="QCheckBox" name="isAttackFrameCheckBox">
+                   <widget class="QCheckBox" name="isKeyFrameCheckBox">
                     <property name="text">
-                     <string>Is attack Frame</string>
+                     <string>Is Key-Frame</string>
                     </property>
                    </widget>
                   </item>
@@ -394,6 +599,9 @@
                       <horstretch>0</horstretch>
                       <verstretch>0</verstretch>
                      </sizepolicy>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">border: 1px solid black;</string>
                     </property>
                    </widget>
                   </item>
@@ -417,7 +625,11 @@
                  </widget>
                 </item>
                 <item row="1" column="0">
-                 <widget class="QWidget" name="framesPreviewWidget" native="true"/>
+                 <widget class="QWidget" name="framesPreviewWidget" native="true">
+                  <property name="styleSheet">
+                   <string notr="true">border: 1px solid black;</string>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </item>

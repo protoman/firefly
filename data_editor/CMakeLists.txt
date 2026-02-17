@@ -25,6 +25,8 @@ set(PROJECT_SOURCES
         ../tiled/TiledWorldLoader.cpp
         ../tiled/TiledWorldLoader.hpp
         ../defines.h
+        util/CommonUtils.cpp
+        util/CommonUtils.hpp
 )
 
 set(WIDGETS_INCLUDE_DIR "widgets")

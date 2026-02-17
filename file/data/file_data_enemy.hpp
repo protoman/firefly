@@ -34,10 +34,10 @@ namespace data {
         frame_type_attack8,
         frame_type_teleport,
         frame_type_hit,
-        frame_type_stairs,
-        frame_type_stairs_semi,
-        frame_type_stairs_attack,
-        frame_type_stairs_move,
+        frame_type_ladder,
+        frame_type_ladder_semi,
+        frame_type_ladder_attack,
+        frame_type_ladder_move,
         frame_type_throw,
         frame_type_turning,
         frame_type_presenting,
@@ -47,7 +47,7 @@ namespace data {
         frame_type_looking_up,
         frame_type_looking_down,
         frame_type_wall_grabbing,
-        frame_type_damage,
+        frame_type_damaged,
         frame_type_celebrating,
     };
 
@@ -85,13 +85,13 @@ namespace data {
     };
 
     struct file_enemy_frame {
-        bool is_attack_frame;
+        bool is_key_frame;
         long duration;
         int origin;
 
         template <class Archive>
         void serialize(Archive & ar) {
-            ar(CEREAL_NVP(is_attack_frame), CEREAL_NVP(duration), CEREAL_NVP(origin));
+            ar(CEREAL_NVP(is_key_frame), CEREAL_NVP(duration), CEREAL_NVP(origin));
         }
 
     };

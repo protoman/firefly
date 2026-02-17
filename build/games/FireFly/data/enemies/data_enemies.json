@@ -8,7 +8,7 @@
             "speed": 0.0,
             "jump_speed": 0.0,
             "range": 0,
-            "graphic_filename": "",
+            "graphic_filename": "bat.png",
             "sprite_size": {
                 "w": 0,
                 "h": 0
@@ -21,13 +21,13 @@
         },
         {
             "id": 0,
-            "name": "NPC #1",
+            "name": "NPC #1 ABAHH",
             "hp": 1,
             "shield_mode": 0,
             "speed": 0.0,
             "jump_speed": 0.0,
             "range": 0,
-            "graphic_filename": "",
+            "graphic_filename": "bee.png",
             "sprite_size": {
                 "w": 0,
                 "h": 0
@@ -46,7 +46,7 @@
             "speed": 0.0,
             "jump_speed": 0.0,
             "range": 0,
-            "graphic_filename": "",
+            "graphic_filename": "android.png",
             "sprite_size": {
                 "w": 0,
                 "h": 0
