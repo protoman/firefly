@@ -27,6 +27,7 @@ void EnemyEdit::start(std::string data_directory)
     this->show();
 
     ui->centralwidget->blockSignals(true);
+    ui->frameSelectWidget->setDataDirectory(game_data_directory);
 
     CommonUtils::fill_files_combo(game_data_directory + "/images/sprites/enemies", ui->GraphicFilenameComboBox, true);
     loadData();
@@ -92,6 +93,8 @@ void EnemyEdit::fillFormWithData(int selected_enemy) {
     ui->spriteSizeHeightSpinBox->setValue(enemies.enemy_list.at(selected_enemy).sprite_size.h);
     ui->projectileOriginXSpinBox->setValue(enemies.enemy_list.at(selected_enemy).projectile_origin_point.x);
     ui->projectileOriginYSpinBox->setValue(enemies.enemy_list.at(selected_enemy).projectile_origin_point.y);
+
+    ui->frameSelectWidget->updateGraphic(enemies.enemy_list.at(selected_enemy).sprite_size.w, enemies.enemy_list.at(selected_enemy).sprite_size.h, enemies.enemy_list.at(selected_enemy).graphic_filename);
 }
 
 
@@ -102,6 +105,7 @@ void EnemyEdit::on_GraphicFilenameComboBox_currentTextChanged(const QString &arg
         return;
     }
     enemies.enemy_list.at(selectorCombobox->currentIndex()).graphic_filename = arg1.toStdString();
+    ui->frameSelectWidget->updateGraphic(ui->spriteSizeWidthSpinBox->value(), ui->spriteSizeHeightSpinBox->value(), arg1.toStdString());
 }
 
 
@@ -111,5 +115,20 @@ void EnemyEdit::on_nameLineEdit_textChanged(const QString &arg1)
         return;
     }
     enemies.enemy_list.at(selectorCombobox->currentIndex()).name = arg1.toStdString();
+}
+
+
+void EnemyEdit::on_spriteSizeWidthSpinBox_valueChanged(int arg1)
+{
+    enemies.enemy_list.at(selectorCombobox->currentIndex()).sprite_size.w = arg1;
+    ui->frameSelectWidget->updateGraphic(arg1, ui->spriteSizeHeightSpinBox->value(), ui->GraphicFilenameComboBox->currentText().toStdString());
+}
+
+
+void EnemyEdit::on_spriteSizeHeightSpinBox_valueChanged(int arg1)
+{
+    enemies.enemy_list.at(selectorCombobox->currentIndex()).sprite_size.h = arg1;
+    ui->frameSelectWidget->updateGraphic(ui->spriteSizeWidthSpinBox->value(), arg1, ui->GraphicFilenameComboBox->currentText().toStdString());
+
 }
 

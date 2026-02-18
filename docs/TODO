@@ -1,6 +1,13 @@
 ########################################################
                      TODO LIST
 ########################################################
+
+
+Validade this tool for paint to replace paint tool sai:
+https://medibangpaint.com/en/
+https://krita.org/pt-br/
+
+
 - Each player sprite needs its own size (w/h)
     # setting the sprite must be done ONLY through a method, so it can update the size in box2d
     # improve the way we place the player sprite on screen

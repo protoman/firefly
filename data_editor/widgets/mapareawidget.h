@@ -13,7 +13,6 @@ public:
     void loadMapData();
 
 protected:
-    // methods
     void paintEvent(QPaintEvent *event);
 
 private:

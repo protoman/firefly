@@ -30,6 +30,10 @@ private slots:
     void on_GraphicFilenameComboBox_currentTextChanged(const QString &arg1);
     void on_nameLineEdit_textChanged(const QString &arg1);
 
+    void on_spriteSizeWidthSpinBox_valueChanged(int arg1);
+
+    void on_spriteSizeHeightSpinBox_valueChanged(int arg1);
+
 private:
     void fillSelectorCombobox();
     void fillFormWithData(int selected_enemy);
