@@ -132,7 +132,7 @@ std::vector<tiled_world_tileset_origin_data> TiledWorldLoader::buildTileLayerDat
 
         for (auto map_tile : map_chunk.tiles) {
             if (map_tile.ID != 0) {
-                int map_tile_index = map_tile.ID - 1;
+                unsigned int map_tile_index = map_tile.ID - 1;
                 tiled_world_tileset_origin_data tile;
                 tile.tile_pos = map_tile_index;
                 tile.origin_x = tile_map[map_tile_index].origin_x;

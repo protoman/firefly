@@ -27,12 +27,19 @@ public slots:
 private slots:
     void on_actionAdd_triggered();
     void on_actionSave_triggered();
-    void on_GraphicFilenameComboBox_currentTextChanged(const QString &arg1);
     void on_nameLineEdit_textChanged(const QString &arg1);
-
+    void on_HPSpinBox_valueChanged(int arg1);
+    void on_shieldTypeComboBox_currentIndexChanged(int index);
+    void on_moveSpeedHorizontalDoubleSpinBox_valueChanged(double arg1);
+    void on_jumpSpeedDoubleSpinBox_valueChanged(double arg1);
+    void on_rangeSpinBox_valueChanged(int arg1);
+    void on_GraphicFilenameComboBox_currentTextChanged(const QString &arg1);
     void on_spriteSizeWidthSpinBox_valueChanged(int arg1);
-
     void on_spriteSizeHeightSpinBox_valueChanged(int arg1);
+
+    void on_projectileOriginXSpinBox_valueChanged(int arg1);
+
+    void on_projectileOriginYSpinBox_valueChanged(int arg1);
 
 private:
     void fillSelectorCombobox();

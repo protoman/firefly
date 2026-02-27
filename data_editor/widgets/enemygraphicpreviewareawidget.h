@@ -3,6 +3,11 @@
 
 #include <QWidget>
 
+struct st_selected_point {
+    int x = 0;
+    int y = 0;
+};
+
 class EnemyGraphicPreviewAreaWidget : public QWidget
 {
     Q_OBJECT
@@ -13,7 +18,7 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *event);
-
+    void mouseReleaseEvent(QMouseEvent * event);
 
 signals:
 
@@ -25,6 +30,7 @@ private:
     std::string graphic_filename;
     QPixmap graphic_image;
     std::string game_data_directory;
+    st_selected_point selected_point;
 };
 
 #endif // ENEMYGRAPHICPREVIEWAREAWIDGET_H

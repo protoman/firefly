@@ -53,6 +53,7 @@ else()
             ${PROJECT_SOURCES}
                 icons.qrc
                 widgets/enemygraphicpreviewareawidget.h widgets/enemygraphicpreviewareawidget.cpp
+                quest/questeditwindow.h quest/questeditwindow.cpp quest/questeditwindow.ui
         )
 
     endif()

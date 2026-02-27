@@ -2,6 +2,10 @@
                      TODO LIST
 ########################################################
 
+- Start developing the architecture of stages/teleporters/world/enemies/npcs/quests
+    # create a class diagram
+
+- try to use copilot to generate the UI/code for the quest editor window
 
 Validade this tool for paint to replace paint tool sai:
 https://medibangpaint.com/en/

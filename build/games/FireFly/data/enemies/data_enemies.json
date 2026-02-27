@@ -2,16 +2,16 @@
     "value0": [
         {
             "id": 0,
-            "name": "NPC #0",
-            "hp": 1,
-            "shield_mode": 0,
-            "speed": 0.0,
-            "jump_speed": 0.0,
-            "range": 0,
+            "name": "Bat",
+            "hp": 2,
+            "shield_mode": 3,
+            "speed": 3.0,
+            "jump_speed": 3.0,
+            "range": 99,
             "graphic_filename": "bat.png",
             "sprite_size": {
-                "w": 0,
-                "h": 0
+                "w": 27,
+                "h": 21
             },
             "projectile_origin_point": {
                 "x": 0,

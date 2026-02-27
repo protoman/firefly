@@ -28,6 +28,7 @@ void EnemyEdit::start(std::string data_directory)
 
     ui->centralwidget->blockSignals(true);
     ui->frameSelectWidget->setDataDirectory(game_data_directory);
+    ui->graphicPreviewAreaWidged->setDataDirectory(game_data_directory);
 
     CommonUtils::fill_files_combo(game_data_directory + "/images/sprites/enemies", ui->GraphicFilenameComboBox, true);
     loadData();
@@ -95,18 +96,11 @@ void EnemyEdit::fillFormWithData(int selected_enemy) {
     ui->projectileOriginYSpinBox->setValue(enemies.enemy_list.at(selected_enemy).projectile_origin_point.y);
 
     ui->frameSelectWidget->updateGraphic(enemies.enemy_list.at(selected_enemy).sprite_size.w, enemies.enemy_list.at(selected_enemy).sprite_size.h, enemies.enemy_list.at(selected_enemy).graphic_filename);
+    ui->graphicPreviewAreaWidged->updateGraphic(enemies.enemy_list.at(selected_enemy).sprite_size.w, enemies.enemy_list.at(selected_enemy).sprite_size.h, enemies.enemy_list.at(selected_enemy).graphic_filename);
+    ui->frameSelectWidget->repaint();
+    ui->graphicPreviewAreaWidged->repaint();
 }
 
-
-
-void EnemyEdit::on_GraphicFilenameComboBox_currentTextChanged(const QString &arg1)
-{
-    if (selectorCombobox->currentIndex() > enemies.enemy_list.size()) {
-        return;
-    }
-    enemies.enemy_list.at(selectorCombobox->currentIndex()).graphic_filename = arg1.toStdString();
-    ui->frameSelectWidget->updateGraphic(ui->spriteSizeWidthSpinBox->value(), ui->spriteSizeHeightSpinBox->value(), arg1.toStdString());
-}
 
 
 void EnemyEdit::on_nameLineEdit_textChanged(const QString &arg1)
@@ -118,10 +112,55 @@ void EnemyEdit::on_nameLineEdit_textChanged(const QString &arg1)
 }
 
 
+void EnemyEdit::on_HPSpinBox_valueChanged(int arg1)
+{
+    enemies.enemy_list.at(selectorCombobox->currentIndex()).hp = arg1;
+}
+
+
+void EnemyEdit::on_shieldTypeComboBox_currentIndexChanged(int index)
+{
+    enemies.enemy_list.at(selectorCombobox->currentIndex()).shield_mode = static_cast<data::enemy_shield_modes>(index);
+}
+
+
+void EnemyEdit::on_moveSpeedHorizontalDoubleSpinBox_valueChanged(double arg1)
+{
+    enemies.enemy_list.at(selectorCombobox->currentIndex()).speed = arg1;
+}
+
+
+void EnemyEdit::on_jumpSpeedDoubleSpinBox_valueChanged(double arg1)
+{
+    enemies.enemy_list.at(selectorCombobox->currentIndex()).jump_speed = arg1;
+}
+
+
+void EnemyEdit::on_rangeSpinBox_valueChanged(int arg1)
+{
+    enemies.enemy_list.at(selectorCombobox->currentIndex()).range = arg1;
+}
+
+
+void EnemyEdit::on_GraphicFilenameComboBox_currentTextChanged(const QString &arg1)
+{
+    if (selectorCombobox->currentIndex() > enemies.enemy_list.size()) {
+        return;
+    }
+    enemies.enemy_list.at(selectorCombobox->currentIndex()).graphic_filename = arg1.toStdString();
+    ui->frameSelectWidget->updateGraphic(ui->spriteSizeWidthSpinBox->value(), ui->spriteSizeHeightSpinBox->value(), arg1.toStdString());
+    ui->graphicPreviewAreaWidged->updateGraphic(ui->spriteSizeWidthSpinBox->value(), ui->spriteSizeHeightSpinBox->value(), arg1.toStdString());
+    ui->frameSelectWidget->repaint();
+    ui->graphicPreviewAreaWidged->repaint();
+}
+
 void EnemyEdit::on_spriteSizeWidthSpinBox_valueChanged(int arg1)
 {
     enemies.enemy_list.at(selectorCombobox->currentIndex()).sprite_size.w = arg1;
     ui->frameSelectWidget->updateGraphic(arg1, ui->spriteSizeHeightSpinBox->value(), ui->GraphicFilenameComboBox->currentText().toStdString());
+    ui->graphicPreviewAreaWidged->updateGraphic(arg1, ui->spriteSizeHeightSpinBox->value(), ui->GraphicFilenameComboBox->currentText().toStdString());
+    ui->frameSelectWidget->repaint();
+    ui->graphicPreviewAreaWidged->repaint();
 }
 
 
@@ -129,6 +168,19 @@ void EnemyEdit::on_spriteSizeHeightSpinBox_valueChanged(int arg1)
 {
     enemies.enemy_list.at(selectorCombobox->currentIndex()).sprite_size.h = arg1;
     ui->frameSelectWidget->updateGraphic(ui->spriteSizeWidthSpinBox->value(), arg1, ui->GraphicFilenameComboBox->currentText().toStdString());
+    ui->graphicPreviewAreaWidged->updateGraphic(ui->spriteSizeWidthSpinBox->value(), arg1, ui->GraphicFilenameComboBox->currentText().toStdString());
+    ui->frameSelectWidget->repaint();
+    ui->graphicPreviewAreaWidged->repaint();
+}
 
+void EnemyEdit::on_projectileOriginXSpinBox_valueChanged(int arg1)
+{
+    enemies.enemy_list.at(selectorCombobox->currentIndex()).projectile_origin_point.x = arg1;
+}
+
+
+void EnemyEdit::on_projectileOriginYSpinBox_valueChanged(int arg1)
+{
+    enemies.enemy_list.at(selectorCombobox->currentIndex()).projectile_origin_point.y = arg1;
 }
 

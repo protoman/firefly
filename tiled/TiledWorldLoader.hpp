@@ -17,13 +17,13 @@ enum e_tiled_world_layer_type {
 };
 
 struct tiled_world_tileset_origin_data {
-    int origin_x;
-    int origin_y;
-    int w;
-    int h;
-    int dest_x;
-    int dest_y;
-    int tile_pos;
+    unsigned int origin_x;
+    unsigned int origin_y;
+    unsigned int w;
+    unsigned int h;
+    unsigned int dest_x;
+    unsigned int dest_y;
+    unsigned int tile_pos;
     std::string filename;
 };
 
