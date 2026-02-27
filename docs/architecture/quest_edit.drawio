@@ -1,0 +1,46 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
+  <diagram name="Página-1" id="dSKvwnaUfIE1d-YAVQWK">
+    <mxGraphModel dx="1783" dy="1035" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="dcnps2blm0-94z5PKMNL-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="540" width="770" x="30" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="dcnps2blm0-94z5PKMNL-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="500" width="360" x="50" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="dcnps2blm0-94z5PKMNL-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="500" width="350" x="430" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="dcnps2blm0-94z5PKMNL-5" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Editing" vertex="1">
+          <mxGeometry height="30" width="60" x="40" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="dcnps2blm0-94z5PKMNL-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Existing Steps" vertex="1">
+          <mxGeometry height="30" width="110" x="430" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="dcnps2blm0-94z5PKMNL-7" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;" value="Quest" vertex="1">
+          <mxGeometry height="110" width="190" x="30" y="715" as="geometry" />
+        </mxCell>
+        <mxCell id="dcnps2blm0-94z5PKMNL-8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Action" vertex="1">
+          <mxGeometry height="60" width="120" x="500" y="940" as="geometry" />
+        </mxCell>
+        <mxCell id="dcnps2blm0-94z5PKMNL-9" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Dependency&lt;div&gt;(null for none)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="220" y="940" as="geometry" />
+        </mxCell>
+        <mxCell id="dcnps2blm0-94z5PKMNL-10" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="80" width="80" x="374" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="dcnps2blm0-94z5PKMNL-11" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Actor (type/Id)" vertex="1">
+          <mxGeometry height="60" width="120" x="60" y="940" as="geometry" />
+        </mxCell>
+        <mxCell id="dcnps2blm0-94z5PKMNL-12" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="npc,&amp;nbsp;&lt;div&gt;object,&amp;nbsp;&lt;/div&gt;&lt;div&gt;enemy,&amp;nbsp;&lt;/div&gt;&lt;div&gt;etc&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="120" x="60" y="1040" as="geometry" />
+        </mxCell>
+        <mxCell id="dcnps2blm0-94z5PKMNL-14" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="carrying object,&lt;div&gt;spoke with npc,&lt;/div&gt;&lt;div&gt;killed enemy,&lt;/div&gt;&lt;div&gt;etc&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="120" x="220" y="1040" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
