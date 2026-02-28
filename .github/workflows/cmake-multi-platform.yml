@@ -87,10 +87,24 @@ jobs:
         .\vcpkg\vcpkg integrate install
         .\vcpkg\vcpkg install harfbuzz:x64-windows freetype:x64-windows box2d:x64-windows
         .\vcpkg\vcpkg install sdl3 
-        .\vcpkg\vcpkg install sdl3-mixer
-        .\vcpkg\vcpkg install sdl3-ttf 
+        .\vcpkg\vcpkg install sdl3-tff
+        .\vcpkg\vcpkg install sdl3-image
         .\vcpkg\vcpkg install tmxlite
-    
+
+    - name: Build and Install SDL3_mixer (Windows)
+      if: runner.os == 'Windows'
+      # Windows can use Choco for package management, or vcpkg with CMake integration
+      run: |
+        git clone https://github.com/libsdl-org/SDL_mixer.git
+        cd SDL_mixer
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_TOOLCHAIN_FILE=..\vcpkg\scripts\buildsystems\vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+        cmake --build . --config Release
+        cmake --install . --prefix C:\SDL_mixer
+
+  # cmake --install . --prefix C:\SDL_mixer
+
     - uses: libsdl-org/setup-sdl@v1
       with:
         version: '3-latest' # Specifies using the latest SDL3 release
