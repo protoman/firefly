@@ -86,7 +86,10 @@ jobs:
         .\vcpkg\bootstrap-vcpkg.bat
         .\vcpkg\vcpkg integrate install
         .\vcpkg\vcpkg install harfbuzz:x64-windows freetype:x64-windows box2d:x64-windows
-        .\vcpkg\vcpkg install sdl3 sdl3-mixer sdl3-ttf tmxlite
+        .\vcpkg\vcpkg install sdl3 
+        .\vcpkg\vcpkg install sdl3-mixer
+        .\vcpkg\vcpkg install sdl3-ttf 
+        .\vcpkg\vcpkg install tmxlite
     
     - uses: libsdl-org/setup-sdl@v1
       with:
