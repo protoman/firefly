@@ -81,7 +81,11 @@ jobs:
       if: runner.os == 'Windows'
       # Windows can use Choco for package management, or vcpkg with CMake integration
       run: |
-        choco install harfbuzz freetype box2d
+        # Install vcpkg for better Windows package management
+        git clone https://github.com/Microsoft/vcpkg.git
+        .\vcpkg\bootstrap-vcpkg.bat
+        .\vcpkg\vcpkg integrate install
+        .\vcpkg\vcpkg install harfbuzz:x64-windows freetype:x64-windows box2d:x64-windows
     
     - uses: libsdl-org/setup-sdl@v1
       with:
