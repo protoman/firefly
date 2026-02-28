@@ -51,7 +51,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get update && sudo apt-get install -y cmake libglu-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxkbcommon-dev libwayland-dev wayland-protocols libharfbuzz-dev libfribidi-dev libfreetype-dev libxss-dev 
+        sudo apt-get update && sudo apt-get install -y cmake libglu-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxkbcommon-dev libwayland-dev wayland-protocols libharfbuzz-dev libfribidi-dev libfreetype-dev libxss-dev libxtst-dev 
 
     - name: Download Configure and build Box2D
       if: runner.os == 'Linux'
@@ -86,6 +86,7 @@ jobs:
         .\vcpkg\bootstrap-vcpkg.bat
         .\vcpkg\vcpkg integrate install
         .\vcpkg\vcpkg install harfbuzz:x64-windows freetype:x64-windows box2d:x64-windows
+        .\vcpkg\vcpkg install sdl3 sdl3-mixer sdl3-ttf tmxlite
     
     - uses: libsdl-org/setup-sdl@v1
       with:
