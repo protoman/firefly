@@ -88,6 +88,7 @@ jobs:
         .\vcpkg\vcpkg install sdl3-ttf:x64-windows
         .\vcpkg\vcpkg install sdl3-image:x64-windows
         .\vcpkg\vcpkg install tmxlite:x64-windows
+        .\vcpkg\vcpkg install libogg
 
     - uses: libsdl-org/setup-sdl@v1
       with:
