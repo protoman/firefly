@@ -102,6 +102,7 @@ jobs:
       run: |
         git clone https://github.com/libsdl-org/SDL_mixer.git
         cd SDL_mixer
+        git submodule init
         mkdir build
         cd build
         cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
