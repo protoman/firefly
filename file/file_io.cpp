@@ -1,6 +1,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <cstdlib>
+#include <filesystem>
+
 #include "file_io.h"
 #include "convert.h"
 #include "../file/convert.h"
@@ -17,6 +19,7 @@
 
 #include "data/shareddata.h"
 
+namespace fs = std::filesystem;
 
 // ************************************************************************************************************* //
 
@@ -101,42 +104,33 @@ std::vector<std::string> file_io::read_game_list()
 
 
 
-// @TODO: make this work in multiplatform
-// http://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
 std::vector<std::string> file_io::read_directory_list(std::string filename, bool dir_only)
 {
     std::vector<std::string> res;
-    filename = StringUtils::clean_filename(filename);
 
+    // Assuming StringUtils::clean_filename returns a valid path string
+    fs::path rootPath(StringUtils::clean_filename(filename));
 
-    DIR *dir = opendir(filename.c_str());
-
-
-    struct dirent *entry = readdir(dir);
-
-    while (entry != nullptr) {
-
-        //std::cout << ">>>>>>>>> entry->d_name: " << entry->d_name << std::endl;
-
-        std::string dir_name = std::string(entry->d_name);
-        if (dir_name != "." && dir_name != "..") {
-            DIR *child_dir;
-            std::string child_dir_path = filename + std::string("/") + dir_name;
-            child_dir = opendir (child_dir_path.c_str());
-
-            if (dir_only == true && child_dir != nullptr) {
-                res.push_back(dir_name);
-            } else if (dir_only == false && child_dir == nullptr) {
-                res.push_back(dir_name);
-            }
-        }
-        entry = readdir(dir);
-
+    // Basic safety check: does the path exist and is it actually a directory?
+    if (!fs::exists(rootPath) || !fs::is_directory(rootPath)) {
+        return res;
     }
-    closedir(dir);
+
+    // directory_iterator skips "." and ".." automatically
+    for (const auto& entry : fs::directory_iterator(rootPath)) {
+        bool is_dir = entry.is_directory();
+
+        if (dir_only && is_dir) {
+            // entry.path().filename() gets just "folder_name"
+            res.push_back(entry.path().filename().string());
+        }
+        else if (!dir_only && !is_dir) {
+            // entry.path().filename() gets just "file.txt"
+            res.push_back(entry.path().filename().string());
+        }
+    }
 
     return res;
-
 }
 
 

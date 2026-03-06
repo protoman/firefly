@@ -9,8 +9,6 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <dirent.h>
-#include <stdio.h>
 
 #include "file/v6/file_level_v6.h"
 
