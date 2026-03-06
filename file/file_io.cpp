@@ -4,15 +4,9 @@
 #include <filesystem>
 
 #include "file_io.h"
-#include "convert.h"
-#include "../file/convert.h"
 #include "aux_tools/stringutils.h"
 #include "aux_tools/exception_manager.h"
 #include "file/fio_common.h"
-
-#ifdef ANDROID
-#include <android/log.h>
-#endif
 
 // versioned file for config, so we can force resetting it
 #define CONFIG_FILENAME "/config_v204.sav"
