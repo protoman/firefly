@@ -107,10 +107,10 @@ jobs:
         cd build
         cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
         cmake --build build --config Release
-        ${SDL3_mixer_ROOT}
-        $SDL3_mixer_ROOT
+        #${SDL3_mixer_ROOT}
+        #$SDL3_mixer_ROOT
         $env:SDL3_mixer_ROOT
-        cmake --install build --prefix ${SDL3_mixer_ROOT}
+        cmake --install build --prefix $env:SDL3_mixer_ROOT
 
   # cmake --install . --prefix C:\SDL_mixer
 
