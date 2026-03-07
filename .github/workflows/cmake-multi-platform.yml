@@ -100,7 +100,6 @@ jobs:
     - name: Build and Install SDL3_mixer (Windows)
       if: runner.os == 'Windows'
       run: |
-        set -x
         git clone https://github.com/libsdl-org/SDL_mixer.git
         cd SDL_mixer
         git submodule update --init --recursive
@@ -108,8 +107,8 @@ jobs:
         cd build
         cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
         cmake --build build --config Release
-        echo $SDL3_mixer_ROOT
-        cmake --install build --prefix $SDL3_mixer_ROOT
+        echo ${{ SDL3_mixer_ROOT }}
+        cmake --install build --prefix ${{ SDL3_mixer_ROOT }}
 
   # cmake --install . --prefix C:\SDL_mixer
 
