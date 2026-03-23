@@ -48,6 +48,11 @@ add_executable(FireFlyGame
     collision_detection.cpp collision_detection.h
     controller/inputcontroller.cpp controller/inputcontroller.h
     controller/mapcontroller.cpp controller/mapcontroller.h
+    data/model/object_data.cpp data/model/object_data.h
+    data/model/recovery_object_data.cpp data/model/recovery_object_data.h
+    data/model/platform_object_data.cpp data/model/platform_object_data.h
+    data/model/util_object_data.cpp data/model/util_object_data.h
+    data/model/quest_object_data.cpp data/model/quest_object_data.h
     data/shareddata.cpp data/shareddata.h
     data/sharedmapdata.cpp data/sharedmapdata.h
     data/st_color.hpp

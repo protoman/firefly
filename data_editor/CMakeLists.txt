@@ -54,6 +54,9 @@ else()
                 icons.qrc
                 widgets/enemygraphicpreviewareawidget.h widgets/enemygraphicpreviewareawidget.cpp
                 quest/questeditwindow.h quest/questeditwindow.cpp quest/questeditwindow.ui
+                docs/TODO.txt
+                sub_windows/object/objectedit.h sub_windows/object/objectedit.cpp sub_windows/object/objectedit.ui
+                docs/ai_instructions.txt
         )
 
     endif()

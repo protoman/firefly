@@ -750,6 +750,150 @@ data/SharedGameData.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/SharedGameData.cpp.s
 .PHONY : data/SharedGameData.cpp.s
 
+data/SharedPlayerData.o: data/SharedPlayerData.cpp.o
+.PHONY : data/SharedPlayerData.o
+
+# target to build an object file
+data/SharedPlayerData.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/SharedPlayerData.cpp.o
+.PHONY : data/SharedPlayerData.cpp.o
+
+data/SharedPlayerData.i: data/SharedPlayerData.cpp.i
+.PHONY : data/SharedPlayerData.i
+
+# target to preprocess a source file
+data/SharedPlayerData.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/SharedPlayerData.cpp.i
+.PHONY : data/SharedPlayerData.cpp.i
+
+data/SharedPlayerData.s: data/SharedPlayerData.cpp.s
+.PHONY : data/SharedPlayerData.s
+
+# target to generate assembly for a file
+data/SharedPlayerData.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/SharedPlayerData.cpp.s
+.PHONY : data/SharedPlayerData.cpp.s
+
+data/model/object_data.o: data/model/object_data.cpp.o
+.PHONY : data/model/object_data.o
+
+# target to build an object file
+data/model/object_data.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/object_data.cpp.o
+.PHONY : data/model/object_data.cpp.o
+
+data/model/object_data.i: data/model/object_data.cpp.i
+.PHONY : data/model/object_data.i
+
+# target to preprocess a source file
+data/model/object_data.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/object_data.cpp.i
+.PHONY : data/model/object_data.cpp.i
+
+data/model/object_data.s: data/model/object_data.cpp.s
+.PHONY : data/model/object_data.s
+
+# target to generate assembly for a file
+data/model/object_data.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/object_data.cpp.s
+.PHONY : data/model/object_data.cpp.s
+
+data/model/platform_object_data.o: data/model/platform_object_data.cpp.o
+.PHONY : data/model/platform_object_data.o
+
+# target to build an object file
+data/model/platform_object_data.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/platform_object_data.cpp.o
+.PHONY : data/model/platform_object_data.cpp.o
+
+data/model/platform_object_data.i: data/model/platform_object_data.cpp.i
+.PHONY : data/model/platform_object_data.i
+
+# target to preprocess a source file
+data/model/platform_object_data.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/platform_object_data.cpp.i
+.PHONY : data/model/platform_object_data.cpp.i
+
+data/model/platform_object_data.s: data/model/platform_object_data.cpp.s
+.PHONY : data/model/platform_object_data.s
+
+# target to generate assembly for a file
+data/model/platform_object_data.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/platform_object_data.cpp.s
+.PHONY : data/model/platform_object_data.cpp.s
+
+data/model/quest_object_data.o: data/model/quest_object_data.cpp.o
+.PHONY : data/model/quest_object_data.o
+
+# target to build an object file
+data/model/quest_object_data.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/quest_object_data.cpp.o
+.PHONY : data/model/quest_object_data.cpp.o
+
+data/model/quest_object_data.i: data/model/quest_object_data.cpp.i
+.PHONY : data/model/quest_object_data.i
+
+# target to preprocess a source file
+data/model/quest_object_data.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/quest_object_data.cpp.i
+.PHONY : data/model/quest_object_data.cpp.i
+
+data/model/quest_object_data.s: data/model/quest_object_data.cpp.s
+.PHONY : data/model/quest_object_data.s
+
+# target to generate assembly for a file
+data/model/quest_object_data.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/quest_object_data.cpp.s
+.PHONY : data/model/quest_object_data.cpp.s
+
+data/model/recovery_object_data.o: data/model/recovery_object_data.cpp.o
+.PHONY : data/model/recovery_object_data.o
+
+# target to build an object file
+data/model/recovery_object_data.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/recovery_object_data.cpp.o
+.PHONY : data/model/recovery_object_data.cpp.o
+
+data/model/recovery_object_data.i: data/model/recovery_object_data.cpp.i
+.PHONY : data/model/recovery_object_data.i
+
+# target to preprocess a source file
+data/model/recovery_object_data.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/recovery_object_data.cpp.i
+.PHONY : data/model/recovery_object_data.cpp.i
+
+data/model/recovery_object_data.s: data/model/recovery_object_data.cpp.s
+.PHONY : data/model/recovery_object_data.s
+
+# target to generate assembly for a file
+data/model/recovery_object_data.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/recovery_object_data.cpp.s
+.PHONY : data/model/recovery_object_data.cpp.s
+
+data/model/util_object_data.o: data/model/util_object_data.cpp.o
+.PHONY : data/model/util_object_data.o
+
+# target to build an object file
+data/model/util_object_data.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/util_object_data.cpp.o
+.PHONY : data/model/util_object_data.cpp.o
+
+data/model/util_object_data.i: data/model/util_object_data.cpp.i
+.PHONY : data/model/util_object_data.i
+
+# target to preprocess a source file
+data/model/util_object_data.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/util_object_data.cpp.i
+.PHONY : data/model/util_object_data.cpp.i
+
+data/model/util_object_data.s: data/model/util_object_data.cpp.s
+.PHONY : data/model/util_object_data.s
+
+# target to generate assembly for a file
+data/model/util_object_data.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/util_object_data.cpp.s
+.PHONY : data/model/util_object_data.cpp.s
+
 data/shareddata.o: data/shareddata.cpp.o
 .PHONY : data/shareddata.o
 
@@ -1254,6 +1398,30 @@ tiled/TiledMapLayer.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMapLayer.cpp.s
 .PHONY : tiled/TiledMapLayer.cpp.s
 
+tiled/TiledMapObjectLayer.o: tiled/TiledMapObjectLayer.cpp.o
+.PHONY : tiled/TiledMapObjectLayer.o
+
+# target to build an object file
+tiled/TiledMapObjectLayer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMapObjectLayer.cpp.o
+.PHONY : tiled/TiledMapObjectLayer.cpp.o
+
+tiled/TiledMapObjectLayer.i: tiled/TiledMapObjectLayer.cpp.i
+.PHONY : tiled/TiledMapObjectLayer.i
+
+# target to preprocess a source file
+tiled/TiledMapObjectLayer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMapObjectLayer.cpp.i
+.PHONY : tiled/TiledMapObjectLayer.cpp.i
+
+tiled/TiledMapObjectLayer.s: tiled/TiledMapObjectLayer.cpp.s
+.PHONY : tiled/TiledMapObjectLayer.s
+
+# target to generate assembly for a file
+tiled/TiledMapObjectLayer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMapObjectLayer.cpp.s
+.PHONY : tiled/TiledMapObjectLayer.cpp.s
+
 tiled/TiledMapTexture.o: tiled/TiledMapTexture.cpp.o
 .PHONY : tiled/TiledMapTexture.o
 
@@ -1277,6 +1445,30 @@ tiled/TiledMapTexture.s: tiled/TiledMapTexture.cpp.s
 tiled/TiledMapTexture.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMapTexture.cpp.s
 .PHONY : tiled/TiledMapTexture.cpp.s
+
+tiled/TiledWorldLoader.o: tiled/TiledWorldLoader.cpp.o
+.PHONY : tiled/TiledWorldLoader.o
+
+# target to build an object file
+tiled/TiledWorldLoader.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledWorldLoader.cpp.o
+.PHONY : tiled/TiledWorldLoader.cpp.o
+
+tiled/TiledWorldLoader.i: tiled/TiledWorldLoader.cpp.i
+.PHONY : tiled/TiledWorldLoader.i
+
+# target to preprocess a source file
+tiled/TiledWorldLoader.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledWorldLoader.cpp.i
+.PHONY : tiled/TiledWorldLoader.cpp.i
+
+tiled/TiledWorldLoader.s: tiled/TiledWorldLoader.cpp.s
+.PHONY : tiled/TiledWorldLoader.s
+
+# target to generate assembly for a file
+tiled/TiledWorldLoader.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledWorldLoader.cpp.s
+.PHONY : tiled/TiledWorldLoader.cpp.s
 
 view/animation.o: view/animation.cpp.o
 .PHONY : view/animation.o
@@ -1579,6 +1771,24 @@ help:
 	@echo "... data/SharedGameData.o"
 	@echo "... data/SharedGameData.i"
 	@echo "... data/SharedGameData.s"
+	@echo "... data/SharedPlayerData.o"
+	@echo "... data/SharedPlayerData.i"
+	@echo "... data/SharedPlayerData.s"
+	@echo "... data/model/object_data.o"
+	@echo "... data/model/object_data.i"
+	@echo "... data/model/object_data.s"
+	@echo "... data/model/platform_object_data.o"
+	@echo "... data/model/platform_object_data.i"
+	@echo "... data/model/platform_object_data.s"
+	@echo "... data/model/quest_object_data.o"
+	@echo "... data/model/quest_object_data.i"
+	@echo "... data/model/quest_object_data.s"
+	@echo "... data/model/recovery_object_data.o"
+	@echo "... data/model/recovery_object_data.i"
+	@echo "... data/model/recovery_object_data.s"
+	@echo "... data/model/util_object_data.o"
+	@echo "... data/model/util_object_data.i"
+	@echo "... data/model/util_object_data.s"
 	@echo "... data/shareddata.o"
 	@echo "... data/shareddata.i"
 	@echo "... data/shareddata.s"
@@ -1642,9 +1852,15 @@ help:
 	@echo "... tiled/TiledMapLayer.o"
 	@echo "... tiled/TiledMapLayer.i"
 	@echo "... tiled/TiledMapLayer.s"
+	@echo "... tiled/TiledMapObjectLayer.o"
+	@echo "... tiled/TiledMapObjectLayer.i"
+	@echo "... tiled/TiledMapObjectLayer.s"
 	@echo "... tiled/TiledMapTexture.o"
 	@echo "... tiled/TiledMapTexture.i"
 	@echo "... tiled/TiledMapTexture.s"
+	@echo "... tiled/TiledWorldLoader.o"
+	@echo "... tiled/TiledWorldLoader.i"
+	@echo "... tiled/TiledWorldLoader.s"
 	@echo "... view/animation.o"
 	@echo "... view/animation.i"
 	@echo "... view/animation.s"
