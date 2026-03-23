@@ -1,0 +1,44 @@
+This is a C++, version 23, that uses Qt library project that implement an editor for files used in a game.
+Create five classes, all with a getter and setter for each of its properties.
+First one is called ObjectData, the is the parent for all other classes described after it.
+The properties of the ObjectData class are as follows:
+    - graphic_filename that is string
+    - graphic_size that is composed of two properties of type integer, width and heigth
+    - frame_duration is a long
+
+Now, the first child of ObjectData class is called RecoveryObjectData and have one single property:
+    - Type is an enum, called RecoveryObjectDataTypeEnum, you should also create, of possible values E_TANK, W_TANK, HP_SMALL, HP_BIG, WPN_SMALL, WPN_BIG, SAVE_POINT
+
+The second child of ObjectData is called PlatformObjectData and have the following properties:
+    - Type is an enum, called PlatformObjectDataTypeEnum, you should also create, that can have the values Moving, Dissapearing-Block, Falling-Platformn, Flying-Platform, Horizontal-Expanding-Ray, Vertical-Expanding-Ray, Horizontal-Expanding-Death-Ray, Vertical-Expanding-Death-Ray, Door, Track Platform, Destructible Wall, Descructible, Descructible-Jump and Timed-Bomb
+    - Moving-Direction is also an enum, called PlatformObjectDataMovingDirectionEnum, with possible values left, right, up, down, left-up, right-up, left-down, right-down
+    - Timer-Limit is an integer
+    - Movement-Speed is a float
+    - Movement-Limit is a float
+    - Activate-only-When over it is a boolean (default false)
+    - Animate-only-when-active is a boolean (default false)
+    - Animation-loop is a boolean (default true)
+    - Animation-loop-in-Reverse is a boolean (default false)
+    - Door-Key is an integer
+
+The third child of ObjectData is called UtilObjectData and have the following properties:
+    - Type is an enum, called PlatformObjectDataTypeEnum, you should also create, that can have the values Ability, Teleporter and Key
+    - Teleporter-Destiny is composed of two float values, x and y
+
+The fourth child of ObjectData is called QuestObjectData and have the following properties:
+    - Quest-Id, an integer
+    - requires, an integer
+    - delivers, an integer
+
+All classes must be created in the data/model directory under the project. Also, adjust naming and code-style to a good convention for C++ 23.
+
+########
+
+Add support, in all classes in data/model directory,
+for serialization and deserialization of the properties to and from JSON format,
+using the included cereal library. Example of how it should be implemented is on file_map_anim_block_v0, and some other already in the code.
+
+########
+
+Encapsulate all members in the serialize method in all classes inside model/data directory, with CEREAL_NVP, so the json is constructed using actual names. Follow the
+  same structure as file_map_anim_block_v0.

@@ -1,0 +1,47 @@
+
+
+
+
+
+
+
+
+Separar tipos de objetos, cada um sendo uma aba do editor:
+
+Propriedades em comum:
+    Name
+    Graphic-Filename
+    Graphic-Size (int width and int heigth)
+    Frame-Duration: int
+
+
+- Recovery
+    Type: E_TANK, W_TANK, HP_SMALL, HP_BIG, WPN_SMALL, WPN_BIG, SAVE_POINT
+
+- Platforms
+    Type: Moving
+    Dissapearing-Block, Falling-Platformn, Flying-Platform (?),
+    Horizontal-Expanding-Ray, Vertical-Expanding-Ray, Horizontal-Expanding-Death-Ray, Vertical-Expanding-Death-Ray,
+    Door,
+    Track Platform,
+    Destructible Wall, Descructible, Descructible-Jump,
+    Timed-Bomb,
+
+    Moving-Direction: left, right, up, down, left-up, right-up, left-down, righht-down
+    Timer-Limit: (int, milisseconds)
+    Movement-Speed: float
+    Movement-Limit: float
+    Activate-only-When over it: boolean (default false)
+    Animate-only-when-active: boolean (default false)
+    Animation-loop: boolean (default true)
+    Animation-loop-in-Reverse: boolean (default false)
+    Door-Key: int (id object)
+
+
+- Util
+    Type: Ability, Teleporter, Key
+    Teleporter-Destiny: (flkoat x, y coordinates)
+
+- Quest
+
+
