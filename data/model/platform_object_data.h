@@ -2,6 +2,7 @@
 #define PLATFORM_OBJECT_DATA_H
 
 #include "object_data.h"
+#include "cereal/cereal.hpp"
 
 enum class PlatformObjectDataTypeEnum {
     Moving,
@@ -59,6 +60,22 @@ public:
     void set_animation_loop(bool loop);
     void set_animation_loop_in_reverse(bool reverse);
     void set_door_key(int key);
+
+    // Cereal serialization
+    template<class Archive>
+    void serialize(Archive & archive) {
+        archive(cereal::base_class<ObjectData>(this),
+                CEREAL_NVP(m_type),
+                CEREAL_NVP(m_moving_direction),
+                CEREAL_NVP(m_timer_limit),
+                CEREAL_NVP(m_movement_speed),
+                CEREAL_NVP(m_movement_limit),
+                CEREAL_NVP(m_activate_only_when_over_it),
+                CEREAL_NVP(m_animate_only_when_active),
+                CEREAL_NVP(m_animation_loop),
+                CEREAL_NVP(m_animation_loop_in_reverse),
+                CEREAL_NVP(m_door_key));
+    }
 
 private:
     PlatformObjectDataTypeEnum m_type;

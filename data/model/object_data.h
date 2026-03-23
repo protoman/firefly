@@ -2,6 +2,7 @@
 #define OBJECT_DATA_H
 
 #include <string>
+#include "cereal/cereal.hpp"
 
 class ObjectData {
 public:
@@ -19,6 +20,15 @@ public:
     void set_graphic_width(int width);
     void set_graphic_height(int height);
     void set_frame_duration(long duration);
+
+    // Cereal serialization
+    template<class Archive>
+    void serialize(Archive & archive) {
+        archive(CEREAL_NVP(m_graphic_filename),
+                CEREAL_NVP(m_graphic_width),
+                CEREAL_NVP(m_graphic_height),
+                CEREAL_NVP(m_frame_duration));
+    }
 
 protected:
     std::string m_graphic_filename;

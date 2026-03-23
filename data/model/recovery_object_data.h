@@ -2,6 +2,7 @@
 #define RECOVERY_OBJECT_DATA_H
 
 #include "object_data.h"
+#include "cereal/cereal.hpp"
 
 enum class RecoveryObjectDataTypeEnum {
     E_TANK,
@@ -23,6 +24,13 @@ public:
 
     // Setters
     void set_type(RecoveryObjectDataTypeEnum type);
+
+    // Cereal serialization
+    template<class Archive>
+    void serialize(Archive & archive) {
+        archive(cereal::base_class<ObjectData>(this),
+                CEREAL_NVP(m_type));
+    }
 
 private:
     RecoveryObjectDataTypeEnum m_type;
