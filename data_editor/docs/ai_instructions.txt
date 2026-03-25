@@ -49,3 +49,12 @@ Implement method ObjectEdit::reload_data.
 It should fill a list o
 It should first clean the ui.currentObjectSelector object, then fill it with all elements from the vectors object_recovery_list,
 object_quest_list, object_platform_list and object_util_list, adding a prefix on each, with the type surrounded by [ and ].
+
+#########
+
+Given there is a GUI window defined in objectedit.ui, with the related class defined in objectedit.h and objectedit.cpp; all in the sub_windows/object folder, I want:
+When the user clicks the add button, it should create a new ObjectData, setting the name in the format "[N][TYPE] - Object Name", where N is the current size of the object_list vector,
+and TYPE should come from the enum ObjectDataType, from the ui.typeSelector currentIndex, as a string.
+Also, it should set the type in the created object, as the one defined the the ui.typeSelector.
+After that, add the new object in the end of the object_list vector.
+Then, add the name of the newly created object at the back of the ui.currentObjectSelector combobox.

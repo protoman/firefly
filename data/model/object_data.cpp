@@ -1,7 +1,8 @@
 #include "object_data.h"
 
 ObjectData::ObjectData()
-    : m_graphic_filename(""),
+    : m_name("Object"),
+      m_graphic_filename(""),
       m_graphic_width(0),
       m_graphic_height(0),
       m_frame_duration(0),
@@ -23,6 +24,10 @@ ObjectData::ObjectData()
       m_util_type(UtilObjectDataTypeEnum::Ability),
       m_teleporter_destiny_x(0.0f),
       m_teleporter_destiny_y(0.0f) {
+}
+
+std::string ObjectData::get_name() const {
+    return m_name;
 }
 
 std::string ObjectData::get_graphic_filename() const {
@@ -119,6 +124,10 @@ float ObjectData::get_teleporter_destiny_y() const {
 
 
 // Setters
+void ObjectData::set_name(const std::string& name) {
+    m_name = name;
+}
+
 void ObjectData::set_graphic_filename(const std::string& filename) {
     m_graphic_filename = filename;
 }
