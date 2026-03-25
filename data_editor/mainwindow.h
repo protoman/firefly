@@ -6,6 +6,7 @@
 #include "cereal/archives/json.hpp"
 #include "file/data/file_data_enemy.hpp"
 #include "enemy/enemyedit.h"
+#include "sub_windows/object/objectedit.h"
 
 enum e_editMode {
     e_editMode_ENEMY,
@@ -43,9 +44,12 @@ private slots:
     void on_actionPlace_Enemy_triggered();
     void on_actionPlace_Object_triggered();
 
+    void on_actionObject_Editor_triggered();
+
 private:
     Ui::MainWindow *ui;
     EnemyEdit enemyEdit;
+    ObjectEdit objectEdit;
     e_editMode editMode = e_editMode_ENEMY;
     editor_config config;
     std::string config_filename = "editor_config.json";

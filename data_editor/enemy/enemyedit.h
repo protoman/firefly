@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include "cereal/cereal.hpp"
 #include "cereal/archives/json.hpp"
+#include "data/model/object_data.h"
 #include "file/data/file_data_enemy.hpp"
 
 namespace Ui {

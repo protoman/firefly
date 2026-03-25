@@ -141,6 +141,7 @@
    </attribute>
    <addaction name="actionSave"/>
    <addaction name="actionEnemy_Editor"/>
+   <addaction name="actionObject_Editor"/>
    <addaction name="separator"/>
    <addaction name="actionPlace_Enemy"/>
    <addaction name="actionPlace_Object"/>
@@ -210,6 +211,18 @@
     <enum>QAction::NoRole</enum>
    </property>
   </action>
+  <action name="actionObject_Editor">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/icons/bqm-remove.svg</normaloff>:/icons/icons/bqm-remove.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Object Editor</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -219,6 +232,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

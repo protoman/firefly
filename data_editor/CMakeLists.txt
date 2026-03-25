@@ -26,6 +26,16 @@ set(PROJECT_SOURCES
         ../tiled/TiledWorldLoader.cpp
         ../tiled/TiledWorldLoader.hpp
         ../defines.h
+        ../data/model/object_data.cpp
+        ../data/model/object_data.h
+        ../data/model/platform_object_data.cpp
+        ../data/model/platform_object_data.h
+        ../data/model/quest_object_data.cpp
+        ../data/model/quest_object_data.h
+        ../data/model/recovery_object_data.cpp
+        ../data/model/recovery_object_data.h
+        ../data/model/util_object_data.cpp
+        ../data/model/util_object_data.h
         util/CommonUtils.cpp
         util/CommonUtils.hpp
 )

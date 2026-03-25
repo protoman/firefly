@@ -42,3 +42,10 @@ using the included cereal library. Example of how it should be implemented is on
 
 Encapsulate all members in the serialize method in all classes inside model/data directory, with CEREAL_NVP, so the json is constructed using actual names. Follow the
   same structure as file_map_anim_block_v0.
+
+#########
+
+Implement method ObjectEdit::reload_data.
+It should fill a list o
+It should first clean the ui.currentObjectSelector object, then fill it with all elements from the vectors object_recovery_list,
+object_quest_list, object_platform_list and object_util_list, adding a prefix on each, with the type surrounded by [ and ].

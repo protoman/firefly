@@ -68,3 +68,9 @@ void MainWindow::on_actionPlace_Object_triggered()
     editMode = e_editMode_OBJECT;
 }
 
+
+void MainWindow::on_actionObject_Editor_triggered()
+{
+    objectEdit.start(config.game_data_directory);
+}
+
