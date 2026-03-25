@@ -2,6 +2,7 @@
 #define OBJECT_DATA_H
 
 #include <string>
+#include <vector>
 #include "cereal/cereal.hpp"
 
 enum class ObjectDataType {
@@ -9,6 +10,11 @@ enum class ObjectDataType {
     QUEST,
     PLATFORM,
     UTIL
+};
+
+struct ObjectDataTypeInfo {
+    ObjectDataType type;
+    std::string name;
 };
 
 enum class RecoveryObjectDataTypeEnum {
@@ -59,6 +65,11 @@ class ObjectData {
 public:
     ObjectData();
     virtual ~ObjectData() = default;
+
+    // Static Helpers
+    [[nodiscard]] static ObjectDataTypeInfo get_type_info(ObjectDataType type);
+    [[nodiscard]] static ObjectDataType get_type_from_index(int index);
+    [[nodiscard]] static std::vector<ObjectDataType> get_all_types();
 
     // Getters
     [[nodiscard]] std::string get_name() const;

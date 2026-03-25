@@ -44,7 +44,8 @@ void ObjectEdit::loadData()
 
     if (object_list.empty()) {
         ObjectData new_object;
-        new_object.set_name("[0][RECOVERY] - Object Name");
+        ObjectDataTypeInfo info = ObjectData::get_type_info(ObjectDataType::RECOVERY);
+        new_object.set_name("[0][" + info.name + "] - Object Name");
         new_object.set_object_type(ObjectDataType::RECOVERY);
         object_list.push_back(new_object);
     }
@@ -69,44 +70,19 @@ void ObjectEdit::fillFormWithData(int index) {
     if (index < 0 || index >= static_cast<int>(object_list.size())) return;
 
     const ObjectData& obj = object_list.at(index);
-    // Assuming UI elements exist based on ObjectData properties
-    // ui->nameLineEdit->setText(QString::fromStdString(obj.get_name()));
-    // ui->typeSelector->setCurrentIndex(static_cast<int>(obj.get_object_type()));
-    // ... other fields as needed
+    // UI mapping will go here
 }
 
 void ObjectEdit::on_addButton_released()
 {
-    ObjectData new_object;
     int index = object_list.size();
-    std::string type_str;
-    ObjectDataType obj_type;
+    ObjectDataType obj_type = ObjectData::get_type_from_index(ui->typeSelector->currentIndex());
+    ObjectDataTypeInfo info = ObjectData::get_type_info(obj_type);
 
-    switch (ui->typeSelector->currentIndex()) {
-        case 0:
-            obj_type = ObjectDataType::RECOVERY;
-            type_str = "RECOVERY";
-            break;
-        case 1:
-            obj_type = ObjectDataType::QUEST;
-            type_str = "QUEST";
-            break;
-        case 2:
-            obj_type = ObjectDataType::PLATFORM;
-            type_str = "PLATFORM";
-            break;
-        case 3:
-            obj_type = ObjectDataType::UTIL;
-            type_str = "UTIL";
-            break;
-        default:
-            obj_type = ObjectDataType::RECOVERY;
-            type_str = "UNKNOWN";
-            break;
-    }
-
+    ObjectData new_object;
     new_object.set_object_type(obj_type);
-    std::string name = "[" + std::to_string(index) + "][" + type_str + "] - Object Name";
+
+    std::string name = "[" + std::to_string(index) + "][" + info.name + "] - Object Name";
     new_object.set_name(name);
 
     object_list.push_back(new_object);
