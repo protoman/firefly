@@ -23,6 +23,10 @@ set(PROJECT_SOURCES
         enemy/enemyedit.ui
         widgets/mapareawidget.cpp
         widgets/mapareawidget.h
+        sub_windows/object/objectedit.h
+        sub_windows/object/objectedit.cpp
+        widgets/enemygraphicpreviewareawidget.h
+        widgets/enemygraphicpreviewareawidget.cpp
         ../tiled/TiledWorldLoader.cpp
         ../tiled/TiledWorldLoader.hpp
         ../defines.h

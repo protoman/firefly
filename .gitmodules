@@ -1,3 +1,6 @@
 [submodule "editors/npc"]
 	path = editors/enemies
 	url = git@github.com:protoman/firefly-npc-editor.git
+[submodule "game_data"]
+	path = game_data
+	url = git@github.com:protoman/firefly_data.git

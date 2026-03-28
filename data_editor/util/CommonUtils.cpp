@@ -6,10 +6,25 @@
 
 #include <qdir.h>
 #include <QMessageBox>
+#include <QCoreApplication>
+#include <QFileInfo>
 
 CommonUtils* CommonUtils::_instance = nullptr;
 
-CommonUtils::CommonUtils() = default;
+CommonUtils::CommonUtils() {
+    // Determine the path of the executable
+    QString appPath = QCoreApplication::applicationDirPath();
+
+    // The editor binary is in Firefly/data_editor/cmake-build-debug/... (or similar)
+    // We want to climb up until we reach 'Firefly'
+    QDir dir(appPath);
+    while (dir.dirName() != "firefly" && !dir.isRoot()) {
+        dir.cdUp();
+    }
+
+    m_parent_project_path = dir.absolutePath().toStdString();
+    m_objects_sprites_path = m_parent_project_path + "/game_data/images/sprites/objects";
+}
 
 CommonUtils *CommonUtils::get_instance()
 {
@@ -54,3 +69,15 @@ void CommonUtils::show_directory_error_message(std::string directory) {
     QDir().mkdir(directory.c_str());
 }
 
+void CommonUtils::set_parent_project_path(const std::string& path) {
+    m_parent_project_path = path;
+    m_objects_sprites_path = m_parent_project_path + "/game_data/images/sprites/objects";
+}
+
+std::string CommonUtils::get_parent_project_path() const {
+    return m_parent_project_path;
+}
+
+std::string CommonUtils::get_objects_sprites_path() const {
+    return m_objects_sprites_path;
+}

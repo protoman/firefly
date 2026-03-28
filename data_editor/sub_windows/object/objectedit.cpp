@@ -23,6 +23,11 @@ void ObjectEdit::start(std::string data_directory)
     this->show();
 
     ui->centralwidget->blockSignals(true);
+
+    // Fill the graphic filename combobox with .png files from the parent project's object sprites folder
+    std::string objects_sprites_path = CommonUtils::get_instance()->get_objects_sprites_path();
+    CommonUtils::fill_files_combo(objects_sprites_path, ui->graphicFilenameComboBox, true);
+
     loadData();
     fillSelectorCombobox();
     if (!object_list.empty()) {
