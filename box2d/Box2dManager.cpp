@@ -3,8 +3,9 @@
 #include <iostream>
 #include "data/SharedPlayerData.hpp"
 
+#define SLOPE_REDUCED_SPEED_FACTOR 0.2f // For sliding down when no input
 
-Box2dManager::Box2dManager() : groundId(), groundBox() {
+Box2dManager::Box2dManager() : groundBox(), _last_slope_normal(0.0f, 0.0f) { // Initialize _last_slope_normal
     // create world
     worldDef.gravity = (b2Vec2){0.0f, GRAVITY};
     worldId = b2CreateWorld(&worldDef);
@@ -78,7 +79,7 @@ st_rectangle Box2dManager::get_player_box() {
             for (int i=0; i<2; i++) {
                 if (areFloatsEqual(contactData.manifold.points[i].point.y, player_feet, 0.9f)) {
                     jump_started = false;
-                    //std::cout << "Box2dManager::get_player_box - finish-jump - contactData.pointsCount[" << contactData.manifold.pointCount << "], point[" << i << "].y[" << contactData.manifold.points[i].point.y << "], player_feet[" << player_feet << "]" << std::endl;
+                    //std::cout << "Box2dManager::get_player_box - finish-jump - contactData.pointsCount[" << contactData.manifold.pointCount << "], point[" << i << "].y[" << contactData.manifold.points[i].point.y << "], player_feet[" << contactData.manifold.points[i].point.y << "]" << std::endl;
                     break;
                 }
             }
@@ -144,42 +145,70 @@ void Box2dManager::add_static_body_polygon(std::vector<std::vector<st_float_posi
 }
 
 void Box2dManager::change_player_position(st_float_position inc) {
-    /*
-    if ((inc.x != 0 || inc.y != 0) && is_player_on_ground()) {
-        b2Body_SetLinearDamping(playerBodyId, 5.0f);
-        //playerBodyDef.linearDamping = 5.0f;
-    } else {
-        b2Body_SetLinearDamping(playerBodyId, 0.0f);
-        //playerBodyDef.linearDamping = 5.0f;
-    }
-    */
+    e_player_on_ground ground_type = is_player_on_ground();
+    b2Vec2 currentVelocity = b2Body_GetLinearVelocity(playerBodyId);
+
     if (inc.x == 0.0f) {
-        e_player_on_ground ground_type = is_player_on_ground();
         if (ground_type == PLAYER_GROUND_SLOPE && jump_started == false) {
+            // Player is on a slope and no horizontal input, make them slide down
+            b2Vec2 desiredVelocity = {-_last_slope_normal.x * SLOPE_REDUCED_SPEED_FACTOR, currentVelocity.y};
+            b2Body_SetLinearVelocity(playerBodyId, desiredVelocity);
+            return;
+        } else if (ground_type == PLAYER_GROUND_LINEAR && jump_started == false) {
+            // Player is on flat ground and no horizontal input, stop them
             b2Body_SetLinearVelocity(playerBodyId, {0.0f, 0.0f});
+            return;
         }
-        //playerShapeDef.material.friction = 1.0f;
-        //b2Body_SetLinearVelocity(playerBodyId, {0.0f, 1.0f});
-        //std::cout << "Box2dManager::change_player_position - no move, friction[" << playerShapeDef.material.friction << "]" << std::endl;
+        // If not on ground or jumping, let gravity handle vertical movement, no horizontal impulse
         return;
     }
-    b2Vec2 vel = b2Body_GetLinearVelocity(playerBodyId);
-    if (inc.x < 0 && vel.x < -HORIZONTAL_SPEED_LIMIT) {
-        return;
+
+    // Player has horizontal input (inc.x != 0.0f)
+    float target_horizontal_speed = 0.0f;
+    float max_speed_limit = HORIZONTAL_SPEED_LIMIT;
+    bool is_climbing_slope = false;
+
+    if (ground_type == PLAYER_GROUND_SLOPE && jump_started == false) {
+        // Check if trying to climb the slope
+        // A slope normal n = {nx, ny}. If nx < 0, slope goes up-right. If nx > 0, slope goes up-left.
+        bool climbing_right = (inc.x > 0 && _last_slope_normal.x > 0.1f); 
+        bool climbing_left = (inc.x < 0 && _last_slope_normal.x < -0.1f);
+
+        if (climbing_right || climbing_left) {
+            is_climbing_slope = true;
+            max_speed_limit *= SLOPE_CLIMB_SPEED_FACTOR; // Reduce speed limit for climbing
+        }
     }
-    if (inc.x > 0 && vel.x > HORIZONTAL_SPEED_LIMIT) {
-        return;
-    }
-    b2Vec2 velocity;
+
     if (inc.x > 0) {
-        velocity.x = HORIZONTAL_MOVE_FORCE;
-    } else if (inc.x < 0) {
-        velocity.x = -HORIZONTAL_MOVE_FORCE;
-    } else {
-        velocity.x = 0.0f;
+        target_horizontal_speed = max_speed_limit;
+    } else { // inc.x < 0
+        target_horizontal_speed = -max_speed_limit;
     }
-    velocity.y = 0.0f;
-    b2Body_ApplyLinearImpulseToCenter(playerBodyId, velocity, true);
+
+    if (is_climbing_slope) {
+        // When climbing, project the horizontal velocity onto the slope surface
+        // The surface tangent T is {-ny, nx} or {ny, -nx}. 
+        // We want to move along T.
+        b2Vec2 tangent = {_last_slope_normal.y, -_last_slope_normal.x};
+        if (inc.x * tangent.x < 0) {
+            tangent = {-tangent.x, -tangent.y};
+        }
+        
+        b2Vec2 projectedVelocity = {
+            tangent.x * max_speed_limit,
+            tangent.y * max_speed_limit
+        };
+        b2Body_SetLinearVelocity(playerBodyId, projectedVelocity);
+    } else {
+        // For normal movement (not climbing a steep slope, or moving down a slope), apply impulse to accelerate
+        // Only apply impulse if we are below the target speed limit
+        if ((inc.x > 0 && currentVelocity.x < target_horizontal_speed) ||
+            (inc.x < 0 && currentVelocity.x > target_horizontal_speed)) { // Note: target_horizontal_speed is negative for left
+            float impulse_x = (inc.x > 0) ? HORIZONTAL_MOVE_FORCE : -HORIZONTAL_MOVE_FORCE;
+            b2Body_ApplyLinearImpulseToCenter(playerBodyId, {impulse_x, 0.0f}, true);
+        }
+    }
 }
 
 void Box2dManager::player_jump()
@@ -207,30 +236,35 @@ void Box2dManager::run_debug_draw(b2DebugDraw *draw)
 
 e_player_on_ground Box2dManager::is_player_on_ground() {
     b2Vec2 position = b2Body_GetPosition(playerBodyId);
-    // check contact events
-    b2ContactData contactDataArray[20];
-    int contact_count = b2Body_GetContactData(playerBodyId, contactDataArray, 20);
-    float player_feet = position.y + (player_h/2);
-    //std::cout << "###################################################################################" << std::endl;
+    float rayLength = 0.5f; // Increased ray length
+    b2Vec2 start = {position.x, position.y}; // Start from center
+    b2Vec2 translation = {0.0f, player_h / 2.0f + rayLength};
 
-    for (int n=0; n<contact_count; n++) {
-        b2ContactData contactData = contactDataArray[n];
-        //std::cout << "Box2dManager::is_player_on_ground - contact[" << n << "], pointCount[" << contactData.manifold.pointCount << "], normal[" << contactData.manifold.normal.x << "][" << contactData.manifold.normal.y << "]" << std::endl;
-        if (contactData.manifold.pointCount != 2) {
-            continue;
+    struct RayCastContext {
+        b2Vec2 normal;
+        bool hit;
+        b2BodyId playerBodyId;
+    } context = {{0, 0}, false, playerBodyId};
+
+    auto callback = [](b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, void* contextPtr) -> float {
+        RayCastContext* ctx = static_cast<RayCastContext*>(contextPtr);
+        b2BodyId hitBodyId = b2Shape_GetBody(shapeId);
+        if (hitBodyId.index1 == ctx->playerBodyId.index1 && hitBodyId.world0 == ctx->playerBodyId.world0) {
+            return -1.0f; // Continue raycast
         }
-        for (int i=0; i<2; i++) {
-            if (areFloatsEqual(contactData.manifold.points[i].point.y, player_feet, 0.9f)) {
-                if (contactData.manifold.normal.x > 0.0f && contactData.manifold.normal.x < 1.0f && contactData.manifold.normal.y > 0.0f && contactData.manifold.normal.y < 1.0f) {
-                    std::cout << "#1 - Box2dManager::is_player_on_ground - Is on slope[TRUE] - normal[" << contactData.manifold.normal.x << "][" << contactData.manifold.normal.y << "]" << std::endl;
-                    return PLAYER_GROUND_SLOPE;
-                } else if (contactData.manifold.normal.x < 0.0f && contactData.manifold.normal.x > -1.0f && contactData.manifold.normal.y > 0.0f && contactData.manifold.normal.y < 1.0f) {
-                    //std::cout << "#2 - Box2dManager::is_player_on_ground - Is on slope[TRUE] - normal[" << contactData.manifold.normal.x << "][" << contactData.manifold.normal.y << "]" << std::endl;
-                    return PLAYER_GROUND_SLOPE;
-                } else {
-                    return PLAYER_GROUND_LINEAR;
-                }
-            }
+        ctx->hit = true;
+        ctx->normal = normal;
+        return fraction; // Terminate raycast at closest hit
+    };
+
+    b2World_CastRay(worldId, start, translation, b2DefaultQueryFilter(), callback, &context);
+
+    if (context.hit) {
+        if (std::abs(context.normal.x) > 0.01f) {
+            _last_slope_normal = {-context.normal.x, -context.normal.y};
+            return PLAYER_GROUND_SLOPE;
+        } else if (context.normal.y < -0.9f) {
+            return PLAYER_GROUND_LINEAR;
         }
     }
     return PLAYER_GROUND_NONE;
@@ -250,6 +284,3 @@ bool Box2dManager::areFloatsEqual(float a, float b, float tolerance)
     //std::cout << "Box2dManager::areFloatsEqual - a[" << a << "], b[" << b << "], tolerance[" << tolerance << "], diff[" << diff << "], result[" << result << "]" << std::endl;
     return result;
 }
-
-
-

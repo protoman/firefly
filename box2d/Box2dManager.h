@@ -5,6 +5,7 @@
 #include "data/st_common.h"
 
 #define PIXELS_PER_METER 40
+#define SLOPE_CLIMB_SPEED_FACTOR 0.5f
 
 
 enum e_player_on_ground {
@@ -37,6 +38,8 @@ public:
     void execute_player_physics();
     void updatePlayerCollision(st_size size);
 
+    friend class Box2dManagerTest;
+
 private:
     bool areFloatsEqual(float a, float b, float tolerance = 1e-5f);
 
@@ -58,7 +61,7 @@ private:
     b2WorldId worldId{};
     // ground
     b2BodyDef groundBodyDef = b2DefaultBodyDef();
-    b2BodyId groundId;
+    b2BodyId id;
     b2Polygon groundBox;
     b2ShapeDef groundShapeDef = b2DefaultShapeDef();
     // player
@@ -74,6 +77,8 @@ private:
 
 
     bool jump_started = false;
+    b2Vec2 _last_slope_normal; // Added member variable
+
     // static objects
     std::vector<static_object_struct> staticObjects;
 };
