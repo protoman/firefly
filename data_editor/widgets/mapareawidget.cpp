@@ -14,7 +14,7 @@ MapAreaWidget::MapAreaWidget(QWidget *parent)
 
 void MapAreaWidget::loadMapData()
 {
-    std::string mapFilename = "/home/iuri/Desenvolvimento/firefly/build/games/FireFly/data/tiled/swamp.tmx";
+    std::string mapFilename = "/home/iuri/Desenvolvimento/firefly/game_data/tiled/swamp.tmx";
     worldLoader.loadMap(mapFilename);
     map_properties = worldLoader.getMapProperties();
     layers = worldLoader.getMapLayers();

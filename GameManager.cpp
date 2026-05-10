@@ -754,7 +754,7 @@ void GameManager::show_notice()
     Draw::get_instance()->update_screen();
 
     st_imageData upperland_surface;
-    upperland_surface = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->GAMEPATH + "/shared/images/upperland.png");
+    upperland_surface = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->FILEPATH + "/shared/images/upperland.png");
 
     st_position logo_pos(RES_W/2 - (upperland_surface.surface->w/6)/2, RES_H/2 - upperland_surface.surface->h/2);
 
@@ -1841,8 +1841,6 @@ void GameManager::select_game_screen()
     }
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(200);
-
-    //std::string game_dir = std::string("/games/") + game_list.at(picked_n) + std::string("/");
 
     _selected_game = game_list.at(picked_n);
 }

@@ -271,7 +271,7 @@ void SoundView::load_shared_music(std::string music_file)
     std::string filename;
 
     unload_music();
-    filename = SharedData::get_instance()->GAMEPATH + "/shared/music/" + music_file;
+    filename = SharedData::get_instance()->FILEPATH + "/shared/music/" + music_file;
     music = MIX_LoadAudio(nullptr, filename.c_str(), false);
     if (!music) {
         std::cout << "Error in soundLib::load_music::Mix_LoadMUS('" << filename << "': '" << SDL_GetError() << "'\n";
@@ -442,7 +442,7 @@ void SoundView::play_sfx_from_file(std::string filename, int repeat_n)
 
 void SoundView::play_shared_sfx(std::string filename)
 {
-    filename = SharedData::get_instance()->GAMEPATH + "shared/sfx/" + filename;
+    filename = SharedData::get_instance()->FILEPATH + "shared/sfx/" + filename;
     MIX_Audio *sfx = MIX_LoadAudio(mixer, filename.c_str(), false);
 
     if (!sfx) {

@@ -76,32 +76,32 @@ Draw *Draw::get_instance()
 
 void Draw::preload()
 {
-    std::string filename = SharedData::get_instance()->GAMEPATH + std::string("shared/images/teleport_small.png");
+    std::string filename = SharedData::get_instance()->FILEPATH + std::string("/shared/images/teleport_small.png");
     _teleport_small_gfx = ImageView::get_instance()->imageFromFile(filename);
     teleport_small_frame_count = _teleport_small_gfx.surface->w/_teleport_small_gfx.surface->h;
     if (teleport_small_frame_count <1) {
         teleport_small_frame_count = 1;
     }
 
-    filename = SharedData::get_instance()->GAMEPATH + "shared/images/snowflacke.png";
+    filename = SharedData::get_instance()->FILEPATH + "shared/images/snowflacke.png";
     snow_flacke = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "shared/images/rain.png";
+    filename = SharedData::get_instance()->FILEPATH + "shared/images/rain.png";
     rain_obj = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "shared/images/black_line.png";
+    filename = SharedData::get_instance()->FILEPATH + "shared/images/black_line.png";
     shadow_line = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "shared/images/boss_intro_bg.png";
+    filename = SharedData::get_instance()->FILEPATH + "shared/images/boss_intro_bg.png";
     boss_intro_bg = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "shared/images/dark_effect_mask.png";
+    filename = SharedData::get_instance()->FILEPATH + "shared/images/dark_effect_mask.png";
     dark_effect_light_source_mask = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "shared/images/yellow_light_mask.png";
+    filename = SharedData::get_instance()->FILEPATH + "shared/images/yellow_light_mask.png";
     yellow_light_mask = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "shared/images/red_light_mask.png";
+    filename = SharedData::get_instance()->FILEPATH + "shared/images/red_light_mask.png";
     red_light_mask = ImageView::get_instance()->imageFromFile(filename);
 
 
@@ -119,13 +119,13 @@ void Draw::preload()
         }
     }
 
-    filename = SharedData::get_instance()->GAMEPATH + "shared/images/hp_ball.png";
+    filename = SharedData::get_instance()->FILEPATH + "shared/images/hp_ball.png";
     hud_player_hp_ball = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "shared/images/wpn_ball.png";
+    filename = SharedData::get_instance()->FILEPATH + "shared/images/wpn_ball.png";
     hud_player_wpn_ball = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "shared/images/boss_hp_ball.png";
+    filename = SharedData::get_instance()->FILEPATH + "shared/images/boss_hp_ball.png";
     hud_boss_hp_ball = ImageView::get_instance()->imageFromFile(filename);
 
     filename = SharedData::get_instance()->FILEPATH + "/images/1up_icons.png";
@@ -134,39 +134,39 @@ void Draw::preload()
     filename = SharedData::get_instance()->FILEPATH + "images/backgrounds/castle_point.png";
     castle_point = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/d_pad.png";
+    filename = SharedData::get_instance()->FILEPATH + "/shared/images/buttons/d_pad.png";
     input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_DPAD_LEFTRIGHT, st_imageData()));
     input_images_map.at(INPUT_IMAGES_DPAD_LEFTRIGHT) = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/btn_a.png";
+    filename = SharedData::get_instance()->FILEPATH + "/shared/images/buttons/btn_a.png";
     input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_A, st_imageData()));
     input_images_map.at(INPUT_IMAGES_A) = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/btn_b.png";
+    filename = SharedData::get_instance()->FILEPATH + "/shared/images/buttons/btn_b.png";
     input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_B, st_imageData()));
     input_images_map.at(INPUT_IMAGES_B) = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/btn_x.png";
+    filename = SharedData::get_instance()->FILEPATH + "/shared/images/buttons/btn_x.png";
     input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_X, st_imageData()));
     input_images_map.at(INPUT_IMAGES_X) = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/btn_y.png";
+    filename = SharedData::get_instance()->FILEPATH + "/shared/images/buttons/btn_y.png";
     input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_Y, st_imageData()));
     input_images_map.at(INPUT_IMAGES_Y) = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/d_pad_up.png";
+    filename = SharedData::get_instance()->FILEPATH + "/shared/images/buttons/d_pad_up.png";
     input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_DPAD_UP, st_imageData()));
     input_images_map.at(INPUT_IMAGES_DPAD_UP) = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/d_pad_down.png";
+    filename = SharedData::get_instance()->FILEPATH + "/shared/images/buttons/d_pad_down.png";
     input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_DPAD_DOWN, st_imageData()));
     input_images_map.at(INPUT_IMAGES_DPAD_DOWN) = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/d_pad_left.png";
+    filename = SharedData::get_instance()->FILEPATH + "/shared/images/buttons/d_pad_left.png";
     input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_DPAD_LEFT, st_imageData()));
     input_images_map.at(INPUT_IMAGES_DPAD_LEFT) = ImageView::get_instance()->imageFromFile(filename);
 
-    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/buttons/d_pad_right.png";
+    filename = SharedData::get_instance()->FILEPATH + "/shared/images/buttons/d_pad_right.png";
     input_images_map.insert(std::pair<e_INPUT_IMAGES, st_imageData>(INPUT_IMAGES_DPAD_RIGHT, st_imageData()));
     input_images_map.at(INPUT_IMAGES_DPAD_RIGHT) = ImageView::get_instance()->imageFromFile(filename);
 
@@ -197,11 +197,11 @@ void Draw::preload()
     dialog_surface = ImageView::get_instance()->imageFromFile(filename);
     ImageView::get_instance()->set_surface_alpha(200, dialog_surface);
 
-    filename = SharedData::get_instance()->GAMEPATH + "/shared/images/water_animation.png";
+    filename = SharedData::get_instance()->FILEPATH + "/shared/images/water_animation.png";
     water_tile_overlay = ImageView::get_instance()->imageFromFile(filename);
     ImageView::get_instance()->set_surface_alpha(160, water_tile_overlay);
 
-    filename = SharedData::get_instance()->GAMEPATH + "shared/images/death_animation.png";
+    filename = SharedData::get_instance()->FILEPATH + "shared/images/death_animation.png";
     _death_animation = ImageView::get_instance()->imageFromFile(filename);
     _death_animation_frames_n = _death_animation.surface->w/_death_animation.surface->h;
 
@@ -342,7 +342,7 @@ void Draw::show_flash()
 {
     if (flash_obj.surface == nullptr) {
         // load rain
-        std::string filename = SharedData::get_instance()->GAMEPATH + "/shared/images/flash.png";
+        std::string filename = SharedData::get_instance()->FILEPATH + "/shared/images/flash.png";
         flash_obj = ImageView::get_instance()->imageFromFile(filename);
     }
     for (int i=0; i<FLASH_POINTS_N; i++) {
@@ -361,7 +361,7 @@ void Draw::show_flash()
 void Draw::show_bubble(int x, int y)
 {
     if (_bubble_gfx.surface == nullptr) {
-        std::string filename = SharedData::get_instance()->GAMEPATH + "shared/images/bubble.png";
+        std::string filename = SharedData::get_instance()->FILEPATH + "shared/images/bubble.png";
         _bubble_gfx = ImageView::get_instance()->imageFromFile(filename);
     }
     ImageView::get_instance()->renderImageAt(x, y, _bubble_gfx);
@@ -402,8 +402,8 @@ int Draw::show_credits_text(bool can_leave, std::vector<std::string> credit_text
     st_imageData bg2;
 
 
-    bg1 = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->GAMEPATH + "/shared/images/star_field1.png");
-    bg2 = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->GAMEPATH + "/shared/images/star_field2.png");
+    bg1 = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->FILEPATH + "/shared/images/star_field1.png");
+    bg2 = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->FILEPATH + "/shared/images/star_field2.png");
 
     ImageView::get_instance()->clearScreenArea(0, 0, RES_W, RES_H, 0, 0, 0);
 

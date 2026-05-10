@@ -91,7 +91,7 @@ bool file_io::file_exists(std::string filename)
 
 std::vector<std::string> file_io::read_game_list()
 {
-    std::string filename = SharedData::get_instance()->GAMEPATH + "/games/";
+    std::string filename = SharedData::get_instance()->FILEPATH + "/games/";
     filename = StringUtils::clean_filename(filename);
     return read_directory_list(filename, true);
 }
