@@ -3,6 +3,7 @@
 #include "data/st_common.h" // For st_float_position
 #include "data/SharedPlayerData.hpp" // Box2dManager uses this
 #include <cmath>
+#include <iostream>
 
 class Box2dManagerTest : public ::testing::Test {
 protected:
@@ -38,6 +39,10 @@ protected:
     // Protected helpers to access private members of Box2dManager (since we are a friend)
     void setPlayerTransform(b2Vec2 position, b2Rot rotation) {
         b2Body_SetTransform(box2dManager->playerBodyId, position, rotation);
+    }
+
+    void setPlayerVelocity(b2Vec2 velocity) {
+        b2Body_SetLinearVelocity(box2dManager->playerBodyId, velocity);
     }
 
     b2Vec2 getPlayerPosition() {
@@ -299,6 +304,256 @@ TEST(SlopeMovementTests, MinimalSpeedRespectBaseSpeed) {
 		float minimal_speed = calculate_minimal_speed_test(angle, base_speed);
 		EXPECT_LE(minimal_speed, base_speed) << "Minimal speed should not exceed base speed at angle " << angle;
 	}
+}
+
+// ==================== No-Input Slope Tests ====================
+// These tests verify the player does not drift horizontally when
+// standing on slopes of various angles with no directional input.
+
+// Helper: position player so the capsule bottom touches the slope surface
+// Slope goes from (0, y_start) to (x_end, 0) in meters
+// y_slope(x) = y_start - x * (y_start / x_end)
+// Capsule bottom is at position.y + capsule_bottom_offset
+// We want position.y + bottom_offset = y_slope
+static float capsule_bottom_offset = 0.675f; // radius of capsule
+static float player_half_h = 2.0f; // player_h / 2
+
+TEST_F(Box2dManagerTest, NoInputDoesNotPushHorizontallyOn30DegSlope) {
+    createSlope(0.0f, 400.0f, 692.8f, 0.0f);
+    // y_surface(5) = 10 - 5*tan(30) = 7.113
+    float y_surface = 10.0f - 5.0f * 0.57735f;
+    // Place capsule bottom exactly at surface
+    setPlayerTransform({5.0f, y_surface - capsule_bottom_offset}, b2Rot_identity);
+
+    // Minimal steps to establish contact without building slide momentum
+    for (int i = 0; i < 3; ++i) box2dManager->execute();
+
+    // Verify slope detection is working
+    b2Vec2 slopeCheck;
+    EXPECT_TRUE(box2dManager->is_on_slope(slopeCheck));
+
+    st_float_position no_input(0.0f, 0.0f);
+    box2dManager->change_player_position(no_input);
+
+    b2Vec2 vel = getPlayerVelocity();
+    // Must not set horizontal velocity when there's no input
+    EXPECT_NEAR(vel.x, 0.0f, 0.05f);
+}
+
+TEST_F(Box2dManagerTest, NoInputDoesNotPushHorizontallyOn45DegSlope) {
+    createSlope(0.0f, 400.0f, 400.0f, 0.0f);
+    // y_surface(2.5) = 10 - 2.5*tan(45) = 7.5
+    float y_surface = 10.0f - 2.5f * 1.0f;
+    setPlayerTransform({2.5f, y_surface - capsule_bottom_offset}, b2Rot_identity);
+
+    for (int i = 0; i < 3; ++i) box2dManager->execute();
+
+    b2Vec2 slopeCheck;
+    EXPECT_TRUE(box2dManager->is_on_slope(slopeCheck));
+
+    st_float_position no_input(0.0f, 0.0f);
+    box2dManager->change_player_position(no_input);
+
+    b2Vec2 vel = getPlayerVelocity();
+    EXPECT_NEAR(vel.x, 0.0f, 0.05f);
+}
+
+TEST_F(Box2dManagerTest, NoInputDoesNotPushHorizontallyOn60DegSlope) {
+    createSlope(0.0f, 400.0f, 230.8f, 0.0f);
+    // y_surface(2) = 10 - 2*tan(60) = 6.536
+    float y_surface = 10.0f - 2.0f * 1.732f;
+    setPlayerTransform({2.0f, y_surface - capsule_bottom_offset}, b2Rot_identity);
+
+    for (int i = 0; i < 3; ++i) box2dManager->execute();
+
+    b2Vec2 slopeCheck;
+    EXPECT_TRUE(box2dManager->is_on_slope(slopeCheck));
+
+    st_float_position no_input(0.0f, 0.0f);
+    box2dManager->change_player_position(no_input);
+
+    b2Vec2 vel = getPlayerVelocity();
+    // Must not set horizontal velocity when there's no input
+    EXPECT_NEAR(vel.x, 0.0f, 0.05f);
+}
+
+TEST_F(Box2dManagerTest, NoInputNoDriftOverTimeOn30DegSlope) {
+    createSlope(0.0f, 400.0f, 692.8f, 0.0f);
+    float y_surface = 10.0f - 5.0f * 0.57735f;
+    setPlayerTransform({5.0f, y_surface - capsule_bottom_offset}, b2Rot_identity);
+
+    for (int i = 0; i < 3; ++i) box2dManager->execute();
+
+    b2Vec2 slopeCheck;
+    EXPECT_TRUE(box2dManager->is_on_slope(slopeCheck));
+
+    st_float_position no_input(0.0f, 0.0f);
+    float initial_x = getPlayerPosition().x;
+
+    for (int frame = 0; frame < 60; ++frame) {
+        box2dManager->change_player_position(no_input);
+        box2dManager->execute();
+    }
+
+    float final_x = getPlayerPosition().x;
+    float drift = std::abs(final_x - initial_x);
+    std::cout << "30deg: initial_x[" << initial_x << "] final_x[" << final_x << "] drift[" << drift << "]" << std::endl;
+    EXPECT_LT(drift, 0.1f);
+}
+
+TEST_F(Box2dManagerTest, NoInputNoDriftOverTimeOn45DegSlope) {
+    createSlope(0.0f, 400.0f, 400.0f, 0.0f);
+    float y_surface = 10.0f - 2.5f * 1.0f;
+    setPlayerTransform({2.5f, y_surface - capsule_bottom_offset}, b2Rot_identity);
+
+    for (int i = 0; i < 3; ++i) box2dManager->execute();
+
+    b2Vec2 slopeCheck;
+    EXPECT_TRUE(box2dManager->is_on_slope(slopeCheck));
+
+    st_float_position no_input(0.0f, 0.0f);
+    float initial_x = getPlayerPosition().x;
+
+    for (int frame = 0; frame < 60; ++frame) {
+        box2dManager->change_player_position(no_input);
+        box2dManager->execute();
+    }
+
+    float final_x = getPlayerPosition().x;
+    float drift = std::abs(final_x - initial_x);
+    std::cout << "45deg: initial_x[" << initial_x << "] final_x[" << final_x << "] drift[" << drift << "]" << std::endl;
+    EXPECT_LT(drift, 0.1f);
+}
+
+TEST_F(Box2dManagerTest, NoInputNoDriftOverTimeOn60DegSlope) {
+    createSlope(0.0f, 400.0f, 230.8f, 0.0f);
+    float y_surface = 10.0f - 2.0f * 1.732f;
+    setPlayerTransform({2.0f, y_surface - capsule_bottom_offset}, b2Rot_identity);
+
+    for (int i = 0; i < 3; ++i) box2dManager->execute();
+
+    b2Vec2 slopeCheck;
+    EXPECT_TRUE(box2dManager->is_on_slope(slopeCheck));
+
+    st_float_position no_input(0.0f, 0.0f);
+    float initial_x = getPlayerPosition().x;
+
+    for (int frame = 0; frame < 60; ++frame) {
+        box2dManager->change_player_position(no_input);
+        box2dManager->execute();
+    }
+
+    float final_x = getPlayerPosition().x;
+    float drift = std::abs(final_x - initial_x);
+    std::cout << "60deg: initial_x[" << initial_x << "] final_x[" << final_x << "] drift[" << drift << "]" << std::endl;
+    EXPECT_LT(drift, 0.1f);
+}
+
+// Reproduce: player stands still on slope, presses jump.
+// Game flow: execute() then player_jump() -- NO change_player_position in between.
+// With _freeze_position still true from previous no-input frames, execute() kills the jump.
+TEST_F(Box2dManagerTest, PlayerJumpsFromSlopeWhenNotMoving) {
+    createSlope(0.0f, 400.0f, 400.0f, 0.0f);
+    float y_surface = 10.0f - 2.5f * 1.0f;
+    setPlayerTransform({2.5f, y_surface - capsule_bottom_offset}, b2Rot_identity);
+
+    // Establish freeze state: 3 no-input frames
+    st_float_position no_input(0.0f, 0.0f);
+    for (int i = 0; i < 3; ++i) {
+        box2dManager->change_player_position(no_input);
+        box2dManager->execute();
+    }
+
+    b2Vec2 pos_before = getPlayerPosition();
+
+    // Simulate the exact game flow on a jump frame:
+    // 1. execute() runs first (sees _freeze_position=true, freezes position)
+    // 2. No change_player_position is called (jump==0 gate in game)
+    // 3. player_jump() is called
+    box2dManager->execute();
+    box2dManager->player_jump();
+
+    // Simulate next frame: execute() runs with what player_jump set
+    box2dManager->execute();
+
+    b2Vec2 pos_after = getPlayerPosition();
+    b2Vec2 vel_after = getPlayerVelocity();
+
+    std::cout << "JumpFromSlope: before.y[" << pos_before.y << "] after.y[" << pos_after.y << "] vy[" << vel_after.y << "]" << std::endl;
+
+    // Without fix: _freeze_position stays true, jump is killed — pos.y barely changes, vy ≈ 0
+    // With fix: player_jump clears freeze, body moves upward
+    EXPECT_LT(pos_after.y, pos_before.y);
+    EXPECT_LT(vel_after.y, -1.0f);
+}
+
+// When the player falls from above onto a slope, the capsule bottom should end up
+// exactly on the slope surface — not hovering above it.
+// The raycasts in is_on_slope start from visual-bottom (pos.y + player_h/2) which is
+// ~1.3m below the capsule collision bottom. If the raycasts miss and the contact
+// normal fallback fails on the first frame of contact, the body keeps falling past
+// the surface, gets pushed back by the solver, and _freeze_position locks it at a
+// position where the capsule bottom is above the true surface.
+TEST_F(Box2dManagerTest, PlayerFallsOntoSlopeFromAbove) {
+    createSlope(0.0f, 400.0f, 400.0f, 0.0f);
+
+    // Place the player high above the slope
+    float start_x = 2.5f;
+    float capsule_radius = capsule_bottom_offset;
+    setPlayerTransform({start_x, 2.0f}, b2Rot_identity);
+
+    // Let the player fall with gravity (no input) until they settle on the slope
+    st_float_position no_input(0.0f, 0.0f);
+    float prev_dy = 999.0f;
+    for (int i = 0; i < 240; ++i) {
+        // Game flow: execute then change_player_position
+        box2dManager->execute();
+        box2dManager->change_player_position(no_input);
+
+        b2Vec2 pos = getPlayerPosition();
+        float dy = std::abs(pos.y - prev_dy);
+        if (i > 10 && dy < 0.0001f) {
+            std::cout << "FellOntoSlope: settled at frame " << i << std::endl;
+            break;
+        }
+        prev_dy = pos.y;
+    }
+
+    b2Vec2 final_pos = getPlayerPosition();
+    // Slope surface at x=2.5: y_surface = 10 - 2.5 = 7.5
+    // Capsule bottom should be AT the surface:
+    // final_pos.y + capsule_bottom_offset == y_surface  →  final_pos.y == 7.5 - 0.675 == 6.825
+    float expected_y = 7.5f - capsule_radius;
+    float y_error = std::abs(final_pos.y - expected_y);
+    std::cout << "FellOntoSlope: pos.y[" << final_pos.y << "] expected[" << expected_y << "] error[" << y_error << "]" << std::endl;
+    // Debug: re-run with per-frame logging to find premature freeze
+    std::cout << "--- Per-frame trace ---" << std::endl;
+    {
+        setPlayerTransform({start_x, 2.0f}, b2Rot_identity);
+        setPlayerVelocity({0.0f, 0.0f});
+        bool freeze_ever_set = false;
+        int freeze_frame = -1;
+        for (int i = 0; i < 60; ++i) {
+            b2Vec2 pos_before = getPlayerPosition();
+            box2dManager->execute();
+            b2Vec2 pos_mid = getPlayerPosition();
+            b2Vec2 vel_mid = getPlayerVelocity();
+            b2Vec2 slope_n;
+            bool on_slope = box2dManager->is_on_slope(slope_n);
+            box2dManager->change_player_position(no_input);
+            b2Vec2 pos_after = getPlayerPosition();
+            if (on_slope && !freeze_ever_set) {
+                freeze_ever_set = true;
+                freeze_frame = i;
+            }
+            if (i < 30 || on_slope) {
+                std::cout << "  i[" << i << "] pos_before[" << pos_before.x << "," << pos_before.y << "] pos_mid[" << pos_mid.x << "," << pos_mid.y << "] vel[" << vel_mid.x << "," << vel_mid.y << "] onSlope[" << on_slope << "]" << std::endl;
+            }
+        }
+        b2Vec2 final = getPlayerPosition();
+        std::cout << "  freeze first set at frame[" << freeze_frame << "], final_pos[" << final.x << "," << final.y << "]" << std::endl;
+    }
+    EXPECT_LT(y_error, 0.05f);
 }
 
 int main(int argc, char **argv) {

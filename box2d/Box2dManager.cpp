@@ -1,9 +1,6 @@
 #include "Box2dManager.h"
 
-#include <iostream>
 #include "data/SharedPlayerData.hpp"
-
-#define SLOPE_REDUCED_SPEED_FACTOR 0.2f // For sliding down when no input
 
 Box2dManager::Box2dManager() : groundBox(), _last_slope_normal(0.0f, 0.0f) { // Initialize _last_slope_normal
     // create world
@@ -21,7 +18,7 @@ Box2dManager::Box2dManager() : groundBox(), _last_slope_normal(0.0f, 0.0f) { // 
     playerBodyDef.type = b2_dynamicBody;
     playerBodyDef.fixedRotation = true; // Set this to true to prevent rotation
     //playerBodyDef.linearDamping = 1.0f;
-    playerBodyDef.position = (b2Vec2){10.0f, 0.0f};
+    playerBodyDef.position = (b2Vec2){25.0f, 0.0f};
     playerBodyId = b2CreateBody(worldId, &playerBodyDef);
     playerShapeDef.density = PLAYER_DENSITY;
     playerShapeDef.material.friction = PLAYER_FRICTION;
@@ -53,9 +50,12 @@ Box2dManager::~Box2dManager()
 
 void Box2dManager::execute()
 {
+    b2Vec2 posBefore = b2Body_GetPosition(playerBodyId);
     b2World_Step(worldId, timeStep, subStepCount);
-    //b2Vec2 position = b2Body_GetPosition(playerBodyId);
-    //b2Rot rotation = b2Body_GetRotation(playerBodyId);
+    if (_freeze_position) {
+        b2Body_SetTransform(playerBodyId, posBefore, b2Rot_identity);
+        b2Body_SetLinearVelocity(playerBodyId, {0.0f, 0.0f});
+    }
 }
 
 st_rectangle Box2dManager::get_ground_box()
@@ -154,12 +154,27 @@ void Box2dManager::change_player_position(st_float_position inc) {
         _last_slope_normal = slopeNormal;
     }
 
-    if (inc.x == 0.0f) {
-        if (onSlope && !jump_started) {
-            b2Vec2 desiredVelocity = {-slopeNormal.x * SLOPE_REDUCED_SPEED_FACTOR, currentVelocity.y};
-            b2Body_SetLinearVelocity(playerBodyId, desiredVelocity);
+    if (inc.x == 0.0f && onSlope && !jump_started) {
+        b2Vec2 vel = b2Body_GetLinearVelocity(playerBodyId);
+        _settle_counter++;
+        if (_settle_counter >= 5) {
+            _freeze_position = true;
+            b2Body_SetGravityScale(playerBodyId, 0.0f);
+            b2Body_SetLinearVelocity(playerBodyId, {0.0f, 0.0f});
             return;
-        } else if (groundType == PLAYER_GROUND_LINEAR && !jump_started) {
+        }
+        _freeze_position = false;
+        b2Body_SetGravityScale(playerBodyId, 1.0f);
+        b2Body_SetLinearVelocity(playerBodyId, {0.0f, vel.y});
+        return;
+    }
+
+    _settle_counter = 0;
+    _freeze_position = false;
+    b2Body_SetGravityScale(playerBodyId, 1.0f);
+
+    if (inc.x == 0.0f) {
+        if (groundType == PLAYER_GROUND_LINEAR && !jump_started) {
             b2Body_SetLinearVelocity(playerBodyId, {0.0f, 0.0f});
             return;
         }
@@ -173,10 +188,8 @@ void Box2dManager::change_player_position(st_float_position inc) {
         bool climbing_left = (inc.x < 0 && slopeNormal.x < -0.1f);
 
         if (climbing_right || climbing_left) {
-            float speed_limit = HORIZONTAL_SPEED_LIMIT * SLOPE_CLIMB_SPEED_FACTOR;
-
             float slope_multiplier = -slopeNormal.x / slopeNormal.y;
-            float target_vx = (inc.x > 0) ? speed_limit : -speed_limit;
+            float target_vx = (inc.x > 0) ? HORIZONTAL_SPEED_LIMIT * SLOPE_CLIMB_SPEED_FACTOR : -HORIZONTAL_SPEED_LIMIT * SLOPE_CLIMB_SPEED_FACTOR;
             float target_vy = target_vx * slope_multiplier;
 
             b2Body_SetLinearVelocity(playerBodyId, {target_vx, target_vy});
@@ -206,8 +219,10 @@ void Box2dManager::player_jump()
 {
     if (jump_started == false) {
         jump_started = true;
-        //std::cout << ">>> Box2dManager::player_jump::START" << std::endl;
-        // check that velocity is not already applied
+
+        _freeze_position = false;
+        b2Body_SetGravityScale(playerBodyId, 1.0f);
+
         b2Vec2 currentVelocity = b2Body_GetLinearVelocity(playerBodyId);
         if (currentVelocity.y < -10.0f) {
             return;
@@ -234,7 +249,7 @@ e_player_on_ground Box2dManager::is_player_on_ground() {
 
     b2Vec2 position = b2Body_GetPosition(playerBodyId);
     float rayLength = 0.05f; // Extremely short ray for flat ground detection
-    b2Vec2 start = {position.x, position.y + player_h / 2.0f - 0.02f}; // Start exactly at feet
+    b2Vec2 start = {position.x, position.y + player_w / 2.0f - 0.02f}; // Start at capsule bottom
     b2Vec2 translation = {0.0f, 0.02f + rayLength}; // Check just a few pixels below feet
 
     struct RayCastContext {
@@ -263,7 +278,7 @@ e_player_on_ground Box2dManager::is_player_on_ground() {
 
 bool Box2dManager::is_on_slope(b2Vec2& out_normal) {
     b2Vec2 position = b2Body_GetPosition(playerBodyId);
-    float bottom_y = position.y + player_h / 2.0f - 0.02f;
+    float bottom_y = position.y + player_w / 2.0f - 0.02f;
     float rayLength = 0.15f;
 
     struct RayCastContext {

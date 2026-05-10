@@ -79,7 +79,10 @@ private:
 
 
     bool jump_started = false;
-    b2Vec2 _last_slope_normal; // Added member variable
+    b2Vec2 _last_slope_normal;
+    bool _freeze_position = false;
+    int _settle_counter = 0;
+    b2Vec2 _last_settle_pos = {0.0f, 0.0f};
 
     // static objects
     std::vector<static_object_struct> staticObjects;
