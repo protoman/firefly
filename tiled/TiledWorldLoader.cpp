@@ -65,8 +65,6 @@ std::vector<tiled_world_tileset_origin_data> TiledWorldLoader::buildTileLayerDat
     for (int layer_i=0; layer_i < layers.size(); layer_i++) {
         if (layers[layer_i]->getType() == tmx::Layer::Type::Tile) {
             const tmx::TileLayer& tempLayer = layers[layer_i]->getLayerAs<tmx::TileLayer>();
-            long tempLayerX = tempLayer.getSize().x;
-            long tempLayerY = tempLayer.getSize().y;
             layer_n = layer_i;
         }
     }
@@ -103,7 +101,9 @@ std::vector<tiled_world_tileset_origin_data> TiledWorldLoader::buildTileLayerDat
         std::string tilesetImageFilename = ts.getImagePath();
         unsigned int tileset_w_tiles = ts.getImageSize().x / mapTileSize.y;
 
-        for (const auto& tile_piece : ts.getTiles()) {
+        std::vector<tmx::Tileset::Tile> tiles = ts.getTiles();
+        std::cout << "## DEBUG - tiles.size[" << tiles.size() << "]" << std::endl;
+        for (const auto& tile_piece : tiles) {
             //push back to vert array
             tiled_world_tileset_origin_data tile;
             tile.filename = tilesetImageFilename;
