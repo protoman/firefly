@@ -25,9 +25,11 @@ public slots:
 
 private slots:
     void on_addButton_released();
+    void on_actionSave_triggered();
 
 private:
     void loadData();
+    void saveData();
     void fillSelectorCombobox();
     void fillFormWithData(int index);
 

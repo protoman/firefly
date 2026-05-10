@@ -2,6 +2,7 @@
 #include "ui_objectedit.h"
 #include "util/CommonUtils.hpp"
 #include <QComboBox>
+#include <fstream>
 
 ObjectEdit::ObjectEdit(QWidget *parent)
     : QMainWindow(parent)
@@ -44,8 +45,22 @@ void ObjectEdit::reload_data() {
 
 void ObjectEdit::loadData()
 {
-    data::file_objects loaded_objects = data::loadObjects(game_data_directory);
-    object_list = loaded_objects.object_list;
+    std::string parent_project_path = CommonUtils::get_instance()->get_parent_project_path();
+    std::string object_data_path = parent_project_path + "/game_data/object_data.json";
+    
+    object_list.clear();
+    
+    std::ifstream input_file(object_data_path);
+    if (input_file.is_open()) {
+        try {
+            cereal::JSONInputArchive iarchive(input_file);
+            iarchive(cereal::make_nvp("objects", object_list));
+        } catch (...) {
+            // If JSON parsing fails, leave list empty
+            object_list.clear();
+        }
+        input_file.close();
+    }
 
     if (object_list.empty()) {
         ObjectData new_object;
@@ -94,3 +109,22 @@ void ObjectEdit::on_addButton_released()
     ui->currentObjectSelector->addItem(QString::fromStdString(name));
     ui->currentObjectSelector->setCurrentIndex(index);
 }
+
+void ObjectEdit::saveData()
+{
+    std::string parent_project_path = CommonUtils::get_instance()->get_parent_project_path();
+    std::string object_data_path = parent_project_path + "/game_data/object_data.json";
+    
+    std::ofstream output_file(object_data_path);
+    if (output_file.is_open()) {
+        cereal::JSONOutputArchive oarchive(output_file);
+        oarchive(cereal::make_nvp("objects", object_list));
+        output_file.close();
+    }
+}
+
+void ObjectEdit::on_actionSave_triggered()
+{
+    saveData();
+}
+
