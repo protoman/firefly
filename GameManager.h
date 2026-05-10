@@ -171,9 +171,7 @@ private:
     void show_mem_debug(int n);
     void change_map_scroll(st_float_position pos, bool check_lock);
     void init_map_and_player_to_bottom();
-
     static void drawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexCount, float radius, b2HexColor color, void *context);
-
 
 public:
     st_size calc_area_tile_size(int area_n);

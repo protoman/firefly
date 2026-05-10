@@ -35,6 +35,8 @@ public:
     void player_jump();
     void run_debug_draw(b2DebugDraw* draw);
     e_player_on_ground is_player_on_ground();
+    bool is_on_slope(b2Vec2& normal);
+    bool is_player_touching_ground();
     void execute_player_physics();
     void updatePlayerCollision(st_size size);
 

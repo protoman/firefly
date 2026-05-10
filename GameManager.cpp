@@ -314,6 +314,8 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
         InputController::get_instance()->clean();
     }
 
+    st_rectangle box2d_player_pos = box2d_manager.get_player_box();
+
     if (dialog_queue.size() > 0) {
         if (dialog_queue.at(0).timer == 0 && InputController::get_instance()->p1_input[BTN_JUMP] == 1) {
             //std::cout << "Remove dialog #1" << std::endl;
@@ -438,7 +440,7 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
         }
         fps_manager.limit();
 
-        st_rectangle box2d_player_pos = box2d_manager.get_player_box();
+
         box2d_manager.run_debug_draw(&debugDrawer);
 
 

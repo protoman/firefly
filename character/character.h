@@ -235,7 +235,7 @@ public:
     void set_is_on_game_item_area(bool state);
     bool have_frame_graphic(int direction, int type, int pos);  // indicates if the given frame graphic exits
     void reset_animation_type();
-    struct st_characterMovements getMoveCommands();
+    st_characterMovements getMoveCommands();
 
 
 private:

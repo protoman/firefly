@@ -1,7 +1,10 @@
 #include "moveslopes.h"
 #include "GameManager.h"
+#include <cmath>
 
 #define ADJUST_Y 3
+#define SLOPE_ANGLE_THRESHOLD 45.0f
+#define MINIMAL_SPEED_FACTOR 0.2f
 
 
 moveSlopes::moveSlopes()
@@ -97,6 +100,7 @@ int moveSlopes::calcExpectedVericalPosForSlope(int xinc, int yinc, st_rectangle 
     }
     double diff_h = (double)(right-left);
     current_slope_step = diff_h/TILESIZE; // represents how much changes for x for each x pixel in the slope
+    current_slope_angle = calculate_slope_angle(diff_h);
     int center_x = hitbox.x + xinc + hitbox.w/2;
 
     //std::cout << "MOVESLOPES::calcExpectedVericalPosForSlope - tileY[" << tile_info.y << "], hitbox.y[" << hitbox.y << "], hitbox.h[" << hitbox.h << "], yinc[" << yinc << "]" << std::endl;
@@ -113,24 +117,37 @@ int moveSlopes::calcExpectedVericalPosForSlope(int xinc, int yinc, st_rectangle 
 
     return calc_y;
 
-    /*
-    double diff_h = (double)(right-left);
-    current_slope_step = diff_h/TILESIZE; // represents how much changes for x for each x pixel in the slope
-    int tileX = (hitbox.x + xinc) / TILESIZE;
-    int tileY = (hitbox.y + hitbox.h + yinc + ADJUST_Y) / TILESIZE;
-    int x = hitbox.x + xinc;
-    int y = tileY*TILESIZE;
-    int xDiff = abs(tileX*TILESIZE - x);
+}
 
-    int diff_x_calc = tileX*TILESIZE - x;
-    std::cout << "MOVESLOPES::calcExpectedVericalPosForSlope - diff_h[" << diff_h << "], current_slope_step[" << current_slope_step << "], diff_x_calc[" << diff_x_calc << "], hitbox.x[" << hitbox.x << "], x[" << x << "]" << std::endl;
+float moveSlopes::calculate_slope_angle(float height_diff) const
+{
+	if (TILESIZE == 0) {
+		return 0.0f;
+	}
+	float angle_radians = std::atan(std::abs(height_diff) / TILESIZE);
+	float angle_degrees = angle_radians * 180.0f / static_cast<float>(M_PI);
+	return angle_degrees;
+}
 
+float moveSlopes::calculate_minimal_speed(float slope_angle, float base_speed) const
+{
+	if (slope_angle <= SLOPE_ANGLE_THRESHOLD) {
+		return base_speed;
+	}
 
-    int calc_y = y - (current_slope_step * xDiff);
-    //std::cout << "MOVESLOPES::calcExpectedVericalPosForSlope - y[" << y << "], calc_y[" << calc_y << "], current_slope_step[" << current_slope_step << "], xDiff[" << xDiff << "]" << std::endl;
-    //std::cout << "MOVESLOPES::calcExpectedVericalPosForSlope - tileY[" << tileY << "], calc_y[" << calc_y << "], current_y[" << (hitbox.y+hitbox.h) << "], next_y[" << (hitbox.y+hitbox.h+yinc) << "], yinc[" << yinc << "]" << std::endl;
-    return calc_y;
-    */
+	float angle_excess = slope_angle - SLOPE_ANGLE_THRESHOLD;
+	float angle_ratio = angle_excess / (90.0f - SLOPE_ANGLE_THRESHOLD);
+	angle_ratio = std::min(angle_ratio, 1.0f);
+
+	float speed_reduction = angle_ratio * (1.0f - MINIMAL_SPEED_FACTOR);
+	float minimal_speed = base_speed * (1.0f - speed_reduction);
+
+	return std::max(minimal_speed, base_speed * MINIMAL_SPEED_FACTOR);
+}
+
+float moveSlopes::get_current_slope_angle() const
+{
+	return current_slope_angle;
 }
 
 /*
