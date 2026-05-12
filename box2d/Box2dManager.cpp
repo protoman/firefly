@@ -186,10 +186,15 @@ void Box2dManager::change_player_position(st_float_position inc) {
     if (onSlope && !jump_started) {
         bool climbing_right = (inc.x > 0 && slopeNormal.x > 0.1f);
         bool climbing_left = (inc.x < 0 && slopeNormal.x < -0.1f);
+        bool descending_right = (inc.x > 0 && slopeNormal.x < -0.1f);
+        bool descending_left = (inc.x < 0 && slopeNormal.x > 0.1f);
 
-        if (climbing_right || climbing_left) {
+        if (climbing_right || climbing_left || descending_right || descending_left) {
             float slope_multiplier = -slopeNormal.x / slopeNormal.y;
-            float target_vx = (inc.x > 0) ? HORIZONTAL_SPEED_LIMIT * SLOPE_CLIMB_SPEED_FACTOR : -HORIZONTAL_SPEED_LIMIT * SLOPE_CLIMB_SPEED_FACTOR;
+            float target_vx = (inc.x > 0) ? HORIZONTAL_SPEED_LIMIT : -HORIZONTAL_SPEED_LIMIT;
+            if (climbing_right || climbing_left) {
+                target_vx *= SLOPE_CLIMB_SPEED_FACTOR;
+            }
             float target_vy = target_vx * slope_multiplier;
 
             b2Body_SetLinearVelocity(playerBodyId, {target_vx, target_vy});

@@ -524,6 +524,28 @@ TEST_F(Box2dManagerTest, PlayerFallsOntoSlopeFromAbove) {
     EXPECT_TRUE(right_edge_below_surface);
 }
 
+TEST_F(Box2dManagerTest, PlayerMovesDown45DegreeSlope) {
+    createSlope(0.0f, 400.0f, 400.0f, 0.0f);
+
+    setPlayerTransform({4.0f, 6.0f - capsule_bottom_offset}, b2Rot_identity);
+
+    st_float_position move_left(-2.0f, 0.0f);
+
+    float initial_x = getPlayerPosition().x;
+    float initial_y = getPlayerPosition().y;
+
+    for (int i = 0; i < 20; ++i) {
+        box2dManager->change_player_position(move_left);
+        box2dManager->execute();
+    }
+
+    float final_x = getPlayerPosition().x;
+    float final_y = getPlayerPosition().y;
+
+    ASSERT_LT(final_x, initial_x);
+    ASSERT_GT(final_y, initial_y);
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
