@@ -154,6 +154,43 @@ void Box2dManager::change_player_position(st_float_position inc) {
         _last_slope_normal = slopeNormal;
     }
 
+    // === SLIDE STATE MACHINE ===
+    if (_is_sliding) {
+        float expected_speed = HORIZONTAL_SPEED_LIMIT * SLIDE_DOWN_SPEED_MULTIPLIER;
+        b2Vec2 vel = b2Body_GetLinearVelocity(playerBodyId);
+        float actual_speed = std::sqrt(vel.x * vel.x + vel.y * vel.y);
+
+        if (!onSlope) {
+            _is_sliding = false;
+            if (groundType == PLAYER_GROUND_LINEAR) {
+                _slide_coasting = true;
+            }
+        } else if (actual_speed < expected_speed * 0.3f) {
+            _is_sliding = false;
+        } else {
+            _slide_coasting = false;
+            _settle_counter = 0;
+            _freeze_position = false;
+            b2Body_SetGravityScale(playerBodyId, 1.0f);
+            b2Vec2 downhill_dir = {-slopeNormal.y, slopeNormal.x};
+            b2Body_SetLinearVelocity(playerBodyId, {downhill_dir.x * expected_speed, downhill_dir.y * expected_speed});
+            return;
+        }
+    }
+
+    // Slide trigger: press DOWN on a slope
+    if (inc.y > 0.0f && onSlope && !jump_started) {
+        _is_sliding = true;
+        _slide_coasting = false;
+        _settle_counter = 0;
+        _freeze_position = false;
+        b2Body_SetGravityScale(playerBodyId, 1.0f);
+        float slide_speed = HORIZONTAL_SPEED_LIMIT * SLIDE_DOWN_SPEED_MULTIPLIER;
+        b2Vec2 downhill_dir = {-slopeNormal.y, slopeNormal.x};
+        b2Body_SetLinearVelocity(playerBodyId, {downhill_dir.x * slide_speed, downhill_dir.y * slide_speed});
+        return;
+    }
+
     if (inc.x == 0.0f && onSlope && !jump_started) {
         b2Vec2 vel = b2Body_GetLinearVelocity(playerBodyId);
         _settle_counter++;
@@ -173,8 +210,23 @@ void Box2dManager::change_player_position(st_float_position inc) {
     _freeze_position = false;
     b2Body_SetGravityScale(playerBodyId, 1.0f);
 
+    // Stop coasting when player gives any horizontal input
+    if (inc.x != 0.0f) {
+        _slide_coasting = false;
+    }
+
     if (inc.x == 0.0f) {
         if (groundType == PLAYER_GROUND_LINEAR && !jump_started) {
+            if (_slide_coasting) {
+                b2Vec2 vel = b2Body_GetLinearVelocity(playerBodyId);
+                float speed = std::sqrt(vel.x * vel.x + vel.y * vel.y);
+                if (speed < 1.0f) {
+                    _slide_coasting = false;
+                    b2Body_SetLinearVelocity(playerBodyId, {0.0f, 0.0f});
+                    return;
+                }
+                return;
+            }
             b2Body_SetLinearVelocity(playerBodyId, {0.0f, 0.0f});
             return;
         }

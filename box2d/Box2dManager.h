@@ -52,6 +52,7 @@ private:
     float GRAVITY = 39.6f;
     float MAX_SPEED = 45.0f;
     float HORIZONTAL_SPEED_LIMIT = 10.0f;
+    float SLIDE_DOWN_SPEED_MULTIPLIER = 2.0f;
     float HORIZONTAL_MOVE_FORCE = 4.0f;
     float PLAYER_DENSITY = 1.0f;
     float PLAYER_FRICTION = 1.0f;
@@ -82,7 +83,8 @@ private:
     b2Vec2 _last_slope_normal;
     bool _freeze_position = false;
     int _settle_counter = 0;
-    b2Vec2 _last_settle_pos = {0.0f, 0.0f};
+    bool _is_sliding = false;
+    bool _slide_coasting = false;
 
     // static objects
     std::vector<static_object_struct> staticObjects;

@@ -546,6 +546,123 @@ TEST_F(Box2dManagerTest, PlayerMovesDown45DegreeSlope) {
     ASSERT_GT(final_y, initial_y);
 }
 
+TEST_F(Box2dManagerTest, SlideDownSlope45Degrees) {
+    createSlope(0.0f, 400.0f, 400.0f, 0.0f);
+
+    setPlayerTransform({3.0f, 7.0f - capsule_bottom_offset}, b2Rot_identity);
+
+    for (int i = 0; i < 3; ++i) box2dManager->execute();
+
+    b2Vec2 slopeCheck;
+    EXPECT_TRUE(box2dManager->is_on_slope(slopeCheck));
+
+    st_float_position slide_down(0.0f, 1.0f);
+    box2dManager->change_player_position(slide_down);
+
+    b2Vec2 vel = getPlayerVelocity();
+    float slide_speed = std::sqrt(vel.x * vel.x + vel.y * vel.y);
+    float expected_speed = 10.0f * 2.0f;
+
+    EXPECT_NEAR(slide_speed, expected_speed, 1.0f);
+    EXPECT_LT(vel.x, 0.0f);
+    EXPECT_GT(vel.y, 0.0f);
+    EXPECT_NEAR(std::abs(vel.x), std::abs(vel.y), 1.0f);
+}
+
+TEST_F(Box2dManagerTest, SlideDownSlope60Degrees) {
+    createSlope(0.0f, 400.0f, 230.8f, 0.0f);
+
+    setPlayerTransform({2.0f, 10.0f - 2.0f * 1.732f - capsule_bottom_offset}, b2Rot_identity);
+
+    for (int i = 0; i < 3; ++i) box2dManager->execute();
+
+    b2Vec2 slopeCheck;
+    EXPECT_TRUE(box2dManager->is_on_slope(slopeCheck));
+
+    st_float_position slide_down(0.0f, 1.0f);
+    box2dManager->change_player_position(slide_down);
+
+    b2Vec2 vel = getPlayerVelocity();
+    float slide_speed = std::sqrt(vel.x * vel.x + vel.y * vel.y);
+    float expected_speed = 10.0f * 2.0f;
+
+    EXPECT_NEAR(slide_speed, expected_speed, 1.0f);
+    EXPECT_LT(vel.x, 0.0f);
+    EXPECT_GT(vel.y, 0.0f);
+}
+
+TEST_F(Box2dManagerTest, SlideDownFromFrozenState) {
+    createSlope(0.0f, 400.0f, 400.0f, 0.0f);
+
+    setPlayerTransform({3.0f, 7.0f - capsule_bottom_offset}, b2Rot_identity);
+
+    st_float_position no_input(0.0f, 0.0f);
+    for (int i = 0; i < 10; ++i) {
+        box2dManager->execute();
+        box2dManager->change_player_position(no_input);
+    }
+
+    b2Vec2 pos_before_slide = getPlayerPosition();
+
+    // Now press DOWN — game loop order: execute then change_player_position
+    // Without fix: freeze persists, execute restores position, slide never moves body
+    st_float_position slide_down(0.0f, 1.0f);
+    for (int i = 0; i < 3; ++i) {
+        box2dManager->execute();
+        box2dManager->change_player_position(slide_down);
+    }
+
+    b2Vec2 pos_after_slide = getPlayerPosition();
+    b2Vec2 vel = getPlayerVelocity();
+
+    // The body must have moved downhill (left and down)
+    ASSERT_LT(pos_after_slide.x, pos_before_slide.x);
+    ASSERT_GT(pos_after_slide.y, pos_before_slide.y);
+
+    float slide_speed = std::sqrt(vel.x * vel.x + vel.y * vel.y);
+    float expected_speed = 10.0f * 2.0f;
+    EXPECT_NEAR(slide_speed, expected_speed, 1.0f);
+}
+
+TEST_F(Box2dManagerTest, SlideContinuesAfterReleasingDown) {
+    createSlope(0.0f, 400.0f, 400.0f, 0.0f);
+
+    setPlayerTransform({4.0f, 6.0f - capsule_bottom_offset}, b2Rot_identity);
+
+    // Warmup to settle on slope
+    st_float_position no_input(0.0f, 0.0f);
+    for (int i = 0; i < 5; ++i) {
+        box2dManager->execute();
+        box2dManager->change_player_position(no_input);
+    }
+
+    b2Vec2 pos_before = getPlayerPosition();
+
+    // One frame of DOWN to trigger slide
+    st_float_position slide_down(0.0f, 1.0f);
+    box2dManager->execute();
+    box2dManager->change_player_position(slide_down);
+
+    b2Vec2 pos_after_slide_start = getPlayerPosition();
+
+    // Now release DOWN — slide should continue via state machine
+    for (int i = 0; i < 5; ++i) {
+        box2dManager->execute();
+        box2dManager->change_player_position(no_input);
+    }
+
+    b2Vec2 pos_after_continuation = getPlayerPosition();
+    b2Vec2 vel = getPlayerVelocity();
+
+    // Body should have moved further downhill after releasing DOWN
+    ASSERT_LT(pos_after_continuation.x, pos_after_slide_start.x);
+    ASSERT_GT(pos_after_continuation.y, pos_after_slide_start.y);
+
+    float slide_speed = std::sqrt(vel.x * vel.x + vel.y * vel.y);
+    float expected_speed = 10.0f * 2.0f;
+    EXPECT_NEAR(slide_speed, expected_speed, 1.0f);
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
