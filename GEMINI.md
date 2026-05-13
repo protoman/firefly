@@ -59,6 +59,8 @@ This is a C++ game that aims to be a Metroidvania-like similar to Shantae Half-G
   - `add_static_body_rectangles()` — simple box shapes from `st_rectangle` data.
   - `add_static_body_polygon()` — polygon shapes from vertex lists.
 - `execute()` advances the simulation: `b2World_Step(worldId, 1/60, 4)`.
+  - Saves `_vel_before_step` and position **before** the step for use by wall-friction correction and position-freeze logic.
+  - If `_freeze_position` is true (no-input on slope/ground), restores the pre-step position and zeros velocity — eliminates solver-introduced drift.
 - `execute_player_physics()` is defined but **NOT called** in the main game loop (may cause jump-state issues).
 
 ### Key Constants (`Box2dManager.h`)
@@ -69,6 +71,7 @@ This is a C++ game that aims to be a Metroidvania-like similar to Shantae Half-G
 | `HORIZONTAL_SPEED_LIMIT` | 10.0 | Max horizontal speed (m/s) |
 | `HORIZONTAL_MOVE_FORCE` | 4.0 | Impulse applied per frame for horizontal movement |
 | `SLOPE_CLIMB_SPEED_FACTOR` | 0.5 | Speed multiplier when climbing slopes (vx = 10 * 0.5 = 5 m/s) |
+| `SLIDE_DOWN_SPEED_MULTIPLIER` | 2.0 | Speed multiplier for slide (vx = 10 * 2 = 20 m/s) |
 | `PLAYER_FRICTION` | 1.0 | Player body friction |
 | `SCENARIO_FRICTION` | 0.5 | Static geometry friction |
 | `player_w` | 54/40 = 1.35m | Player width |
@@ -98,7 +101,43 @@ When `inc.x == 0.0f`:
 - **On slope** (`onSlope && !jump_started`): Sets velocity to `{0.0f, currentVelocity.y}` — stops horizontal drift but preserves vertical velocity so the player stays in contact with the slope surface.
 - **On flat ground** (`groundType == PLAYER_GROUND_LINEAR && !jump_started`): Sets velocity to `{0.0f, 0.0f}` — full stop.
 - **In air** (neither): Returns without modifying velocity — gravity handles movement.
+- In both ground cases, `_freeze_position = true` is set. On the next `execute()`, the pre-step position is restored and velocity zeroed, eliminating solver-introduced drift.
+- When the player provides input again or jumps, `_freeze_position` is cleared.
 - **Historical note**: The old code set `{-slopeNormal.x * 0.2f, currentVelocity.y}` on slopes, which caused the player to slide backward horizontally on slopes > 45°.
+
+### Slope Descent (`change_player_position()`)
+When moving with horizontal input down a slope (e.g., moving right on a left-up slope or left on a right-up slope):
+- `descending_right = (inc.x > 0 && slopeNormal.x < -0.1f)` — moving right down a left-up slope.
+- `descending_left = (inc.x < 0 && slopeNormal.x > 0.1f)` — moving left down a right-up slope.
+- Velocity is **set directly** at full horizontal speed projected along the slope tangent:
+  - `slope_multiplier = -slopeNormal.x / slopeNormal.y`
+  - `target_vx = HORIZONTAL_SPEED_LIMIT * sign(inc.x)`
+  - `target_vy = target_vx * slope_multiplier`
+- This keeps the player on the slope surface without floating, unlike the old impulse-based approach.
+
+### Slide State Machine
+When `inc.y > 0` (DOWN pressed) on a slope:
+- Enters `_is_sliding = true` state.
+- Velocity is set along the **downhill tangent**: `(-slopeNormal.y, slopeNormal.x)` normalized, then scaled by `HORIZONTAL_SPEED_LIMIT * SLIDE_DOWN_SPEED_MULTIPLIER = 20 m/s`.
+- Once sliding, the state persists until:
+  - Horizontal velocity drops below 30% of the expected target (wall/obstruction), OR
+  - The player leaves the slope onto flat ground (one frame of `_slide_coasting` before full stop).
+- On slide exit, velocity is zeroed and `_freeze_position` takes over.
+
+### Wall Friction Correction
+During airborne jumps/falls (`jump_started && !onSlope && groundType == PLAYER_GROUND_NONE`):
+- Box2D's solver can reduce vertical speed when the player is pressed against a wall.
+- `execute()` saves `_vel_before_step` before `b2World_Step`.
+- In `change_player_position()`, the post-step Y velocity is compared with the expected value: `_vel_before_step.y + GRAVITY * timeStep`.
+- If `|actual_vy - expected_vy| > 0.1`, the velocity is corrected to the expected Y value (X is untouched).
+- This prevents wall contact from slowing the player's jump or accelerating the fall.
+
+### Settling Delay
+When landing on a slope (ground type transitions to `PLAYER_GROUND_SLOPE`):
+- `_settle_counter` increments each frame once `inc.x == 0` and the player is on a slope.
+- After 5 frames of no input on the slope, `_freeze_position = true` is set.
+- The 5-frame delay allows the body to settle to equilibrium after landing from a jump/fall.
+- Moving, jumping, or sliding resets `_settle_counter` to 0.
 
 ### Slope Transition Boost
 When moving with input and NOT currently on a slope, but `_last_slope_normal` (from the most recent frame where `is_on_slope` was true) indicates the player recently left a slope:
@@ -119,11 +158,12 @@ box2d_manager.change_player_position(inc);   // Apply Box2D movement based on in
 The Box2D body position is used to compute the visual rectangle via `get_player_box()`.
 
 ### Movement Flow (Box2D path)
-1. `GameManager` forces `BTN_RIGHT = 1` via `player_started_moving_right` debug flag.
-2. `classPlayer::move()` reads input, sets `moveCommands.right = 1`.
-3. `classPlayer::charMove()` runs tile-based movement on `character::position`.
-4. `GameManager` checks `player1.getMoveCommands().right` and calls `box2d_manager.change_player_position({2.0f, 0.0f})`.
-5. `Box2dManager::change_player_position()` applies Box2D physics (slope climb, normal move, or no-input).
+1. `GameManager` reads `player1.getMoveCommands()` to determine input.
+2. `box2d_manager.execute()` — step physics.
+3. `box2d_manager.change_player_position(inc)` — apply Box2D movement based on input, where:
+   - `inc.x` comes from `moveCommands.right - moveCommands.left` (typically ±2.0f).
+   - `inc.y` comes from `moveCommands.down` (2.0f when DOWN is pressed, triggering slide).
+4. `Box2dManager::change_player_position()` handles all slope/climb/descent/slide/wall-friction logic.
 
 ### Unit Tests (`tests/Box2dManager_test.cpp`)
 - Uses Google Test framework.
@@ -133,7 +173,7 @@ The Box2D body position is used to compute the visual rectangle via `get_player_
 - Slope surface Y at a given X: `y_surface = Y_START - X * tan(angle)`.
 - Player capsule bottom offset from body position: `capsule_bottom_offset = radius = player_w/2 = 0.675m`.
 - To position player on slope surface: `body.y = y_surface - capsule_bottom_offset`.
-- Existing tests: 45° climbing, 60° climbing, falling, no-input drift at 30°/45°/60°.
+- Existing tests: 45° climbing, 60° climbing, falling, no-input drift at 30°/45°/60°, jump-from-slope, fall-onto-slope, 45° descent, 45°/60° slide, slide-from-frozen, slide-continuation, wall-friction.
 
 ### Future Work / Known Issues
 - `execute_player_physics()` is defined but never called in the game loop — the jump state (`jump_started`) is only managed inside `get_player_box()` as a side effect.

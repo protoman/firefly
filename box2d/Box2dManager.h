@@ -85,6 +85,7 @@ private:
     int _settle_counter = 0;
     bool _is_sliding = false;
     bool _slide_coasting = false;
+    b2Vec2 _vel_before_step = {0.0f, 0.0f};
 
     // static objects
     std::vector<static_object_struct> staticObjects;

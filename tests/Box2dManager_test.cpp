@@ -663,6 +663,44 @@ TEST_F(Box2dManagerTest, SlideContinuesAfterReleasingDown) {
     EXPECT_NEAR(slide_speed, expected_speed, 1.0f);
 }
 
+TEST_F(Box2dManagerTest, PlayerFallsAtCorrectSpeedWhenPressingAgainstWall) {
+    // Create a floor
+    std::vector<st_rectangle> walls;
+    walls.push_back(st_rectangle(0, 400, 800, 40));
+    box2dManager->add_static_body_rectangles(walls);
+
+    // Create a wall to the right of the player (140px = 3.5m)
+    walls.clear();
+    walls.push_back(st_rectangle(140, 0, 8, 400));
+    box2dManager->add_static_body_rectangles(walls);
+
+    float player_w = 1.35f;
+    float wall_x = 3.5f;
+    float player_body_x = wall_x - player_w;
+    setPlayerTransform({player_body_x, 2.0f}, b2Rot_identity);
+
+    box2dManager->player_jump();
+
+    b2Vec2 prev_vel = getPlayerVelocity();
+    float gravity_step = 39.6f * (1.0f / 60.0f);
+
+    st_float_position push_right(2.0f, 0.0f);
+    b2Vec2 vel;
+    for (int frame = 0; frame < 30; ++frame) {
+        box2dManager->execute();
+        box2dManager->change_player_position(push_right);
+        vel = getPlayerVelocity();
+
+        // First 5 frames may have solver settling artifacts (impulse + wall)
+        // After that, vy change should track gravity
+        if (frame > 5 && frame > 0) {
+            float vy_change = vel.y - prev_vel.y;
+            EXPECT_NEAR(vy_change, gravity_step, 0.25f);
+        }
+        prev_vel = vel;
+    }
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

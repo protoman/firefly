@@ -1,5 +1,7 @@
 #include "Box2dManager.h"
 
+#include <cmath>
+
 #include "data/SharedPlayerData.hpp"
 
 Box2dManager::Box2dManager() : groundBox(), _last_slope_normal(0.0f, 0.0f) { // Initialize _last_slope_normal
@@ -50,6 +52,7 @@ Box2dManager::~Box2dManager()
 
 void Box2dManager::execute()
 {
+    _vel_before_step = b2Body_GetLinearVelocity(playerBodyId);
     b2Vec2 posBefore = b2Body_GetPosition(playerBodyId);
     b2World_Step(worldId, timeStep, subStepCount);
     if (_freeze_position) {
@@ -231,6 +234,15 @@ void Box2dManager::change_player_position(st_float_position inc) {
             return;
         }
         return;
+    }
+
+    // Prevent wall contact from altering vertical speed during jumps/falls
+    if (jump_started && !onSlope && groundType == PLAYER_GROUND_NONE) {
+        b2Vec2 vel = b2Body_GetLinearVelocity(playerBodyId);
+        float expected_vy = _vel_before_step.y + GRAVITY * timeStep;
+        if (std::fabs(vel.y - expected_vy) > 0.1f) {
+            b2Body_SetLinearVelocity(playerBodyId, {vel.x, expected_vy});
+        }
     }
 
     float target_horizontal_speed = (inc.x > 0) ? HORIZONTAL_SPEED_LIMIT : -HORIZONTAL_SPEED_LIMIT;
