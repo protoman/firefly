@@ -2,8 +2,7 @@ Project Firefly (To Be Named)
 -------
 
 #### Description
-A game engine muit to be MetroidVania-like that uses C++11, SDL2 (to be moved to 3), tmxlite, 
-Box2D 3.1 and Qt.
+A game engine meant to be MetroidVania-like that uses C++23, SDL3, tmxlite, Box2D 3.1 and Qt.
 
 Because this is a fork of the Rockbot engine, it still contains the dependency on Qt for the editor, 
 but the idea is to scrap that and move it to CMake and change configuration that are currently
@@ -22,7 +21,7 @@ For nbow, use the qmake files inclused int he project to generate Makefile.
 Firefly uses [tmxlite](https://github.com/fallahn/tmxlite/), 
 [Box2D](https://github.com/eXpl0it3r/Box2D) and [SDL2](https://github.com/libsdl-org/SDL)
 which are not included in the repository.
-
+ 
 ***
 
 (c)Iuri Fiedoruk, Arismeire Kümmer Silva Fiedoruk & contributors 2018 - 2026

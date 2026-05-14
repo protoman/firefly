@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionPlace_Enemy->setChecked(true);
 
     loadConfig();
+    ui->editAreaWidget->setGameDataDirectory(config.game_data_directory);
+    ui->editAreaWidget->loadMapData();
 }
 
 MainWindow::~MainWindow()

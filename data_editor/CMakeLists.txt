@@ -50,6 +50,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(FireflyEditor
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        icons.qrc
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET FireflyEditor APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -115,3 +116,8 @@ install(TARGETS FireflyEditor
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(FireflyEditor)
 endif()
+
+add_custom_command(TARGET FireflyEditor POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:FireflyEditor> ${CMAKE_SOURCE_DIR}/../build/
+    COMMENT "Copying FireflyEditor to ${CMAKE_SOURCE_DIR}/../build/"
+)

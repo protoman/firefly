@@ -10,6 +10,7 @@ class MapAreaWidget : public QWidget
     Q_OBJECT
 public:
     explicit MapAreaWidget(QWidget *parent = nullptr);
+    void setGameDataDirectory(const std::string& dir);
     void loadMapData();
 
 protected:
@@ -21,6 +22,7 @@ private:
 
 private:
     QWidget *myParent;
+    std::string game_data_directory;
     int zoom = 1;
     int TILESIZE = 32;
     int MAP_W = 320;

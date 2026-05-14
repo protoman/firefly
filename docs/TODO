@@ -1,13 +1,18 @@
 ########################################################
                      TODO LIST
 ########################################################
+- convert all existing data to json.
+
+- implement editor screens
+    # reorganize the file-* load and write classes.
+        # must be shared between game and editor
 
 - Start developing the architecture of stages/teleporters/world/enemies/npcs/quests
     # create a class diagram
 
-- try to use copilot to generate the UI/code for the quest editor window
+ - try to use copilot to generate the UI/code for the quest editor window
 
-Validade this tool for paint to replace paint tool sai:
+Validate this tool for paint to replace paint tool sai:
 https://medibangpaint.com/en/
 https://krita.org/pt-br/
 

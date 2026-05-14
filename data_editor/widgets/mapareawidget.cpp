@@ -9,12 +9,16 @@ MapAreaWidget::MapAreaWidget(QWidget *parent)
 {
     myParent = parent;
     myParent->resize(QSize(999, 200));
-    loadMapData();
+}
+
+void MapAreaWidget::setGameDataDirectory(const std::string& dir)
+{
+    game_data_directory = dir;
 }
 
 void MapAreaWidget::loadMapData()
 {
-    std::string mapFilename = "/home/iuri/Desenvolvimento/firefly/game_data/tiled/swamp.tmx";
+    std::string mapFilename = game_data_directory + "/data/tiled/swamp.tmx";
     worldLoader.loadMap(mapFilename);
     map_properties = worldLoader.getMapProperties();
     layers = worldLoader.getMapLayers();
