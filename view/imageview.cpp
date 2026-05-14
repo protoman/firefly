@@ -601,9 +601,7 @@ void ImageView::place_anim_tile(int anim_tile_id, st_position pos_destiny)
     struct st_imageData* tile_ref = &ANIM_TILES_SURFACES.at(anim_tile_id);
 
     if (tile_ref->surface == nullptr) {
-        std::cout << "place_anim_tile - ERROR surfaceDestiny is nullptr for id " << anim_tile_id << " - ignoring..." << std::endl;
-        char debug_msg[255];
-        sprintf(debug_msg, "EXIT:place_anim_tile[%d][%lu]", anim_tile_id, ANIM_TILES_SURFACES.size());
+        std::cout << "place_anim_tile - ERROR surfaceDestiny is nullptr for id " << anim_tile_id << ", size=" << ANIM_TILES_SURFACES.size() << " - ignoring..." << std::endl;
         return;
     }
 
