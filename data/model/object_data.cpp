@@ -1,7 +1,8 @@
 #include "object_data.h"
 
 ObjectData::ObjectData()
-    : m_graphic_filename(""),
+    : m_name("Object"),
+      m_graphic_filename(""),
       m_graphic_width(0),
       m_graphic_height(0),
       m_frame_duration(0),
@@ -23,6 +24,34 @@ ObjectData::ObjectData()
       m_util_type(UtilObjectDataTypeEnum::Ability),
       m_teleporter_destiny_x(0.0f),
       m_teleporter_destiny_y(0.0f) {
+}
+
+ObjectDataTypeInfo ObjectData::get_type_info(ObjectDataType type) {
+    switch (type) {
+        case ObjectDataType::RECOVERY: return {type, "RECOVERY"};
+        case ObjectDataType::QUEST:    return {type, "QUEST"};
+        case ObjectDataType::PLATFORM: return {type, "PLATFORM"};
+        case ObjectDataType::UTIL:     return {type, "UTIL"};
+        default:                       return {type, "UNKNOWN"};
+    }
+}
+
+ObjectDataType ObjectData::get_type_from_index(int index) {
+    switch (index) {
+        case 0:  return ObjectDataType::RECOVERY;
+        case 1:  return ObjectDataType::QUEST;
+        case 2:  return ObjectDataType::PLATFORM;
+        case 3:  return ObjectDataType::UTIL;
+        default: return ObjectDataType::RECOVERY;
+    }
+}
+
+std::vector<ObjectDataType> ObjectData::get_all_types() {
+    return {ObjectDataType::RECOVERY, ObjectDataType::QUEST, ObjectDataType::PLATFORM, ObjectDataType::UTIL};
+}
+
+std::string ObjectData::get_name() const {
+    return m_name;
 }
 
 std::string ObjectData::get_graphic_filename() const {
@@ -119,6 +148,10 @@ float ObjectData::get_teleporter_destiny_y() const {
 
 
 // Setters
+void ObjectData::set_name(const std::string& name) {
+    m_name = name;
+}
+
 void ObjectData::set_graphic_filename(const std::string& filename) {
     m_graphic_filename = filename;
 }

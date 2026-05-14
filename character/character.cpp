@@ -237,7 +237,15 @@ void character::charMove() {
             temp_move_speed = QUICKSAND_JUMP_LIMIT/2;
         }
 
-        for (float i=temp_move_speed; i>=0.1; i--) {
+        float minimal_speed = 0.1f;
+        {
+            float test_slope_angle = slopesManager.get_current_slope_angle();
+            if (test_slope_angle > SLOPE_ANGLE_THRESHOLD) {
+                minimal_speed = slopesManager.calculate_minimal_speed(test_slope_angle, temp_move_speed);
+            }
+        }
+
+        for (float i=temp_move_speed; i>=minimal_speed; i--) {
             st_map_collision map_col = map_collision(-i, 0, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
             mapLock = map_col.block;
             if (state.animation_type == ANIM_TYPE_HIT) {
@@ -309,7 +317,14 @@ void character::charMove() {
         }
 
         //std::cout << "### MOVE::RIGHT#1 temp_move_speed[" << temp_move_speed << "] ###" << std::endl;
-        for (float i=temp_move_speed; i>=0.1; i--) {
+        float minimal_speed = 0.1f;
+        {
+            float test_slope_angle = slopesManager.get_current_slope_angle();
+            if (test_slope_angle > SLOPE_ANGLE_THRESHOLD) {
+                minimal_speed = slopesManager.calculate_minimal_speed(test_slope_angle, temp_move_speed);
+            }
+        }
+        for (float i=temp_move_speed; i>=minimal_speed; i--) {
             // movement is too small to change a pixel in player movement, ignore it
             int adjusted_real_pos = (int)(relativePosition.x + i);
             int real_pos = (int)relativePosition.x;

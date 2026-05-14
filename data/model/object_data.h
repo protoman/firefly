@@ -2,6 +2,7 @@
 #define OBJECT_DATA_H
 
 #include <string>
+#include <vector>
 #include "cereal/cereal.hpp"
 
 enum class ObjectDataType {
@@ -9,6 +10,11 @@ enum class ObjectDataType {
     QUEST,
     PLATFORM,
     UTIL
+};
+
+struct ObjectDataTypeInfo {
+    ObjectDataType type;
+    std::string name;
 };
 
 enum class RecoveryObjectDataTypeEnum {
@@ -60,39 +66,46 @@ public:
     ObjectData();
     virtual ~ObjectData() = default;
 
+    // Static Helpers
+    [[nodiscard]] static ObjectDataTypeInfo get_type_info(ObjectDataType type);
+    [[nodiscard]] static ObjectDataType get_type_from_index(int index);
+    [[nodiscard]] static std::vector<ObjectDataType> get_all_types();
+
     // Getters
-    std::string get_graphic_filename() const;
-    int get_graphic_width() const;
-    int get_graphic_height() const;
-    long get_frame_duration() const;
-    ObjectDataType get_object_type() const;
+    [[nodiscard]] std::string get_name() const;
+    [[nodiscard]] std::string get_graphic_filename() const;
+    [[nodiscard]] int get_graphic_width() const;
+    [[nodiscard]] int get_graphic_height() const;
+    [[nodiscard]] long get_frame_duration() const;
+    [[nodiscard]] ObjectDataType get_object_type() const;
 
     // Recovery Getters
-    RecoveryObjectDataTypeEnum get_recovery_type() const;
+    [[nodiscard]] RecoveryObjectDataTypeEnum get_recovery_type() const;
 
     // Platform Getters
-    PlatformObjectDataTypeEnum get_platform_type() const;
-    PlatformObjectDataMovingDirectionEnum get_moving_direction() const;
-    int get_timer_limit() const;
-    float get_movement_speed() const;
-    float get_movement_limit() const;
-    bool get_activate_only_when_over_it() const;
-    bool get_animate_only_when_active() const;
-    bool get_animation_loop() const;
-    bool get_animation_loop_in_reverse() const;
-    int get_door_key() const;
+    [[nodiscard]] PlatformObjectDataTypeEnum get_platform_type() const;
+    [[nodiscard]] PlatformObjectDataMovingDirectionEnum get_moving_direction() const;
+    [[nodiscard]] int get_timer_limit() const;
+    [[nodiscard]] float get_movement_speed() const;
+    [[nodiscard]] float get_movement_limit() const;
+    [[nodiscard]] bool get_activate_only_when_over_it() const;
+    [[nodiscard]] bool get_animate_only_when_active() const;
+    [[nodiscard]] bool get_animation_loop() const;
+    [[nodiscard]] bool get_animation_loop_in_reverse() const;
+    [[nodiscard]] int get_door_key() const;
 
     // Quest Getters
-    int get_quest_id() const;
-    int get_requires_item() const;
-    int get_delivers_item() const;
+    [[nodiscard]] int get_quest_id() const;
+    [[nodiscard]] int get_requires_item() const;
+    [[nodiscard]] int get_delivers_item() const;
 
     // Util Getters
-    UtilObjectDataTypeEnum get_util_type() const;
-    float get_teleporter_destiny_x() const;
-    float get_teleporter_destiny_y() const;
+    [[nodiscard]] UtilObjectDataTypeEnum get_util_type() const;
+    [[nodiscard]] float get_teleporter_destiny_x() const;
+    [[nodiscard]] float get_teleporter_destiny_y() const;
 
     // Setters
+    void set_name(const std::string& name);
     void set_graphic_filename(const std::string& filename);
     void set_graphic_width(int width);
     void set_graphic_height(int height);
@@ -127,7 +140,8 @@ public:
     // Cereal serialization
     template<class Archive>
     void serialize(Archive & archive) {
-        archive(CEREAL_NVP(m_graphic_filename),
+        archive(CEREAL_NVP(m_name),
+                CEREAL_NVP(m_graphic_filename),
                 CEREAL_NVP(m_graphic_width),
                 CEREAL_NVP(m_graphic_height),
                 CEREAL_NVP(m_frame_duration),
@@ -152,6 +166,7 @@ public:
     }
 
 protected:
+    std::string m_name;
     std::string m_graphic_filename;
     int m_graphic_width;
     int m_graphic_height;

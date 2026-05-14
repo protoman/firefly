@@ -30,7 +30,7 @@ void EnemyEdit::start(std::string data_directory)
     ui->frameSelectWidget->setDataDirectory(game_data_directory);
     ui->graphicPreviewAreaWidged->setDataDirectory(game_data_directory);
 
-    CommonUtils::fill_files_combo(game_data_directory + "/images/sprites/enemies", ui->GraphicFilenameComboBox, true);
+        CommonUtils::fill_files_combo(game_data_directory + "/images/sprites/enemies", ui->GraphicFilenameComboBox, true);
     loadData();
     fillSelectorCombobox();
     fillFormWithData(0);

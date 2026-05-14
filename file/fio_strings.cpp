@@ -205,7 +205,7 @@ std::string fio_strings::get_common_strings_filename(int language)
 
 std::string fio_strings::get_game_strings_filename(int language)
 {
-    std::string filename = std::string(SharedData::get_instance()->GAMEPATH) + "/shared/strings_ingame_" + get_language_filename_prefix(language) + ".dat";
+    std::string filename = std::string(SharedData::get_instance()->FILEPATH) + "/shared/strings_ingame_" + get_language_filename_prefix(language) + ".dat";
     filename = StringUtils::clean_filename(filename);
     return filename;
 }

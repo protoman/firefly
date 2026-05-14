@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
-project(FireFlyGame VERSION 1.0 LANGUAGES C CXX)
 
-set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_C_COMPILER "clang")
-set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_C_COMPILER "/usr/bin/clang")
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+
+# Set policy CMP0135 to NEW for FetchContent timestamp handling
+cmake_policy(SET CMP0135 NEW)
+
+project(FireFlyGame VERSION 1.0 LANGUAGES C CXX)
 #set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
 
 set(CMAKE_CXX_STANDARD 23)
@@ -24,7 +26,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
 
-add_executable(FireFlyGame
+set(GAME_SOURCES
     GameManager.cpp GameManager.h
     aux_tools/ability_name.cpp aux_tools/ability_name.h
     aux_tools/exception_manager.cpp aux_tools/exception_manager.h
@@ -85,7 +87,6 @@ add_executable(FireFlyGame
     file/v6/file_style_v6.h
     file/v6/file_v6_quest.h
     game_data.cpp game_data.h
-    main.cpp
     objects/GameObject.cpp objects/GameObject.h
     options/key_map.cpp options/key_map.h
     options/pausemenu.cpp options/pausemenu.h
@@ -118,24 +119,27 @@ add_executable(FireFlyGame
     tiled/TiledWorldLoader.cpp
     tiled/TiledWorldLoader.hpp
     file/data/map_elements.hpp
-        file/data/file_data_enemy.hpp
+    file/data/file_data_enemy.hpp
 )
 
+add_library(FireFlyGameLib STATIC ${GAME_SOURCES})
+
+add_executable(FireFlyGame main.cpp)
+
 if(LINUX)
-    target_compile_definitions(FireFlyGame PRIVATE
+    target_compile_definitions(FireFlyGameLib PRIVATE
         LINUX
         PC
     )
 
-    target_link_directories(FireFlyGame PRIVATE
+    target_link_directories(FireFlyGameLib PRIVATE
         /usr/X11R6/lib
         /usr/lib/x86_64-linux-gnu
         /usr/local/lib/
     )
 
-    target_link_libraries(FireFlyGame PRIVATE
+    target_link_libraries(FireFlyGameLib PUBLIC
         SDL3::SDL3
-        # Remove flag: --libs`
         SDL3_image::SDL3_image
         SDL3_mixer::SDL3_mixer
         SDL3_ttf::SDL3_ttf
@@ -145,10 +149,29 @@ if(LINUX)
         tmxlite
     )
 
-    target_compile_options(FireFlyGame PRIVATE -I/usr/local/include/SDL3 -Werror=return-type -Wno-ignored-qualifiers -Wno-reorder -fpermissive -g)
+    target_include_directories(FireFlyGameLib PUBLIC
+        ${CMAKE_SOURCE_DIR}
+        ${SDL3_INCLUDE_DIRS}
+    )
+
+    target_compile_options(FireFlyGameLib PRIVATE -I/usr/local/include/SDL3 -Werror=return-type -Wno-ignored-qualifiers -Wno-reorder -fpermissive -g)
 endif()
+
+target_link_libraries(FireFlyGame PRIVATE FireFlyGameLib)
+
 
 install(TARGETS FireFlyGame
     BUNDLE DESTINATION .
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+# Add GTest
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.15.2.zip
+)
+FetchContent_MakeAvailable(googletest)
+
+# Add the tests subdirectory AFTER googletest is available
+add_subdirectory(tests)

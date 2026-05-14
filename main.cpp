@@ -34,13 +34,12 @@ void get_filepath()
     if(buffer != nullptr) {
         SharedData::get_instance()->FILEPATH = std::string(buffer);
     }
-    SharedData::get_instance()->GAMEPATH = std::string("/") + SharedData::get_instance()->FILEPATH + std::string("/");
-    SharedData::get_instance()->FILEPATH += "/games/FireFly/";
+    SharedData::get_instance()->FILEPATH += "/../game_data/";
 
     delete[] buffer;
 #endif
 
-    std::cout << "get_filepath - FILEPATH:" << SharedData::get_instance()->FILEPATH << std::endl;
+    std::cout << "### main::get_filepath - FILEPATH[" << SharedData::get_instance()->FILEPATH << "]" << std::endl;
 
 }
 

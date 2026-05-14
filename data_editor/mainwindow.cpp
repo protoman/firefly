@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QFileDialog>
+#include <QActionGroup>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -17,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionPlace_Enemy->setChecked(true);
 
     loadConfig();
+    ui->editAreaWidget->setGameDataDirectory(config.game_data_directory);
+    ui->editAreaWidget->loadMapData();
 }
 
 MainWindow::~MainWindow()

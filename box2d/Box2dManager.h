@@ -5,6 +5,7 @@
 #include "data/st_common.h"
 
 #define PIXELS_PER_METER 40
+#define SLOPE_CLIMB_SPEED_FACTOR 0.5f
 
 
 enum e_player_on_ground {
@@ -34,8 +35,12 @@ public:
     void player_jump();
     void run_debug_draw(b2DebugDraw* draw);
     e_player_on_ground is_player_on_ground();
+    bool is_on_slope(b2Vec2& normal);
+    bool is_player_touching_ground();
     void execute_player_physics();
     void updatePlayerCollision(st_size size);
+
+    friend class Box2dManagerTest;
 
 private:
     bool areFloatsEqual(float a, float b, float tolerance = 1e-5f);
@@ -47,6 +52,7 @@ private:
     float GRAVITY = 39.6f;
     float MAX_SPEED = 45.0f;
     float HORIZONTAL_SPEED_LIMIT = 10.0f;
+    float SLIDE_DOWN_SPEED_MULTIPLIER = 2.0f;
     float HORIZONTAL_MOVE_FORCE = 4.0f;
     float PLAYER_DENSITY = 1.0f;
     float PLAYER_FRICTION = 1.0f;
@@ -58,7 +64,7 @@ private:
     b2WorldId worldId{};
     // ground
     b2BodyDef groundBodyDef = b2DefaultBodyDef();
-    b2BodyId groundId;
+    b2BodyId id;
     b2Polygon groundBox;
     b2ShapeDef groundShapeDef = b2DefaultShapeDef();
     // player
@@ -74,6 +80,13 @@ private:
 
 
     bool jump_started = false;
+    b2Vec2 _last_slope_normal;
+    bool _freeze_position = false;
+    int _settle_counter = 0;
+    bool _is_sliding = false;
+    bool _slide_coasting = false;
+    b2Vec2 _vel_before_step = {0.0f, 0.0f};
+
     // static objects
     std::vector<static_object_struct> staticObjects;
 };

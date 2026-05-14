@@ -87,7 +87,7 @@ rebuild_cache/fast: rebuild_cache
 
 # Special rule for the target list_install_components
 list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\""
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\" \"gmock\" \"gtest\""
 .PHONY : list_install_components
 
 # Special rule for the target list_install_components
@@ -162,6 +162,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named FireFlyGameLib
+
+# Build rule for target.
+FireFlyGameLib: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 FireFlyGameLib
+.PHONY : FireFlyGameLib
+
+# fast build rule for target.
+FireFlyGameLib/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/build
+.PHONY : FireFlyGameLib/fast
+
+#=============================================================================
 # Target rules for targets named FireFlyGame
 
 # Build rule for target.
@@ -174,12 +187,77 @@ FireFlyGame/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/build
 .PHONY : FireFlyGame/fast
 
+#=============================================================================
+# Target rules for targets named gmock
+
+# Build rule for target.
+gmock: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gmock
+.PHONY : gmock
+
+# fast build rule for target.
+gmock/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/build.make _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/build
+.PHONY : gmock/fast
+
+#=============================================================================
+# Target rules for targets named gmock_main
+
+# Build rule for target.
+gmock_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gmock_main
+.PHONY : gmock_main
+
+# fast build rule for target.
+gmock_main/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/build.make _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/build
+.PHONY : gmock_main/fast
+
+#=============================================================================
+# Target rules for targets named gtest
+
+# Build rule for target.
+gtest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gtest
+.PHONY : gtest
+
+# fast build rule for target.
+gtest/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build
+.PHONY : gtest/fast
+
+#=============================================================================
+# Target rules for targets named gtest_main
+
+# Build rule for target.
+gtest_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gtest_main
+.PHONY : gtest_main
+
+# fast build rule for target.
+gtest_main/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build
+.PHONY : gtest_main/fast
+
+#=============================================================================
+# Target rules for targets named Box2dManager_test
+
+# Build rule for target.
+Box2dManager_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Box2dManager_test
+.PHONY : Box2dManager_test
+
+# fast build rule for target.
+Box2dManager_test/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/Box2dManager_test.dir/build.make tests/CMakeFiles/Box2dManager_test.dir/build
+.PHONY : Box2dManager_test/fast
+
 GameManager.o: GameManager.cpp.o
 .PHONY : GameManager.o
 
 # target to build an object file
 GameManager.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/GameManager.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/GameManager.cpp.o
 .PHONY : GameManager.cpp.o
 
 GameManager.i: GameManager.cpp.i
@@ -187,7 +265,7 @@ GameManager.i: GameManager.cpp.i
 
 # target to preprocess a source file
 GameManager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/GameManager.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/GameManager.cpp.i
 .PHONY : GameManager.cpp.i
 
 GameManager.s: GameManager.cpp.s
@@ -195,7 +273,7 @@ GameManager.s: GameManager.cpp.s
 
 # target to generate assembly for a file
 GameManager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/GameManager.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/GameManager.cpp.s
 .PHONY : GameManager.cpp.s
 
 aux_tools/ability_name.o: aux_tools/ability_name.cpp.o
@@ -203,7 +281,7 @@ aux_tools/ability_name.o: aux_tools/ability_name.cpp.o
 
 # target to build an object file
 aux_tools/ability_name.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/ability_name.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/ability_name.cpp.o
 .PHONY : aux_tools/ability_name.cpp.o
 
 aux_tools/ability_name.i: aux_tools/ability_name.cpp.i
@@ -211,7 +289,7 @@ aux_tools/ability_name.i: aux_tools/ability_name.cpp.i
 
 # target to preprocess a source file
 aux_tools/ability_name.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/ability_name.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/ability_name.cpp.i
 .PHONY : aux_tools/ability_name.cpp.i
 
 aux_tools/ability_name.s: aux_tools/ability_name.cpp.s
@@ -219,7 +297,7 @@ aux_tools/ability_name.s: aux_tools/ability_name.cpp.s
 
 # target to generate assembly for a file
 aux_tools/ability_name.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/ability_name.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/ability_name.cpp.s
 .PHONY : aux_tools/ability_name.cpp.s
 
 aux_tools/exception_manager.o: aux_tools/exception_manager.cpp.o
@@ -227,7 +305,7 @@ aux_tools/exception_manager.o: aux_tools/exception_manager.cpp.o
 
 # target to build an object file
 aux_tools/exception_manager.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/exception_manager.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/exception_manager.cpp.o
 .PHONY : aux_tools/exception_manager.cpp.o
 
 aux_tools/exception_manager.i: aux_tools/exception_manager.cpp.i
@@ -235,7 +313,7 @@ aux_tools/exception_manager.i: aux_tools/exception_manager.cpp.i
 
 # target to preprocess a source file
 aux_tools/exception_manager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/exception_manager.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/exception_manager.cpp.i
 .PHONY : aux_tools/exception_manager.cpp.i
 
 aux_tools/exception_manager.s: aux_tools/exception_manager.cpp.s
@@ -243,7 +321,7 @@ aux_tools/exception_manager.s: aux_tools/exception_manager.cpp.s
 
 # target to generate assembly for a file
 aux_tools/exception_manager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/exception_manager.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/exception_manager.cpp.s
 .PHONY : aux_tools/exception_manager.cpp.s
 
 aux_tools/fps_control.o: aux_tools/fps_control.cpp.o
@@ -251,7 +329,7 @@ aux_tools/fps_control.o: aux_tools/fps_control.cpp.o
 
 # target to build an object file
 aux_tools/fps_control.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/fps_control.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/fps_control.cpp.o
 .PHONY : aux_tools/fps_control.cpp.o
 
 aux_tools/fps_control.i: aux_tools/fps_control.cpp.i
@@ -259,7 +337,7 @@ aux_tools/fps_control.i: aux_tools/fps_control.cpp.i
 
 # target to preprocess a source file
 aux_tools/fps_control.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/fps_control.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/fps_control.cpp.i
 .PHONY : aux_tools/fps_control.cpp.i
 
 aux_tools/fps_control.s: aux_tools/fps_control.cpp.s
@@ -267,7 +345,7 @@ aux_tools/fps_control.s: aux_tools/fps_control.cpp.s
 
 # target to generate assembly for a file
 aux_tools/fps_control.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/fps_control.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/fps_control.cpp.s
 .PHONY : aux_tools/fps_control.cpp.s
 
 aux_tools/stringutils.o: aux_tools/stringutils.cpp.o
@@ -275,7 +353,7 @@ aux_tools/stringutils.o: aux_tools/stringutils.cpp.o
 
 # target to build an object file
 aux_tools/stringutils.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/stringutils.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/stringutils.cpp.o
 .PHONY : aux_tools/stringutils.cpp.o
 
 aux_tools/stringutils.i: aux_tools/stringutils.cpp.i
@@ -283,7 +361,7 @@ aux_tools/stringutils.i: aux_tools/stringutils.cpp.i
 
 # target to preprocess a source file
 aux_tools/stringutils.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/stringutils.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/stringutils.cpp.i
 .PHONY : aux_tools/stringutils.cpp.i
 
 aux_tools/stringutils.s: aux_tools/stringutils.cpp.s
@@ -291,7 +369,7 @@ aux_tools/stringutils.s: aux_tools/stringutils.cpp.s
 
 # target to generate assembly for a file
 aux_tools/stringutils.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/stringutils.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/stringutils.cpp.s
 .PHONY : aux_tools/stringutils.cpp.s
 
 aux_tools/trajectory_parabola.o: aux_tools/trajectory_parabola.cpp.o
@@ -299,7 +377,7 @@ aux_tools/trajectory_parabola.o: aux_tools/trajectory_parabola.cpp.o
 
 # target to build an object file
 aux_tools/trajectory_parabola.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/trajectory_parabola.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/trajectory_parabola.cpp.o
 .PHONY : aux_tools/trajectory_parabola.cpp.o
 
 aux_tools/trajectory_parabola.i: aux_tools/trajectory_parabola.cpp.i
@@ -307,7 +385,7 @@ aux_tools/trajectory_parabola.i: aux_tools/trajectory_parabola.cpp.i
 
 # target to preprocess a source file
 aux_tools/trajectory_parabola.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/trajectory_parabola.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/trajectory_parabola.cpp.i
 .PHONY : aux_tools/trajectory_parabola.cpp.i
 
 aux_tools/trajectory_parabola.s: aux_tools/trajectory_parabola.cpp.s
@@ -315,7 +393,7 @@ aux_tools/trajectory_parabola.s: aux_tools/trajectory_parabola.cpp.s
 
 # target to generate assembly for a file
 aux_tools/trajectory_parabola.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/aux_tools/trajectory_parabola.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/aux_tools/trajectory_parabola.cpp.s
 .PHONY : aux_tools/trajectory_parabola.cpp.s
 
 box2d/Box2dManager.o: box2d/Box2dManager.cpp.o
@@ -323,7 +401,7 @@ box2d/Box2dManager.o: box2d/Box2dManager.cpp.o
 
 # target to build an object file
 box2d/Box2dManager.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/box2d/Box2dManager.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/box2d/Box2dManager.cpp.o
 .PHONY : box2d/Box2dManager.cpp.o
 
 box2d/Box2dManager.i: box2d/Box2dManager.cpp.i
@@ -331,7 +409,7 @@ box2d/Box2dManager.i: box2d/Box2dManager.cpp.i
 
 # target to preprocess a source file
 box2d/Box2dManager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/box2d/Box2dManager.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/box2d/Box2dManager.cpp.i
 .PHONY : box2d/Box2dManager.cpp.i
 
 box2d/Box2dManager.s: box2d/Box2dManager.cpp.s
@@ -339,7 +417,7 @@ box2d/Box2dManager.s: box2d/Box2dManager.cpp.s
 
 # target to generate assembly for a file
 box2d/Box2dManager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/box2d/Box2dManager.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/box2d/Box2dManager.cpp.s
 .PHONY : box2d/Box2dManager.cpp.s
 
 box2d/box2ddebugdraw.o: box2d/box2ddebugdraw.cpp.o
@@ -347,7 +425,7 @@ box2d/box2ddebugdraw.o: box2d/box2ddebugdraw.cpp.o
 
 # target to build an object file
 box2d/box2ddebugdraw.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/box2d/box2ddebugdraw.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/box2d/box2ddebugdraw.cpp.o
 .PHONY : box2d/box2ddebugdraw.cpp.o
 
 box2d/box2ddebugdraw.i: box2d/box2ddebugdraw.cpp.i
@@ -355,7 +433,7 @@ box2d/box2ddebugdraw.i: box2d/box2ddebugdraw.cpp.i
 
 # target to preprocess a source file
 box2d/box2ddebugdraw.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/box2d/box2ddebugdraw.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/box2d/box2ddebugdraw.cpp.i
 .PHONY : box2d/box2ddebugdraw.cpp.i
 
 box2d/box2ddebugdraw.s: box2d/box2ddebugdraw.cpp.s
@@ -363,7 +441,7 @@ box2d/box2ddebugdraw.s: box2d/box2ddebugdraw.cpp.s
 
 # target to generate assembly for a file
 box2d/box2ddebugdraw.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/box2d/box2ddebugdraw.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/box2d/box2ddebugdraw.cpp.s
 .PHONY : box2d/box2ddebugdraw.cpp.s
 
 character/GameEnemy.o: character/GameEnemy.cpp.o
@@ -371,7 +449,7 @@ character/GameEnemy.o: character/GameEnemy.cpp.o
 
 # target to build an object file
 character/GameEnemy.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/GameEnemy.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/GameEnemy.cpp.o
 .PHONY : character/GameEnemy.cpp.o
 
 character/GameEnemy.i: character/GameEnemy.cpp.i
@@ -379,7 +457,7 @@ character/GameEnemy.i: character/GameEnemy.cpp.i
 
 # target to preprocess a source file
 character/GameEnemy.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/GameEnemy.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/GameEnemy.cpp.i
 .PHONY : character/GameEnemy.cpp.i
 
 character/GameEnemy.s: character/GameEnemy.cpp.s
@@ -387,7 +465,7 @@ character/GameEnemy.s: character/GameEnemy.cpp.s
 
 # target to generate assembly for a file
 character/GameEnemy.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/GameEnemy.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/GameEnemy.cpp.s
 .PHONY : character/GameEnemy.cpp.s
 
 character/GameNpc.o: character/GameNpc.cpp.o
@@ -395,7 +473,7 @@ character/GameNpc.o: character/GameNpc.cpp.o
 
 # target to build an object file
 character/GameNpc.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/GameNpc.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/GameNpc.cpp.o
 .PHONY : character/GameNpc.cpp.o
 
 character/GameNpc.i: character/GameNpc.cpp.i
@@ -403,7 +481,7 @@ character/GameNpc.i: character/GameNpc.cpp.i
 
 # target to preprocess a source file
 character/GameNpc.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/GameNpc.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/GameNpc.cpp.i
 .PHONY : character/GameNpc.cpp.i
 
 character/GameNpc.s: character/GameNpc.cpp.s
@@ -411,7 +489,7 @@ character/GameNpc.s: character/GameNpc.cpp.s
 
 # target to generate assembly for a file
 character/GameNpc.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/GameNpc.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/GameNpc.cpp.s
 .PHONY : character/GameNpc.cpp.s
 
 character/artificial_inteligence.o: character/artificial_inteligence.cpp.o
@@ -419,7 +497,7 @@ character/artificial_inteligence.o: character/artificial_inteligence.cpp.o
 
 # target to build an object file
 character/artificial_inteligence.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/artificial_inteligence.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/artificial_inteligence.cpp.o
 .PHONY : character/artificial_inteligence.cpp.o
 
 character/artificial_inteligence.i: character/artificial_inteligence.cpp.i
@@ -427,7 +505,7 @@ character/artificial_inteligence.i: character/artificial_inteligence.cpp.i
 
 # target to preprocess a source file
 character/artificial_inteligence.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/artificial_inteligence.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/artificial_inteligence.cpp.i
 .PHONY : character/artificial_inteligence.cpp.i
 
 character/artificial_inteligence.s: character/artificial_inteligence.cpp.s
@@ -435,7 +513,7 @@ character/artificial_inteligence.s: character/artificial_inteligence.cpp.s
 
 # target to generate assembly for a file
 character/artificial_inteligence.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/artificial_inteligence.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/artificial_inteligence.cpp.s
 .PHONY : character/artificial_inteligence.cpp.s
 
 character/character.o: character/character.cpp.o
@@ -443,7 +521,7 @@ character/character.o: character/character.cpp.o
 
 # target to build an object file
 character/character.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/character.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/character.cpp.o
 .PHONY : character/character.cpp.o
 
 character/character.i: character/character.cpp.i
@@ -451,7 +529,7 @@ character/character.i: character/character.cpp.i
 
 # target to preprocess a source file
 character/character.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/character.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/character.cpp.i
 .PHONY : character/character.cpp.i
 
 character/character.s: character/character.cpp.s
@@ -459,7 +537,7 @@ character/character.s: character/character.cpp.s
 
 # target to generate assembly for a file
 character/character.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/character.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/character.cpp.s
 .PHONY : character/character.cpp.s
 
 character/character_animation.o: character/character_animation.cpp.o
@@ -467,7 +545,7 @@ character/character_animation.o: character/character_animation.cpp.o
 
 # target to build an object file
 character/character_animation.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/character_animation.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/character_animation.cpp.o
 .PHONY : character/character_animation.cpp.o
 
 character/character_animation.i: character/character_animation.cpp.i
@@ -475,7 +553,7 @@ character/character_animation.i: character/character_animation.cpp.i
 
 # target to preprocess a source file
 character/character_animation.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/character_animation.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/character_animation.cpp.i
 .PHONY : character/character_animation.cpp.i
 
 character/character_animation.s: character/character_animation.cpp.s
@@ -483,7 +561,7 @@ character/character_animation.s: character/character_animation.cpp.s
 
 # target to generate assembly for a file
 character/character_animation.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/character_animation.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/character_animation.cpp.s
 .PHONY : character/character_animation.cpp.s
 
 character/classplayer.o: character/classplayer.cpp.o
@@ -491,7 +569,7 @@ character/classplayer.o: character/classplayer.cpp.o
 
 # target to build an object file
 character/classplayer.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/classplayer.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/classplayer.cpp.o
 .PHONY : character/classplayer.cpp.o
 
 character/classplayer.i: character/classplayer.cpp.i
@@ -499,7 +577,7 @@ character/classplayer.i: character/classplayer.cpp.i
 
 # target to preprocess a source file
 character/classplayer.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/classplayer.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/classplayer.cpp.i
 .PHONY : character/classplayer.cpp.i
 
 character/classplayer.s: character/classplayer.cpp.s
@@ -507,7 +585,7 @@ character/classplayer.s: character/classplayer.cpp.s
 
 # target to generate assembly for a file
 character/classplayer.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/classplayer.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/classplayer.cpp.s
 .PHONY : character/classplayer.cpp.s
 
 character/custom/ai_boss_001.o: character/custom/ai_boss_001.cpp.o
@@ -515,7 +593,7 @@ character/custom/ai_boss_001.o: character/custom/ai_boss_001.cpp.o
 
 # target to build an object file
 character/custom/ai_boss_001.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/custom/ai_boss_001.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/custom/ai_boss_001.cpp.o
 .PHONY : character/custom/ai_boss_001.cpp.o
 
 character/custom/ai_boss_001.i: character/custom/ai_boss_001.cpp.i
@@ -523,7 +601,7 @@ character/custom/ai_boss_001.i: character/custom/ai_boss_001.cpp.i
 
 # target to preprocess a source file
 character/custom/ai_boss_001.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/custom/ai_boss_001.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/custom/ai_boss_001.cpp.i
 .PHONY : character/custom/ai_boss_001.cpp.i
 
 character/custom/ai_boss_001.s: character/custom/ai_boss_001.cpp.s
@@ -531,7 +609,7 @@ character/custom/ai_boss_001.s: character/custom/ai_boss_001.cpp.s
 
 # target to generate assembly for a file
 character/custom/ai_boss_001.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/custom/ai_boss_001.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/custom/ai_boss_001.cpp.s
 .PHONY : character/custom/ai_boss_001.cpp.s
 
 character/gamenpc.o: character/gamenpc.cpp.o
@@ -539,7 +617,7 @@ character/gamenpc.o: character/gamenpc.cpp.o
 
 # target to build an object file
 character/gamenpc.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/gamenpc.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/gamenpc.cpp.o
 .PHONY : character/gamenpc.cpp.o
 
 character/gamenpc.i: character/gamenpc.cpp.i
@@ -547,7 +625,7 @@ character/gamenpc.i: character/gamenpc.cpp.i
 
 # target to preprocess a source file
 character/gamenpc.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/gamenpc.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/gamenpc.cpp.i
 .PHONY : character/gamenpc.cpp.i
 
 character/gamenpc.s: character/gamenpc.cpp.s
@@ -555,7 +633,7 @@ character/gamenpc.s: character/gamenpc.cpp.s
 
 # target to generate assembly for a file
 character/gamenpc.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/gamenpc.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/gamenpc.cpp.s
 .PHONY : character/gamenpc.cpp.s
 
 character/movement/inertia.o: character/movement/inertia.cpp.o
@@ -563,7 +641,7 @@ character/movement/inertia.o: character/movement/inertia.cpp.o
 
 # target to build an object file
 character/movement/inertia.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/movement/inertia.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/movement/inertia.cpp.o
 .PHONY : character/movement/inertia.cpp.o
 
 character/movement/inertia.i: character/movement/inertia.cpp.i
@@ -571,7 +649,7 @@ character/movement/inertia.i: character/movement/inertia.cpp.i
 
 # target to preprocess a source file
 character/movement/inertia.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/movement/inertia.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/movement/inertia.cpp.i
 .PHONY : character/movement/inertia.cpp.i
 
 character/movement/inertia.s: character/movement/inertia.cpp.s
@@ -579,7 +657,7 @@ character/movement/inertia.s: character/movement/inertia.cpp.s
 
 # target to generate assembly for a file
 character/movement/inertia.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/movement/inertia.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/movement/inertia.cpp.s
 .PHONY : character/movement/inertia.cpp.s
 
 character/movement/jump.o: character/movement/jump.cpp.o
@@ -587,7 +665,7 @@ character/movement/jump.o: character/movement/jump.cpp.o
 
 # target to build an object file
 character/movement/jump.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/movement/jump.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/movement/jump.cpp.o
 .PHONY : character/movement/jump.cpp.o
 
 character/movement/jump.i: character/movement/jump.cpp.i
@@ -595,7 +673,7 @@ character/movement/jump.i: character/movement/jump.cpp.i
 
 # target to preprocess a source file
 character/movement/jump.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/movement/jump.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/movement/jump.cpp.i
 .PHONY : character/movement/jump.cpp.i
 
 character/movement/jump.s: character/movement/jump.cpp.s
@@ -603,7 +681,7 @@ character/movement/jump.s: character/movement/jump.cpp.s
 
 # target to generate assembly for a file
 character/movement/jump.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/movement/jump.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/movement/jump.cpp.s
 .PHONY : character/movement/jump.cpp.s
 
 character/movement/moveslopes.o: character/movement/moveslopes.cpp.o
@@ -611,7 +689,7 @@ character/movement/moveslopes.o: character/movement/moveslopes.cpp.o
 
 # target to build an object file
 character/movement/moveslopes.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/movement/moveslopes.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/movement/moveslopes.cpp.o
 .PHONY : character/movement/moveslopes.cpp.o
 
 character/movement/moveslopes.i: character/movement/moveslopes.cpp.i
@@ -619,7 +697,7 @@ character/movement/moveslopes.i: character/movement/moveslopes.cpp.i
 
 # target to preprocess a source file
 character/movement/moveslopes.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/movement/moveslopes.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/movement/moveslopes.cpp.i
 .PHONY : character/movement/moveslopes.cpp.i
 
 character/movement/moveslopes.s: character/movement/moveslopes.cpp.s
@@ -627,7 +705,7 @@ character/movement/moveslopes.s: character/movement/moveslopes.cpp.s
 
 # target to generate assembly for a file
 character/movement/moveslopes.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/character/movement/moveslopes.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/character/movement/moveslopes.cpp.s
 .PHONY : character/movement/moveslopes.cpp.s
 
 class_config.o: class_config.cpp.o
@@ -635,7 +713,7 @@ class_config.o: class_config.cpp.o
 
 # target to build an object file
 class_config.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/class_config.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/class_config.cpp.o
 .PHONY : class_config.cpp.o
 
 class_config.i: class_config.cpp.i
@@ -643,7 +721,7 @@ class_config.i: class_config.cpp.i
 
 # target to preprocess a source file
 class_config.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/class_config.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/class_config.cpp.i
 .PHONY : class_config.cpp.i
 
 class_config.s: class_config.cpp.s
@@ -651,7 +729,7 @@ class_config.s: class_config.cpp.s
 
 # target to generate assembly for a file
 class_config.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/class_config.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/class_config.cpp.s
 .PHONY : class_config.cpp.s
 
 collision_detection.o: collision_detection.cpp.o
@@ -659,7 +737,7 @@ collision_detection.o: collision_detection.cpp.o
 
 # target to build an object file
 collision_detection.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/collision_detection.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/collision_detection.cpp.o
 .PHONY : collision_detection.cpp.o
 
 collision_detection.i: collision_detection.cpp.i
@@ -667,7 +745,7 @@ collision_detection.i: collision_detection.cpp.i
 
 # target to preprocess a source file
 collision_detection.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/collision_detection.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/collision_detection.cpp.i
 .PHONY : collision_detection.cpp.i
 
 collision_detection.s: collision_detection.cpp.s
@@ -675,7 +753,7 @@ collision_detection.s: collision_detection.cpp.s
 
 # target to generate assembly for a file
 collision_detection.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/collision_detection.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/collision_detection.cpp.s
 .PHONY : collision_detection.cpp.s
 
 controller/inputcontroller.o: controller/inputcontroller.cpp.o
@@ -683,7 +761,7 @@ controller/inputcontroller.o: controller/inputcontroller.cpp.o
 
 # target to build an object file
 controller/inputcontroller.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/controller/inputcontroller.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/controller/inputcontroller.cpp.o
 .PHONY : controller/inputcontroller.cpp.o
 
 controller/inputcontroller.i: controller/inputcontroller.cpp.i
@@ -691,7 +769,7 @@ controller/inputcontroller.i: controller/inputcontroller.cpp.i
 
 # target to preprocess a source file
 controller/inputcontroller.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/controller/inputcontroller.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/controller/inputcontroller.cpp.i
 .PHONY : controller/inputcontroller.cpp.i
 
 controller/inputcontroller.s: controller/inputcontroller.cpp.s
@@ -699,7 +777,7 @@ controller/inputcontroller.s: controller/inputcontroller.cpp.s
 
 # target to generate assembly for a file
 controller/inputcontroller.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/controller/inputcontroller.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/controller/inputcontroller.cpp.s
 .PHONY : controller/inputcontroller.cpp.s
 
 controller/mapcontroller.o: controller/mapcontroller.cpp.o
@@ -707,7 +785,7 @@ controller/mapcontroller.o: controller/mapcontroller.cpp.o
 
 # target to build an object file
 controller/mapcontroller.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/controller/mapcontroller.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/controller/mapcontroller.cpp.o
 .PHONY : controller/mapcontroller.cpp.o
 
 controller/mapcontroller.i: controller/mapcontroller.cpp.i
@@ -715,7 +793,7 @@ controller/mapcontroller.i: controller/mapcontroller.cpp.i
 
 # target to preprocess a source file
 controller/mapcontroller.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/controller/mapcontroller.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/controller/mapcontroller.cpp.i
 .PHONY : controller/mapcontroller.cpp.i
 
 controller/mapcontroller.s: controller/mapcontroller.cpp.s
@@ -723,7 +801,7 @@ controller/mapcontroller.s: controller/mapcontroller.cpp.s
 
 # target to generate assembly for a file
 controller/mapcontroller.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/controller/mapcontroller.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/controller/mapcontroller.cpp.s
 .PHONY : controller/mapcontroller.cpp.s
 
 data/SharedGameData.o: data/SharedGameData.cpp.o
@@ -731,7 +809,7 @@ data/SharedGameData.o: data/SharedGameData.cpp.o
 
 # target to build an object file
 data/SharedGameData.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/SharedGameData.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/SharedGameData.cpp.o
 .PHONY : data/SharedGameData.cpp.o
 
 data/SharedGameData.i: data/SharedGameData.cpp.i
@@ -739,7 +817,7 @@ data/SharedGameData.i: data/SharedGameData.cpp.i
 
 # target to preprocess a source file
 data/SharedGameData.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/SharedGameData.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/SharedGameData.cpp.i
 .PHONY : data/SharedGameData.cpp.i
 
 data/SharedGameData.s: data/SharedGameData.cpp.s
@@ -747,7 +825,7 @@ data/SharedGameData.s: data/SharedGameData.cpp.s
 
 # target to generate assembly for a file
 data/SharedGameData.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/SharedGameData.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/SharedGameData.cpp.s
 .PHONY : data/SharedGameData.cpp.s
 
 data/SharedPlayerData.o: data/SharedPlayerData.cpp.o
@@ -755,7 +833,7 @@ data/SharedPlayerData.o: data/SharedPlayerData.cpp.o
 
 # target to build an object file
 data/SharedPlayerData.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/SharedPlayerData.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/SharedPlayerData.cpp.o
 .PHONY : data/SharedPlayerData.cpp.o
 
 data/SharedPlayerData.i: data/SharedPlayerData.cpp.i
@@ -763,7 +841,7 @@ data/SharedPlayerData.i: data/SharedPlayerData.cpp.i
 
 # target to preprocess a source file
 data/SharedPlayerData.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/SharedPlayerData.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/SharedPlayerData.cpp.i
 .PHONY : data/SharedPlayerData.cpp.i
 
 data/SharedPlayerData.s: data/SharedPlayerData.cpp.s
@@ -771,7 +849,7 @@ data/SharedPlayerData.s: data/SharedPlayerData.cpp.s
 
 # target to generate assembly for a file
 data/SharedPlayerData.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/SharedPlayerData.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/SharedPlayerData.cpp.s
 .PHONY : data/SharedPlayerData.cpp.s
 
 data/model/object_data.o: data/model/object_data.cpp.o
@@ -779,7 +857,7 @@ data/model/object_data.o: data/model/object_data.cpp.o
 
 # target to build an object file
 data/model/object_data.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/object_data.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/object_data.cpp.o
 .PHONY : data/model/object_data.cpp.o
 
 data/model/object_data.i: data/model/object_data.cpp.i
@@ -787,7 +865,7 @@ data/model/object_data.i: data/model/object_data.cpp.i
 
 # target to preprocess a source file
 data/model/object_data.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/object_data.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/object_data.cpp.i
 .PHONY : data/model/object_data.cpp.i
 
 data/model/object_data.s: data/model/object_data.cpp.s
@@ -795,7 +873,7 @@ data/model/object_data.s: data/model/object_data.cpp.s
 
 # target to generate assembly for a file
 data/model/object_data.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/object_data.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/object_data.cpp.s
 .PHONY : data/model/object_data.cpp.s
 
 data/model/platform_object_data.o: data/model/platform_object_data.cpp.o
@@ -803,7 +881,7 @@ data/model/platform_object_data.o: data/model/platform_object_data.cpp.o
 
 # target to build an object file
 data/model/platform_object_data.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/platform_object_data.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/platform_object_data.cpp.o
 .PHONY : data/model/platform_object_data.cpp.o
 
 data/model/platform_object_data.i: data/model/platform_object_data.cpp.i
@@ -811,7 +889,7 @@ data/model/platform_object_data.i: data/model/platform_object_data.cpp.i
 
 # target to preprocess a source file
 data/model/platform_object_data.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/platform_object_data.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/platform_object_data.cpp.i
 .PHONY : data/model/platform_object_data.cpp.i
 
 data/model/platform_object_data.s: data/model/platform_object_data.cpp.s
@@ -819,7 +897,7 @@ data/model/platform_object_data.s: data/model/platform_object_data.cpp.s
 
 # target to generate assembly for a file
 data/model/platform_object_data.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/platform_object_data.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/platform_object_data.cpp.s
 .PHONY : data/model/platform_object_data.cpp.s
 
 data/model/quest_object_data.o: data/model/quest_object_data.cpp.o
@@ -827,7 +905,7 @@ data/model/quest_object_data.o: data/model/quest_object_data.cpp.o
 
 # target to build an object file
 data/model/quest_object_data.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/quest_object_data.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/quest_object_data.cpp.o
 .PHONY : data/model/quest_object_data.cpp.o
 
 data/model/quest_object_data.i: data/model/quest_object_data.cpp.i
@@ -835,7 +913,7 @@ data/model/quest_object_data.i: data/model/quest_object_data.cpp.i
 
 # target to preprocess a source file
 data/model/quest_object_data.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/quest_object_data.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/quest_object_data.cpp.i
 .PHONY : data/model/quest_object_data.cpp.i
 
 data/model/quest_object_data.s: data/model/quest_object_data.cpp.s
@@ -843,7 +921,7 @@ data/model/quest_object_data.s: data/model/quest_object_data.cpp.s
 
 # target to generate assembly for a file
 data/model/quest_object_data.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/quest_object_data.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/quest_object_data.cpp.s
 .PHONY : data/model/quest_object_data.cpp.s
 
 data/model/recovery_object_data.o: data/model/recovery_object_data.cpp.o
@@ -851,7 +929,7 @@ data/model/recovery_object_data.o: data/model/recovery_object_data.cpp.o
 
 # target to build an object file
 data/model/recovery_object_data.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/recovery_object_data.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/recovery_object_data.cpp.o
 .PHONY : data/model/recovery_object_data.cpp.o
 
 data/model/recovery_object_data.i: data/model/recovery_object_data.cpp.i
@@ -859,7 +937,7 @@ data/model/recovery_object_data.i: data/model/recovery_object_data.cpp.i
 
 # target to preprocess a source file
 data/model/recovery_object_data.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/recovery_object_data.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/recovery_object_data.cpp.i
 .PHONY : data/model/recovery_object_data.cpp.i
 
 data/model/recovery_object_data.s: data/model/recovery_object_data.cpp.s
@@ -867,7 +945,7 @@ data/model/recovery_object_data.s: data/model/recovery_object_data.cpp.s
 
 # target to generate assembly for a file
 data/model/recovery_object_data.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/recovery_object_data.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/recovery_object_data.cpp.s
 .PHONY : data/model/recovery_object_data.cpp.s
 
 data/model/util_object_data.o: data/model/util_object_data.cpp.o
@@ -875,7 +953,7 @@ data/model/util_object_data.o: data/model/util_object_data.cpp.o
 
 # target to build an object file
 data/model/util_object_data.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/util_object_data.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/util_object_data.cpp.o
 .PHONY : data/model/util_object_data.cpp.o
 
 data/model/util_object_data.i: data/model/util_object_data.cpp.i
@@ -883,7 +961,7 @@ data/model/util_object_data.i: data/model/util_object_data.cpp.i
 
 # target to preprocess a source file
 data/model/util_object_data.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/util_object_data.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/util_object_data.cpp.i
 .PHONY : data/model/util_object_data.cpp.i
 
 data/model/util_object_data.s: data/model/util_object_data.cpp.s
@@ -891,7 +969,7 @@ data/model/util_object_data.s: data/model/util_object_data.cpp.s
 
 # target to generate assembly for a file
 data/model/util_object_data.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/model/util_object_data.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/model/util_object_data.cpp.s
 .PHONY : data/model/util_object_data.cpp.s
 
 data/shareddata.o: data/shareddata.cpp.o
@@ -899,7 +977,7 @@ data/shareddata.o: data/shareddata.cpp.o
 
 # target to build an object file
 data/shareddata.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/shareddata.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/shareddata.cpp.o
 .PHONY : data/shareddata.cpp.o
 
 data/shareddata.i: data/shareddata.cpp.i
@@ -907,7 +985,7 @@ data/shareddata.i: data/shareddata.cpp.i
 
 # target to preprocess a source file
 data/shareddata.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/shareddata.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/shareddata.cpp.i
 .PHONY : data/shareddata.cpp.i
 
 data/shareddata.s: data/shareddata.cpp.s
@@ -915,7 +993,7 @@ data/shareddata.s: data/shareddata.cpp.s
 
 # target to generate assembly for a file
 data/shareddata.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/shareddata.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/shareddata.cpp.s
 .PHONY : data/shareddata.cpp.s
 
 data/sharedmapdata.o: data/sharedmapdata.cpp.o
@@ -923,7 +1001,7 @@ data/sharedmapdata.o: data/sharedmapdata.cpp.o
 
 # target to build an object file
 data/sharedmapdata.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/sharedmapdata.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/sharedmapdata.cpp.o
 .PHONY : data/sharedmapdata.cpp.o
 
 data/sharedmapdata.i: data/sharedmapdata.cpp.i
@@ -931,7 +1009,7 @@ data/sharedmapdata.i: data/sharedmapdata.cpp.i
 
 # target to preprocess a source file
 data/sharedmapdata.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/sharedmapdata.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/sharedmapdata.cpp.i
 .PHONY : data/sharedmapdata.cpp.i
 
 data/sharedmapdata.s: data/sharedmapdata.cpp.s
@@ -939,7 +1017,7 @@ data/sharedmapdata.s: data/sharedmapdata.cpp.s
 
 # target to generate assembly for a file
 data/sharedmapdata.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/data/sharedmapdata.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/data/sharedmapdata.cpp.s
 .PHONY : data/sharedmapdata.cpp.s
 
 file/file_io.o: file/file_io.cpp.o
@@ -947,7 +1025,7 @@ file/file_io.o: file/file_io.cpp.o
 
 # target to build an object file
 file/file_io.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/file/file_io.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/file/file_io.cpp.o
 .PHONY : file/file_io.cpp.o
 
 file/file_io.i: file/file_io.cpp.i
@@ -955,7 +1033,7 @@ file/file_io.i: file/file_io.cpp.i
 
 # target to preprocess a source file
 file/file_io.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/file/file_io.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/file/file_io.cpp.i
 .PHONY : file/file_io.cpp.i
 
 file/file_io.s: file/file_io.cpp.s
@@ -963,7 +1041,7 @@ file/file_io.s: file/file_io.cpp.s
 
 # target to generate assembly for a file
 file/file_io.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/file/file_io.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/file/file_io.cpp.s
 .PHONY : file/file_io.cpp.s
 
 file/fio_common.o: file/fio_common.cpp.o
@@ -971,7 +1049,7 @@ file/fio_common.o: file/fio_common.cpp.o
 
 # target to build an object file
 file/fio_common.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/file/fio_common.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/file/fio_common.cpp.o
 .PHONY : file/fio_common.cpp.o
 
 file/fio_common.i: file/fio_common.cpp.i
@@ -979,7 +1057,7 @@ file/fio_common.i: file/fio_common.cpp.i
 
 # target to preprocess a source file
 file/fio_common.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/file/fio_common.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/file/fio_common.cpp.i
 .PHONY : file/fio_common.cpp.i
 
 file/fio_common.s: file/fio_common.cpp.s
@@ -987,7 +1065,7 @@ file/fio_common.s: file/fio_common.cpp.s
 
 # target to generate assembly for a file
 file/fio_common.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/file/fio_common.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/file/fio_common.cpp.s
 .PHONY : file/fio_common.cpp.s
 
 file/fio_scenes.o: file/fio_scenes.cpp.o
@@ -995,7 +1073,7 @@ file/fio_scenes.o: file/fio_scenes.cpp.o
 
 # target to build an object file
 file/fio_scenes.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/file/fio_scenes.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/file/fio_scenes.cpp.o
 .PHONY : file/fio_scenes.cpp.o
 
 file/fio_scenes.i: file/fio_scenes.cpp.i
@@ -1003,7 +1081,7 @@ file/fio_scenes.i: file/fio_scenes.cpp.i
 
 # target to preprocess a source file
 file/fio_scenes.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/file/fio_scenes.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/file/fio_scenes.cpp.i
 .PHONY : file/fio_scenes.cpp.i
 
 file/fio_scenes.s: file/fio_scenes.cpp.s
@@ -1011,7 +1089,7 @@ file/fio_scenes.s: file/fio_scenes.cpp.s
 
 # target to generate assembly for a file
 file/fio_scenes.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/file/fio_scenes.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/file/fio_scenes.cpp.s
 .PHONY : file/fio_scenes.cpp.s
 
 file/fio_strings.o: file/fio_strings.cpp.o
@@ -1019,7 +1097,7 @@ file/fio_strings.o: file/fio_strings.cpp.o
 
 # target to build an object file
 file/fio_strings.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/file/fio_strings.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/file/fio_strings.cpp.o
 .PHONY : file/fio_strings.cpp.o
 
 file/fio_strings.i: file/fio_strings.cpp.i
@@ -1027,7 +1105,7 @@ file/fio_strings.i: file/fio_strings.cpp.i
 
 # target to preprocess a source file
 file/fio_strings.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/file/fio_strings.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/file/fio_strings.cpp.i
 .PHONY : file/fio_strings.cpp.i
 
 file/fio_strings.s: file/fio_strings.cpp.s
@@ -1035,7 +1113,7 @@ file/fio_strings.s: file/fio_strings.cpp.s
 
 # target to generate assembly for a file
 file/fio_strings.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/file/fio_strings.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/file/fio_strings.cpp.s
 .PHONY : file/fio_strings.cpp.s
 
 game_data.o: game_data.cpp.o
@@ -1043,7 +1121,7 @@ game_data.o: game_data.cpp.o
 
 # target to build an object file
 game_data.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/game_data.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/game_data.cpp.o
 .PHONY : game_data.cpp.o
 
 game_data.i: game_data.cpp.i
@@ -1051,7 +1129,7 @@ game_data.i: game_data.cpp.i
 
 # target to preprocess a source file
 game_data.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/game_data.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/game_data.cpp.i
 .PHONY : game_data.cpp.i
 
 game_data.s: game_data.cpp.s
@@ -1059,7 +1137,7 @@ game_data.s: game_data.cpp.s
 
 # target to generate assembly for a file
 game_data.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/game_data.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/game_data.cpp.s
 .PHONY : game_data.cpp.s
 
 main.o: main.cpp.o
@@ -1091,7 +1169,7 @@ objects/GameObject.o: objects/GameObject.cpp.o
 
 # target to build an object file
 objects/GameObject.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/objects/GameObject.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/objects/GameObject.cpp.o
 .PHONY : objects/GameObject.cpp.o
 
 objects/GameObject.i: objects/GameObject.cpp.i
@@ -1099,7 +1177,7 @@ objects/GameObject.i: objects/GameObject.cpp.i
 
 # target to preprocess a source file
 objects/GameObject.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/objects/GameObject.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/objects/GameObject.cpp.i
 .PHONY : objects/GameObject.cpp.i
 
 objects/GameObject.s: objects/GameObject.cpp.s
@@ -1107,7 +1185,7 @@ objects/GameObject.s: objects/GameObject.cpp.s
 
 # target to generate assembly for a file
 objects/GameObject.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/objects/GameObject.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/objects/GameObject.cpp.s
 .PHONY : objects/GameObject.cpp.s
 
 options/key_map.o: options/key_map.cpp.o
@@ -1115,7 +1193,7 @@ options/key_map.o: options/key_map.cpp.o
 
 # target to build an object file
 options/key_map.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/options/key_map.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/options/key_map.cpp.o
 .PHONY : options/key_map.cpp.o
 
 options/key_map.i: options/key_map.cpp.i
@@ -1123,7 +1201,7 @@ options/key_map.i: options/key_map.cpp.i
 
 # target to preprocess a source file
 options/key_map.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/options/key_map.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/options/key_map.cpp.i
 .PHONY : options/key_map.cpp.i
 
 options/key_map.s: options/key_map.cpp.s
@@ -1131,7 +1209,7 @@ options/key_map.s: options/key_map.cpp.s
 
 # target to generate assembly for a file
 options/key_map.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/options/key_map.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/options/key_map.cpp.s
 .PHONY : options/key_map.cpp.s
 
 options/pausemenu.o: options/pausemenu.cpp.o
@@ -1139,7 +1217,7 @@ options/pausemenu.o: options/pausemenu.cpp.o
 
 # target to build an object file
 options/pausemenu.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/options/pausemenu.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/options/pausemenu.cpp.o
 .PHONY : options/pausemenu.cpp.o
 
 options/pausemenu.i: options/pausemenu.cpp.i
@@ -1147,7 +1225,7 @@ options/pausemenu.i: options/pausemenu.cpp.i
 
 # target to preprocess a source file
 options/pausemenu.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/options/pausemenu.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/options/pausemenu.cpp.i
 .PHONY : options/pausemenu.cpp.i
 
 options/pausemenu.s: options/pausemenu.cpp.s
@@ -1155,7 +1233,7 @@ options/pausemenu.s: options/pausemenu.cpp.s
 
 # target to generate assembly for a file
 options/pausemenu.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/options/pausemenu.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/options/pausemenu.cpp.s
 .PHONY : options/pausemenu.cpp.s
 
 ports/android/android_game_services.o: ports/android/android_game_services.cpp.o
@@ -1163,7 +1241,7 @@ ports/android/android_game_services.o: ports/android/android_game_services.cpp.o
 
 # target to build an object file
 ports/android/android_game_services.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/ports/android/android_game_services.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/ports/android/android_game_services.cpp.o
 .PHONY : ports/android/android_game_services.cpp.o
 
 ports/android/android_game_services.i: ports/android/android_game_services.cpp.i
@@ -1171,7 +1249,7 @@ ports/android/android_game_services.i: ports/android/android_game_services.cpp.i
 
 # target to preprocess a source file
 ports/android/android_game_services.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/ports/android/android_game_services.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/ports/android/android_game_services.cpp.i
 .PHONY : ports/android/android_game_services.cpp.i
 
 ports/android/android_game_services.s: ports/android/android_game_services.cpp.s
@@ -1179,7 +1257,7 @@ ports/android/android_game_services.s: ports/android/android_game_services.cpp.s
 
 # target to generate assembly for a file
 ports/android/android_game_services.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/ports/android/android_game_services.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/ports/android/android_game_services.cpp.s
 .PHONY : ports/android/android_game_services.cpp.s
 
 projectilelib.o: projectilelib.cpp.o
@@ -1187,7 +1265,7 @@ projectilelib.o: projectilelib.cpp.o
 
 # target to build an object file
 projectilelib.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/projectilelib.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/projectilelib.cpp.o
 .PHONY : projectilelib.cpp.o
 
 projectilelib.i: projectilelib.cpp.i
@@ -1195,7 +1273,7 @@ projectilelib.i: projectilelib.cpp.i
 
 # target to preprocess a source file
 projectilelib.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/projectilelib.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/projectilelib.cpp.i
 .PHONY : projectilelib.cpp.i
 
 projectilelib.s: projectilelib.cpp.s
@@ -1203,7 +1281,7 @@ projectilelib.s: projectilelib.cpp.s
 
 # target to generate assembly for a file
 projectilelib.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/projectilelib.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/projectilelib.cpp.s
 .PHONY : projectilelib.cpp.s
 
 scenes/dialogs.o: scenes/dialogs.cpp.o
@@ -1211,7 +1289,7 @@ scenes/dialogs.o: scenes/dialogs.cpp.o
 
 # target to build an object file
 scenes/dialogs.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/scenes/dialogs.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/scenes/dialogs.cpp.o
 .PHONY : scenes/dialogs.cpp.o
 
 scenes/dialogs.i: scenes/dialogs.cpp.i
@@ -1219,7 +1297,7 @@ scenes/dialogs.i: scenes/dialogs.cpp.i
 
 # target to preprocess a source file
 scenes/dialogs.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/scenes/dialogs.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/scenes/dialogs.cpp.i
 .PHONY : scenes/dialogs.cpp.i
 
 scenes/dialogs.s: scenes/dialogs.cpp.s
@@ -1227,7 +1305,7 @@ scenes/dialogs.s: scenes/dialogs.cpp.s
 
 # target to generate assembly for a file
 scenes/dialogs.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/scenes/dialogs.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/scenes/dialogs.cpp.s
 .PHONY : scenes/dialogs.cpp.s
 
 scenes/game_menu.o: scenes/game_menu.cpp.o
@@ -1235,7 +1313,7 @@ scenes/game_menu.o: scenes/game_menu.cpp.o
 
 # target to build an object file
 scenes/game_menu.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/scenes/game_menu.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/scenes/game_menu.cpp.o
 .PHONY : scenes/game_menu.cpp.o
 
 scenes/game_menu.i: scenes/game_menu.cpp.i
@@ -1243,7 +1321,7 @@ scenes/game_menu.i: scenes/game_menu.cpp.i
 
 # target to preprocess a source file
 scenes/game_menu.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/scenes/game_menu.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/scenes/game_menu.cpp.i
 .PHONY : scenes/game_menu.cpp.i
 
 scenes/game_menu.s: scenes/game_menu.cpp.s
@@ -1251,7 +1329,7 @@ scenes/game_menu.s: scenes/game_menu.cpp.s
 
 # target to generate assembly for a file
 scenes/game_menu.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/scenes/game_menu.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/scenes/game_menu.cpp.s
 .PHONY : scenes/game_menu.cpp.s
 
 sceneslib.o: sceneslib.cpp.o
@@ -1259,7 +1337,7 @@ sceneslib.o: sceneslib.cpp.o
 
 # target to build an object file
 sceneslib.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/sceneslib.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/sceneslib.cpp.o
 .PHONY : sceneslib.cpp.o
 
 sceneslib.i: sceneslib.cpp.i
@@ -1267,7 +1345,7 @@ sceneslib.i: sceneslib.cpp.i
 
 # target to preprocess a source file
 sceneslib.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/sceneslib.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/sceneslib.cpp.i
 .PHONY : sceneslib.cpp.i
 
 sceneslib.s: sceneslib.cpp.s
@@ -1275,7 +1353,7 @@ sceneslib.s: sceneslib.cpp.s
 
 # target to generate assembly for a file
 sceneslib.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/sceneslib.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/sceneslib.cpp.s
 .PHONY : sceneslib.cpp.s
 
 strings_map.o: strings_map.cpp.o
@@ -1283,7 +1361,7 @@ strings_map.o: strings_map.cpp.o
 
 # target to build an object file
 strings_map.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/strings_map.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/strings_map.cpp.o
 .PHONY : strings_map.cpp.o
 
 strings_map.i: strings_map.cpp.i
@@ -1291,7 +1369,7 @@ strings_map.i: strings_map.cpp.i
 
 # target to preprocess a source file
 strings_map.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/strings_map.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/strings_map.cpp.i
 .PHONY : strings_map.cpp.i
 
 strings_map.s: strings_map.cpp.s
@@ -1299,7 +1377,7 @@ strings_map.s: strings_map.cpp.s
 
 # target to generate assembly for a file
 strings_map.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/strings_map.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/strings_map.cpp.s
 .PHONY : strings_map.cpp.s
 
 text/i18ntext.o: text/i18ntext.cpp.o
@@ -1307,7 +1385,7 @@ text/i18ntext.o: text/i18ntext.cpp.o
 
 # target to build an object file
 text/i18ntext.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/text/i18ntext.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/text/i18ntext.cpp.o
 .PHONY : text/i18ntext.cpp.o
 
 text/i18ntext.i: text/i18ntext.cpp.i
@@ -1315,7 +1393,7 @@ text/i18ntext.i: text/i18ntext.cpp.i
 
 # target to preprocess a source file
 text/i18ntext.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/text/i18ntext.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/text/i18ntext.cpp.i
 .PHONY : text/i18ntext.cpp.i
 
 text/i18ntext.s: text/i18ntext.cpp.s
@@ -1323,7 +1401,7 @@ text/i18ntext.s: text/i18ntext.cpp.s
 
 # target to generate assembly for a file
 text/i18ntext.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/text/i18ntext.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/text/i18ntext.cpp.s
 .PHONY : text/i18ntext.cpp.s
 
 text/npc_dialog_manager.o: text/npc_dialog_manager.cpp.o
@@ -1331,7 +1409,7 @@ text/npc_dialog_manager.o: text/npc_dialog_manager.cpp.o
 
 # target to build an object file
 text/npc_dialog_manager.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/text/npc_dialog_manager.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/text/npc_dialog_manager.cpp.o
 .PHONY : text/npc_dialog_manager.cpp.o
 
 text/npc_dialog_manager.i: text/npc_dialog_manager.cpp.i
@@ -1339,7 +1417,7 @@ text/npc_dialog_manager.i: text/npc_dialog_manager.cpp.i
 
 # target to preprocess a source file
 text/npc_dialog_manager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/text/npc_dialog_manager.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/text/npc_dialog_manager.cpp.i
 .PHONY : text/npc_dialog_manager.cpp.i
 
 text/npc_dialog_manager.s: text/npc_dialog_manager.cpp.s
@@ -1347,7 +1425,7 @@ text/npc_dialog_manager.s: text/npc_dialog_manager.cpp.s
 
 # target to generate assembly for a file
 text/npc_dialog_manager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/text/npc_dialog_manager.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/text/npc_dialog_manager.cpp.s
 .PHONY : text/npc_dialog_manager.cpp.s
 
 tiled/TiledMap.o: tiled/TiledMap.cpp.o
@@ -1355,7 +1433,7 @@ tiled/TiledMap.o: tiled/TiledMap.cpp.o
 
 # target to build an object file
 tiled/TiledMap.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMap.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledMap.cpp.o
 .PHONY : tiled/TiledMap.cpp.o
 
 tiled/TiledMap.i: tiled/TiledMap.cpp.i
@@ -1363,7 +1441,7 @@ tiled/TiledMap.i: tiled/TiledMap.cpp.i
 
 # target to preprocess a source file
 tiled/TiledMap.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMap.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledMap.cpp.i
 .PHONY : tiled/TiledMap.cpp.i
 
 tiled/TiledMap.s: tiled/TiledMap.cpp.s
@@ -1371,7 +1449,7 @@ tiled/TiledMap.s: tiled/TiledMap.cpp.s
 
 # target to generate assembly for a file
 tiled/TiledMap.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMap.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledMap.cpp.s
 .PHONY : tiled/TiledMap.cpp.s
 
 tiled/TiledMapLayer.o: tiled/TiledMapLayer.cpp.o
@@ -1379,7 +1457,7 @@ tiled/TiledMapLayer.o: tiled/TiledMapLayer.cpp.o
 
 # target to build an object file
 tiled/TiledMapLayer.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMapLayer.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledMapLayer.cpp.o
 .PHONY : tiled/TiledMapLayer.cpp.o
 
 tiled/TiledMapLayer.i: tiled/TiledMapLayer.cpp.i
@@ -1387,7 +1465,7 @@ tiled/TiledMapLayer.i: tiled/TiledMapLayer.cpp.i
 
 # target to preprocess a source file
 tiled/TiledMapLayer.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMapLayer.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledMapLayer.cpp.i
 .PHONY : tiled/TiledMapLayer.cpp.i
 
 tiled/TiledMapLayer.s: tiled/TiledMapLayer.cpp.s
@@ -1395,7 +1473,7 @@ tiled/TiledMapLayer.s: tiled/TiledMapLayer.cpp.s
 
 # target to generate assembly for a file
 tiled/TiledMapLayer.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMapLayer.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledMapLayer.cpp.s
 .PHONY : tiled/TiledMapLayer.cpp.s
 
 tiled/TiledMapObjectLayer.o: tiled/TiledMapObjectLayer.cpp.o
@@ -1403,7 +1481,7 @@ tiled/TiledMapObjectLayer.o: tiled/TiledMapObjectLayer.cpp.o
 
 # target to build an object file
 tiled/TiledMapObjectLayer.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMapObjectLayer.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledMapObjectLayer.cpp.o
 .PHONY : tiled/TiledMapObjectLayer.cpp.o
 
 tiled/TiledMapObjectLayer.i: tiled/TiledMapObjectLayer.cpp.i
@@ -1411,7 +1489,7 @@ tiled/TiledMapObjectLayer.i: tiled/TiledMapObjectLayer.cpp.i
 
 # target to preprocess a source file
 tiled/TiledMapObjectLayer.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMapObjectLayer.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledMapObjectLayer.cpp.i
 .PHONY : tiled/TiledMapObjectLayer.cpp.i
 
 tiled/TiledMapObjectLayer.s: tiled/TiledMapObjectLayer.cpp.s
@@ -1419,7 +1497,7 @@ tiled/TiledMapObjectLayer.s: tiled/TiledMapObjectLayer.cpp.s
 
 # target to generate assembly for a file
 tiled/TiledMapObjectLayer.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMapObjectLayer.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledMapObjectLayer.cpp.s
 .PHONY : tiled/TiledMapObjectLayer.cpp.s
 
 tiled/TiledMapTexture.o: tiled/TiledMapTexture.cpp.o
@@ -1427,7 +1505,7 @@ tiled/TiledMapTexture.o: tiled/TiledMapTexture.cpp.o
 
 # target to build an object file
 tiled/TiledMapTexture.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMapTexture.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledMapTexture.cpp.o
 .PHONY : tiled/TiledMapTexture.cpp.o
 
 tiled/TiledMapTexture.i: tiled/TiledMapTexture.cpp.i
@@ -1435,7 +1513,7 @@ tiled/TiledMapTexture.i: tiled/TiledMapTexture.cpp.i
 
 # target to preprocess a source file
 tiled/TiledMapTexture.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMapTexture.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledMapTexture.cpp.i
 .PHONY : tiled/TiledMapTexture.cpp.i
 
 tiled/TiledMapTexture.s: tiled/TiledMapTexture.cpp.s
@@ -1443,7 +1521,7 @@ tiled/TiledMapTexture.s: tiled/TiledMapTexture.cpp.s
 
 # target to generate assembly for a file
 tiled/TiledMapTexture.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledMapTexture.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledMapTexture.cpp.s
 .PHONY : tiled/TiledMapTexture.cpp.s
 
 tiled/TiledWorldLoader.o: tiled/TiledWorldLoader.cpp.o
@@ -1451,7 +1529,7 @@ tiled/TiledWorldLoader.o: tiled/TiledWorldLoader.cpp.o
 
 # target to build an object file
 tiled/TiledWorldLoader.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledWorldLoader.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledWorldLoader.cpp.o
 .PHONY : tiled/TiledWorldLoader.cpp.o
 
 tiled/TiledWorldLoader.i: tiled/TiledWorldLoader.cpp.i
@@ -1459,7 +1537,7 @@ tiled/TiledWorldLoader.i: tiled/TiledWorldLoader.cpp.i
 
 # target to preprocess a source file
 tiled/TiledWorldLoader.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledWorldLoader.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledWorldLoader.cpp.i
 .PHONY : tiled/TiledWorldLoader.cpp.i
 
 tiled/TiledWorldLoader.s: tiled/TiledWorldLoader.cpp.s
@@ -1467,7 +1545,7 @@ tiled/TiledWorldLoader.s: tiled/TiledWorldLoader.cpp.s
 
 # target to generate assembly for a file
 tiled/TiledWorldLoader.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/tiled/TiledWorldLoader.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/tiled/TiledWorldLoader.cpp.s
 .PHONY : tiled/TiledWorldLoader.cpp.s
 
 view/animation.o: view/animation.cpp.o
@@ -1475,7 +1553,7 @@ view/animation.o: view/animation.cpp.o
 
 # target to build an object file
 view/animation.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/animation.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/animation.cpp.o
 .PHONY : view/animation.cpp.o
 
 view/animation.i: view/animation.cpp.i
@@ -1483,7 +1561,7 @@ view/animation.i: view/animation.cpp.i
 
 # target to preprocess a source file
 view/animation.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/animation.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/animation.cpp.i
 .PHONY : view/animation.cpp.i
 
 view/animation.s: view/animation.cpp.s
@@ -1491,7 +1569,7 @@ view/animation.s: view/animation.cpp.s
 
 # target to generate assembly for a file
 view/animation.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/animation.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/animation.cpp.s
 .PHONY : view/animation.cpp.s
 
 view/draw.o: view/draw.cpp.o
@@ -1499,7 +1577,7 @@ view/draw.o: view/draw.cpp.o
 
 # target to build an object file
 view/draw.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/draw.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/draw.cpp.o
 .PHONY : view/draw.cpp.o
 
 view/draw.i: view/draw.cpp.i
@@ -1507,7 +1585,7 @@ view/draw.i: view/draw.cpp.i
 
 # target to preprocess a source file
 view/draw.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/draw.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/draw.cpp.i
 .PHONY : view/draw.cpp.i
 
 view/draw.s: view/draw.cpp.s
@@ -1515,7 +1593,7 @@ view/draw.s: view/draw.cpp.s
 
 # target to generate assembly for a file
 view/draw.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/draw.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/draw.cpp.s
 .PHONY : view/draw.cpp.s
 
 view/gfx_sin_wave.o: view/gfx_sin_wave.cpp.o
@@ -1523,7 +1601,7 @@ view/gfx_sin_wave.o: view/gfx_sin_wave.cpp.o
 
 # target to build an object file
 view/gfx_sin_wave.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/gfx_sin_wave.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/gfx_sin_wave.cpp.o
 .PHONY : view/gfx_sin_wave.cpp.o
 
 view/gfx_sin_wave.i: view/gfx_sin_wave.cpp.i
@@ -1531,7 +1609,7 @@ view/gfx_sin_wave.i: view/gfx_sin_wave.cpp.i
 
 # target to preprocess a source file
 view/gfx_sin_wave.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/gfx_sin_wave.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/gfx_sin_wave.cpp.i
 .PHONY : view/gfx_sin_wave.cpp.i
 
 view/gfx_sin_wave.s: view/gfx_sin_wave.cpp.s
@@ -1539,7 +1617,7 @@ view/gfx_sin_wave.s: view/gfx_sin_wave.cpp.s
 
 # target to generate assembly for a file
 view/gfx_sin_wave.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/gfx_sin_wave.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/gfx_sin_wave.cpp.s
 .PHONY : view/gfx_sin_wave.cpp.s
 
 view/imageview.o: view/imageview.cpp.o
@@ -1547,7 +1625,7 @@ view/imageview.o: view/imageview.cpp.o
 
 # target to build an object file
 view/imageview.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/imageview.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/imageview.cpp.o
 .PHONY : view/imageview.cpp.o
 
 view/imageview.i: view/imageview.cpp.i
@@ -1555,7 +1633,7 @@ view/imageview.i: view/imageview.cpp.i
 
 # target to preprocess a source file
 view/imageview.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/imageview.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/imageview.cpp.i
 .PHONY : view/imageview.cpp.i
 
 view/imageview.s: view/imageview.cpp.s
@@ -1563,7 +1641,7 @@ view/imageview.s: view/imageview.cpp.s
 
 # target to generate assembly for a file
 view/imageview.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/imageview.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/imageview.cpp.s
 .PHONY : view/imageview.cpp.s
 
 view/ingame_presentation.o: view/ingame_presentation.cpp.o
@@ -1571,7 +1649,7 @@ view/ingame_presentation.o: view/ingame_presentation.cpp.o
 
 # target to build an object file
 view/ingame_presentation.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/ingame_presentation.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/ingame_presentation.cpp.o
 .PHONY : view/ingame_presentation.cpp.o
 
 view/ingame_presentation.i: view/ingame_presentation.cpp.i
@@ -1579,7 +1657,7 @@ view/ingame_presentation.i: view/ingame_presentation.cpp.i
 
 # target to preprocess a source file
 view/ingame_presentation.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/ingame_presentation.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/ingame_presentation.cpp.i
 .PHONY : view/ingame_presentation.cpp.i
 
 view/ingame_presentation.s: view/ingame_presentation.cpp.s
@@ -1587,7 +1665,7 @@ view/ingame_presentation.s: view/ingame_presentation.cpp.s
 
 # target to generate assembly for a file
 view/ingame_presentation.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/ingame_presentation.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/ingame_presentation.cpp.s
 .PHONY : view/ingame_presentation.cpp.s
 
 view/option_picker.o: view/option_picker.cpp.o
@@ -1595,7 +1673,7 @@ view/option_picker.o: view/option_picker.cpp.o
 
 # target to build an object file
 view/option_picker.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/option_picker.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/option_picker.cpp.o
 .PHONY : view/option_picker.cpp.o
 
 view/option_picker.i: view/option_picker.cpp.i
@@ -1603,7 +1681,7 @@ view/option_picker.i: view/option_picker.cpp.i
 
 # target to preprocess a source file
 view/option_picker.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/option_picker.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/option_picker.cpp.i
 .PHONY : view/option_picker.cpp.i
 
 view/option_picker.s: view/option_picker.cpp.s
@@ -1611,7 +1689,7 @@ view/option_picker.s: view/option_picker.cpp.s
 
 # target to generate assembly for a file
 view/option_picker.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/option_picker.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/option_picker.cpp.s
 .PHONY : view/option_picker.cpp.s
 
 view/soundview.o: view/soundview.cpp.o
@@ -1619,7 +1697,7 @@ view/soundview.o: view/soundview.cpp.o
 
 # target to build an object file
 view/soundview.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/soundview.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/soundview.cpp.o
 .PHONY : view/soundview.cpp.o
 
 view/soundview.i: view/soundview.cpp.i
@@ -1627,7 +1705,7 @@ view/soundview.i: view/soundview.cpp.i
 
 # target to preprocess a source file
 view/soundview.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/soundview.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/soundview.cpp.i
 .PHONY : view/soundview.cpp.i
 
 view/soundview.s: view/soundview.cpp.s
@@ -1635,7 +1713,7 @@ view/soundview.s: view/soundview.cpp.s
 
 # target to generate assembly for a file
 view/soundview.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/soundview.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/soundview.cpp.s
 .PHONY : view/soundview.cpp.s
 
 view/textview.o: view/textview.cpp.o
@@ -1643,7 +1721,7 @@ view/textview.o: view/textview.cpp.o
 
 # target to build an object file
 view/textview.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/textview.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/textview.cpp.o
 .PHONY : view/textview.cpp.o
 
 view/textview.i: view/textview.cpp.i
@@ -1651,7 +1729,7 @@ view/textview.i: view/textview.cpp.i
 
 # target to preprocess a source file
 view/textview.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/textview.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/textview.cpp.i
 .PHONY : view/textview.cpp.i
 
 view/textview.s: view/textview.cpp.s
@@ -1659,7 +1737,7 @@ view/textview.s: view/textview.cpp.s
 
 # target to generate assembly for a file
 view/textview.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/textview.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/textview.cpp.s
 .PHONY : view/textview.cpp.s
 
 view/timerview.o: view/timerview.cpp.o
@@ -1667,7 +1745,7 @@ view/timerview.o: view/timerview.cpp.o
 
 # target to build an object file
 view/timerview.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/timerview.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/timerview.cpp.o
 .PHONY : view/timerview.cpp.o
 
 view/timerview.i: view/timerview.cpp.i
@@ -1675,7 +1753,7 @@ view/timerview.i: view/timerview.cpp.i
 
 # target to preprocess a source file
 view/timerview.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/timerview.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/timerview.cpp.i
 .PHONY : view/timerview.cpp.i
 
 view/timerview.s: view/timerview.cpp.s
@@ -1683,7 +1761,7 @@ view/timerview.s: view/timerview.cpp.s
 
 # target to generate assembly for a file
 view/timerview.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGame.dir/build.make CMakeFiles/FireFlyGame.dir/view/timerview.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FireFlyGameLib.dir/build.make CMakeFiles/FireFlyGameLib.dir/view/timerview.cpp.s
 .PHONY : view/timerview.cpp.s
 
 # Help Target
@@ -1698,7 +1776,13 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... Box2dManager_test"
 	@echo "... FireFlyGame"
+	@echo "... FireFlyGameLib"
+	@echo "... gmock"
+	@echo "... gmock_main"
+	@echo "... gtest"
+	@echo "... gtest_main"
 	@echo "... GameManager.o"
 	@echo "... GameManager.i"
 	@echo "... GameManager.s"

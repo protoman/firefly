@@ -24,8 +24,10 @@ void TextView::init()
     }
 
     // load font
-    font = TTF_OpenFont("./fonts/bpmonobold.ttf", FONT_SIZE);
-    outline_font = TTF_OpenFont("./fonts/bpmonobold.ttf", FONT_SIZE);
+    std::string font_path = SharedData::get_instance()->FILEPATH + "/fonts/bpmonobold.ttf";
+    font = TTF_OpenFont(font_path.c_str(), FONT_SIZE);
+    outline_font = TTF_OpenFont(font_path.c_str(), FONT_SIZE);
+    std::cout << "DEBUG" << std::endl;
 }
 
 void TextView::renderText(int x, int y, st_color color, bool centered, std::string text)

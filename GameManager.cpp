@@ -314,6 +314,8 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
         InputController::get_instance()->clean();
     }
 
+    st_rectangle box2d_player_pos = box2d_manager.get_player_box();
+
     if (dialog_queue.size() > 0) {
         if (dialog_queue.at(0).timer == 0 && InputController::get_instance()->p1_input[BTN_JUMP] == 1) {
             //std::cout << "Remove dialog #1" << std::endl;
@@ -380,6 +382,8 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
                 box2d_manager.change_player_position(st_float_position(2.0f, 0.0f));
             } else if (player1.getMoveCommands().left == 1) {
                 box2d_manager.change_player_position(st_float_position(-2.0f, 0.0f));
+            } else if (player1.getMoveCommands().down == 1) {
+                box2d_manager.change_player_position(st_float_position(0.0f, 2.0f));
             } else {
                 if (player1.getMoveCommands().jump == 0 && player1.getMoveCommands().dash == 0) {
                     box2d_manager.change_player_position(st_float_position(0.0f, 0.0f));
@@ -438,7 +442,7 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
         }
         fps_manager.limit();
 
-        st_rectangle box2d_player_pos = box2d_manager.get_player_box();
+
         box2d_manager.run_debug_draw(&debugDrawer);
 
 
@@ -754,7 +758,7 @@ void GameManager::show_notice()
     Draw::get_instance()->update_screen();
 
     st_imageData upperland_surface;
-    upperland_surface = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->GAMEPATH + "/shared/images/upperland.png");
+    upperland_surface = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->FILEPATH + "/shared/images/upperland.png");
 
     st_position logo_pos(RES_W/2 - (upperland_surface.surface->w/6)/2, RES_H/2 - upperland_surface.surface->h/2);
 
@@ -1841,8 +1845,6 @@ void GameManager::select_game_screen()
     }
     InputController::get_instance()->clean();
     TimerView::get_instance()->delay(200);
-
-    //std::string game_dir = std::string("/games/") + game_list.at(picked_n) + std::string("/");
 
     _selected_game = game_list.at(picked_n);
 }

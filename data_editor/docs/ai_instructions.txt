@@ -49,3 +49,32 @@ Implement method ObjectEdit::reload_data.
 It should fill a list o
 It should first clean the ui.currentObjectSelector object, then fill it with all elements from the vectors object_recovery_list,
 object_quest_list, object_platform_list and object_util_list, adding a prefix on each, with the type surrounded by [ and ].
+
+#########
+
+Given there is a GUI window defined in objectedit.ui, with the related class defined in objectedit.h and objectedit.cpp; all in the sub_windows/object folder, I want:
+When the user clicks the add button, it should create a new ObjectData, setting the name in the format "[N][TYPE] - Object Name", where N is the current size of the object_list vector,
+and TYPE should come from the enum ObjectDataType, from the ui.typeSelector currentIndex, as a string.
+Also, it should set the type in the created object, as the one defined the ui.typeSelector.
+After that, add the new object in the end of the object_list vector.
+Then, add the name of the newly created object at the back of the ui.currentObjectSelector combobox.
+
+#########
+
+Given that the current project, FireflyEditor, is inside another one, called Firefly, I want you to create a way
+that whe I do run the editor binary, it knows what is the path of the parent project, so it can load the .png files from the folder game_data/images/sprites/objects, that is inside the parent project of this one.
+Store the definition of the necessary data of the folders in the CommonUtils class for future use.
+
+#########
+
+
+The ui.graphicFilenameComboBox should be filled with .png files in the folder game_data/images/sprites/objects that is inside the parent project of this one.
+There is an existing method to add entries into a combobox, CommonUtils::fill_files_combo, use it and the previously added path to the data files for that.
+
+#########
+
+nameLineEdit
+graphicFilenameComboBox
+graphicSizeXSpinbox
+graphicSizeYSpinbox
+graphicFrameDurationSpinbox
