@@ -16,3 +16,10 @@ target_link_libraries(Box2dManager_test
 
 # Add the test to CTest
 add_test(NAME Box2dManager_test COMMAND Box2dManager_test)
+
+if(WIN32)
+    target_compile_definitions(Box2dManager_test PRIVATE
+        NOMINMAX
+        _USE_MATH_DEFINES
+    )
+endif()

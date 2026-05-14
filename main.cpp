@@ -23,10 +23,11 @@ void get_filepath()
 #ifdef WIN32
     char* buffer;
     if( (buffer = _getcwd( nullptr, 0 )) != nullptr ) {
-        FILEPATH = std::string(buffer);
-        FILEPATH += "/";
+        SharedData::get_instance()->FILEPATH = std::string(buffer);
+        SharedData::get_instance()->FILEPATH += "/";
     }
     delete[] buffer;
+    SharedData::get_instance()->FILEPATH += "../game_data/";
 #else
     char *buffer = new char[MAX_PATH_LENGTH];
     getcwd(buffer, MAX_PATH_LENGTH);

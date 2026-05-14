@@ -138,6 +138,11 @@ if(WIN32)
         _USE_MATH_DEFINES
     )
 
+    target_compile_definitions(FireFlyGame PRIVATE
+        NOMINMAX
+        _USE_MATH_DEFINES
+    )
+
     target_link_libraries(FireFlyGameLib PUBLIC
         SDL3::SDL3
         SDL3_image::SDL3_image
