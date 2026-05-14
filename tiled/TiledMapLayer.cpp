@@ -1,6 +1,7 @@
 #include "TiledMapLayer.h"
 
 #include <iostream>
+#include <algorithm>
 #include <cassert>
 #include <map>
 

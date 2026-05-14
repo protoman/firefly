@@ -25,11 +25,7 @@ void TimerView::delay(int waitMS) const
 
 void TimerView::udelay(int useconds)
 {
-#ifndef PC
     SDL_Delay(useconds);
-#else
-    usleep(useconds);
-#endif
 }
 
 unsigned long TimerView::getTimer() const

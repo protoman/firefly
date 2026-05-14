@@ -1117,7 +1117,7 @@ void Draw::draw_explosion(st_position center_point, int radius, int angle_inc)
 {
     // 8 initial points
     int points_n = 12;
-    st_float_position points[points_n];
+    std::vector<st_float_position> points(points_n);
     float angle_diff = 360 / points_n;
     int frame = 0;
 
