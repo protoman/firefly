@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <string>
 #include <sstream>
+#include <format>
+#include <vector>
 
 
 exception_manager::exception_manager()
@@ -15,24 +17,21 @@ exception_manager::exception_manager()
 void exception_manager::throw_param_exception(std::string prefix, std::string param)
 {
     std::string backtrace = get_backtrace();
-    char error_msg[512+backtrace.size()];
-    sprintf(error_msg, "Exception: Invalid parameter [%s] - value[%s]\nBacktrace:\n[%s]", prefix.c_str(), param.c_str(), backtrace.c_str());
+    std::string error_msg = std::format("Exception: Invalid parameter [{}] - value[{}]\nBacktrace:\n[{}]", prefix, param, backtrace);
     throw std::invalid_argument(error_msg);
 }
 
 void exception_manager::throw_file_not_found_exception(std::string prefix, std::string param)
 {
     std::string backtrace = get_backtrace();
-    char error_msg[512+backtrace.size()];
-    sprintf(error_msg, "Exception: file not found[%s] - file[%s]\nBacktrace:\n[%s]", prefix.c_str(), param.c_str(), backtrace.c_str());
+    std::string error_msg = std::format("Exception: file not found[{}] - file[{}]\nBacktrace:\n[{}]", prefix, param, backtrace);
     throw std::invalid_argument(error_msg);
 }
 
 void exception_manager::throw_general_exception(std::string prefix, std::string param)
 {
     std::string backtrace = get_backtrace();
-    char error_msg[512+backtrace.size()];
-    sprintf(error_msg, "Exception: runtime error[%s] - code[%s]\nBacktrace:\n[%s]", prefix.c_str(), param.c_str(), backtrace.c_str());
+    std::string error_msg = std::format("Exception: runtime error[{}] - code[{}]\nBacktrace:\n[{}]", prefix, param, backtrace);
     throw std::runtime_error(error_msg);
 }
 
@@ -77,8 +76,8 @@ void exception_manager::dumpBacktrace(std::ostream& os, void** buffer, size_t co
 
 void exception_manager::getBacktrace(std::ostringstream &oss, const size_t max)
 {
-    void* buffer[max];
-    dumpBacktrace(oss, buffer, captureBacktrace(buffer, max));
+    std::vector<void*> buffer(max);
+    dumpBacktrace(oss, buffer.data(), captureBacktrace(buffer.data(), max));
 }
 #endif
 

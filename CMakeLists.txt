@@ -126,6 +126,27 @@ add_library(FireFlyGameLib STATIC ${GAME_SOURCES})
 
 add_executable(FireFlyGame main.cpp)
 
+target_include_directories(FireFlyGameLib PUBLIC
+    ${CMAKE_SOURCE_DIR}
+    ${SDL3_INCLUDE_DIRS}
+)
+
+if(WIN32)
+    target_compile_definitions(FireFlyGameLib PRIVATE
+        WINDOWS
+        PC
+    )
+
+    target_link_libraries(FireFlyGameLib PUBLIC
+        SDL3::SDL3
+        SDL3_image::SDL3_image
+        SDL3_mixer::SDL3_mixer
+        SDL3_ttf::SDL3_ttf
+        box2d
+        tmxlite
+    )
+endif()
+
 if(LINUX)
     target_compile_definitions(FireFlyGameLib PRIVATE
         LINUX
@@ -147,11 +168,6 @@ if(LINUX)
         box2d
         dl
         tmxlite
-    )
-
-    target_include_directories(FireFlyGameLib PUBLIC
-        ${CMAKE_SOURCE_DIR}
-        ${SDL3_INCLUDE_DIRS}
     )
 
     target_compile_options(FireFlyGameLib PRIVATE -I/usr/local/include/SDL3 -Werror=return-type -Wno-ignored-qualifiers -Wno-reorder -fpermissive -g)
