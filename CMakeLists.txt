@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(CMAKE_C_COMPILER "/usr/bin/clang")
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
-
 # Set policy CMP0135 to NEW for FetchContent timestamp handling
 cmake_policy(SET CMP0135 NEW)
 
@@ -19,6 +16,29 @@ find_package(SDL3 REQUIRED)
 find_package(SDL3_image REQUIRED)
 find_package(SDL3_mixer REQUIRED)
 find_package(SDL3_ttf REQUIRED)
+
+# Find Box2D
+find_package(box2d CONFIG REQUIRED)
+
+# Add tmxlite using find_package (vcpkg) or FetchContent (fallback)
+find_package(tmxlite CONFIG QUIET)
+if(NOT tmxlite_FOUND)
+    message(STATUS "tmxlite not found, using FetchContent")
+    include(FetchContent)
+    FetchContent_Declare(
+        tmxlite
+        URL https://github.com/fallahn/tmxlite/archive/refs/tags/v1.4.4.tar.gz
+        SOURCE_SUBDIR tmxlite
+        PATCH_COMMAND sed -i "s/cmake_minimum_required(VERSION 3.1)/cmake_minimum_required(VERSION 3.5)/" tmxlite/CMakeLists.txt
+    )
+    FetchContent_MakeAvailable(tmxlite)
+endif()
+
+# Create an alias for tmxlite if it's not already namespaced
+if(NOT TARGET tmxlite::tmxlite)
+    add_library(tmxlite::tmxlite ALIAS tmxlite)
+endif()
+
 include_directories(${SDL3_INCLUDE_DIRS})
 
 set(OUTPUT_DIR "${CMAKE_SOURCE_DIR}/build")
@@ -142,15 +162,6 @@ if(WIN32)
         NOMINMAX
         _USE_MATH_DEFINES
     )
-
-    target_link_libraries(FireFlyGameLib PUBLIC
-        SDL3::SDL3
-        SDL3_image::SDL3_image
-        SDL3_mixer::SDL3_mixer
-        SDL3_ttf::SDL3_ttf
-        box2d
-        tmxlite
-    )
 endif()
 
 if(LINUX)
@@ -159,25 +170,22 @@ if(LINUX)
         PC
     )
 
-    target_link_directories(FireFlyGameLib PRIVATE
-        /usr/X11R6/lib
-        /usr/lib/x86_64-linux-gnu
-        /usr/local/lib/
-    )
-
     target_link_libraries(FireFlyGameLib PUBLIC
-        SDL3::SDL3
-        SDL3_image::SDL3_image
-        SDL3_mixer::SDL3_mixer
-        SDL3_ttf::SDL3_ttf
         X11
-        box2d
         dl
-        tmxlite
     )
 
     target_compile_options(FireFlyGameLib PRIVATE -I/usr/local/include/SDL3 -Werror=return-type -Wno-ignored-qualifiers -Wno-reorder -fpermissive -g)
 endif()
+
+target_link_libraries(FireFlyGameLib PUBLIC
+    SDL3::SDL3
+    SDL3_image::SDL3_image
+    SDL3_mixer::SDL3_mixer
+    SDL3_ttf::SDL3_ttf
+    box2d::box2d
+    tmxlite::tmxlite
+)
 
 target_link_libraries(FireFlyGame PRIVATE FireFlyGameLib)
 

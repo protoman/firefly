@@ -1,3 +1,18 @@
+========================================================================================================================
+Clean the Box2DManager from unused variables and functions.
+Then, better organize the code so it is easier to read for developers. Add documentation when some part is not clear.
+
+========================================================================================================================
+
+Based on the shape and variables used by the player, in the Box2dManager class, I want to change it so that
+the Box2dManager class should hold Box2D variables required for the character shape or state in a map structure,
+the key to the map will be the character id, this includes the player, so refactor the existing variables also.
+The character class should hold the b2BodyId of itself.
+
+Convert jump in character class, GameEnemy and artficial_inteligence to use Box2DManager instead of the jump class.
+
+========================================================================================================================
+
 # animações novas para sprites:
     # agachado
     # levando dano

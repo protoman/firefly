@@ -65,18 +65,6 @@ jobs:
         cmake --build .
         sudo make install
 
-    - name: Download Configure and build TmxLite
-      if: runner.os == 'Linux'
-      run: |
-        wget -c https://github.com/fallahn/tmxlite/archive/refs/tags/v1.4.4.tar.gz
-        tar -zxvf v1.4.4.tar.gz
-        cd tmxlite-1.4.4/tmxlite
-        mkdir build
-        cd build
-        cmake ..
-        cmake --build .
-        sudo make install
-
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows'
       run: |
