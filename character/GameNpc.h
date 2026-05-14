@@ -1,5 +1,5 @@
-#ifndef GAMENPC_H
-#define GAMENPC_H
+#ifndef GAMENPC_CLASS_H
+#define GAMENPC_CLASS_H
 
 #include "character/character.h"
 #include "file/fio_strings.h"

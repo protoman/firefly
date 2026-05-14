@@ -42,7 +42,6 @@ set(GAME_SOURCES
     character/character_animation.cpp character/character_animation.h
     character/classplayer.cpp character/classplayer.h
     character/custom/ai_boss_001.cpp character/custom/ai_boss_001.h
-    character/gamenpc.cpp character/gamenpc.h
     character/movement/inertia.cpp character/movement/inertia.h
     character/movement/jump.cpp character/movement/jump.h
     character/movement/moveslopes.cpp character/movement/moveslopes.h
@@ -135,6 +134,8 @@ if(WIN32)
     target_compile_definitions(FireFlyGameLib PRIVATE
         WINDOWS
         PC
+        NOMINMAX
+        _USE_MATH_DEFINES
     )
 
     target_link_libraries(FireFlyGameLib PUBLIC

@@ -1,5 +1,6 @@
 #include "moveslopes.h"
 #include "GameManager.h"
+#include <algorithm>
 #include <cmath>
 
 #define ADJUST_Y 3

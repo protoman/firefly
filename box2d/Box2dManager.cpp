@@ -1,17 +1,19 @@
 #include "Box2dManager.h"
 
+#include <algorithm>
 #include <cmath>
+#include <vector>
 
 #include "data/SharedPlayerData.hpp"
 
 Box2dManager::Box2dManager() : groundBox(), _last_slope_normal(0.0f, 0.0f) { // Initialize _last_slope_normal
     // create world
-    worldDef.gravity = (b2Vec2){0.0f, GRAVITY};
+    worldDef.gravity = b2Vec2{0.0f, GRAVITY};
     worldId = b2CreateWorld(&worldDef);
     b2World_SetMaximumLinearSpeed(worldId, MAX_SPEED);
 
     // create ground, static body
-    //groundBodyDef.position = (b2Vec2){0.0f, 720.0f};
+    //groundBodyDef.position = b2Vec2{0.0f, 720.0f};
     //groundId = b2CreateBody(worldId, &groundBodyDef);
     //groundBox = b2MakeBox(50.0f, 10.0f);
     //b2CreatePolygonShape(groundId, &groundShapeDef, &groundBox);
@@ -20,7 +22,7 @@ Box2dManager::Box2dManager() : groundBox(), _last_slope_normal(0.0f, 0.0f) { // 
     playerBodyDef.type = b2_dynamicBody;
     playerBodyDef.fixedRotation = true; // Set this to true to prevent rotation
     //playerBodyDef.linearDamping = 1.0f;
-    playerBodyDef.position = (b2Vec2){25.0f, 0.0f};
+    playerBodyDef.position = b2Vec2{25.0f, 0.0f};
     playerBodyId = b2CreateBody(worldId, &playerBodyDef);
     playerShapeDef.density = PLAYER_DENSITY;
     playerShapeDef.material.friction = PLAYER_FRICTION;
@@ -108,7 +110,7 @@ void Box2dManager::add_static_body_rectangles(std::vector<st_rectangle> rectangl
         float calc_half_h = rectangle.h/PIXELS_PER_METER/2;
         float calc_pos_x = rectangle.x/PIXELS_PER_METER + calc_half_w;
         float calc_pos_y = rectangle.y/PIXELS_PER_METER + calc_half_h;
-        object.bodyDef.position = (b2Vec2){calc_pos_x, calc_pos_y};
+        object.bodyDef.position = b2Vec2{calc_pos_x, calc_pos_y};
         object.id = b2CreateBody(worldId, &object.bodyDef);
         object.box = b2MakeBox(calc_half_w, calc_half_h);
         b2CreatePolygonShape(object.id, &object.shapeDef, &object.box);
@@ -125,13 +127,13 @@ void Box2dManager::add_static_body_polygon(std::vector<std::vector<st_float_posi
     }
     for (int i=0; i<points.size(); i++) {
         unsigned int points_size = points.at(i).size();
-        b2Vec2 vertices[points_size];
+        std::vector<b2Vec2> vertices(points_size);
         for (int j=0; j<points.at(i).size(); j++) {
             float vertice_x = points.at(i).at(j).x/PIXELS_PER_METER;
             float vertice_y = points.at(i).at(j).y/PIXELS_PER_METER;
             vertices[j] = {vertice_x, vertice_y};
         }
-        b2Hull hull = b2ComputeHull(vertices, points_size);
+        b2Hull hull = b2ComputeHull(vertices.data(), points_size);
         b2Polygon polygonShape = b2MakePolygon(&hull, 0.0f); // 0.0f radius for sharp corners
         staticObjects.push_back(static_object_struct());
 

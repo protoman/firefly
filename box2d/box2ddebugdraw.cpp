@@ -1,6 +1,7 @@
 #include "box2ddebugdraw.h"
 
 #include <iostream>
+#include <vector>
 #include <SDL3/SDL.h>
 
 #include "data/sharedmapdata.h"
@@ -109,7 +110,7 @@ void Box2dDebugDraw::setRenderer(SDL_Renderer *renderer) {
 void Box2dDebugDraw::DrawCircle(SDL_Point center, float radius) {
     // 35 / 49 is a slightly biased approximation of 1/sqrt(2)
     const int arrSize = roundUpToMultipleOfEight( radius * 8 * 35 / 49 );
-    SDL_FPoint points[arrSize];
+    std::vector<SDL_FPoint> points(arrSize);
     int       drawCount = 0;
 
     const int32_t diameter = (radius * 2);
@@ -151,7 +152,7 @@ void Box2dDebugDraw::DrawCircle(SDL_Point center, float radius) {
         }
     }
 
-    SDL_RenderPoints( sdl_renderer, points, drawCount );
+    SDL_RenderPoints( sdl_renderer, points.data(), drawCount );
 }
 
 int Box2dDebugDraw::roundUpToMultipleOfEight(int v) {
