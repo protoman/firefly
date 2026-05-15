@@ -82,6 +82,14 @@ public:
 	static constexpr int PLAYER_CHARACTER_ID = 0;
 
 private:
+	// Movement sub-routines (called by change_player_position)
+	bool handle_slide_state(CharacterBox2dData& player, b2Vec2& slopeNormal, bool onSlope, e_player_on_ground groundType);
+	bool try_start_slide(CharacterBox2dData& player, b2Vec2& slopeNormal, bool onSlope, st_float_position inc);
+	bool handle_no_input(CharacterBox2dData& player, bool onSlope, e_player_on_ground groundType, st_float_position inc);
+	void correct_wall_friction(CharacterBox2dData& player, bool onSlope, e_player_on_ground groundType);
+	bool try_slope_movement(CharacterBox2dData& player, b2Vec2& slopeNormal, bool onSlope, st_float_position inc);
+	void apply_horizontal_impulse(CharacterBox2dData& player, b2Vec2& currentVelocity, bool onSlope, st_float_position inc, float target_horizontal_speed);
+
 	bool areFloatsEqual(float a, float b, float tolerance = 1e-5f);
 
 private:

@@ -925,7 +925,6 @@ bool classPlayer::can_air_dash()
 
 void classPlayer::damage(unsigned int damage_points, bool ignore_hit_timer)
 {
-    int new_damage_points = damage_points;
     character::damage(damage_points, ignore_hit_timer);
 }
 
@@ -933,11 +932,6 @@ void classPlayer::damage_spikes(bool ignore_hit_timer)
 {
     classPlayer::damage(SPIKES_DAMAGE, ignore_hit_timer);
 }
-
-
-
-
-
 
 void classPlayer::reset_charging_shot()
 {

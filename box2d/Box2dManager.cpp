@@ -149,43 +149,68 @@ void Box2dManager::change_player_position(st_float_position inc) {
 		player.last_slope_normal = slopeNormal;
 	}
 
-	// === SLIDE STATE MACHINE ===
-	if (player.is_sliding) {
-		float expected_speed = HORIZONTAL_SPEED_LIMIT * SLIDE_DOWN_SPEED_MULTIPLIER;
-		b2Vec2 vel = b2Body_GetLinearVelocity(player.bodyId);
-		float actual_speed = std::sqrt(vel.x * vel.x + vel.y * vel.y);
+	if (handle_slide_state(player, slopeNormal, onSlope, groundType)) return;
+	if (try_start_slide(player, slopeNormal, onSlope, inc)) return;
+	if (handle_no_input(player, onSlope, groundType, inc)) return;
 
-		if (!onSlope) {
-			player.is_sliding = false;
-			if (groundType == PLAYER_GROUND_LINEAR) {
-				player.slide_coasting = true;
-			}
-		} else if (actual_speed < expected_speed * 0.3f) {
-			player.is_sliding = false;
-		} else {
-			player.slide_coasting = false;
-			player.settle_counter = 0;
-			player.freeze_position = false;
-			b2Body_SetGravityScale(player.bodyId, 1.0f);
-			b2Vec2 downhill_dir = {-slopeNormal.y, slopeNormal.x};
-			b2Body_SetLinearVelocity(player.bodyId, {downhill_dir.x * expected_speed, downhill_dir.y * expected_speed});
-			return;
-		}
+	correct_wall_friction(player, onSlope, groundType);
+
+	float target_horizontal_speed = (inc.x > 0) ? HORIZONTAL_SPEED_LIMIT : -HORIZONTAL_SPEED_LIMIT;
+
+	if (try_slope_movement(player, slopeNormal, onSlope, inc)) return;
+
+	apply_horizontal_impulse(player, currentVelocity, onSlope, inc, target_horizontal_speed);
+}
+
+bool Box2dManager::handle_slide_state(CharacterBox2dData& player, b2Vec2& slopeNormal, bool onSlope, e_player_on_ground groundType)
+{
+	if (!player.is_sliding) {
+		return false;
 	}
 
-	// Slide trigger: press DOWN on a slope
-	if (inc.y > 0.0f && onSlope && !player.jump_started) {
-		player.is_sliding = true;
+	float expected_speed = HORIZONTAL_SPEED_LIMIT * SLIDE_DOWN_SPEED_MULTIPLIER;
+	b2Vec2 vel = b2Body_GetLinearVelocity(player.bodyId);
+	float actual_speed = std::sqrt(vel.x * vel.x + vel.y * vel.y);
+
+	if (!onSlope) {
+		player.is_sliding = false;
+		if (groundType == PLAYER_GROUND_LINEAR) {
+			player.slide_coasting = true;
+		}
+	} else if (actual_speed < expected_speed * 0.3f) {
+		player.is_sliding = false;
+	} else {
 		player.slide_coasting = false;
 		player.settle_counter = 0;
 		player.freeze_position = false;
 		b2Body_SetGravityScale(player.bodyId, 1.0f);
-		float slide_speed = HORIZONTAL_SPEED_LIMIT * SLIDE_DOWN_SPEED_MULTIPLIER;
 		b2Vec2 downhill_dir = {-slopeNormal.y, slopeNormal.x};
-		b2Body_SetLinearVelocity(player.bodyId, {downhill_dir.x * slide_speed, downhill_dir.y * slide_speed});
-		return;
+		b2Body_SetLinearVelocity(player.bodyId, {downhill_dir.x * expected_speed, downhill_dir.y * expected_speed});
+		return true;
+	}
+	return false;
+}
+
+bool Box2dManager::try_start_slide(CharacterBox2dData& player, b2Vec2& slopeNormal, bool onSlope, st_float_position inc)
+{
+	if (!(inc.y > 0.0f && onSlope && !player.jump_started)) {
+		return false;
 	}
 
+	player.is_sliding = true;
+	player.slide_coasting = false;
+	player.settle_counter = 0;
+	player.freeze_position = false;
+	b2Body_SetGravityScale(player.bodyId, 1.0f);
+	float slide_speed = HORIZONTAL_SPEED_LIMIT * SLIDE_DOWN_SPEED_MULTIPLIER;
+	b2Vec2 downhill_dir = {-slopeNormal.y, slopeNormal.x};
+	b2Body_SetLinearVelocity(player.bodyId, {downhill_dir.x * slide_speed, downhill_dir.y * slide_speed});
+	return true;
+}
+
+bool Box2dManager::handle_no_input(CharacterBox2dData& player, bool onSlope, e_player_on_ground groundType, st_float_position inc)
+{
+	// No-input settling on slope: accumulate counter, then freeze
 	if (inc.x == 0.0f && onSlope && !player.jump_started) {
 		b2Vec2 vel = b2Body_GetLinearVelocity(player.bodyId);
 		player.settle_counter++;
@@ -193,14 +218,15 @@ void Box2dManager::change_player_position(st_float_position inc) {
 			player.freeze_position = true;
 			b2Body_SetGravityScale(player.bodyId, 0.0f);
 			b2Body_SetLinearVelocity(player.bodyId, {0.0f, 0.0f});
-			return;
+			return true;
 		}
 		player.freeze_position = false;
 		b2Body_SetGravityScale(player.bodyId, 1.0f);
 		b2Body_SetLinearVelocity(player.bodyId, {0.0f, vel.y});
-		return;
+		return true;
 	}
 
+	// Any input resets settle state
 	player.settle_counter = 0;
 	player.freeze_position = false;
 	b2Body_SetGravityScale(player.bodyId, 1.0f);
@@ -210,6 +236,7 @@ void Box2dManager::change_player_position(st_float_position inc) {
 		player.slide_coasting = false;
 	}
 
+	// No-input stop on flat ground
 	if (inc.x == 0.0f) {
 		if (groundType == PLAYER_GROUND_LINEAR && !player.jump_started) {
 			if (player.slide_coasting) {
@@ -218,62 +245,78 @@ void Box2dManager::change_player_position(st_float_position inc) {
 				if (speed < 1.0f) {
 					player.slide_coasting = false;
 					b2Body_SetLinearVelocity(player.bodyId, {0.0f, 0.0f});
-					return;
+					return true;
 				}
-				return;
+				return true;
 			}
 			b2Body_SetLinearVelocity(player.bodyId, {0.0f, 0.0f});
-			return;
+			return true;
 		}
+		return true;
+	}
+	return false;
+}
+
+void Box2dManager::correct_wall_friction(CharacterBox2dData& player, bool onSlope, e_player_on_ground groundType)
+{
+	if (!player.jump_started || onSlope || groundType != PLAYER_GROUND_NONE) {
 		return;
 	}
 
-	// Prevent wall contact from altering vertical speed during jumps/falls
-	if (player.jump_started && !onSlope && groundType == PLAYER_GROUND_NONE) {
-		b2Vec2 vel = b2Body_GetLinearVelocity(player.bodyId);
-		float expected_vy = player.vel_before_step.y + GRAVITY * timeStep;
-		if (std::fabs(vel.y - expected_vy) > 0.1f) {
-			b2Body_SetLinearVelocity(player.bodyId, {vel.x, expected_vy});
-		}
+	b2Vec2 vel = b2Body_GetLinearVelocity(player.bodyId);
+	float expected_vy = player.vel_before_step.y + GRAVITY * timeStep;
+	if (std::fabs(vel.y - expected_vy) > 0.1f) {
+		b2Body_SetLinearVelocity(player.bodyId, {vel.x, expected_vy});
+	}
+}
+
+bool Box2dManager::try_slope_movement(CharacterBox2dData& player, b2Vec2& slopeNormal, bool onSlope, st_float_position inc)
+{
+	if (!onSlope || player.jump_started) {
+		return false;
 	}
 
-	float target_horizontal_speed = (inc.x > 0) ? HORIZONTAL_SPEED_LIMIT : -HORIZONTAL_SPEED_LIMIT;
+	bool climbing_right = (inc.x > 0 && slopeNormal.x > 0.1f);
+	bool climbing_left = (inc.x < 0 && slopeNormal.x < -0.1f);
+	bool descending_right = (inc.x > 0 && slopeNormal.x < -0.1f);
+	bool descending_left = (inc.x < 0 && slopeNormal.x > 0.1f);
 
-	if (onSlope && !player.jump_started) {
-		bool climbing_right = (inc.x > 0 && slopeNormal.x > 0.1f);
-		bool climbing_left = (inc.x < 0 && slopeNormal.x < -0.1f);
-		bool descending_right = (inc.x > 0 && slopeNormal.x < -0.1f);
-		bool descending_left = (inc.x < 0 && slopeNormal.x > 0.1f);
+	if (!(climbing_right || climbing_left || descending_right || descending_left)) {
+		return false;
+	}
 
-		if (climbing_right || climbing_left || descending_right || descending_left) {
-			float slope_multiplier = -slopeNormal.x / slopeNormal.y;
-			float target_vx = (inc.x > 0) ? HORIZONTAL_SPEED_LIMIT : -HORIZONTAL_SPEED_LIMIT;
-			if (climbing_right || climbing_left) {
-				target_vx *= SLOPE_CLIMB_SPEED_FACTOR;
-			}
-			float target_vy = target_vx * slope_multiplier;
+	float slope_multiplier = -slopeNormal.x / slopeNormal.y;
+	float target_vx = (inc.x > 0) ? HORIZONTAL_SPEED_LIMIT : -HORIZONTAL_SPEED_LIMIT;
+	if (climbing_right || climbing_left) {
+		target_vx *= SLOPE_CLIMB_SPEED_FACTOR;
+	}
+	float target_vy = target_vx * slope_multiplier;
 
-			b2Body_SetLinearVelocity(player.bodyId, {target_vx, target_vy});
+	b2Body_SetLinearVelocity(player.bodyId, {target_vx, target_vy});
+	return true;
+}
+
+void Box2dManager::apply_horizontal_impulse(CharacterBox2dData& player, b2Vec2& currentVelocity, bool onSlope, st_float_position inc, float target_horizontal_speed)
+{
+	if (!((inc.x > 0 && currentVelocity.x < target_horizontal_speed) ||
+		  (inc.x < 0 && currentVelocity.x > target_horizontal_speed))) {
+		return;
+	}
+
+	float impulse_x = (inc.x > 0) ? HORIZONTAL_MOVE_FORCE : -HORIZONTAL_MOVE_FORCE;
+
+	// Slope transition boost: moving toward a slope edge we recently left
+	if (!onSlope && !player.jump_started && player.last_slope_normal.x != 0.0f) {
+		bool moving_into_slope = (inc.x > 0 && player.last_slope_normal.x > 0.1f) ||
+								 (inc.x < 0 && player.last_slope_normal.x < -0.1f);
+		if (moving_into_slope && currentVelocity.y >= -0.5f) {
+			float vy_boost = -player.last_slope_normal.x / player.last_slope_normal.y * 0.3f;
+			b2Body_ApplyLinearImpulseToCenter(player.bodyId, {impulse_x, vy_boost}, true);
 			return;
 		}
 	}
 
-	if ((inc.x > 0 && currentVelocity.x < target_horizontal_speed) ||
-		(inc.x < 0 && currentVelocity.x > target_horizontal_speed)) {
-		float impulse_x = (inc.x > 0) ? HORIZONTAL_MOVE_FORCE : -HORIZONTAL_MOVE_FORCE;
-
-		if (!onSlope && !player.jump_started && player.last_slope_normal.x != 0.0f) {
-			bool moving_into_slope = (inc.x > 0 && player.last_slope_normal.x > 0.1f) ||
-									 (inc.x < 0 && player.last_slope_normal.x < -0.1f);
-			if (moving_into_slope && currentVelocity.y >= -0.5f) {
-				float vy_boost = -player.last_slope_normal.x / player.last_slope_normal.y * 0.3f;
-				b2Body_ApplyLinearImpulseToCenter(player.bodyId, {impulse_x, vy_boost}, true);
-				return;
-			}
-		}
-
-		b2Body_ApplyLinearImpulseToCenter(player.bodyId, {impulse_x, 0.0f}, true);
-	}
+	b2Body_ApplyLinearImpulseToCenter(player.bodyId, {impulse_x, 0.0f}, true);
 }
 
 void Box2dManager::character_jump(int character_id, bool big_jump)
