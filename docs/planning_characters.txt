@@ -5,11 +5,24 @@ Then, better organize the code so it is easier to read for developers. Add docum
 ========================================================================================================================
 
 Based on the shape and variables used by the player, in the Box2dManager class, I want to change it so that
-the Box2dManager class should hold Box2D variables required for the character shape or state in a map structure,
-the key to the map will be the character id, this includes the player, so refactor the existing variables also.
-The character class should hold the b2BodyId of itself.
+the Box2dManager class should hold Box2D variables required for the character boxid, shape or state in a map structure,
+the key to the map will be the character id, this includes the player, so refactor the existing variables too.
+Also, create a method that builds the shapes, ids and other necessary objects, and add it to this map.
+The method should receive required parameters such as, initial position on the map, size, etc.
 
-Convert jump in character class, GameEnemy and artficial_inteligence to use Box2DManager instead of the jump class.
+========================================================================================================================
+On the GameEnemy and GameNpc classes, when initializing the NPC, call the method in Box2dManager that creates
+the id and shape objects into a map, passing all the required parameters, so all required box2d variables,
+exist for that character.
+========================================================================================================================
+
+Remove inertia, if used, inc lasses character, GameNpc, GameEnemy and artificial_inteligence.
+It should rely on Box2DManager for that character in the map on that class, for speed and movement instead.
+========================================================================================================================
+
+Remove jump, if used, inc lasses character, GameNpc, GameEnemy and artificial_inteligence.
+It should rely on Box2DManager for that character in the map on that class, for speed and movement instead.
+
 
 ========================================================================================================================
 
