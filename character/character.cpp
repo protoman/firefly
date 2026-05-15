@@ -130,7 +130,9 @@ void character::charMove() {
         return;
     }
 
-    check_y_scroll();
+    // Disabled: Box2D camera (update_stage_scrolling) handles Y follow now.
+    // This old tile-based scroll overrides the Box2D scroll, causing oscillation.
+    //check_y_scroll();
 
     //std::cout << "CHAR::MOVE - py[" << position.y << "], real.y[" << realPosition.y << "]" << std::endl;
 

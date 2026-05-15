@@ -821,6 +821,108 @@ TEST(CharacterJumpTest, RePressAfterLandingStartsNewJump) {
 	EXPECT_TRUE(mgr.is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
 }
 
+// Test that Y-axis velocity during a jump is smooth (no oscillations)
+// The player body must not jitter up and down during a jump.
+TEST_F(Box2dManagerTest, JumpYVelocityIsSmooth) {
+	std::vector<st_rectangle> walls;
+	walls.push_back(st_rectangle(0, 400, 800, 40));
+	box2dManager->add_static_body_rectangles(walls);
+
+	setPlayerTransform({1.0f, 9.325f}, b2Rot_identity);
+	box2dManager->execute();
+
+	box2dManager->character_jump(Box2dManager::PLAYER_CHARACTER_ID, false);
+	box2dManager->set_jump_button_released(Box2dManager::PLAYER_CHARACTER_ID);
+
+	const float gravity_step = 39.6f / 60.0f;
+
+	// Let a few frames pass to get airborne
+	for (int i = 0; i < 5; ++i) {
+		box2dManager->execute();
+		box2dManager->change_player_position({0.0f, 0.0f});
+	}
+
+	// Track velocity over the rising portion of the jump (~30 frames at -22 + 0.66*frame < 0)
+	for (int frame = 0; frame < 30; ++frame) {
+		float y_before = getPlayerPosition().y;
+		b2Vec2 vel_before = getPlayerVelocity();
+
+		box2dManager->execute();
+		box2dManager->change_player_position({0.0f, 0.0f});
+
+		float y_after = getPlayerPosition().y;
+		b2Vec2 vel_after = getPlayerVelocity();
+
+		float vy_change = vel_after.y - vel_before.y;
+
+		// vy must change by exactly gravity_step (smooth, no jitter)
+		EXPECT_NEAR(vy_change, gravity_step, 0.01f)
+			<< "vy change must match gravity at frame " << frame
+			<< " (vy_before=" << vel_before.y << ", vy_after=" << vel_after.y << ")";
+
+		// vy must never decrease (become more negative) - that would indicate jitter
+		EXPECT_GE(vy_change, 0.0f)
+			<< "vy must never decrease at frame " << frame
+			<< " (vy_change=" << vy_change << ")";
+
+		// Position: while both are negative (rising), y must decrease
+		// or while both are positive (falling), y must increase
+		// No back-and-forth oscillation allowed
+		if (vel_before.y < 0.0f && vel_after.y < 0.0f) {
+			EXPECT_LT(y_after, y_before)
+				<< "y must decrease while rising at frame " << frame
+				<< " (y_before=" << y_before << ", y_after=" << y_after << ")";
+		} else if (vel_before.y > 0.0f && vel_after.y > 0.0f) {
+			EXPECT_GT(y_after, y_before)
+				<< "y must increase while falling at frame " << frame
+				<< " (y_before=" << y_before << ", y_after=" << y_after << ")";
+		}
+	}
+}
+
+// Same test but with horizontal input (exercises wall friction correction path)
+TEST_F(Box2dManagerTest, JumpWithHorizontalInputVelocityIsSmooth) {
+	std::vector<st_rectangle> walls;
+	walls.push_back(st_rectangle(0, 400, 800, 40));
+	box2dManager->add_static_body_rectangles(walls);
+
+	setPlayerTransform({1.0f, 9.325f}, b2Rot_identity);
+	box2dManager->execute();
+
+	box2dManager->character_jump(Box2dManager::PLAYER_CHARACTER_ID, false);
+	box2dManager->set_jump_button_released(Box2dManager::PLAYER_CHARACTER_ID);
+
+	const float gravity_step = 39.6f / 60.0f;
+
+	// Press right during jump
+	st_float_position move_right(2.0f, 0.0f);
+
+	for (int frame = 0; frame < 30; ++frame) {
+		float y_before = getPlayerPosition().y;
+		b2Vec2 vel_before = getPlayerVelocity();
+
+		box2dManager->execute();
+		box2dManager->change_player_position(move_right);
+
+		float y_after = getPlayerPosition().y;
+		b2Vec2 vel_after = getPlayerVelocity();
+
+		float vy_change = vel_after.y - vel_before.y;
+
+		EXPECT_NEAR(vy_change, gravity_step, 0.15f)
+			<< "vy change should roughly match gravity with horizontal input at frame " << frame;
+		EXPECT_GE(vy_change, 0.0f)
+			<< "vy must never decrease at frame " << frame
+			<< " (vy_change=" << vy_change << ")";
+
+		if (vel_before.y < 0.0f && vel_after.y < 0.0f) {
+			EXPECT_LT(y_after, y_before) << "y must decrease while rising at frame " << frame;
+		} else if (vel_before.y > 0.0f && vel_after.y > 0.0f) {
+			EXPECT_GT(y_after, y_before) << "y must increase while falling at frame " << frame;
+		}
+	}
+}
+
 TEST_F(Box2dManagerTest, GetPlayerBoxInterferenceBug) {
 	// Create a ground floor
 	std::vector<st_rectangle> walls;

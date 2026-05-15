@@ -496,11 +496,9 @@ st_float_position GameManager::checkScrolling()
 
     move.x += (player_x_px - mapScroll.x) - RES_W/2;
 
-    //std::cout << "GameManager::checkScrolling - move.x[" << move.x << "]" << std::endl;
-
-    if (mapScroll.x + move.x < 0 || mapScroll.x + move.x > mapController.get_size().width*TILESIZE) {
+    if (mapScroll.x + move.x < 0 || mapScroll.x + move.x > mapController.get_size().width * TILESIZE) {
         move.x = 0;
-	}
+    }
 
 	return move;
 }
@@ -1555,6 +1553,24 @@ void GameManager::update_stage_scrolling()
         return;
     }
     mapController.changeScrolling(checkScrolling(), true);
+
+    // Direct vertical camera follow from Box2D position (bypasses row-lock)
+    b2BodyId player_body = box2d_manager.get_character_body(Box2dManager::PLAYER_CHARACTER_ID);
+    b2Vec2 body_pos = b2Body_GetPosition(player_body);
+    float player_y_px = body_pos.y * PIXELS_PER_METER;
+    float current_scroll_y = mapController.getMapScrolling().y;
+    float target_scroll_y = player_y_px - AREA_H / 2;
+
+    if (target_scroll_y < 0) target_scroll_y = 0;
+    int map_height_px = mapController.get_size().height * TILESIZE;
+    if (target_scroll_y + AREA_H > map_height_px) {
+        target_scroll_y = map_height_px - AREA_H;
+    }
+    if (target_scroll_y < 0) target_scroll_y = 0;
+
+    float diff_y = target_scroll_y - current_scroll_y;
+    mapController.incScrollValue(0, diff_y);
+
     st_position p_pos = player1.get_real_position();
     p_pos.x += player1.get_size().width/2;
     //std::cout << "p_pos.x: " << p_pos.x << std::endl;
