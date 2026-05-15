@@ -314,15 +314,12 @@ void classPlayer::attack(bool dont_update_colors)
 
         short int weapon_id = 0;
 
-        std::cout << "PLAYER::ATTACK - used_weapon[" << used_weapon << "]" << std::endl;
-
         weapon_id = used_weapon;
 
         if (weapon_id == -1) {
             weapon_id = 0;
         }
 
-        std::cout << ">>>>>>>>>>>>>>>>>> proj_direction[" << proj_direction << "] <<<<<<<<<<<<<<<<<<" << std::endl;
         projectile_list.push_back(projectile(0, proj_direction, get_attack_position(), is_player()));
         projectile &temp_proj = projectile_list.back();
         temp_proj.play_sfx(false);
@@ -330,9 +327,6 @@ void classPlayer::attack(bool dont_update_colors)
         temp_proj.set_weapon_id(weapon_id);
         temp_proj.set_owner(this);
         temp_proj.set_max_dist(TILESIZE*4);
-
-
-        std::cout << "classPlayer::attack::DEBUG #1" << std::endl;
 
         int weapon_trajectory = GameData::get_instance()->get_projectile(0).trajectory;
         if (weapon_trajectory == TRAJECTORY_CENTERED || weapon_trajectory == TRAJECTORY_SLASH) {
@@ -374,8 +368,6 @@ void classPlayer::attack(bool dont_update_colors)
             }
         }
 
-        std::cout << "classPlayer::attack::DEBUG #2" << std::endl;
-
         attack_state = ATTACK_START;
         state.attack_timer = TimerView::get_instance()->getTimer();
         if (state.animation_type == ANIM_TYPE_STAND) {
@@ -387,8 +379,6 @@ void classPlayer::attack(bool dont_update_colors)
         } else if (state.animation_type == ANIM_TYPE_WALK) {
             set_animation_type(ANIM_TYPE_WALK_ATTACK);
         }
-
-        std::cout << "classPlayer::attack::DEBUG #3" << std::endl;
     }
 }
 

@@ -12,7 +12,6 @@
 #include "data/sharedmapdata.h"
 
 void TiledWorldLoader::loadMap(std::string filename) {
-    std::cout << "### TiledMap::initialize.filename[" << filename << "]" << std::endl;
     if (!map.load(filename)) {
         std::cout << "Error loading map" << std::endl;
         return;
@@ -77,8 +76,8 @@ std::vector<tiled_world_tileset_origin_data> TiledWorldLoader::buildTileLayerDat
     const auto layer_chunks = layer.getChunks();
     const auto mapTileSize = map.getTileSize();
 
-    std::cout << "layer_tiles.size[" << layer_tiles.size() << "]" << std::endl; // finite
-    std::cout << "layer_chunks.size[" << layer_chunks.size() << "]" << std::endl; // infinite
+    //std::cout << "layer_tiles.size[" << layer_tiles.size() << "]" << std::endl; // finite
+    //std::cout << "layer_chunks.size[" << layer_chunks.size() << "]" << std::endl; // infinite
 
 
     const auto& tileIDs = layer.getTiles();
@@ -128,8 +127,6 @@ std::vector<tiled_world_tileset_origin_data> TiledWorldLoader::buildTileLayerDat
     // This part builds the map tiles
     int map_x_multi = 0;
     for (const auto& map_chunk : layer_chunks) {
-        //std::cout << "### map_chunk.size[" << map_chunk.size.x << "][" << map_chunk.size.y << "], position[" << map_chunk.position.x << "][" << map_chunk.position.y << "]" << std::endl;
-
         for (auto map_tile : map_chunk.tiles) {
             if (map_tile.ID != 0) {
                 unsigned int map_tile_index = map_tile.ID - 1;

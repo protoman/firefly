@@ -69,9 +69,6 @@ void Box2dManager::execute()
 		if (data.jump_started && data.jump_button_released) {
 			b2Vec2 vel = b2Body_GetLinearVelocity(data.bodyId);
 			if (vel.y >= 0.0f && is_character_touching_ground(data)) {
-				#ifdef DEBUG_BOX2D
-				std::cout << "Box2dManager::execute - Resetting jumps for character " << id << std::endl;
-				#endif
 				character_reset_jumps(id);
 			}
 		}

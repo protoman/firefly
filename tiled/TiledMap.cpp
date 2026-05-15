@@ -18,7 +18,6 @@ TiledMap::TiledMap() = default;
 void TiledMap::initialize(std::string filename, SDL_Renderer* renderer)
 {
     if (map.load(filename)) {
-        std::cout << "### TiledMap::initialize.filename[" << filename << "]" << std::endl;
         //load the textures as they're shared between layers
         const auto& tileSets = map.getTilesets();
         assert(!tileSets.empty());
