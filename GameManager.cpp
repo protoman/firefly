@@ -1552,7 +1552,7 @@ void GameManager::update_stage_scrolling()
     if (TimerView::get_instance()->is_paused() == true) {
         return;
     }
-    mapController.changeScrolling(checkScrolling(), true);
+    mapController.changeScrolling(checkScrolling(), false);
 
     // Direct vertical camera follow from Box2D position (bypasses row-lock)
     b2BodyId player_body = box2d_manager.get_character_body(Box2dManager::PLAYER_CHARACTER_ID);
