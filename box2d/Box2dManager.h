@@ -76,7 +76,6 @@ public:
 	e_player_on_ground is_player_on_ground();
 	bool is_on_slope(b2Vec2& normal);
 	bool is_player_touching_ground();
-	void execute_player_physics();
 	void updatePlayerCollision(st_size size);
 
 	bool is_character_touching_ground(const CharacterBox2dData& data);
@@ -93,7 +92,6 @@ private:
 	float timeStep = 1.0f / 60.0f;
 	int subStepCount = 4;
 	float GRAVITY = 39.6f;
-	float MAX_SPEED = 45.0f;
 	float HORIZONTAL_SPEED_LIMIT = 10.0f;
 	float SLIDE_DOWN_SPEED_MULTIPLIER = 2.0f;
 	float HORIZONTAL_MOVE_FORCE = 4.0f;
@@ -107,9 +105,6 @@ private:
 	b2WorldId worldId{};
 	// ground
 	b2BodyDef groundBodyDef = b2DefaultBodyDef();
-	b2BodyId id;
-	b2Polygon groundBox;
-	b2ShapeDef groundShapeDef = b2DefaultShapeDef();
 
 	// characters
 	std::map<int, CharacterBox2dData> _characters;

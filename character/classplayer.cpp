@@ -893,7 +893,6 @@ void classPlayer::clean_move_commands()
     moveCommands.left = 0;
     moveCommands.right = 0;
     moveCommands.use_item = 0;
-    moveCommands.start = 0;
     moveCommands.up = 0;
 }
 

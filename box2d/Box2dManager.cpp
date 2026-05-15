@@ -11,7 +11,7 @@ CharacterBox2dData& Box2dManager::_player_data()
 	return _characters.at(PLAYER_CHARACTER_ID);
 }
 
-Box2dManager::Box2dManager() : groundBox() {
+Box2dManager::Box2dManager() {
 	// create world
 	worldDef.gravity = b2Vec2{0.0f, GRAVITY};
 	worldId = b2CreateWorld(&worldDef);
@@ -517,19 +517,6 @@ bool Box2dManager::is_character_touching_ground(const CharacterBox2dData& data) 
 		}
 	}
 	return false;
-}
-
-void Box2dManager::execute_player_physics() {
-	auto& player = _player_data();
-	b2Vec2 currentVelocity = b2Body_GetLinearVelocity(player.bodyId);
-
-	if (!is_player_touching_ground()) {
-		player.jump_started = true;
-	} else {
-		if (currentVelocity.y >= -0.1f) {
-			player.jump_started = false;
-		}
-	}
 }
 
 void Box2dManager::updatePlayerCollision(st_size size) {

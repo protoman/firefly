@@ -52,7 +52,6 @@ struct st_characterMovements { // this instruction holds commands passed from pl
     short right;
     short attack;
     short jump;
-    short start;
     short dash;
     short use_item;
 	st_characterMovements()
@@ -67,7 +66,6 @@ struct st_characterMovements { // this instruction holds commands passed from pl
  * @brief
  *
  */
-        start = 0;
 		dash = 0;
         use_item = 0;
 	}
@@ -123,9 +121,6 @@ public:
     Uint8 get_current_hp() const;
     void set_current_hp(Uint8 inc);
     int get_box2d_character_id();
-    void execute_jump();								// execute a complete jump
-    void execute_jump_up();					// execute jump until reaches the maximum height
-    void fall();								// falls until reaching ground or leaving screen /// @TODO
     void fall_to_ground();
     void initialize_position_to_ground();
     bool change_position(short int xinc, short int yinc);
@@ -232,7 +227,6 @@ public:
     void remove_game_item_from_slot();
     void set_is_on_game_item_area(bool state);
     bool have_frame_graphic(int direction, int type, int pos);  // indicates if the given frame graphic exits
-    void reset_animation_type();
     st_characterMovements getMoveCommands();
 
 
@@ -355,11 +349,9 @@ protected:
     bool _is_falling;
 
     int _dead_state; // 0 - alive, 1 - just died, 2 dead
-    bool _has_background;
     short _stairs_stopped_count; // used to prevent stopping stairs animation because of a single frame without player input
     short _charged_shot_projectile_id;
     short _normal_shot_projectile_id;
-    short _hit_move_back_dist;
     bool _was_animation_reset;                               // inform that animation "looped" once
     bool _is_last_frame;                                     // inform that reached the end of that animation loop
     bool _is_attack_frame;                                   // inform that NPC reached the attack-frame number (so it can attack before attack animation reaches the final frame)

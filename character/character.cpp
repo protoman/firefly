@@ -33,7 +33,7 @@ static std::map<std::string, st_imageData> _character_frames_surface;
 // ********************************************************************************************** //
 //                                                                                                //
 // ********************************************************************************************** //
-character::character() : hitPoints(1, 1), last_hit_time(0), is_player_type(false), _platform(nullptr), hit_animation_timer(0), hit_moved_back_n(0), attack_button_released(true), dead(false), charging_color_n(0), charging_color_timer(0), shield_type(0), _moving_platform_timer(0), position(), _number(0), _super_jump(false), _force_jump(false), _teleport_minimal_y(0), _is_falling(false), _dead_state(0), _water_splash(false), _has_background(false), hit_duration(300), _is_boss(false), _is_stage_boss(false), is_ghost(false)
+character::character() : hitPoints(1, 1), last_hit_time(0), is_player_type(false), _platform(nullptr), hit_animation_timer(0), hit_moved_back_n(0), attack_button_released(true), dead(false), charging_color_n(0), charging_color_timer(0), shield_type(0), _moving_platform_timer(0), position(), _number(0), _super_jump(false), _force_jump(false), _teleport_minimal_y(0), _is_falling(false), _dead_state(0), _water_splash(false), hit_duration(300), _is_boss(false), _is_stage_boss(false), is_ghost(false)
 {
     _was_animation_reset = false;
     move_speed = 2.0;
@@ -564,7 +564,6 @@ void character::clear_move_commands()
     //std::cout << ">>> moveCommands.attack::RESET #3" << std::endl;
 	moveCommands.attack = 0;
 	moveCommands.jump = 0;
-    moveCommands.start = 0;
 }
 
 
@@ -2915,13 +2914,6 @@ bool character::have_frame_graphic(int direction, int type, int pos)
     return true;
 }
 
-void character::reset_animation_type()
-{
-    if (get_anim_type() != ANIM_TYPE_STAND || get_anim_type() != ANIM_TYPE_WALK) {
-        set_animation_type(ANIM_TYPE_STAND);
-    }
-}
-
 st_characterMovements character::getMoveCommands()
 {
     return moveCommands;
@@ -3345,82 +3337,6 @@ void character::set_current_hp(Uint8 inc)
 st_position character::get_real_position() const
 {
     return relativePosition;
-}
-
-void character::execute_jump_up()
-{
-    int b2d_id = is_player() ? Box2dManager::PLAYER_CHARACTER_ID : _box2d_character_id;
-    if (b2d_id >= 0) {
-        auto& mgr = GameManager::get_instance()->get_box2d_manager();
-        jump(0, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
-        jump(1, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
-        // Loop while ascending (velocity.y < 0) - Box2D handles physics
-        return;
-    }
-
-    // Non-Box2D: fall then jump using tile-based method
-    for (int i=0; i<100; i++) {
-		char_update_real_position();
-		gravity();
-        GameManager::get_instance()->get_current_map_obj()->show();
-		show();
-        GameManager::get_instance()->get_current_map_obj()->showAbove(0);
-	}
-
-    jump(0, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
-    jump(1, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
-    gravity();
-}
-
-void character::execute_jump()
-{
-	// fall until reaching ground
-	fall();
-
-	// reset command jump, if any
-    jump(0, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
-    int initial_y = (int)position.y;
-    jump(1, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
-	std::cout << "execute_jump::START - " << initial_y << ", position.y: " << position.y << std::endl;
-    while (position.y != initial_y) {
-        InputController::get_instance()->read_input();
-        //std::cout << "execute_jump::LOOP - " << initial_y << ", position.y: " << position.y << std::endl;
-		char_update_real_position();
-        bool resJump = jump(1, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
-        if (resJump == false) {
-			gravity();
-		}
-        GameManager::get_instance()->get_current_map_obj()->show();
-		show();
-        GameManager::get_instance()->get_current_map_obj()->showAbove();
-        TimerView::get_instance()->delay(20);
-    }
-}
-
-
-void character::fall()
-{
-    { int b2d_id = is_player() ? Box2dManager::PLAYER_CHARACTER_ID : _box2d_character_id;
-      if (b2d_id >= 0) { GameManager::get_instance()->get_box2d_manager().character_reset_jumps(b2d_id); return; } }
-    // already on the ground
-    if (hit_ground() == true) {
-        set_animation_type(ANIM_TYPE_STAND);
-        return;
-    }
-    for (int i=0; i<RES_H; i++) {
-		char_update_real_position();
-		gravity(false);
-		if (hit_ground() == true && state.animation_type == ANIM_TYPE_STAND) {
-            GameManager::get_instance()->get_current_map_obj()->show();
-			show();
-            GameManager::get_instance()->get_current_map_obj()->showAbove();
-			return;
-		}
-        GameManager::get_instance()->get_current_map_obj()->show();
-		show();
-        GameManager::get_instance()->get_current_map_obj()->showAbove();
-        TimerView::get_instance()->delay(10);
-    }
 }
 
 // @TODO: find first ground from bottom, that have space for player (2 tiles above are free), check 2 tiles on the x-axis also
