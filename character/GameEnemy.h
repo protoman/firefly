@@ -4,7 +4,7 @@
 #include <string>
 #include "character.h"
 #include "file/format.h"
-#include "character/artificial_inteligence.h"
+#include "character/artificial_intelligence.h"
 
 class classPlayer;
 
@@ -26,7 +26,7 @@ struct enemy_frameset {
  * @brief
  *
  */
-class GameEnemy : public artificial_inteligence
+class GameEnemy : public artificial_intelligence
 {
 public:
     GameEnemy();

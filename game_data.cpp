@@ -122,16 +122,16 @@ void GameData::load_npc_list()
 
 void GameData::load_ai_list()
 {
-    ai_list_v0 = fio_cmm.load_json_data<file_artificial_inteligence_v0>(SharedData::get_instance()->FILEPATH + "data/game_ai_list_v0.json");
+    ai_list_v0 = fio_cmm.load_json_data<file_artificial_intelligence_v0>(SharedData::get_instance()->FILEPATH + "data/game_ai_list_v0.json");
 
-    ai_list = fio_cmm.load_from_disk<file_artificial_inteligence>(SharedData::get_instance()->FILEPATH + "/game_ai_list.dat");
+    ai_list = fio_cmm.load_from_disk<file_artificial_intelligence>(SharedData::get_instance()->FILEPATH + "/game_ai_list.dat");
     if (ai_list.size() == 0) { // add one first item to avoid errors
         for (unsigned int i=0; i<enemy_list.size(); i++) {
-            ai_list.push_back(file_artificial_inteligence());
+            ai_list.push_back(file_artificial_intelligence());
         }
     }
     if (ai_list.size() == 0) { // add one first item to avoid errors
-        ai_list.push_back(file_artificial_inteligence());
+        ai_list.push_back(file_artificial_intelligence());
     }
 }
 

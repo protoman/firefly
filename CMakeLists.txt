@@ -57,7 +57,7 @@ set(GAME_SOURCES
     box2d/box2ddebugdraw.cpp box2d/box2ddebugdraw.h
     character/GameEnemy.cpp character/GameEnemy.h
     character/GameNpc.cpp character/GameNpc.h
-    character/artificial_inteligence.cpp character/artificial_inteligence.h
+    character/artificial_intelligence.cpp character/artificial_intelligence.h
     character/character.cpp character/character.h
     character/character_animation.cpp character/character_animation.h
     character/classplayer.cpp character/classplayer.h

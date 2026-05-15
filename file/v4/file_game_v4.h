@@ -377,12 +377,12 @@ struct reaction {
     }
 };
 
-struct file_artificial_inteligence {
+struct file_artificial_intelligence {
     char name[CHAR_NAME_SIZE];
     struct file_ai_action states[AI_MAX_STATES];
     struct reaction reactions[MAX_AI_REACTIONS];                    // reactions near, hit and dead
 
-    file_artificial_inteligence() {
+    file_artificial_intelligence() {
         sprintf(name, "%s", "A.I.");
     }
 };
@@ -421,16 +421,16 @@ struct file_ai_reaction_v3 {
     }
 };
 
-struct file_artificial_inteligence_v3 {
+struct file_artificial_intelligence_v3 {
     char name[CHAR_NAME_SIZE];
     struct file_ai_action_v3 states[AI_MAX_STATES];
     struct file_ai_reaction_v3 reactions[MAX_AI_REACTIONS];                    // reactions near, hit and dead
 
-    file_artificial_inteligence_v3() {
+    file_artificial_intelligence_v3() {
         sprintf(name, "%s", "A.I.");
     }
 
-    file_artificial_inteligence_v3(file_artificial_inteligence origin) {
+    file_artificial_intelligence_v3(file_artificial_intelligence origin) {
         sprintf(name, "%s", origin.name);
         for (int i=0; i<AI_MAX_STATES; i++) {
             states[i].chance = origin.states[i].chance;

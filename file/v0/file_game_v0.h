@@ -382,7 +382,7 @@ struct file_ai_action_v0 {
     }
 };
 
-struct file_artificial_inteligence_v0 {
+struct file_artificial_intelligence_v0 {
     std::string name;
     std::vector<file_ai_action_v0> states;
     std::vector<reaction_v0> reactions;                    // reactions near, hit and dead
@@ -393,7 +393,7 @@ struct file_artificial_inteligence_v0 {
       archive(CEREAL_NVP(name), CEREAL_NVP(states), CEREAL_NVP(reactions));
     }
 
-    file_artificial_inteligence_v0() {
+    file_artificial_intelligence_v0() {
         name = "A.I.";
     }
 };

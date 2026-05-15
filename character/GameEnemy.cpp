@@ -273,7 +273,7 @@ void GameEnemy::show()
     hitbox.x -= gameManager::get_instance()->get_current_map_obj()->getMapScrolling().x;
     ImageView::get_instance()->draw_rectangle(hitbox, 0, 0, 255, 100);
 #endif
-    artificial_inteligence::show();
+    artificial_intelligence::show();
     // show tooltip, if needed
     //std::cout << "ENEMY.SHOW[" << name << "]" << std::endl;
 }

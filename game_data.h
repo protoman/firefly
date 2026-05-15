@@ -69,7 +69,7 @@ private:
 
 public:
     file_game game_data;
-    std::vector<file_artificial_inteligence> ai_list;
+    std::vector<file_artificial_intelligence> ai_list;
     std::vector<file_anim_block> anim_tile_list;
     std::vector<file_player_v3_1_1> player_list_v3_1;
     std::vector<file_v6_stage> v6_stage_list;                                           // list of stages
@@ -95,7 +95,7 @@ public:
     std::map<unsigned int, std::vector<file_map_npc_v0>>  file_stage_npc_map_v0;        // map NPCs
 
 
-    std::vector<file_artificial_inteligence_v0> ai_list_v0;
+    std::vector<file_artificial_intelligence_v0> ai_list_v0;
     std::vector<file_anim_block_v0> anim_tile_list_v0;
     std::vector<file_stage_v0> stage_list_v0;                                           // list of stages
     std::map<int, std::vector<file_area_v0>> area_map_v0;                               // map of areas, that are a sub-parts of the stage rooms that share same style

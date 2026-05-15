@@ -1,4 +1,4 @@
-#include "character/artificial_inteligence.h"
+#include "character/artificial_intelligence.h"
 
 #include <math.h>
 
@@ -63,11 +63,11 @@ enum e_BOSS_001_SPRITE_IMAGE_LIST {
 #define HAND_ATTACK_SPEED 6.0
 #define HAND_ATTACK_MAX_DIST 400
 
-void artificial_inteligence::boss_001_execute_ai() {
+void artificial_intelligence::boss_001_execute_ai() {
     //std::cout << "TEST 001" << std::endl;
 }
 
-std::vector<st_rectangle> artificial_inteligence::get_collision_list_boss_001() {
+std::vector<st_rectangle> artificial_intelligence::get_collision_list_boss_001() {
     std::vector<st_rectangle> res;
     // body
     res.push_back(st_rectangle(position.x, position.y, img_boss_body.surface->w, img_boss_body.surface->h));
@@ -87,12 +87,12 @@ std::vector<st_rectangle> artificial_inteligence::get_collision_list_boss_001() 
     return res;
 }
 
-void artificial_inteligence::boss_001_show() {
+void artificial_intelligence::boss_001_show() {
 
     if (!is_on_screen()) {
         return;
     }
-    //std::cout << "artificial_inteligence::boss_001_show - pos.x[" << position.x << "], real_pos.x[" << realPosition.x << "]" << std::endl;
+    //std::cout << "artificial_intelligence::boss_001_show - pos.x[" << position.x << "], real_pos.x[" << realPosition.x << "]" << std::endl;
 
     if (img_boss_body.is_null()) {
         boss_001_init();
@@ -232,7 +232,7 @@ void artificial_inteligence::boss_001_show() {
 
 }
 
-void artificial_inteligence::boss_001_init() {
+void artificial_intelligence::boss_001_init() {
     // TODO: use a list
     img_boss_body = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->FILEPATH + "/images/sprites/enemies/bosses/plant_body.png");
     img_boss_head = ImageView::get_instance()->imageFromFile(SharedData::get_instance()->FILEPATH + "/images/sprites/enemies/bosses/plant_head.png");
