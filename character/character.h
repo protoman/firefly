@@ -10,7 +10,6 @@
 #include "file/format/st_characterState.h"
 #include "projectilelib.h"
 #include "character/movement/jump.h"
-#include "character/movement/moveslopes.h"
 #include "character/character_animation.h"
 #include "file/format/st_hitPoints.h"
 
@@ -268,7 +267,6 @@ protected:
     void check_reset_stand();
     virtual bool can_air_dash();
     Uint8 get_projectile_max_shots(bool always_charged);
-    bool executeCheckSlope(int xinc, int yinc);
 
 
 // members
@@ -402,7 +400,6 @@ protected:
 
     bool is_on_game_item_area = false;
 
-    moveSlopes slopesManager;
 };
 
 #endif // CHARACTER_H

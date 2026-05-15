@@ -63,7 +63,6 @@ set(GAME_SOURCES
     character/classplayer.cpp character/classplayer.h
     character/custom/ai_boss_001.cpp character/custom/ai_boss_001.h
     character/movement/jump.cpp character/movement/jump.h
-    character/movement/moveslopes.cpp character/movement/moveslopes.h
     class_config.cpp class_config.h
     collision_detection.cpp collision_detection.h
     controller/inputcontroller.cpp controller/inputcontroller.h

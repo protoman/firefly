@@ -237,24 +237,15 @@ void character::charMove() {
             temp_move_speed = QUICKSAND_JUMP_LIMIT/2;
         }
 
-        float minimal_speed = 0.1f;
-        {
-            float test_slope_angle = slopesManager.get_current_slope_angle();
-            if (test_slope_angle > SLOPE_ANGLE_THRESHOLD) {
-                minimal_speed = slopesManager.calculate_minimal_speed(test_slope_angle, temp_move_speed);
-            }
-        }
-
-        for (float i=temp_move_speed; i>=minimal_speed; i--) {
+        for (float i=temp_move_speed; i>=0.1f; i--) {
             st_map_collision map_col = map_collision(-i, 0, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
             mapLock = map_col.block;
             if (state.animation_type == ANIM_TYPE_HIT) {
                 hit_moved_back_n += temp_move_speed;
             }
             //if (is_player()) std::cout << "### MOVE::LEFT - mapLock[" << mapLock << "] ###" << std::endl;
-            bool is_on_slope = executeCheckSlope(i, 0);
-            if (is_on_slope == true || mapLock == BLOCK_UNBLOCKED || mapLock == BLOCK_WATER || mapLock == BLOCK_Y) {
-                if (is_on_slope == true || mapLock == BLOCK_UNBLOCKED || mapLock == BLOCK_Y) {
+            if (mapLock == BLOCK_UNBLOCKED || mapLock == BLOCK_WATER || mapLock == BLOCK_Y) {
+                if (mapLock == BLOCK_UNBLOCKED || mapLock == BLOCK_Y) {
                     position.x -= i + GameManager::get_instance()->get_current_map_obj()->get_last_scrolled().x;
                     moved_dist.x -= i + GameManager::get_instance()->get_current_map_obj()->get_last_scrolled().x;
                 } else if (mapLock == BLOCK_WATER) {
@@ -317,14 +308,7 @@ void character::charMove() {
         }
 
         //std::cout << "### MOVE::RIGHT#1 temp_move_speed[" << temp_move_speed << "] ###" << std::endl;
-        float minimal_speed = 0.1f;
-        {
-            float test_slope_angle = slopesManager.get_current_slope_angle();
-            if (test_slope_angle > SLOPE_ANGLE_THRESHOLD) {
-                minimal_speed = slopesManager.calculate_minimal_speed(test_slope_angle, temp_move_speed);
-            }
-        }
-        for (float i=temp_move_speed; i>=minimal_speed; i--) {
+        for (float i=temp_move_speed; i>=0.1f; i--) {
             // movement is too small to change a pixel in player movement, ignore it
             int adjusted_real_pos = (int)(relativePosition.x + i);
             int real_pos = (int)relativePosition.x;
@@ -333,16 +317,12 @@ void character::charMove() {
             if (adjusted_real_pos == real_pos) {
                 break;
             }
-            bool is_on_slope = executeCheckSlope(i, 0);
-
             if (is_player() == false || (relativePosition.x + i + frameSize.width/2) < RES_W) {
                 st_map_collision map_col = map_collision(i, 0, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
                 mapLock = map_col.block;
-                //std::cout << "### MOVE::RIGHT#2 - is_on_slope[" << is_on_slope << "] ###" << std::endl;
-                if (is_on_slope == true || mapLock == BLOCK_UNBLOCKED || mapLock == BLOCK_WATER || mapLock == BLOCK_Y) {
-                    //std::cout << "CHAR::MOVE-RIGHT #3 mapLock[" << mapLock << "], pos.x[" << position.x << "]" << std::endl;
+                if (mapLock == BLOCK_UNBLOCKED || mapLock == BLOCK_WATER || mapLock == BLOCK_Y) {
 
-                    if (is_on_slope == true || mapLock == TERRAIN_UNBLOCKED || mapLock == BLOCK_Y) {
+                    if (mapLock == TERRAIN_UNBLOCKED || mapLock == BLOCK_Y) {
                         position.x += i - GameManager::get_instance()->get_current_map_obj()->get_last_scrolled().x;
                         moved_dist.x += i - GameManager::get_instance()->get_current_map_obj()->get_last_scrolled().x;
                     } else if (mapLock == BLOCK_WATER) {
@@ -1438,9 +1418,7 @@ bool character::gravity(bool boss_demo_mode=false)
 
         st_map_collision map_col;
         bool was_moved = false;
-        bool hit_slope = executeCheckSlope(0, adjusted_speed);
-        if (!hit_slope) {
-            for (int i=adjusted_speed; i>0; i--) {
+        for (int i=adjusted_speed; i>0; i--) {
                 map_col = map_collision(0, i+1, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
                 int mapLock = map_col.block;
 
@@ -1486,7 +1464,6 @@ bool character::gravity(bool boss_demo_mode=false)
                     reset_gravity_speed();
                 }
             }
-        }
 
 		if (was_moved == false && (state.animation_type == ANIM_TYPE_JUMP || state.animation_type == ANIM_TYPE_JUMP_ATTACK) && state.animation_type != ANIM_TYPE_SLIDE) {
             if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #H" << std::endl;
@@ -1994,16 +1971,6 @@ bool character::jump(int jumpCommandStage, st_float_position mapScrolling)
             _obj_jump.interrupt();
         }
 
-        if (jump_speed > 0) {
-            bool hit_slope = executeCheckSlope(0, jump_speed);
-            if (hit_slope) {
-                reset_animation_type();
-                std::cout << "################ hit_slope #2, p.bottom[" << get_hitbox().y + get_hitbox().h << "]" << std::endl;
-                _obj_jump.finish();
-                return false;
-            }
-        }
-
         // check collision
         for (int i=abs((float)jump_speed); i>0; i--) {
             int speed_y = 0;
@@ -2501,36 +2468,9 @@ st_map_collision character::map_collision(const float incx, const short incy, st
         map_point.y = py_bottom/TILESIZE;
     }
 
-    // Search fro slope in the middle X point first
-    bool hit_slope = false;
-    if ((state.animation_type == ANIM_TYPE_JUMP || state.animation_type == ANIM_TYPE_JUMP_ATTACK) && incy != 0) {
-        int slope_map_x_points[3];
-        slope_map_x_points[0] = (px_center-4)/TILESIZE;
-        slope_map_x_points[1] = px_center/TILESIZE;
-        slope_map_x_points[2] = (px_center+4)/TILESIZE;
-        for (int i=0; i<3; i++) {
-            int test_x = slope_map_x_points[i];
-            int test_y = (py_bottom)/TILESIZE;
-
-            file_v6_room_tile tile_center = GameManager::get_instance()->get_current_map_obj()->getTileFromPosition(test_x, test_y);
-
-            // this exists to prevent irregular movement when we reach the single-pixel space between slope tiles
-
-            if (tile_center.tile_underlay.type == TILE_TYPE_SLOPE) {
-                hit_slope = true;
-                // TODO
-                return st_map_collision(map_block, TERRAIN_SOLID);
-            }
-
-            //std::cout << "check_map_collision_point #2, map_block[" << map_block << "], pos.y[" << position.y << "], py_bottom[" << py_bottom << "], rect_hitbox.h[" << rect_hitbox.h << "], py_top[" << py_top << "], rect_hitbox.y[" << rect_hitbox.y << "], py_adjust[" << py_adjust << "], incy[" << incy << "]" << std::endl;
-            //std::cout << "CHAR::GRAVITY - CHECK-SLOPE - tile.type[" << tile_center.tile_underlay.type << "], map.x[" << test_x << "], map.y[" << test_y << "], py_bottom[" << py_bottom << "]" << std::endl;
-        }
-
-    }
-
     //if (is_player() == false) std::cout << "CHAR::MAP_COLLISION[" << name << "], map_point.y: " << map_point.y << std::endl;
 
-    if (incy != 0 && hit_slope == false) {
+    if (incy != 0) {
         for (int i=0; i<3; i++) {
             map_point.x = map_x_points[i];
             old_map_point.x = map_x_points[i];
@@ -2554,11 +2494,6 @@ st_map_collision character::map_collision(const float incx, const short incy, st
             }
 
 
-            // SLOPE //
-            if (map_block != BLOCK_UNBLOCKED && new_map_lock == TERRAIN_SLOPE) {
-                std::cout << ">>>>>>>>>>>>>>>> ADJUST TO SLOPE" << std::endl;
-                //map_block = slopesManager.checkSlope(0, incy, get_hitbox(state.animation_state));
-            }
             // STAIRS //
             if ((map_block == BLOCK_UNBLOCKED || map_block == BLOCK_X || map_block == BLOCK_WATER) && incy > 0 && new_map_lock == TERRAIN_STAIR) { // stairs special case
                 int middle_y_point_lock = TERRAIN_UNBLOCKED;
@@ -3125,20 +3060,6 @@ Uint8 character::get_projectile_max_shots(bool always_charged)
         return max_projectiles;
     }
     return max_proj;
-}
-
-bool character::executeCheckSlope(int xinc, int yinc)
-{
-    if (_obj_jump.is_started() && _obj_jump.get_state() == JUMPUP) {
-        return false;
-    }
-    int calc_y = slopesManager.checkSlope(xinc, yinc, get_hitbox(state.animation_state));
-    if (calc_y != 0) {
-        //if (is_player()) std::cout << "CHAR::executeCheckSlope - set y from currenbt[" << position.y << "] to value[" << calc_y << "]" << std::endl;
-        position.y = calc_y;
-        return true;
-    }
-    return false;
 }
 
 void character::push_back(short direction)
