@@ -146,6 +146,8 @@ public:
     void zoom_in();
     void zoom_out();
 
+    Box2dManager& get_box2d_manager();
+
 private:
     GameManager();
     ~GameManager();

@@ -1539,6 +1539,11 @@ void GameManager::set_player_direction(ANIM_DIRECTION dir)
     player1.set_direction(dir);
 }
 
+Box2dManager& GameManager::get_box2d_manager()
+{
+	return box2d_manager;
+}
+
 void GameManager::update_stage_scrolling()
 {
     if (TimerView::get_instance()->is_paused() == true) {

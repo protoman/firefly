@@ -16,6 +16,12 @@ the id and shape objects into a map, passing all the required parameters, so all
 exist for that character.
 ========================================================================================================================
 
+Now, for the GameObject class too, when initializing the object, call the method in Box2dManager that creates
+the id and shape objects into a map, passing all the required parameters, so all required box2d variables,
+exist for that character.
+========================================================================================================================
+
+
 Remove inertia, if used, inc lasses character, GameNpc, GameEnemy and artificial_inteligence.
 It should rely on Box2DManager for that character in the map on that class, for speed and movement instead.
 ========================================================================================================================

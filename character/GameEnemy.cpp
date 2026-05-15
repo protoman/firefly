@@ -62,6 +62,11 @@ GameEnemy::GameEnemy(int map_id, int main_id, int id) : _is_player_friend(false)
     if (is_static()) {
         can_fly = true;
     }
+
+    _box2d_character_id = GameManager::get_instance()->get_box2d_manager().add_character(
+        st_float_position(position.x, position.y),
+        st_size(frameSize.width, frameSize.height)
+    );
 }
 
 GameEnemy::GameEnemy(int map_id, int main_id, st_position enemy_pos, short int direction, bool player_friend) // spawned enemy
@@ -85,9 +90,12 @@ GameEnemy::GameEnemy(int map_id, int main_id, st_position enemy_pos, short int d
     if (is_static()) {
         can_fly = true;
     }
+
+    _box2d_character_id = GameManager::get_instance()->get_box2d_manager().add_character(
+        st_float_position(position.x, position.y),
+        st_size(frameSize.width, frameSize.height)
+    );
 }
-
-
 
 
 // ********************************************************************************************** //
@@ -316,6 +324,11 @@ bool GameEnemy::is_static()
 int GameEnemy::get_id()
 {
     return _number;
+}
+
+int GameEnemy::get_box2d_character_id()
+{
+    return _box2d_character_id;
 }
 
 void GameEnemy::enemy_set_hp(st_hit_points new_hp)

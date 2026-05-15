@@ -1,6 +1,7 @@
 #include "GameNpc.h"
 
 #include "game_data.h"
+#include "GameManager.h"
 #include "data/shareddata.h"
 #include "view/imageview.h"
 #include "view/timerview.h"
@@ -103,6 +104,11 @@ void GameNPC::death()
 
 }
 
+int GameNPC::get_box2d_character_id()
+{
+    return _box2d_character_id;
+}
+
 void GameNPC::build_basic_npc(int map_id, int main_id)
 {
     _number = main_id;
@@ -143,6 +149,11 @@ void GameNPC::build_basic_npc(int map_id, int main_id)
     last_execute_time = 0;
     can_fly = have_fly_movement();
     vulnerable_area_box = GameData::get_instance()->get_enemy(_number)->vulnerable_area;
+
+    _box2d_character_id = GameManager::get_instance()->get_box2d_manager().add_character(
+        st_float_position(position.x, position.y),
+        st_size(frameSize.width, frameSize.height)
+    );
 
     npc_dialogs.clear();
     for (int i=0; i<LANGUAGE_COUNT; i++) {

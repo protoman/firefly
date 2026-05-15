@@ -14,6 +14,7 @@ public:
     void show();
     void npc_activate_request_item_tooltip();
     int get_id();
+    int get_box2d_character_id();
     std::string get_dialog(unsigned int language);
 
 protected:
@@ -32,6 +33,8 @@ private:
     unsigned long npc_request_item_tooltip_timer = 0;
     std::vector<std::string> npc_dialogs;
     fio_strings f_strings;
+
+    int _box2d_character_id = -1;
 
 };
 

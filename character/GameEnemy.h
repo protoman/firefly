@@ -66,10 +66,7 @@ public:
     void reset_timers();
     bool is_static();
     int get_id();
-
-
-
-
+    int get_box2d_character_id();
 
 protected:
     void death();
@@ -103,6 +100,8 @@ protected:
     bool _screen_blinked; /**< TODO */
     int _parent_id;
     st_position static_bg_pos;
+
+    int _box2d_character_id = -1;
 
 };
 
