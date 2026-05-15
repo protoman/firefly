@@ -489,9 +489,12 @@ st_float_position GameManager::checkScrolling()
 {
     st_float_position move;
     st_float_position mapScroll = mapController.getMapScrolling();
-    st_float_position p1Pos(player1.getPosition().x,  player1.getPosition().y);
 
-    move.x += (p1Pos.x - mapScroll.x) - RES_W/2;
+    b2BodyId player_body = box2d_manager.get_character_body(Box2dManager::PLAYER_CHARACTER_ID);
+    b2Vec2 body_pos = b2Body_GetPosition(player_body);
+    float player_x_px = body_pos.x * PIXELS_PER_METER;
+
+    move.x += (player_x_px - mapScroll.x) - RES_W/2;
 
     //std::cout << "GameManager::checkScrolling - move.x[" << move.x << "]" << std::endl;
 
