@@ -6,6 +6,7 @@
 #include "data/st_common.h"
 
 #define PIXELS_PER_METER 40
+#define DEBUG_BOX2D
 #define SLOPE_CLIMB_SPEED_FACTOR 0.5f
 
 
@@ -68,6 +69,7 @@ public:
 	void set_character_jumps_remaining(int character_id, int remaining);
 	void set_character_force_jump(int character_id, bool force);
 	void set_character_super_jump(int character_id, bool super);
+	void set_jump_button_released(int character_id);
 	float get_character_vertical_speed(int character_id);
 	b2BodyId get_character_body(int character_id);
 	void run_debug_draw(b2DebugDraw* draw);

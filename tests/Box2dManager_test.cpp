@@ -5,6 +5,10 @@
 #include <cmath>
 #include <iostream>
 
+// GameManager.cpp references gRenderer (defined in main.cpp), provide stub for tests
+struct SDL_Renderer;
+SDL_Renderer* gRenderer = nullptr;
+
 class Box2dManagerTest : public ::testing::Test {
 protected:
 	Box2dManager* box2dManager;
@@ -587,6 +591,266 @@ TEST_F(Box2dManagerTest, PlayerFallsAtCorrectSpeedWhenPressingAgainstWall) {
 		}
 		prev_vel = vel;
 	}
+}
+
+TEST_F(Box2dManagerTest, PlayerDoesNotRejumpWhenHoldingButtonAfterLanding) {
+	// Create a ground floor (at y=400 pixels = 10 meters)
+	std::vector<st_rectangle> walls;
+	walls.push_back(st_rectangle(0, 400, 800, 40));
+	box2dManager->add_static_body_rectangles(walls);
+
+	// Place player on ground — capsule bottom is at body.y + radius
+	// Ground at y=10m (400px / 40), player radius = player_w/2 = 0.675m
+	// Body y = 10 - 0.675 = 9.325m
+	setPlayerTransform({1.0f, 9.325f}, b2Rot_identity);
+
+	// Step physics one frame to settle contacts
+	box2dManager->execute();
+	EXPECT_FALSE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+
+	// Simulate first frame press: character_jump starts a jump
+	box2dManager->character_jump(Box2dManager::PLAYER_CHARACTER_ID, false);
+	EXPECT_TRUE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+
+	// Step physics through full jump arc + landing (button held the whole time)
+	for (int i = 0; i < 100; ++i) {
+		box2dManager->execute();
+	}
+
+	// Button still held → jump state NOT reset (needs both release AND ground)
+	// This prevents re-jump: even though player is on ground, the held button
+	// keeps jump state live so rising-edge detection in character::jump() blocks re-trigger.
+	EXPECT_TRUE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID))
+		<< "Should still be in jump state while button held, even after landing";
+	EXPECT_FALSE(box2dManager->character_can_jump(Box2dManager::PLAYER_CHARACTER_ID))
+		<< "Should not have jumps available while held";
+
+	// Release the button → next execute() resets jump state
+	box2dManager->set_jump_button_released(Box2dManager::PLAYER_CHARACTER_ID);
+	box2dManager->execute();
+
+	// After release + ground, jump state resets
+	EXPECT_FALSE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+	EXPECT_TRUE(box2dManager->character_can_jump(Box2dManager::PLAYER_CHARACTER_ID));
+
+	// Re-press starts a new jump
+	box2dManager->character_jump(Box2dManager::PLAYER_CHARACTER_ID, false);
+	EXPECT_TRUE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+}
+
+// Also test that player_jump() itself would re-jump if called (this is
+// why the GameManager no longer calls it — guards against regression):
+TEST_F(Box2dManagerTest, PlayerJumpRestartsJumpAfterLanding) {
+	// Create a ground floor
+	std::vector<st_rectangle> walls;
+	walls.push_back(st_rectangle(0, 400, 800, 40));
+	box2dManager->add_static_body_rectangles(walls);
+
+	setPlayerTransform({1.0f, 9.325f}, b2Rot_identity);
+	box2dManager->execute();
+
+	// Start a jump via character_jump (the proper path)
+	box2dManager->character_jump(Box2dManager::PLAYER_CHARACTER_ID, false);
+
+	// Step through full arc + landing (button held)
+	for (int i = 0; i < 100; ++i) {
+		box2dManager->execute();
+	}
+
+	// Release button → reset on next execute
+	box2dManager->set_jump_button_released(Box2dManager::PLAYER_CHARACTER_ID);
+	box2dManager->execute();
+
+	// Grounded and reset
+	EXPECT_FALSE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+
+	// player_jump() bypasses rising-edge detection — this is why GameManager
+	// must NOT call it redundantly. This test documents the behavior:
+	box2dManager->player_jump();
+	EXPECT_TRUE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID))
+		<< "player_jump() directly re-starts jump after landing (no rise-edge check). "
+		<< "GameManager must not call it while button is held.";
+}
+
+// ============================================================
+// character::jump() rising-edge detection tests
+// ============================================================
+#include "GameManager.h"
+
+class JumpTestChar : public character {
+public:
+	// Expose protected jump() as public for testing
+	using character::jump;
+
+	JumpTestChar() : character() {
+		set_is_player(true);
+		state.animation_type = ANIM_TYPE_STAND;
+	}
+	void initFrames() override {}
+	void execute() override {}
+	void death() override {}
+};
+
+TEST(CharacterJumpTest, JumpStartsOnButtonPress) {
+	GameManager::get_instance();
+	auto& mgr = GameManager::get_instance()->get_box2d_manager();
+
+	std::vector<st_rectangle> walls;
+	walls.push_back(st_rectangle(0, 400, 800, 40));
+	mgr.add_static_body_rectangles(walls);
+
+	b2BodyId body = mgr.get_character_body(Box2dManager::PLAYER_CHARACTER_ID);
+	b2Body_SetTransform(body, {1.0f, 9.325f}, b2Rot_identity);
+	b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
+	mgr.execute();
+
+	JumpTestChar c;
+
+	// First: button not pressed — no jump
+	bool r0 = c.jump(0, st_float_position(0, 0));
+	EXPECT_FALSE(r0);
+	EXPECT_FALSE(mgr.is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+
+	// Second: button pressed — jump should start
+	bool r1 = c.jump(1, st_float_position(0, 0));
+	EXPECT_TRUE(r1) << "jump() should return true when jump starts on rising edge";
+	EXPECT_TRUE(mgr.is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+
+	b2Vec2 vel = b2Body_GetLinearVelocity(body);
+	EXPECT_LT(vel.y, 0.0f) << "Character should have upward velocity after jump";
+}
+
+// Simulate the real game loop: one jump() call per frame (like charMove does)
+TEST(CharacterJumpTest, JumpWorksAcrossMultipleGameLoopFrames) {
+	GameManager::get_instance();
+	auto& mgr = GameManager::get_instance()->get_box2d_manager();
+
+	// Reset any stale state from previous tests
+	mgr.character_reset_jumps(Box2dManager::PLAYER_CHARACTER_ID);
+
+	st_float_position map_scroll = st_float_position(0, 0);
+
+	std::vector<st_rectangle> walls;
+	walls.push_back(st_rectangle(0, 400, 800, 40));
+	mgr.add_static_body_rectangles(walls);
+
+	b2BodyId body = mgr.get_character_body(Box2dManager::PLAYER_CHARACTER_ID);
+	b2Body_SetTransform(body, {1.0f, 9.325f}, b2Rot_identity);
+	b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
+
+	JumpTestChar c;
+
+	// Frame 1: no input, step and call charMove-equivalent
+	mgr.execute();
+	bool r = c.jump(0, map_scroll);
+	EXPECT_FALSE(r);
+	EXPECT_FALSE(mgr.is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+
+	// Frame 2: button pressed
+	mgr.execute();
+	r = c.jump(1, map_scroll);
+	EXPECT_TRUE(r) << "jump() should return true in game-loop simulation";
+	EXPECT_TRUE(mgr.is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+	b2Vec2 v = b2Body_GetLinearVelocity(body);
+	EXPECT_LT(v.y, 0.0f) << "Should have upward velocity";
+
+	// Frame 3: button held (still jumping)
+	mgr.execute();
+	r = c.jump(1, map_scroll);
+	EXPECT_TRUE(r) << "Should report still jumping while in air";
+	EXPECT_TRUE(mgr.is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+}
+
+// Test: after landing, re-pressing jump starts a new jump properly
+TEST(CharacterJumpTest, RePressAfterLandingStartsNewJump) {
+	GameManager::get_instance();
+	auto& mgr = GameManager::get_instance()->get_box2d_manager();
+
+	// Reset stale state
+	mgr.character_reset_jumps(Box2dManager::PLAYER_CHARACTER_ID);
+
+	st_float_position map_scroll = st_float_position(0, 0);
+
+	std::vector<st_rectangle> walls;
+	walls.push_back(st_rectangle(0, 400, 800, 40));
+	mgr.add_static_body_rectangles(walls);
+
+	b2BodyId body = mgr.get_character_body(Box2dManager::PLAYER_CHARACTER_ID);
+	b2Body_SetTransform(body, {1.0f, 9.325f}, b2Rot_identity);
+	b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
+	mgr.execute();
+
+	JumpTestChar c;
+
+	// Press and release cycle
+	bool r = c.jump(0, map_scroll);
+	r = c.jump(1, map_scroll);  // rising edge → jump
+	EXPECT_TRUE(r);
+	EXPECT_TRUE(mgr.is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+
+	// Step through full jump arc + landing (button held)
+	for (int i = 0; i < 120; ++i) {
+		mgr.execute();
+		r = c.jump(1, map_scroll);  // button "held" through entire jump
+	}
+
+	// Button still held → jump state NOT reset (needs release + ground)
+	EXPECT_TRUE(mgr.is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID))
+		<< "Jump state stays active while button held after landing (prevents re-jump)";
+	EXPECT_FALSE(mgr.character_can_jump(Box2dManager::PLAYER_CHARACTER_ID))
+		<< "No jumps available while held";
+
+	// Release button → c.jump(0) calls set_jump_button_released
+	r = c.jump(0, map_scroll);
+	mgr.execute();  // reset happens on next execute
+
+	// After release + ground, jump state resets
+	EXPECT_FALSE(mgr.is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+	EXPECT_TRUE(mgr.character_can_jump(Box2dManager::PLAYER_CHARACTER_ID));
+
+	// Re-press starts a new jump
+	r = c.jump(1, map_scroll);  // rising edge again → new jump
+	EXPECT_TRUE(r) << "Should start new jump after release + re-press";
+	EXPECT_TRUE(mgr.is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+}
+
+TEST_F(Box2dManagerTest, GetPlayerBoxInterferenceBug) {
+	// Create a ground floor
+	std::vector<st_rectangle> walls;
+	walls.push_back(st_rectangle(0, 400, 800, 40));
+	box2dManager->add_static_body_rectangles(walls);
+
+	setPlayerTransform({1.0f, 9.325f}, b2Rot_identity);
+	box2dManager->execute();
+
+	// Start a jump
+	box2dManager->character_jump(Box2dManager::PLAYER_CHARACTER_ID, false);
+	EXPECT_TRUE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+
+	// Step through full arc + landing (button held)
+	for (int i = 0; i < 100; ++i) {
+		box2dManager->execute();
+	}
+
+	// Now player is on ground, but jump_started is still true because button is held
+	EXPECT_TRUE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+
+	// Release the button (this sets jump_button_released = true)
+	box2dManager->set_jump_button_released(Box2dManager::PLAYER_CHARACTER_ID);
+
+	// CALL get_player_box() - this is what GameManager does EVERY frame
+	box2dManager->get_player_box();
+
+	// Now jump_started should STILL be true because we removed the buggy side effect
+	EXPECT_TRUE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+
+	// Now execute() runs
+	box2dManager->execute();
+
+	// After execute(), jump_started should be false and jumps_remaining should be reset
+	EXPECT_FALSE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+	EXPECT_TRUE(box2dManager->character_can_jump(Box2dManager::PLAYER_CHARACTER_ID))
+		<< "Jumps should have been reset correctly in execute()";
 }
 
 int main(int argc, char **argv) {

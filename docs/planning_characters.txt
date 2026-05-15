@@ -30,8 +30,13 @@ It should rely on Box2DManager for that character in the map on that class, for 
 
 Remove jump class, if used, from classes character, classplayer, GameNpc, GameEnemy and artificial_inteligence.
 It should rely on Box2DManager for that character in the map on that class, for speed and movement instead.
-
-
+========================================================================================================================
+If you hold the jump button, once the jump ends, a new one is started after greaching ground.
+It should only start a new jump if the user releases the jump button, and press it again,
+after the player hits the ground;
+========================================================================================================================
+Sometimes, when on a slope, if you press the jump button, the jump is very short,
+instead of going all the way up. Create unit-tests to try to reproduce the issue and then create a fix.
 
 ========================================================================================================================
 

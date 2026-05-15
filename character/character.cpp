@@ -33,7 +33,7 @@ static std::map<std::string, st_imageData> _character_frames_surface;
 // ********************************************************************************************** //
 //                                                                                                //
 // ********************************************************************************************** //
-character::character() : hitPoints(1, 1), last_hit_time(0), is_player_type(false), _platform(nullptr), hit_animation_timer(0), hit_moved_back_n(0), jump_button_released(true), attack_button_released(true), dead(false), charging_color_n(0), charging_color_timer(0), shield_type(0), _moving_platform_timer(0), position(), _number(0), _super_jump(false), _force_jump(false), _teleport_minimal_y(0), _is_falling(false), _dead_state(0), _water_splash(false), _has_background(false), hit_duration(300), _is_boss(false), _is_stage_boss(false), is_ghost(false)
+character::character() : hitPoints(1, 1), last_hit_time(0), is_player_type(false), _platform(nullptr), hit_animation_timer(0), hit_moved_back_n(0), attack_button_released(true), dead(false), charging_color_n(0), charging_color_timer(0), shield_type(0), _moving_platform_timer(0), position(), _number(0), _super_jump(false), _force_jump(false), _teleport_minimal_y(0), _is_falling(false), _dead_state(0), _water_splash(false), _has_background(false), hit_duration(300), _is_boss(false), _is_stage_boss(false), is_ghost(false)
 {
     _was_animation_reset = false;
     move_speed = 2.0;
@@ -1921,10 +1921,9 @@ bool character::jump(int jumpCommandStage, st_float_position mapScrolling)
     }
     bool use_box2d = (b2d_id >= 0);
 
-    // @TODO - can only jump again once set foot on land
-    if (jumpCommandStage == 0 && jump_button_released == false) {
-        jump_button_released = true;
-    }
+    // Rising-edge detection: only start jump on 0 -> 1 transition
+    bool jump_requested = (jumpCommandStage == 1 && _prev_jump_command == 0);
+    _prev_jump_command = jumpCommandStage;
 
     if (state.animation_type == ANIM_TYPE_HIT) {
         return false;
@@ -1937,7 +1936,11 @@ bool character::jump(int jumpCommandStage, st_float_position mapScrolling)
 
     auto& mgr = GameManager::get_instance()->get_box2d_manager();
 
-    if (_force_jump == true || (jumpCommandStage == 1 && jump_button_released == true)) {
+    if (use_box2d && jumpCommandStage == 0) {
+        mgr.set_jump_button_released(b2d_id);
+    }
+
+    if (_force_jump == true || jump_requested) {
         if (is_in_stairs_frame()) {
             if (!use_box2d || !mgr.is_character_jumping(b2d_id)) {
                 if (is_player()) std::cout << "CHAR::RESET_TO_JUMP #A.5" << std::endl;
@@ -1947,14 +1950,12 @@ bool character::jump(int jumpCommandStage, st_float_position mapScrolling)
                 return false;
             } else {
                 mgr.character_jump_interrupt(b2d_id);
-                if (_force_jump == true) {
-                    _force_jump = false;
-                }
+                _force_jump = false;
             }
         } else {
             bool can_start = false;
             if (use_box2d) {
-                can_start = (_is_falling == false && mgr.character_can_jump(b2d_id));
+                can_start = mgr.character_can_jump(b2d_id);
             } else {
                 can_start = (_is_falling == false);
             }
@@ -1975,9 +1976,9 @@ bool character::jump(int jumpCommandStage, st_float_position mapScrolling)
                     _dashed_jump = true;
                 }
                 set_animation_type(ANIM_TYPE_JUMP);
-                jump_button_released = false;
             }
         }
+        _force_jump = false;
     }
 
     if (use_box2d) {
@@ -1990,14 +1991,14 @@ bool character::jump(int jumpCommandStage, st_float_position mapScrolling)
                 mgr.get_character_vertical_speed(b2d_id) < 0.0f) {
                 mgr.character_jump_interrupt(b2d_id);
             }
+            _is_falling = (mgr.get_character_vertical_speed(b2d_id) >= 0.0f);
             return true;
-        } else {
-            if (_force_jump == true) {
-                _force_jump = false;
-            }
-            gravity();
-            return false;
         }
+        // Not jumping — on ground
+        _is_falling = false;
+        _force_jump = false;
+        gravity();
+        return false;
     }
 
     // Non-Box2D character: simplified jump (tile-based gravity only)
@@ -2012,7 +2013,6 @@ bool character::jump(int jumpCommandStage, st_float_position mapScrolling)
 
     if (is_onquicksand) {
         position.y -= QUICKSAND_JUMP_LIMIT*3;
-        jump_button_released = false;
     }
 
     gravity();
@@ -3294,7 +3294,6 @@ void character::damage(unsigned int damage_points, bool ignore_hit_timer = false
             hit_moved_back_n = 0;
           }
         }
-        jump_button_released = false;
         if (GameManager::get_instance()->get_current_map_obj() != nullptr) {
             int hit_anim_x = 0;
             if (state.direction == ANIM_DIRECTION_LEFT) {

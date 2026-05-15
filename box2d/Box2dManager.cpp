@@ -64,9 +64,14 @@ void Box2dManager::execute()
 	}
 
 	// Check landing for all characters
+	// Only resets jumps when BOTH: button was released AND player reached ground
 	for (auto& [id, data] : _characters) {
-		if (data.jump_started) {
-			if (is_character_touching_ground(data)) {
+		if (data.jump_started && data.jump_button_released) {
+			b2Vec2 vel = b2Body_GetLinearVelocity(data.bodyId);
+			if (vel.y >= 0.0f && is_character_touching_ground(data)) {
+				#ifdef DEBUG_BOX2D
+				std::cout << "Box2dManager::execute - Resetting jumps for character " << id << std::endl;
+				#endif
 				character_reset_jumps(id);
 			}
 		}
@@ -81,29 +86,6 @@ st_rectangle Box2dManager::get_ground_box()
 st_rectangle Box2dManager::get_player_box() {
 	auto& player = _player_data();
 	b2Vec2 position = b2Body_GetPosition(player.bodyId);
-
-	// TODO - move to an 'execute' method
-	// check contact events
-	if (player.jump_started == true) {
-		b2ContactData contactDataArray[10];
-		int count = b2Body_GetContactData(player.bodyId, contactDataArray, 10);
-		float player_feet = position.y + (player.h/2);
-		for (b2ContactData contactData : contactDataArray) {
-			if (contactData.manifold.pointCount != 2) {
-				continue;
-			}
-			for (int i=0; i<2; i++) {
-				if (areFloatsEqual(contactData.manifold.points[i].point.y, player_feet, 0.9f)) {
-					player.jump_started = false;
-					break;
-				}
-			}
-			if (player.jump_started == false) {
-				break;
-			}
-		}
-	}
-
 
 	st_rectangle res = st_rectangle((position.x - player.w/2) * PIXELS_PER_METER, (position.y - player.h/2) * PIXELS_PER_METER, player.w * PIXELS_PER_METER, player.h * PIXELS_PER_METER);
 
@@ -322,11 +304,9 @@ void Box2dManager::character_jump(int character_id, bool big_jump)
 	b2Body_SetGravityScale(data.bodyId, 1.0f);
 
 	b2Vec2 currentVelocity = b2Body_GetLinearVelocity(data.bodyId);
-	if (currentVelocity.y < -10.0f && data.jump_started) {
-		return;
-	}
 
 	data.jump_started = true;
+	data.jump_button_released = false;
 	data.is_big_jump = big_jump;
 	data.jumps_remaining--;
 
@@ -335,7 +315,7 @@ void Box2dManager::character_jump(int character_id, bool big_jump)
 		velocity_y *= 1.4f;
 	}
 
-	b2Body_ApplyLinearImpulseToCenter(data.bodyId, {0.0f, velocity_y}, true);
+	b2Body_SetLinearVelocity(data.bodyId, {currentVelocity.x, velocity_y});
 }
 
 void Box2dManager::character_jump_interrupt(int character_id)
@@ -369,6 +349,12 @@ void Box2dManager::character_reset_jumps(int character_id)
 	data.jump_started = false;
 	data.force_jump = false;
 	data.is_big_jump = false;
+	data.jump_button_released = true;
+}
+
+void Box2dManager::set_jump_button_released(int character_id)
+{
+	_characters.at(character_id).jump_button_released = true;
 }
 
 bool Box2dManager::is_character_jumping(int character_id)
@@ -503,7 +489,7 @@ bool Box2dManager::is_player_touching_ground() {
 	b2Vec2 position = b2Body_GetPosition(player.bodyId);
 	b2ContactData contactDataArray[10];
 	int count = b2Body_GetContactData(player.bodyId, contactDataArray, 10);
-	float player_feet = position.y + (player.h/2);
+	float player_feet = position.y + (player.w / 2.0f);
 
 	for (int n=0; n<count; n++) {
 		b2ContactData contactData = contactDataArray[n];
@@ -520,7 +506,7 @@ bool Box2dManager::is_character_touching_ground(const CharacterBox2dData& data) 
 	b2Vec2 position = b2Body_GetPosition(data.bodyId);
 	b2ContactData contactDataArray[10];
 	int count = b2Body_GetContactData(data.bodyId, contactDataArray, 10);
-	float feet = position.y + (data.h/2);
+	float feet = position.y + (data.w / 2.0f);
 
 	for (int n=0; n<count; n++) {
 		b2ContactData contactData = contactDataArray[n];

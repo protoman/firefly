@@ -315,7 +315,7 @@ protected:
 
     int charging_color_n; // holds information used when changing char colors on charging shot
     unsigned int charging_color_timer; // holds information used when changing char colors on charging shot
-    bool jump_button_released; // indicates if jump button was released between jumps
+    int _prev_jump_command = 0; // previous frame's jump command for rising-edge detection
     bool _dash_button_released; // indicates if dash button (or jump+down) was released between jumps
     /**
      * @brief

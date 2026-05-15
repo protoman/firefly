@@ -390,7 +390,9 @@ void GameManager::show_game(bool can_characters_move, bool can_scroll_stage)
                 }
             }
             if (player1.getMoveCommands().jump == 1) {
-                box2d_manager.player_jump();
+                // Jump is handled inside character::jump() called from charMove()
+                // Do NOT call player_jump() here — it bypasses rising-edge detection
+                // and causes auto-rejump when holding the button through landing.
             }
             st_position p1_real_pos = get_player_relative_center_position();
             SharedData::get_instance()->lightpoint_list.push_back(st_light_point(p1_real_pos.x, p1_real_pos.y, LIGHT_POINT_COLOR_WHITE));
