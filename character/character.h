@@ -365,7 +365,6 @@ protected:
     bool _is_stage_boss;                                    // used in NPC class. Indicates if this is the stage-boss
     bool _dropped_from_stairs;                              // used to avoid grabbing stairs again when dropped from it
     int _box2d_character_id = -1;                           // -1 means no Box2D body
-    short _jumps_number;                                    // used for double or triple jumping
     short _damage_modifier;                                 // used in players
     st_float_position _previous_position;                   // this is used so we can avoid calculating things like hit_gound() if position did not changed
     bool _hit_ground;

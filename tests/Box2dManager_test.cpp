@@ -386,7 +386,8 @@ TEST_F(Box2dManagerTest, PlayerJumpsFromSlopeWhenNotMoving) {
 	b2Vec2 pos_before = getPlayerPosition();
 
 	box2dManager->execute();
-	box2dManager->player_jump();
+	box2dManager->character_jump(Box2dManager::PLAYER_CHARACTER_ID, false);
+	box2dManager->set_jump_button_released(Box2dManager::PLAYER_CHARACTER_ID);
 
 	box2dManager->execute();
 
@@ -573,7 +574,8 @@ TEST_F(Box2dManagerTest, PlayerFallsAtCorrectSpeedWhenPressingAgainstWall) {
 	float player_body_x = wall_x - player_w;
 	setPlayerTransform({player_body_x, 2.0f}, b2Rot_identity);
 
-	box2dManager->player_jump();
+	box2dManager->character_jump(Box2dManager::PLAYER_CHARACTER_ID, false);
+	box2dManager->set_jump_button_released(Box2dManager::PLAYER_CHARACTER_ID);
 
 	b2Vec2 prev_vel = getPlayerVelocity();
 	float gravity_step = 39.6f * (1.0f / 60.0f);
@@ -638,10 +640,11 @@ TEST_F(Box2dManagerTest, PlayerDoesNotRejumpWhenHoldingButtonAfterLanding) {
 	EXPECT_TRUE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
 }
 
-// Also test that player_jump() itself would re-jump if called (this is
-// why the GameManager no longer calls it — guards against regression):
-TEST_F(Box2dManagerTest, PlayerJumpRestartsJumpAfterLanding) {
-	// Create a ground floor
+// Test that a mid-air second jump (double jump) works: press, release, press again while rising
+TEST_F(Box2dManagerTest, DoubleJumpWorksMidAir) {
+	box2dManager->set_character_max_jumps(Box2dManager::PLAYER_CHARACTER_ID, 2);
+	box2dManager->character_reset_jumps(Box2dManager::PLAYER_CHARACTER_ID);
+
 	std::vector<st_rectangle> walls;
 	walls.push_back(st_rectangle(0, 400, 800, 40));
 	box2dManager->add_static_body_rectangles(walls);
@@ -649,27 +652,31 @@ TEST_F(Box2dManagerTest, PlayerJumpRestartsJumpAfterLanding) {
 	setPlayerTransform({1.0f, 9.325f}, b2Rot_identity);
 	box2dManager->execute();
 
-	// Start a jump via character_jump (the proper path)
+	// First jump
 	box2dManager->character_jump(Box2dManager::PLAYER_CHARACTER_ID, false);
+	EXPECT_TRUE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+	EXPECT_TRUE(box2dManager->character_can_jump(Box2dManager::PLAYER_CHARACTER_ID))
+		<< "Should have 1 jump remaining after first jump";
 
-	// Step through full arc + landing (button held)
-	for (int i = 0; i < 100; ++i) {
+	// Step a few frames to get airborne (still rising)
+	for (int i = 0; i < 10; ++i) {
 		box2dManager->execute();
 	}
 
-	// Release button → reset on next execute
+	b2Vec2 vel = getPlayerVelocity();
+	EXPECT_LT(vel.y, 0.0f) << "Should still be rising";
+
+	// Release button (simulate release) and press again for second jump
 	box2dManager->set_jump_button_released(Box2dManager::PLAYER_CHARACTER_ID);
-	box2dManager->execute();
+	box2dManager->character_jump(Box2dManager::PLAYER_CHARACTER_ID, false);
 
-	// Grounded and reset
-	EXPECT_FALSE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+	EXPECT_TRUE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID));
+	EXPECT_FALSE(box2dManager->character_can_jump(Box2dManager::PLAYER_CHARACTER_ID))
+		<< "Should have 0 jumps remaining after second jump";
 
-	// player_jump() bypasses rising-edge detection — this is why GameManager
-	// must NOT call it redundantly. This test documents the behavior:
-	box2dManager->player_jump();
-	EXPECT_TRUE(box2dManager->is_character_jumping(Box2dManager::PLAYER_CHARACTER_ID))
-		<< "player_jump() directly re-starts jump after landing (no rise-edge check). "
-		<< "GameManager must not call it while button is held.";
+	// Velocity should still be upward after second jump
+	b2Vec2 vel2 = getPlayerVelocity();
+	EXPECT_LT(vel2.y, 0.0f) << "Should still be rising after double jump";
 }
 
 // ============================================================

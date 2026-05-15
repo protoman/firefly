@@ -71,10 +71,8 @@ void classPlayer::initialize()
     _simultaneous_shots = GameData::get_instance()->player_list_v3_1[_number].simultaneous_shots;
     //std::cout << "classjump::set_acceleration - player[" << name << "], accel[" << GameMediator::get_instance()->player_list[_number].jump_gravity << "]" << std::endl;
     if (can_double_jump() == true) {
-        _jumps_number = 2;
         GameManager::get_instance()->get_box2d_manager().set_character_max_jumps(Box2dManager::PLAYER_CHARACTER_ID, 2);
     } else {
-        _jumps_number = 1;
         GameManager::get_instance()->get_box2d_manager().set_character_max_jumps(Box2dManager::PLAYER_CHARACTER_ID, 1);
     }
     _damage_modifier = GameData::get_instance()->player_list_v3_1[_number].damage_modifier;

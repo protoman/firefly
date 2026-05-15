@@ -58,7 +58,7 @@ character::character() : hitPoints(1, 1), last_hit_time(0), is_player_type(false
     last_execute_time = 0;
     _check_always_move_ahead = false;
     _dropped_from_stairs = false;
-    _jumps_number = 1;
+
     _dash_button_released = true;
     _damage_modifier = 0;
     _hit_ground = false;

@@ -59,7 +59,6 @@ public:
 	void add_static_body_polygon(std::vector<std::vector<st_float_position>> points);
 	int add_character(st_float_position position, st_size size);
 	void change_player_position(st_float_position inc);
-	void player_jump();
 	void character_jump(int character_id, bool big_jump = false);
 	void character_jump_interrupt(int character_id);
 	bool character_can_jump(int character_id);
@@ -76,8 +75,6 @@ public:
 	e_player_on_ground is_player_on_ground();
 	bool is_on_slope(b2Vec2& normal);
 	bool is_player_touching_ground();
-	void updatePlayerCollision(st_size size);
-
 	bool is_character_touching_ground(const CharacterBox2dData& data);
 
 	friend class Box2dManagerTest;
@@ -98,8 +95,6 @@ private:
 	float PLAYER_DENSITY = 1.0f;
 	float PLAYER_FRICTION = 1.0f;
 	float SCENARIO_FRICTION = 0.5f;
-	float PLAYER_JUMP_VELOCITY = -22.0f;
-
 	// world
 	b2WorldDef worldDef = b2DefaultWorldDef();
 	b2WorldId worldId{};

@@ -276,27 +276,6 @@ void Box2dManager::change_player_position(st_float_position inc) {
 	}
 }
 
-void Box2dManager::player_jump()
-{
-	auto& player = _player_data();
-	if (player.jump_started == false) {
-		player.jump_started = true;
-
-		player.freeze_position = false;
-		b2Body_SetGravityScale(player.bodyId, 1.0f);
-
-		b2Vec2 currentVelocity = b2Body_GetLinearVelocity(player.bodyId);
-		if (currentVelocity.y < -10.0f) {
-			return;
-		}
-
-		b2Vec2 velocity;
-		velocity.x = 0.0f;
-		velocity.y = PLAYER_JUMP_VELOCITY;
-		b2Body_ApplyLinearImpulseToCenter(player.bodyId, velocity, true);
-	}
-}
-
 void Box2dManager::character_jump(int character_id, bool big_jump)
 {
 	auto& data = _characters.at(character_id);
@@ -517,10 +496,6 @@ bool Box2dManager::is_character_touching_ground(const CharacterBox2dData& data) 
 		}
 	}
 	return false;
-}
-
-void Box2dManager::updatePlayerCollision(st_size size) {
-	// TBD //
 }
 
 bool Box2dManager::areFloatsEqual(float a, float b, float tolerance)
