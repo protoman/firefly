@@ -71,7 +71,7 @@ bool TiledMapLayer::init(const tmx::Map& map, uint32_t layerIndex, const std::ve
         //check tile ID to see if it falls within the current tile set
         const auto& ts = tileSets[i];
 
-        // ignore tilkesets with no image
+        // ignore tilesets with no image
         if (ts.getImagePath().empty()) {
             continue;
         }
@@ -126,8 +126,8 @@ bool TiledMapLayer::init(const tmx::Map& map, uint32_t layerIndex, const std::ve
 
         // TODO - não está dando correspondência de map_tiles com a lista de tiles.
         for (const auto& map_chunk : layer_chunks) {
-            std::cout << "### map_chunk.size[" << map_chunk.size.x << "][" << map_chunk.size.y << "], position[" << map_chunk.position.x << "][" << map_chunk.position.y << "]" << std::endl;
 
+            std::cout << "### map_chunk.size[" << map_chunk.size.x << "][" << map_chunk.size.y << "], position[" << map_chunk.position.x << "][" << map_chunk.position.y << "], map_x[" << map_x << "], map_y[" << map_y << "]" << std::endl;
 
             for (auto map_tile : map_chunk.tiles) {
                 if (map_tile.ID != 0) {
@@ -140,34 +140,32 @@ bool TiledMapLayer::init(const tmx::Map& map, uint32_t layerIndex, const std::ve
 
                     tile.w = mapTileSize.x;
                     tile.h = mapTileSize.y;
-                    tile.dest_x = map_x * tile.w;
-                    tile.dest_y = map_y * tile.h;
+                    tile.dest_x = (map_chunk.position.x * tile.w) + (map_x * tile.w);
+                    tile.dest_y = (map_chunk.position.y * tile.h) + (map_y * tile.h);
                     map_tile_list.push_back(tile);
-                    //tiles_collision_rectangles_list.push_back(st_rectangle(tile.dest_x, tile.dest_y, tile.w, tile.h));
 
                     // trying to make simple, just points in the map for the check
                     if (tiles_collision_adjacent_check_list.find(map_y) == std::end(tiles_collision_adjacent_check_list)) {
                         tiles_collision_adjacent_check_list.insert(std::pair<int, std::vector<st_collision_data>>(map_y, std::vector<st_collision_data>()));
                     }
                     st_collision_data collision_data;
-                    collision_data.pos_x = map_x;
+                    collision_data.pos_x = (map_chunk.position.x * tile.w) + map_x;
                     collision_data.map_rect = st_rectangle(tile.dest_x, tile.dest_y, tile.w, tile.h);
 
                     tiles_collision_adjacent_check_list.at(map_y).push_back(collision_data);
 
-                    // add box2d shapes
-                    //BodyDef bodyDef = getBodyDef(x * tileSize + tileSize / 2f + rectangle.getX() - (tileSize - rectangle.getWidth()) / 2f, y * tileSize + tileSize / 2f + rectangle.getY() - (tileSize - rectangle.getHeight()) / 2f);
-                    //float box2d_x = tile.dest_x + float(tile.w/2);
-                    //float box2d_y = tile.dest_y + float(tile.h/2);
-                    //b2BodyDef bodyDef = getBodyDef(box2d_x, box2d_y);
-
-                    std::cout << "map_tile[" << map_x << "][" << map_y << "].id[" << map_tile.ID << "], origin_x[" << tile.origin_x << "], origin_y[" << tile.origin_y << "]" << std::endl;
+                    if (map_tile.ID == 490) {
+                        std::cout << "map_tile[" << map_x << "][" << map_y << "].id[" << map_tile.ID << "], origin_x[" << tile.origin_x << "], origin_y[" << tile.origin_y << "], tile.dest_x[" << tile.dest_x << "], tile.dest_y[" << tile.dest_y << "], tile.w[" << tile.w << "], tile.h[" << tile.h << "]" << std::endl;
+                    }
                 }
 
                 map_x++;
                 if (map_x >= mapSize.x) {
                     map_x = 0;
                     map_y++;
+                }
+                if (map_y >= mapSize.y) {
+                    map_y = 0;
                 }
             }
         }

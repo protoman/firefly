@@ -1576,7 +1576,6 @@ void GameManager::update_stage_scrolling()
     //std::cout << "p_pos.x: " << p_pos.x << std::endl;
     //if (p_pos.x < 0.0) {
     if (p_pos.x < -TILESIZE/2) {
-        std::cout << "GameManager::update_stage_scrolling.change_position_x" << std::endl;
         player1.change_position_x(1);
         // out of screen, probably because was pushed out on a autoscroll stage
         if (p_pos.x < -(TILESIZE-2)) {

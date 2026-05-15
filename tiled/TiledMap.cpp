@@ -67,7 +67,7 @@ std::vector<st_rectangle> TiledMap::get_tiles_collision(int layer_n)
 {
     if (layer_n < 0 || layer_n >= renderLayers.size()) {
         std::cout << "TiledMap::get_tiles_collision - no tiles" << std::endl;
-        return std::vector<st_rectangle>();
+        return {};
     }
     return renderLayers.at(layer_n)->get_tiles_collision_rectangles_list();
 }

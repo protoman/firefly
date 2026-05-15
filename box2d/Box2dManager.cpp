@@ -102,6 +102,9 @@ void Box2dManager::add_static_body_rectangles(std::vector<st_rectangle> rectangl
 		float calc_pos_y = rectangle.y/PIXELS_PER_METER + calc_half_h;
 		object.bodyDef.position = b2Vec2{calc_pos_x, calc_pos_y};
 		object.id = b2CreateBody(worldId, &object.bodyDef);
+		if (calc_half_w == 0) {
+			std::cout << "DEBUG" << std::endl;
+		}
 		object.box = b2MakeBox(calc_half_w, calc_half_h);
 		b2CreatePolygonShape(object.id, &object.shapeDef, &object.box);
 		object.shapeDef.material.restitution = 0.0f;
