@@ -725,9 +725,9 @@ void MapController::changeScrolling(st_float_position pos, bool check_lock)
 {
     if (abs(pos.x) > TILESIZE) {
         if (pos.x > 0) {
-            pos.x = 1;
+            pos.x = TILESIZE;
         } else {
-            pos.x = -1;
+            pos.x = -TILESIZE;
         }
     }
     // moving player to right, screen to left
@@ -735,9 +735,6 @@ void MapController::changeScrolling(st_float_position pos, bool check_lock)
         int current_tile_x = (map_data::SharedMapData::get_instance()->scroll.x/TILESIZE+RES_W/TILESIZE)-1;
         if (current_tile_x < map_tiles_w-1) {
             int x_change = pos.x;
-            if (pos.x >= TILESIZE) { // if change is too big, do not update (TODO: must check all wall until lock)
-                x_change = 1;
-            }
             int tile_x = (map_data::SharedMapData::get_instance()->scroll.x+RES_W-TILESIZE+2)/TILESIZE;
             // this means there is a scroll-lock, so we ignore the excess
             if (check_lock == false || isEdgeColumnLocked(pos.x, tile_x) == false) {

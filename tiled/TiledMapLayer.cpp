@@ -154,9 +154,11 @@ bool TiledMapLayer::init(const tmx::Map& map, uint32_t layerIndex, const std::ve
 
                     tiles_collision_adjacent_check_list.at(map_y).push_back(collision_data);
 
+                    /*
                     if (map_tile.ID == 490) {
                         std::cout << "map_tile[" << map_x << "][" << map_y << "].id[" << map_tile.ID << "], origin_x[" << tile.origin_x << "], origin_y[" << tile.origin_y << "], tile.dest_x[" << tile.dest_x << "], tile.dest_y[" << tile.dest_y << "], tile.w[" << tile.w << "], tile.h[" << tile.h << "]" << std::endl;
                     }
+                    */
                 }
 
                 map_x++;
