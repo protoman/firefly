@@ -75,6 +75,11 @@ GameObject::GameObject(short set_id, MapController *set_map, st_position map_pos
     show_teleport = false;
     teleport_max_timer = 0;
     add_graphic();
+
+    _box2d_character_id = GameManager::get_instance()->get_box2d_manager().add_character(
+        st_float_position(static_cast<float>(position.x), static_cast<float>(position.y)),
+        st_size(framesize_w, framesize_h)
+    );
 }
 
 GameObject::~GameObject()
@@ -1327,6 +1332,11 @@ Uint8 GameObject::get_id() const
 int GameObject::get_uuid()
 {
     return uuid;
+}
+
+int GameObject::get_box2d_character_id()
+{
+    return _box2d_character_id;
 }
 
 // ********************************************************************************************** //

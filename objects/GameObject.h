@@ -148,6 +148,7 @@ public:
     bool is_started() const;
     bool is_on_screen();
     bool is_on_visible_screen();
+    int get_box2d_character_id();
     void set_collision_mode(enum collision_modes collision_mode); // if player uses this as platform, move him
     enum collision_modes get_collision_mode() const;
     void reset_timers();
@@ -223,6 +224,8 @@ private:
 
     bool show_on_screen_debug = false;
     bool item_jet_started = false;
+
+    int _box2d_character_id = -1;
 };
 
 #endif // OBJECT_H
