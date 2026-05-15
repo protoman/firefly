@@ -870,7 +870,6 @@ void classPlayer::death()
     last_hit_time = 0;
 
     selected_weapon = 0;
-    _inertia_obj.stop();
     clear_move_commands();
     InputController::get_instance()->clean();
     set_direction(ANIM_DIRECTION_RIGHT);

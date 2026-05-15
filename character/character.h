@@ -10,7 +10,6 @@
 #include "file/format/st_characterState.h"
 #include "projectilelib.h"
 #include "character/movement/jump.h"
-#include "character/movement/inertia.h"
 #include "character/movement/moveslopes.h"
 #include "character/character_animation.h"
 #include "file/format/st_hitPoints.h"
@@ -380,7 +379,6 @@ protected:
     short _damage_modifier;                                 // used in players
     st_float_position _previous_position;                   // this is used so we can avoid calculating things like hit_gound() if position did not changed
     bool _hit_ground;
-    inertia _inertia_obj;                                   // handles inertia over ice
     bool _dashed_jump;                                      // adds horizontal acceleration fo X movement if jump was made during a dash (not slide) until player reaches ground again
     bool _can_execute_airdash;                                 // prevents dashing multiple-times in middle-air
     bool _player_must_reset_colors;                         // inform the player class that he must get back into default-weapon colors
