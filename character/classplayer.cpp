@@ -72,8 +72,10 @@ void classPlayer::initialize()
     //std::cout << "classjump::set_acceleration - player[" << name << "], accel[" << GameMediator::get_instance()->player_list[_number].jump_gravity << "]" << std::endl;
     if (can_double_jump() == true) {
         _jumps_number = 2;
+        GameManager::get_instance()->get_box2d_manager().set_character_max_jumps(Box2dManager::PLAYER_CHARACTER_ID, 2);
     } else {
         _jumps_number = 1;
+        GameManager::get_instance()->get_box2d_manager().set_character_max_jumps(Box2dManager::PLAYER_CHARACTER_ID, 1);
     }
     _damage_modifier = GameData::get_instance()->player_list_v3_1[_number].damage_modifier;
 }
@@ -140,7 +142,7 @@ bool classPlayer::get_item(object_collision &obj_info)
 
             set_animation_type(ANIM_TYPE_GOT_ITEM);
             cancel_slide();
-            _obj_jump.interrupt();
+            GameManager::get_instance()->get_box2d_manager().character_jump_interrupt(Box2dManager::PLAYER_CHARACTER_ID);
             set_animation_type(ANIM_TYPE_GOT_ITEM);
 
             res = true;
@@ -176,56 +178,22 @@ void classPlayer::recharge(e_energy_types _en_type, int value)
 
 bool classPlayer::shoryuken()
 {
-    // trying to start command (can only start if standing)
-
-    //std::cout << ">> SHOURYUKEN - up: " << moveCommands.up << ", dash: " << moveCommands.dash << ", jump: " << moveCommands.jump << std::endl;
+    auto& mgr = GameManager::get_instance()->get_box2d_manager();
+    int b2d_id = Box2dManager::PLAYER_CHARACTER_ID;
 
     if (moveCommands.up != 0 && moveCommands.dash != 0 && state.animation_type == ANIM_TYPE_STAND)  {
         state.animation_type = ANIM_TYPE_SPECIAL_ATTACK;
         std::cout << ">>>>>>>>>>>>>>>>>>>> SHORYUKEN::START" << std::endl;
         SoundView::get_instance()->play_sfx(SFX_SHORYUKEN_GIRL);
-        _obj_jump.start(true, TERRAIN_UNBLOCKED);
+        mgr.set_character_force_jump(b2d_id, true);
+        mgr.character_jump(b2d_id, true);
         _can_execute_airdash = false;
         return true;
-    // is executing
     } else if (state.animation_type == ANIM_TYPE_SPECIAL_ATTACK) {
         std::cout << ">>>>>>>>>>>>>>>>>>>> SHORYUKEN::EXECUTE" << std::endl;
-        _obj_jump.execute(TERRAIN_UNBLOCKED);
-        int jump_speed = _obj_jump.get_speed();
-        bool jump_moved = false;
-
-        // check collision
-        for (int i=abs((float)jump_speed); i>0; i--) {
-            int speed_y = 0;
-            if (jump_speed > 0) {
-                speed_y = i;
-            } else {
-                speed_y = i*-1;
-            }
-            st_map_collision map_col = map_collision(0, speed_y, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
-            int map_lock = map_col.block;
-            //std::cout << "jump::check_collision - i[" << i << "], map_lock["  << map_lock << "]" << std::endl;
-
-            if (map_lock == BLOCK_UNBLOCKED || map_lock == BLOCK_WATER) {
-                std::cout << ">>>>>>>>>>>>>>>>>>>> PLAYER::INC-Y #1" << std::endl;
-                position.y += speed_y;
-                jump_moved = true;
-                break;
-            }
-        }
-        if (jump_speed != 0 && jump_moved == false) {
-            if (jump_speed < 0) {
-                _obj_jump.interrupt();
-            } else {
-                _obj_jump.finish();
-                state.animation_type = ANIM_TYPE_STAND;
-            }
-        }
-
-
-
-        if (_obj_jump.is_started() == false) {
-            return false;
+        float vy = mgr.get_character_vertical_speed(b2d_id);
+        if (vy >= 0.0f) {
+            state.animation_type = ANIM_TYPE_STAND;
         }
         return true;
     }
@@ -864,8 +832,8 @@ void classPlayer::death()
     GameManager::get_instance()->get_current_map_obj()->reset_objects();
     GameManager::get_instance()->get_current_map_obj()->print_objects_number();
 	dead = true;
-    _obj_jump.interrupt();
-    _obj_jump.finish();
+    GameManager::get_instance()->get_box2d_manager().character_jump_interrupt(Box2dManager::PLAYER_CHARACTER_ID);
+    GameManager::get_instance()->get_box2d_manager().character_reset_jumps(Box2dManager::PLAYER_CHARACTER_ID);
 
     last_hit_time = 0;
 

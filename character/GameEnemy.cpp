@@ -326,11 +326,6 @@ int GameEnemy::get_id()
     return _number;
 }
 
-int GameEnemy::get_box2d_character_id()
-{
-    return _box2d_character_id;
-}
-
 void GameEnemy::enemy_set_hp(st_hit_points new_hp)
 {
     hitPoints = new_hp;
@@ -602,8 +597,9 @@ short GameEnemy::get_dead_state()
 
 void GameEnemy::death()
 {
-    _obj_jump.interrupt();
-    _obj_jump.finish();
+    if (_box2d_character_id >= 0) {
+        GameManager::get_instance()->get_box2d_manager().character_reset_jumps(_box2d_character_id);
+    }
     dead = true;
     _auto_respawn_timer = TimerView::get_instance()->getTimer() + GameData::get_instance()->get_enemy(_number)->respawn_delay;
     if (is_stage_boss()) {

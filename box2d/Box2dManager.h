@@ -32,6 +32,12 @@ struct CharacterBox2dData {
 
 	// State
 	bool jump_started = false;
+	int jumps_remaining = 1;
+	int max_jumps = 1;
+	float jump_velocity = -22.0f;
+	bool jump_button_released = true;
+	bool force_jump = false;
+	bool is_big_jump = false;
 	b2Vec2 last_slope_normal = {0.0f, 0.0f};
 	bool freeze_position = false;
 	int settle_counter = 0;
@@ -53,12 +59,25 @@ public:
 	int add_character(st_float_position position, st_size size);
 	void change_player_position(st_float_position inc);
 	void player_jump();
+	void character_jump(int character_id, bool big_jump = false);
+	void character_jump_interrupt(int character_id);
+	bool character_can_jump(int character_id);
+	void character_reset_jumps(int character_id);
+	bool is_character_jumping(int character_id);
+	void set_character_max_jumps(int character_id, int max);
+	void set_character_jumps_remaining(int character_id, int remaining);
+	void set_character_force_jump(int character_id, bool force);
+	void set_character_super_jump(int character_id, bool super);
+	float get_character_vertical_speed(int character_id);
+	b2BodyId get_character_body(int character_id);
 	void run_debug_draw(b2DebugDraw* draw);
 	e_player_on_ground is_player_on_ground();
 	bool is_on_slope(b2Vec2& normal);
 	bool is_player_touching_ground();
 	void execute_player_physics();
 	void updatePlayerCollision(st_size size);
+
+	bool is_character_touching_ground(const CharacterBox2dData& data);
 
 	friend class Box2dManagerTest;
 

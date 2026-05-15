@@ -9,7 +9,6 @@
 #include "data/st_common.h"
 #include "file/format/st_characterState.h"
 #include "projectilelib.h"
-#include "character/movement/jump.h"
 #include "character/character_animation.h"
 #include "file/format/st_hitPoints.h"
 
@@ -123,6 +122,7 @@ public:
     st_hit_points get_hp() const;
     Uint8 get_current_hp() const;
     void set_current_hp(Uint8 inc);
+    int get_box2d_character_id();
     void execute_jump();								// execute a complete jump
     void execute_jump_up();					// execute jump until reaches the maximum height
     void fall();								// falls until reaching ground or leaving screen /// @TODO
@@ -372,7 +372,7 @@ protected:
     int _progressive_appear_pos;                            // used by spawn-npc to show just a part of the NPC
     bool _is_stage_boss;                                    // used in NPC class. Indicates if this is the stage-boss
     bool _dropped_from_stairs;                              // used to avoid grabbing stairs again when dropped from it
-    classjump _obj_jump;
+    int _box2d_character_id = -1;                           // -1 means no Box2D body
     short _jumps_number;                                    // used for double or triple jumping
     short _damage_modifier;                                 // used in players
     st_float_position _previous_position;                   // this is used so we can avoid calculating things like hit_gound() if position did not changed

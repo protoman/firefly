@@ -217,7 +217,9 @@ void character::charMove() {
         int player_y_diff = player_bottom_y - exact_player_y;
         if (player_y_diff < TILESIZE/4) {
             position.y+= TILESIZE/4;
-            _obj_jump.interrupt();
+            if (_box2d_character_id >= 0) {
+                GameManager::get_instance()->get_box2d_manager().character_jump_interrupt(_box2d_character_id);
+            }
             return;
         }
     }
@@ -959,9 +961,16 @@ void character::advance_frameset()
 
 
 
+int character::get_box2d_character_id()
+{
+    return _box2d_character_id;
+}
+
 void character::reset_jump()
 {
-    _obj_jump.finish();
+    if (_box2d_character_id >= 0) {
+        GameManager::get_instance()->get_box2d_manager().character_reset_jumps(_box2d_character_id);
+    }
 }
 
 void character::consume_projectile()
@@ -1327,7 +1336,18 @@ bool character::gravity(bool boss_demo_mode=false)
         return false;
     }
 
-    if (_obj_jump.is_started() && _obj_jump.get_state() == JUMPUP) {
+    int b2d_id = -1;
+    if (is_player()) {
+        b2d_id = Box2dManager::PLAYER_CHARACTER_ID;
+    } else if (_box2d_character_id >= 0) {
+        b2d_id = _box2d_character_id;
+    }
+    if (b2d_id >= 0) {
+        auto& mgr = GameManager::get_instance()->get_box2d_manager();
+        if (mgr.is_character_jumping(b2d_id) &&
+            mgr.get_character_vertical_speed(b2d_id) < 0.0f) {
+            return false;
+        }
         return false;
     }
 
@@ -1392,7 +1412,7 @@ bool character::gravity(bool boss_demo_mode=false)
         return false;
 	}
 
-    if (_obj_jump.is_started() == false && can_fly == false && position.y < GameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE+1 + frameSize.height) {
+    if (can_fly == false && position.y < GameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE+1 + frameSize.height) {
         // tem que inicializar essa variável sempre que for false
         accel_speed_y = accel_speed_y + accel_speed_y*gravity_y;
 
@@ -1844,7 +1864,8 @@ bool character::slide(st_float_position mapScrolling)
 
     float res_move_x = 0;
     int mapLockAfter = BLOCK_UNBLOCKED;
-    _obj_jump.finish();
+    { int b2d_id = is_player() ? Box2dManager::PLAYER_CHARACTER_ID : _box2d_character_id;
+      if (b2d_id >= 0) GameManager::get_instance()->get_box2d_manager().character_reset_jumps(b2d_id); }
 
     // reduce progressively the jump-move value in oder to deal with collision
     float max_speed = move_speed * 2.5;
@@ -1892,145 +1913,110 @@ bool character::slide(st_float_position mapScrolling)
 // ********************************************************************************************** //
 bool character::jump(int jumpCommandStage, st_float_position mapScrolling)
 {
+    int b2d_id = -1;
+    if (is_player()) {
+        b2d_id = Box2dManager::PLAYER_CHARACTER_ID;
+    } else {
+        b2d_id = _box2d_character_id;
+    }
+    bool use_box2d = (b2d_id >= 0);
+
     // @TODO - can only jump again once set foot on land
     if (jumpCommandStage == 0 && jump_button_released == false) {
         jump_button_released = true;
     }
 
     if (state.animation_type == ANIM_TYPE_HIT) {
-        //std::cout << "JUMP LEAVE #1" << std::endl;
         return false;
     }
 
     // can't jump while on air dash
     if (state.animation_type == ANIM_TYPE_SLIDE && hit_ground() == false) {
-        //std::cout << "JUMP LEAVE #2" << std::endl;
         return false;
     }
 
-    int water_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position((position.x+frameSize.width/2)/TILESIZE, (position.y+6)/TILESIZE));
+    auto& mgr = GameManager::get_instance()->get_box2d_manager();
 
     if (_force_jump == true || (jumpCommandStage == 1 && jump_button_released == true)) {
-        //std::cout << "char::jump - button pressed" << std::endl;
-
         if (is_in_stairs_frame()) {
-            if (_obj_jump.is_started() == false) {
+            if (!use_box2d || !mgr.is_character_jumping(b2d_id)) {
                 if (is_player()) std::cout << "CHAR::RESET_TO_JUMP #A.5" << std::endl;
                 set_animation_type(ANIM_TYPE_JUMP);
                 _is_falling = true;
-                _stairs_falling_timer = TimerView::get_instance()->getTimer() + STAIRS_GRAB_TIMEOUT; // avoid player entering stairs immediatlly after jumping from it
-                //std::cout << "JUMP OUT OF STAIRS #1" << std::endl;
+                _stairs_falling_timer = TimerView::get_instance()->getTimer() + STAIRS_GRAB_TIMEOUT;
                 return false;
             } else {
-                //std::cout << "JUMP OUT OF STAIRS #2" << std::endl;
-                _obj_jump.interrupt();
+                mgr.character_jump_interrupt(b2d_id);
                 if (_force_jump == true) {
                     _force_jump = false;
                 }
             }
         } else {
-            //std::cout << "char::jump - _is_falling[" << _is_falling << "], _jumps_number: " << _jumps_number << ", obj::_jumps_number: " << _obj_jump.get_jumps_number() << std::endl;
-            if (_is_falling == false && (_obj_jump.is_started() == false || (_jumps_number > _obj_jump.get_jumps_number()))) {
+            bool can_start = false;
+            if (use_box2d) {
+                can_start = (_is_falling == false && mgr.character_can_jump(b2d_id));
+            } else {
+                can_start = (_is_falling == false);
+            }
+            if (can_start) {
                 int map_tile_x = (position.x+frameSize.width/2) / TILESIZE;
                 int map_tile_y = (get_hitbox().y+get_hitbox().h) / TILESIZE;
                 int platform_lock = GameManager::get_instance()->get_current_map_obj()->getMapPointLock(st_position(map_tile_x, map_tile_y));
-                if (_super_jump == true) {
+                bool big_jump = (_super_jump == true);
+                if (big_jump) {
                     _super_jump = false;
-                    //std::cout << "JUMP START #1" << std::endl;
-                    _obj_jump.start(true, water_lock);
-                } else if (!(moveCommands.down == 1 && platform_lock == TERRAIN_PLATFORM)) {
-                    //std::cout << "JUMP START #2 - platform_lock[" << platform_lock << "]" << std::endl;
-                    _obj_jump.start(false, water_lock);
+                }
+                if (!(moveCommands.down == 1 && platform_lock == TERRAIN_PLATFORM)) {
+                    if (use_box2d) {
+                        mgr.character_jump(b2d_id, big_jump);
+                    }
                 }
                 if (state.animation_type == ANIM_TYPE_SLIDE) {
                     _dashed_jump = true;
                 }
-                //if (is_player()) std::cout << "CHAR::RESET_TO_JUMP #A.6" << std::endl;
                 set_animation_type(ANIM_TYPE_JUMP);
                 jump_button_released = false;
             }
         }
     }
 
+    if (use_box2d) {
+        if (mgr.is_character_jumping(b2d_id)) {
+            if (is_in_stairs_frame()) {
+                mgr.character_reset_jumps(b2d_id);
+                return false;
+            }
+            if (jumpCommandStage == 0 && _force_jump == false &&
+                mgr.get_character_vertical_speed(b2d_id) < 0.0f) {
+                mgr.character_jump_interrupt(b2d_id);
+            }
+            return true;
+        } else {
+            if (_force_jump == true) {
+                _force_jump = false;
+            }
+            gravity();
+            return false;
+        }
+    }
+
+    // Non-Box2D character: simplified jump (tile-based gravity only)
     bool is_onquicksand = false;
     if (is_on_quicksand()) {
         is_onquicksand = true;
     }
 
-    if (_obj_jump.is_started() == true) {
-        int jump_speed = _obj_jump.get_speed();
-        bool jump_moved = false;
-
-        // if got into stairs, finish jumping
-        if ((is_in_stairs_frame())) {
-            _obj_jump.finish();
-            return false;
-        }
-
-        if (jump_speed < 0 && jumpCommandStage == 0 && _force_jump == false) {
-            _obj_jump.interrupt();
-        }
-
-        // check collision
-        for (int i=abs((float)jump_speed); i>0; i--) {
-            int speed_y = 0;
-            if (jump_speed > 0) {
-                speed_y = i;
-            } else {
-                speed_y = i*-1;
-            }
-            st_map_collision map_col = map_collision(0, speed_y, mapScrolling);
-            int map_lock = map_col.block;
-            if (is_player() && map_lock != BLOCK_UNBLOCKED) {
-                //std::cout << "jump::check_collision - i[" << i << "], map_lock["  << map_lock << "]" << std::endl;
-            }
-
-            if (map_lock == BLOCK_UNBLOCKED || map_lock == BLOCK_WATER) {
-                //std::cout << "jump.speed[" << speed_y << "]" << std::endl;
-                if (is_onquicksand) {
-                    position.y -= QUICKSAND_JUMP_LIMIT*3;
-                    jump_button_released = false;
-                    _obj_jump.finish();
-                } else {
-                    position.y += speed_y;
-                }
-                jump_moved = true;
-                break;
-            }
-        }
-        if (jump_speed != 0 && jump_moved == false) {
-            InputController::get_instance()->test_erumble();
-            if (jump_speed < 0) {
-                _obj_jump.interrupt();
-            } else {
-                _obj_jump.finish();
-            }
-        }
-
-        _obj_jump.execute(water_lock);
-        if (_obj_jump.is_started() == false) {
-            //std::cout << "SFX_PLAYER_JUMP #1" << std::endl;
-            SoundView::get_instance()->play_sfx(SFX_PLAYER_JUMP);
-            if (_force_jump == true) {
-                _force_jump = false;
-            }
-        } else {
-            if (is_player() && position.y > GameManager::get_instance()->get_current_map_obj()->get_size().height*TILESIZE+1) {
-                std::cout << "**** JUMP::LEAVE (death)" << std::endl;
-                _obj_jump.finish();
-            }
-        }
-    } else {
-        if (_force_jump == true) {
-            _force_jump = false;
-        }
-        //accel_speed_y = GRAVITY_MAX_SPEED;
-        gravity();
+    if (is_in_stairs_frame()) {
         return false;
     }
 
+    if (is_onquicksand) {
+        position.y -= QUICKSAND_JUMP_LIMIT*3;
+        jump_button_released = false;
+    }
 
-    return true;
+    gravity();
+    return false;
 }
 
 
@@ -2290,7 +2276,8 @@ st_map_collision character::map_collision(const float incx, const short incy, st
 
                                 set_animation_type(ANIM_TYPE_GOT_ITEM);
                                 cancel_slide();
-                                _obj_jump.interrupt();
+                                { int b2d_id = is_player() ? Box2dManager::PLAYER_CHARACTER_ID : _box2d_character_id;
+                                  if (b2d_id >= 0) GameManager::get_instance()->get_box2d_manager().character_jump_interrupt(b2d_id); }
                                 set_animation_type(ANIM_TYPE_GOT_ITEM);
 
                                 std::cout << ">>>>>>>>>>>>>>>> state.anim_type[" << state.animation_type << "], got_item_value[" << ANIM_TYPE_GOT_ITEM << "]" << std::endl;
@@ -3188,10 +3175,10 @@ void character::set_platform(GameObject* obj)
 		if (state.animation_type == ANIM_TYPE_JUMP) {
             if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #O" << std::endl;
             set_animation_type(ANIM_TYPE_STAND);
-            _obj_jump.interrupt();
+            { int b2d_id = is_player() ? Box2dManager::PLAYER_CHARACTER_ID : _box2d_character_id; if (b2d_id >= 0) GameManager::get_instance()->get_box2d_manager().character_jump_interrupt(b2d_id); }
         } else if (state.animation_type == ANIM_TYPE_JUMP_ATTACK) {
             set_animation_type(ANIM_TYPE_ATTACK);
-            _obj_jump.interrupt();
+            { int b2d_id = is_player() ? Box2dManager::PLAYER_CHARACTER_ID : _box2d_character_id; if (b2d_id >= 0) GameManager::get_instance()->get_box2d_manager().character_jump_interrupt(b2d_id); }
         }
         if (name == _debug_char_name) std::cout << "CHAR::RESET_TO_STAND #P" << std::endl;
         set_animation_type(ANIM_TYPE_STAND);
@@ -3299,11 +3286,13 @@ void character::damage(unsigned int damage_points, bool ignore_hit_timer = false
     if (is_player() == true && state.animation_type != ANIM_TYPE_HIT) {
         SoundView::get_instance()->play_sfx(SFX_PLAYER_HIT);
         set_animation_type(ANIM_TYPE_HIT);
-        if (_obj_jump.is_started() == true) {
+        { int b2d_id = is_player() ? Box2dManager::PLAYER_CHARACTER_ID : _box2d_character_id;
+          if (b2d_id >= 0 && GameManager::get_instance()->get_box2d_manager().is_character_jumping(b2d_id)) {
             hit_moved_back_n = get_hit_push_back_n()/2;
-            _obj_jump.finish();
-        } else {
+            GameManager::get_instance()->get_box2d_manager().character_reset_jumps(b2d_id);
+          } else {
             hit_moved_back_n = 0;
+          }
         }
         jump_button_released = false;
         if (GameManager::get_instance()->get_current_map_obj() != nullptr) {
@@ -3361,9 +3350,17 @@ st_position character::get_real_position() const
 
 void character::execute_jump_up()
 {
-    // fall until reaching ground
-	/// @TODO
-	for (int i=0; i<100; i++) {
+    int b2d_id = is_player() ? Box2dManager::PLAYER_CHARACTER_ID : _box2d_character_id;
+    if (b2d_id >= 0) {
+        auto& mgr = GameManager::get_instance()->get_box2d_manager();
+        jump(0, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
+        jump(1, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
+        // Loop while ascending (velocity.y < 0) - Box2D handles physics
+        return;
+    }
+
+    // Non-Box2D: fall then jump using tile-based method
+    for (int i=0; i<100; i++) {
 		char_update_real_position();
 		gravity();
         GameManager::get_instance()->get_current_map_obj()->show();
@@ -3371,21 +3368,9 @@ void character::execute_jump_up()
         GameManager::get_instance()->get_current_map_obj()->showAbove(0);
 	}
 
-    //activate_super_jump();
-	// reset command jump, if any
     jump(0, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
     jump(1, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
-    //std::cout << "execute_jump::START - " << initial_y << ", position.y: " << position.y << std::endl;
-    while (_obj_jump.get_speed() < 0) {
-        InputController::get_instance()->read_input();
-        char_update_real_position();
-        jump(1, GameManager::get_instance()->get_current_map_obj()->getMapScrolling());
-        GameManager::get_instance()->get_current_map_obj()->show();
-		show();
-        GameManager::get_instance()->get_current_map_obj()->showAbove();
-        TimerView::get_instance()->delay(20);
-	}
-    _obj_jump.interrupt();
+    gravity();
 }
 
 void character::execute_jump()
@@ -3416,7 +3401,8 @@ void character::execute_jump()
 
 void character::fall()
 {
-    _obj_jump.finish();
+    { int b2d_id = is_player() ? Box2dManager::PLAYER_CHARACTER_ID : _box2d_character_id;
+      if (b2d_id >= 0) { GameManager::get_instance()->get_box2d_manager().character_reset_jumps(b2d_id); return; } }
     // already on the ground
     if (hit_ground() == true) {
         set_animation_type(ANIM_TYPE_STAND);
@@ -3442,7 +3428,8 @@ void character::fall()
 void character::fall_to_ground()
 {
     std::cout << "################## CHAR::fall_to_ground START y[" << position.y << "]" << std::endl;
-    _obj_jump.finish();
+    { int b2d_id = is_player() ? Box2dManager::PLAYER_CHARACTER_ID : _box2d_character_id;
+      if (b2d_id >= 0) { GameManager::get_instance()->get_box2d_manager().character_reset_jumps(b2d_id); return; } }
     if (hit_ground() == true) {
         return;
     }
@@ -3692,7 +3679,10 @@ void character::set_animation_type(ANIM_TYPE type)
     //std::cout << "character::set_animation_type type[" << type << "]" << std::endl;
     // if is hit, finish jumping
     if (state.animation_type != type && type == ANIM_TYPE_HIT) {
-        _obj_jump.finish();
+        int b2d_id = is_player() ? Box2dManager::PLAYER_CHARACTER_ID : _box2d_character_id;
+        if (b2d_id >= 0) {
+            GameManager::get_instance()->get_box2d_manager().character_reset_jumps(b2d_id);
+        }
     }
 
     if (type != state.animation_type) {

@@ -62,6 +62,15 @@ void Box2dManager::execute()
 		b2Body_SetTransform(player.bodyId, posBefore, b2Rot_identity);
 		b2Body_SetLinearVelocity(player.bodyId, {0.0f, 0.0f});
 	}
+
+	// Check landing for all characters
+	for (auto& [id, data] : _characters) {
+		if (data.jump_started) {
+			if (is_character_touching_ground(data)) {
+				character_reset_jumps(id);
+			}
+		}
+	}
 }
 
 st_rectangle Box2dManager::get_ground_box()
@@ -306,6 +315,97 @@ void Box2dManager::player_jump()
 	}
 }
 
+void Box2dManager::character_jump(int character_id, bool big_jump)
+{
+	auto& data = _characters.at(character_id);
+	data.freeze_position = false;
+	b2Body_SetGravityScale(data.bodyId, 1.0f);
+
+	b2Vec2 currentVelocity = b2Body_GetLinearVelocity(data.bodyId);
+	if (currentVelocity.y < -10.0f && data.jump_started) {
+		return;
+	}
+
+	data.jump_started = true;
+	data.is_big_jump = big_jump;
+	data.jumps_remaining--;
+
+	float velocity_y = data.jump_velocity;
+	if (big_jump) {
+		velocity_y *= 1.4f;
+	}
+
+	b2Body_ApplyLinearImpulseToCenter(data.bodyId, {0.0f, velocity_y}, true);
+}
+
+void Box2dManager::character_jump_interrupt(int character_id)
+{
+	auto& data = _characters.at(character_id);
+	if (!data.jump_started) {
+		return;
+	}
+	if (data.force_jump) {
+		return;
+	}
+	b2Vec2 vel = b2Body_GetLinearVelocity(data.bodyId);
+	if (vel.y < 0.0f) {
+		b2Body_SetLinearVelocity(data.bodyId, {vel.x, 0.0f});
+	}
+}
+
+bool Box2dManager::character_can_jump(int character_id)
+{
+	auto& data = _characters.at(character_id);
+	if (data.jumps_remaining > 0) {
+		return true;
+	}
+	return false;
+}
+
+void Box2dManager::character_reset_jumps(int character_id)
+{
+	auto& data = _characters.at(character_id);
+	data.jumps_remaining = data.max_jumps;
+	data.jump_started = false;
+	data.force_jump = false;
+	data.is_big_jump = false;
+}
+
+bool Box2dManager::is_character_jumping(int character_id)
+{
+	return _characters.at(character_id).jump_started;
+}
+
+void Box2dManager::set_character_max_jumps(int character_id, int max)
+{
+	_characters.at(character_id).max_jumps = max;
+}
+
+void Box2dManager::set_character_jumps_remaining(int character_id, int remaining)
+{
+	_characters.at(character_id).jumps_remaining = remaining;
+}
+
+void Box2dManager::set_character_force_jump(int character_id, bool force)
+{
+	_characters.at(character_id).force_jump = force;
+}
+
+void Box2dManager::set_character_super_jump(int character_id, bool super)
+{
+	_characters.at(character_id).is_big_jump = super;
+}
+
+float Box2dManager::get_character_vertical_speed(int character_id)
+{
+	return b2Body_GetLinearVelocity(_characters.at(character_id).bodyId).y;
+}
+
+b2BodyId Box2dManager::get_character_body(int character_id)
+{
+	return _characters.at(character_id).bodyId;
+}
+
 void Box2dManager::run_debug_draw(b2DebugDraw *draw)
 {
 	b2World_Draw(worldId, draw);
@@ -410,6 +510,23 @@ bool Box2dManager::is_player_touching_ground() {
 		if (contactData.manifold.pointCount > 0) {
 			for (int i=0; i<contactData.manifold.pointCount; i++) {
 				if (areFloatsEqual(contactData.manifold.points[i].point.y, player_feet, 0.15f)) return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Box2dManager::is_character_touching_ground(const CharacterBox2dData& data) {
+	b2Vec2 position = b2Body_GetPosition(data.bodyId);
+	b2ContactData contactDataArray[10];
+	int count = b2Body_GetContactData(data.bodyId, contactDataArray, 10);
+	float feet = position.y + (data.h/2);
+
+	for (int n=0; n<count; n++) {
+		b2ContactData contactData = contactDataArray[n];
+		if (contactData.manifold.pointCount > 0) {
+			for (int i=0; i<contactData.manifold.pointCount; i++) {
+				if (areFloatsEqual(contactData.manifold.points[i].point.y, feet, 0.15f)) return true;
 			}
 		}
 	}

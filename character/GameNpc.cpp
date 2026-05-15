@@ -104,11 +104,6 @@ void GameNPC::death()
 
 }
 
-int GameNPC::get_box2d_character_id()
-{
-    return _box2d_character_id;
-}
-
 void GameNPC::build_basic_npc(int map_id, int main_id)
 {
     _number = main_id;

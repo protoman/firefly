@@ -764,22 +764,23 @@ void artificial_inteligence::ia_action_jump_once()
 void artificial_inteligence::ia_action_jump_up()
 {
     if (_ai_state.sub_status == IA_ACTION_STATE_INITIAL) {
-        //std::cout << "AI::ia_action_jump_up::INIT" << std::endl;
         _ai_state.sub_status = IA_ACTION_STATE_EXECUTING;
         _ai_state.action_status = 0;
         set_animation_type(ANIM_TYPE_JUMP);
-        _obj_jump.start(false, TERRAIN_UNBLOCKED);
+        if (_box2d_character_id >= 0) {
+            GameManager::get_instance()->get_box2d_manager().character_jump(_box2d_character_id, false);
+        }
         moveCommands.jump = 1;
     } else if (_ai_state.sub_status == IA_ACTION_STATE_EXECUTING) {
         if (_ai_state.action_status == 0) {
-            //std::cout << "AI::ia_action_jump_up::EXECUTE.FIRST" << std::endl;
             moveCommands.jump = 1;
             _ai_state.action_status++;
         } else {
-            //std::cout << "AI::ia_action_jump_up::EXECUTE.RUN" << std::endl;
             moveCommands.jump = 1;
-            float speed = _obj_jump.get_speed();
-            // execute attack, if needed
+            float speed = 0.0f;
+            if (_box2d_character_id >= 0) {
+                speed = GameManager::get_instance()->get_box2d_manager().get_character_vertical_speed(_box2d_character_id);
+            }
             if (speed >= 0 && jump_attack_type != -1) {
                 if (have_frame_graphic(state.direction, ANIM_TYPE_JUMP_ATTACK, 0) == true) {
                     set_animation_type(ANIM_TYPE_JUMP_ATTACK);
@@ -792,7 +793,9 @@ void artificial_inteligence::ia_action_jump_up()
                 _ai_state.sub_status = IA_ACTION_STATE_FINISHED;
                 set_animation_type(ANIM_TYPE_STAND);
                 _ai_state.action_status = 0;
-                _obj_jump.finish();
+                if (_box2d_character_id >= 0) {
+                    GameManager::get_instance()->get_box2d_manager().character_reset_jumps(_box2d_character_id);
+                }
             }
         }
     }
