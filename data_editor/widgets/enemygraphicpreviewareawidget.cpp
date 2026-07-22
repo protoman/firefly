@@ -90,3 +90,8 @@ void EnemyGraphicPreviewAreaWidget::mouseReleaseEvent(QMouseEvent *event)
 void EnemyGraphicPreviewAreaWidget::setDataDirectory(std::string directory) {
     game_data_directory = directory + "/images/sprites/enemies/";
 }
+
+st_selected_point EnemyGraphicPreviewAreaWidget::get_st_selected_point()
+{
+    return selected_point;
+}

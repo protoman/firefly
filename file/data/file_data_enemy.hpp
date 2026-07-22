@@ -11,6 +11,7 @@
 #include "cereal/cereal.hpp"
 #include "cereal/archives/json.hpp"
 #include "cereal/types/vector.hpp"
+#include "cereal/types/map.hpp"
 
 
 
@@ -97,12 +98,11 @@ namespace data {
     };
 
     struct file_enemy_frameset {
-        frame_types type;
         std::vector<file_enemy_frame> frames;
 
         template <class Archive>
         void serialize(Archive & ar) {
-            ar(CEREAL_NVP(type), CEREAL_NVP(frames));
+            ar(CEREAL_NVP(frames));
         }
     };
 
@@ -118,7 +118,7 @@ namespace data {
         std::string graphic_filename;
         file_enemy_size sprite_size;
         file_enemy_point projectile_origin_point;
-        std::vector<file_enemy_frameset> framesets;
+        std::map<frame_types, file_enemy_frameset> framesets;
 
         template <class Archive>
         void serialize(Archive & ar) {

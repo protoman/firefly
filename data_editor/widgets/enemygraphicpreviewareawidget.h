@@ -15,6 +15,7 @@ public:
     explicit EnemyGraphicPreviewAreaWidget(QWidget *parent = nullptr);
     void updateGraphic(int w, int h, std::string filename);
     void setDataDirectory(std::string directory);
+    st_selected_point get_st_selected_point();
 
 protected:
     void paintEvent(QPaintEvent *event);

@@ -30,7 +30,7 @@ void EnemyEdit::start(std::string data_directory)
     ui->frameSelectWidget->setDataDirectory(game_data_directory);
     ui->graphicPreviewAreaWidged->setDataDirectory(game_data_directory);
 
-        CommonUtils::fill_files_combo(game_data_directory + "/images/sprites/enemies", ui->GraphicFilenameComboBox, true);
+    CommonUtils::fill_files_combo(game_data_directory + "/images/sprites/enemies", ui->GraphicFilenameComboBox, true);
     loadData();
     fillSelectorCombobox();
     fillFormWithData(0);
@@ -182,5 +182,42 @@ void EnemyEdit::on_projectileOriginXSpinBox_valueChanged(int arg1)
 void EnemyEdit::on_projectileOriginYSpinBox_valueChanged(int arg1)
 {
     enemies.enemy_list.at(selectorCombobox->currentIndex()).projectile_origin_point.y = arg1;
+}
+
+
+void EnemyEdit::on_addFramePushButton_clicked()
+{
+    data::frame_types type = static_cast<data::frame_types>(ui->framesetTypeComboBox->currentIndex());
+    data::file_enemy_frame frame;
+    frame.is_key_frame = ui->isKeyFrameCheckBox->isChecked();
+    frame.duration = ui->frameDurationSpinBox->value();
+    frame.origin = ui->frameSelectWidget->get_st_selected_point().x; // TODO - do we need Y here or we can simplify to a single int instead?
+    enemies.enemy_list.at(selectorCombobox->currentIndex()).framesets[type].frames.push_back(frame);
+}
+
+
+void EnemyEdit::on_removeFramePushButton_clicked()
+{
+    data::frame_types type = static_cast<data::frame_types>(ui->framesetTypeComboBox->currentIndex());
+    int origin = ui->frameSelectWidget->get_st_selected_point().x; // TODO - do we need Y here or we can simplify to a single int instead?
+    enemies.enemy_list.at(selectorCombobox->currentIndex()).framesets[type].frames.erase(enemies.enemy_list.at(selectorCombobox->currentIndex()).framesets[type].frames.begin() + origin);
+}
+
+void EnemyEdit::on_upFramePushButton_clicked()
+{
+    data::frame_types type = static_cast<data::frame_types>(ui->framesetTypeComboBox->currentIndex());
+    int origin = ui->frameSelectWidget->get_st_selected_point().x; // TODO - do we need Y here or we can simplify to a single int instead?
+    if (origin == 0) { // already at top
+        return;
+    }
+    data::file_enemy_frame temp = enemies.enemy_list.at(selectorCombobox->currentIndex()).framesets[type].frames.at(origin - 1);
+    enemies.enemy_list.at(selectorCombobox->currentIndex()).framesets[type].frames.at(origin - 1) = enemies.enemy_list.at(selectorCombobox->currentIndex()).framesets[type].frames.at(origin);
+    enemies.enemy_list.at(selectorCombobox->currentIndex()).framesets[type].frames.at(origin) = temp;
+}
+
+
+void EnemyEdit::on_downFramePushButton_clicked()
+{
+
 }
 

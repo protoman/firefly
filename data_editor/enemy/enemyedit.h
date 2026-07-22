@@ -42,6 +42,14 @@ private slots:
 
     void on_projectileOriginYSpinBox_valueChanged(int arg1);
 
+    void on_addFramePushButton_clicked();
+
+    void on_removeFramePushButton_clicked();
+
+    void on_upFramePushButton_clicked();
+
+    void on_downFramePushButton_clicked();
+
 private:
     void fillSelectorCombobox();
     void fillFormWithData(int selected_enemy);

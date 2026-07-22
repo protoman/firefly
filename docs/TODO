@@ -1,6 +1,26 @@
 ########################################################
                      TODO LIST
 ########################################################
+- create a system for map
+    # should know the rooms size from the tmx map
+    # should automatically map every room player enters since the origin.
+    # should add information to the map about save, teleport or other special points.
+
+- implement editors
+    # npc
+    # enemy
+    # object
+    # quest
+    # behavior (AI)
+    # map items (npcs, enemies, objects)
+
+- can be hardcoded instead of editable:
+    # game/stage properties (music, names, etc)
+    # text
+    # cutscenes
+    # projectiles and weapons
+    # player-characters
+
 - convert all existing data to json.
 
 - implement editor screens

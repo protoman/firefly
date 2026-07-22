@@ -18,7 +18,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -315,9 +315,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-20</y>
              <width>744</width>
-             <height>467</height>
+             <height>481</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_12">
@@ -329,13 +329,20 @@
               <property name="rightMargin">
                <number>10</number>
               </property>
-              <item row="0" column="0">
+              <item row="0" column="2">
                <layout class="QGridLayout" name="gridLayout_11">
                 <item row="0" column="0">
                  <layout class="QVBoxLayout" name="verticalLayout">
                   <property name="bottomMargin">
                    <number>10</number>
                   </property>
+                  <item>
+                   <widget class="QLabel" name="label_19">
+                    <property name="text">
+                     <string>Edit Frameset:</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_3">
                     <item>
@@ -516,7 +523,7 @@
                     </property>
                     <layout class="QHBoxLayout" name="horizontalLayout_4">
                      <item>
-                      <widget class="QPushButton" name="addPushButton">
+                      <widget class="QPushButton" name="addFramePushButton">
                        <property name="text">
                         <string/>
                        </property>
@@ -528,7 +535,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="removePushButton">
+                      <widget class="QPushButton" name="removeFramePushButton">
                        <property name="text">
                         <string/>
                        </property>
@@ -540,7 +547,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="upPushButton">
+                      <widget class="QPushButton" name="upFramePushButton">
                        <property name="text">
                         <string/>
                        </property>
@@ -552,7 +559,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="downPushButton">
+                      <widget class="QPushButton" name="downFramePushButton">
                        <property name="text">
                         <string/>
                        </property>
@@ -588,6 +595,13 @@
                    </widget>
                   </item>
                   <item>
+                   <widget class="QLabel" name="label_20">
+                    <property name="text">
+                     <string>Frames:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
                    <widget class="QListWidget" name="framesListWidget">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -604,25 +618,31 @@
                 </item>
                </layout>
               </item>
-              <item row="0" column="1">
-               <layout class="QGridLayout" name="gridLayout_13">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_15">
+              <item row="0" column="0">
+               <layout class="QGridLayout" name="gridLayout_7">
+                <item row="1" column="0">
+                 <widget class="EnemyGraphicPreviewAreaWidget" name="frameSelectWidget" native="true">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
-                  <property name="text">
-                   <string>Preview</string>
+                  <property name="minimumSize">
+                   <size>
+                    <width>320</width>
+                    <height>200</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">border: 1px solid black;</string>
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="0">
-                 <widget class="QWidget" name="framesPreviewWidget" native="true">
-                  <property name="styleSheet">
-                   <string notr="true">border: 1px solid black;</string>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_18">
+                  <property name="text">
+                   <string>Frame Picker:</string>
                   </property>
                  </widget>
                 </item>
@@ -631,23 +651,34 @@
              </layout>
             </item>
             <item row="0" column="0">
-             <widget class="EnemyGraphicPreviewAreaWidget" name="frameSelectWidget" native="true">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>320</width>
-                <height>200</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">border: 1px solid black;</string>
-              </property>
-             </widget>
+             <layout class="QGridLayout" name="gridLayout_13">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_15">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Frameset Preview:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QWidget" name="framesPreviewWidget" native="true">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>128</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">border: 1px solid black;</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
