@@ -87,6 +87,24 @@ if(LINUX)
     )
 endif()
 
+# Prefer linking against the main FireFlyGameLib when available instead of compiling sources into the editor
+if(TARGET FireFlyGameLib)
+    message(STATUS "Linking FireflyEditor against in-tree FireFlyGameLib target")
+    target_link_libraries(FireflyEditor PRIVATE FireFlyGameLib)
+else()
+    # Try to find a prebuilt static library in the parent build folder (when building editor standalone)
+    set(PARENT_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../build")
+    find_library(FIREFLY_GAME_LIB NAMES FireFlyGameLib libFireFlyGameLib PATHS ${PARENT_BUILD_DIR} NO_DEFAULT_PATH)
+    if(FIREFLY_GAME_LIB)
+        message(STATUS "Linking FireflyEditor against prebuilt ${FIREFLY_GAME_LIB}")
+        target_link_libraries(FireflyEditor PRIVATE ${FIREFLY_GAME_LIB})
+    else()
+        message(WARNING "FireFlyGameLib not found as CMake target or prebuilt library in ${PARENT_BUILD_DIR}. Falling back to compiling fio_common.cpp and exception_manager.cpp into editor target.")
+        target_sources(FireflyEditor PRIVATE ../file/fio_common.cpp ../aux_tools/exception_manager.cpp)
+    endif()
+endif()
+
+# Link Qt and tmxlite as before
 target_link_libraries(FireflyEditor PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     tmxlite)

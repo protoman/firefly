@@ -25,6 +25,11 @@ struct st_scene_area {
         w = set_w;
         h = set_h;
     }
+
+    template<class Archive>
+    void serialize(Archive & ar) {
+        ar(CEREAL_NVP(x), CEREAL_NVP(y), CEREAL_NVP(w), CEREAL_NVP(h));
+    }
 };
 
 enum e_SCENETYPE {
@@ -72,6 +77,19 @@ struct file_scene_clear_area {
         g = 0;
         b = 0;
     }
+
+    template<class Archive>
+    void save(Archive & ar) const {
+        std::string name_s(name);
+        ar(CEREAL_NVP(name_s), CEREAL_NVP(x), CEREAL_NVP(y), CEREAL_NVP(w), CEREAL_NVP(h), CEREAL_NVP(r), CEREAL_NVP(g), CEREAL_NVP(b));
+    }
+    template<class Archive>
+    void load(Archive & ar) {
+        std::string name_s;
+        ar(name_s, x, y, w, h, r, g, b);
+        strncpy(name, name_s.c_str(), FS_NAME_SIZE);
+        name[FS_NAME_SIZE-1] = '\0';
+    }
 };
 
 struct file_scene_show_image {
@@ -97,6 +115,20 @@ struct file_scene_show_image {
         blocking = true;
         loop_mode = 0;
         move_type = 0;
+    }
+
+    template<class Archive>
+    void save(Archive & ar) const {
+        std::string name_s(name);
+        std::string fname(filename);
+        ar(CEREAL_NVP(name_s), CEREAL_NVP(fname), CEREAL_NVP(ini_x), CEREAL_NVP(ini_y), CEREAL_NVP(dest_x), CEREAL_NVP(dest_y), CEREAL_NVP(copy_area), CEREAL_NVP(move_delay), CEREAL_NVP(blocking), CEREAL_NVP(loop_mode), CEREAL_NVP(move_type));
+    }
+    template<class Archive>
+    void load(Archive & ar) {
+        std::string name_s, fname;
+        ar(name_s, fname, ini_x, ini_y, dest_x, dest_y, copy_area, move_delay, blocking, loop_mode, move_type);
+        strncpy(name, name_s.c_str(), FS_NAME_SIZE); name[FS_NAME_SIZE-1]='\0';
+        strncpy(filename, fname.c_str(), FS_CHAR_FILENAME_SIZE); filename[FS_CHAR_FILENAME_SIZE-1]='\0';
     }
 };
 
@@ -131,6 +163,20 @@ struct file_scene_show_viewpoint {
         blocking = true;
         loop_mode = 0;
     }
+
+    template<class Archive>
+    void save(Archive & ar) const {
+        std::string name_s(name);
+        std::string fname(filename);
+        ar(CEREAL_NVP(name_s), CEREAL_NVP(fname), CEREAL_NVP(ini_x), CEREAL_NVP(ini_y), CEREAL_NVP(dest_x), CEREAL_NVP(dest_y), CEREAL_NVP(w), CEREAL_NVP(h), CEREAL_NVP(pos_x), CEREAL_NVP(pos_y), CEREAL_NVP(move_delay), CEREAL_NVP(blocking), CEREAL_NVP(loop_mode));
+    }
+    template<class Archive>
+    void load(Archive & ar) {
+        std::string name_s, fname;
+        ar(name_s, fname, ini_x, ini_y, dest_x, dest_y, w, h, pos_x, pos_y, move_delay, blocking, loop_mode);
+        strncpy(name, name_s.c_str(), FS_NAME_SIZE); name[FS_NAME_SIZE-1]='\0';
+        strncpy(filename, fname.c_str(), FS_CHAR_FILENAME_SIZE); filename[FS_CHAR_FILENAME_SIZE-1]='\0';
+    }
 };
 
 struct file_scene_show_animation {
@@ -155,6 +201,20 @@ struct file_scene_show_animation {
         repeat = false;
     }
 
+    template <class Archive>
+    void save(Archive & ar) const {
+        std::string name_s(name);
+        std::string fname(filename);
+        ar(CEREAL_NVP(name_s), CEREAL_NVP(fname), CEREAL_NVP(x), CEREAL_NVP(y), CEREAL_NVP(frame_w), CEREAL_NVP(frame_h), CEREAL_NVP(frame_delay), CEREAL_NVP(repeat), CEREAL_NVP(blocking));
+    }
+    template <class Archive>
+    void load(Archive & ar) {
+        std::string name_s, fname;
+        ar(name_s, fname, x, y, frame_w, frame_h, frame_delay, repeat, blocking);
+        strncpy(name, name_s.c_str(), FS_NAME_SIZE); name[FS_NAME_SIZE-1]='\0';
+        strncpy(filename, fname.c_str(), FS_CHAR_FILENAME_SIZE); filename[FS_CHAR_FILENAME_SIZE-1]='\0';
+    }
+
 };
 
 struct file_scene_show_text {
@@ -175,6 +235,24 @@ struct file_scene_show_text {
         transition_type = 0;
         position_type = 0;
     }
+
+    template <class Archive>
+    void save(Archive & ar) const {
+        std::string name_s(name);
+        std::vector<int> lines_v;
+        for (int i=0;i<SCENE_TEXT_LINES_N;i++) lines_v.push_back(line_string_id[i]);
+        ar(CEREAL_NVP(name_s), CEREAL_NVP(lines_v), CEREAL_NVP(x), CEREAL_NVP(y), CEREAL_NVP(transition_type), CEREAL_NVP(position_type));
+    }
+    template <class Archive>
+    void load(Archive & ar) {
+        std::string name_s;
+        std::vector<int> lines_v;
+        ar(name_s, lines_v, x, y, transition_type, position_type);
+        strncpy(name, name_s.c_str(), FS_NAME_SIZE); name[FS_NAME_SIZE-1]='\0';
+        for (int i=0;i<SCENE_TEXT_LINES_N;i++) {
+            if (i < (int)lines_v.size()) line_string_id[i] = lines_v[i]; else line_string_id[i] = -1;
+        }
+    }
 };
 
 struct file_scene_play_sfx {
@@ -187,6 +265,20 @@ struct file_scene_play_sfx {
         filename[0] = '\0';
         repeat_times = 0;
     }
+
+    template <class Archive>
+    void save(Archive & ar) const {
+        std::string name_s(name);
+        std::string fname(filename);
+        ar(CEREAL_NVP(name_s), CEREAL_NVP(fname), CEREAL_NVP(repeat_times));
+    }
+    template <class Archive>
+    void load(Archive & ar) {
+        std::string name_s, fname;
+        ar(name_s, fname, repeat_times);
+        strncpy(name, name_s.c_str(), FS_NAME_SIZE); name[FS_NAME_SIZE-1]='\0';
+        strncpy(filename, fname.c_str(), FS_CHAR_FILENAME_SIZE); filename[FS_CHAR_FILENAME_SIZE-1]='\0';
+    }
 };
 
 struct file_scene_play_music {
@@ -196,6 +288,20 @@ struct file_scene_play_music {
     file_scene_play_music() {
         name[0] = '\0';
         filename[0] = '\0';
+    }
+
+    template <class Archive>
+    void save(Archive & ar) const {
+        std::string name_s(name);
+        std::string fname(filename);
+        ar(CEREAL_NVP(name_s), CEREAL_NVP(fname));
+    }
+    template <class Archive>
+    void load(Archive & ar) {
+        std::string name_s, fname;
+        ar(name_s, fname);
+        strncpy(name, name_s.c_str(), FS_NAME_SIZE); name[FS_NAME_SIZE-1]='\0';
+        strncpy(filename, fname.c_str(), FS_CHAR_FILENAME_SIZE); filename[FS_CHAR_FILENAME_SIZE-1]='\0';
     }
 };
 
@@ -224,6 +330,11 @@ struct file_scene_object {
         run_in_background = false;
     }
 
+    template <class Archive>
+    void serialize(Archive & ar) {
+        ar(CEREAL_NVP(type), CEREAL_NVP(seek_n), CEREAL_NVP(delay_after), CEREAL_NVP(repeat_type), CEREAL_NVP(repeat_value), CEREAL_NVP(run_in_background));
+    }
+
 };
 
 // header of one scene_list file
@@ -232,6 +343,25 @@ struct file_scene_list {
     file_scene_object objects[SCENE_OBJECTS_MAX];
     file_scene_list() {
         name[0] = '\0';
+    }
+
+    template <class Archive>
+    void save(Archive & ar) const {
+        std::string name_s(name);
+        std::vector<file_scene_object> objs_v;
+        objs_v.reserve(SCENE_OBJECTS_MAX);
+        for (int i=0;i<SCENE_OBJECTS_MAX;i++) objs_v.push_back(objects[i]);
+        ar(CEREAL_NVP(name_s), CEREAL_NVP(objs_v));
+    }
+    template <class Archive>
+    void load(Archive & ar) {
+        std::string name_s;
+        std::vector<file_scene_object> objs_v;
+        ar(name_s, objs_v);
+        strncpy(name, name_s.c_str(), FS_NAME_SIZE); name[FS_NAME_SIZE-1]='\0';
+        for (int i=0;i<SCENE_OBJECTS_MAX;i++) {
+            if (i < (int)objs_v.size()) objects[i] = objs_v[i]; else objects[i] = file_scene_object();
+        }
     }
 };
 

@@ -113,8 +113,36 @@ template <class T> int fio_common::get_list_size(std::string filename)
 
 template <class T> std::vector<T> fio_common::load_from_disk(std::string filename)
 {
+    // Prefer JSON counterpart when available. If only binary exists, load it and convert to JSON for future runs.
     std::vector<T> res;
-    FILE *fp = fopen(filename.c_str(), "rb");
+
+    // construct json filename by replacing .dat with .json if present, otherwise append .json
+    std::string json_filename = filename;
+    if (json_filename.size() >= 4 && json_filename.substr(json_filename.size()-4) == ".dat") {
+        json_filename = json_filename.substr(0, json_filename.size()-4) + ".json";
+    } else {
+        json_filename = json_filename + std::string(".json");
+    }
+
+    // if json exists, and the type T supports cereal JSON serialization, use JSON loader
+    FILE *fp = fopen(json_filename.c_str(), "rb");
+    if (fp) {
+        fclose(fp);
+        // Use compile-time check to avoid instantiating cereal load for unsupported types
+        if constexpr (cereal::traits::is_input_serializable<T, cereal::JSONInputArchive>::value) {
+            try {
+                res = load_json_data<T>(json_filename);
+                return res;
+            } catch (...) {
+                // fallthrough to binary loader
+            }
+        } else {
+            // Type T does not support JSON input via cereal; skip JSON load
+        }
+    }
+
+    // fallback: load legacy binary .dat file
+    fp = fopen(filename.c_str(), "rb");
     if (!fp) {
         std::cout << ">>file_io::load_from_disk - file '" << filename << "' not found." << std::endl;
         return res;
@@ -124,7 +152,6 @@ template <class T> std::vector<T> fio_common::load_from_disk(std::string filenam
     while (!feof(fp) && !ferror(fp)) {
         T out;
         int res_read = fread(&out, sizeof(T), 1, fp);
-        //std::cout << ">>file_io::load_from_disk - res_read '" << res_read << "'." << std::endl;
         if (res_read == -1) {
             std::cout << ">>file_io::load_from_disk - Error reading data from scenes_list file '" << filename << "'." << std::endl;
             fclose(fp);
@@ -132,10 +159,10 @@ template <class T> std::vector<T> fio_common::load_from_disk(std::string filenam
         } else if (res_read == 1) {
             res.push_back(out);
         }
-
         n++;
     }
     fclose(fp);
+
     return res;
 }
 

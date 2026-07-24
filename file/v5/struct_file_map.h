@@ -32,6 +32,11 @@ struct st_tile_piece {
         y = -1;
         type = TILE_TYPE_SOLID;
     }
+
+    template <class Archive>
+    void serialize(Archive & ar) {
+        ar(CEREAL_NVP(x), CEREAL_NVP(y), CEREAL_NVP(type));
+    }
 };
 
 
@@ -43,6 +48,11 @@ struct file_v5_map_tile {
         locked = 0;
         tile_overlay.x = -1;
         tile_overlay.y = -1;
+    }
+
+    template <class Archive>
+    void serialize(Archive & ar) {
+        ar(CEREAL_NVP(locked), CEREAL_NVP(tile_underlay), CEREAL_NVP(tile_overlay));
     }
 };
 
@@ -70,6 +80,18 @@ struct file_v5_map_background {
         animation_width = 0;
         animation_timer = 0;
     }
+
+    template <class Archive>
+    void save(Archive & ar) const {
+        std::string filename_s(filename);
+        ar(cereal::make_nvp(std::string("filename"), filename_s), cereal::make_nvp(std::string("adjust_y"), adjust_y), cereal::make_nvp(std::string("speed"), speed), cereal::make_nvp(std::string("auto_scroll"), auto_scroll), cereal::make_nvp(std::string("repeatX"), repeatX), cereal::make_nvp(std::string("repeatY"), repeatY), cereal::make_nvp(std::string("alpha"), alpha), cereal::make_nvp(std::string("animation_width"), animation_width), cereal::make_nvp(std::string("animation_timer"), animation_timer));
+    }
+    template <class Archive>
+    void load(Archive & ar) {
+        std::string filename_s;
+        ar(cereal::make_nvp(std::string("filename"), filename_s), cereal::make_nvp(std::string("adjust_y"), adjust_y), cereal::make_nvp(std::string("speed"), speed), cereal::make_nvp(std::string("auto_scroll"), auto_scroll), cereal::make_nvp(std::string("repeatX"), repeatX), cereal::make_nvp(std::string("repeatY"), repeatY), cereal::make_nvp(std::string("alpha"), alpha), cereal::make_nvp(std::string("animation_width"), animation_width), cereal::make_nvp(std::string("animation_timer"), animation_timer));
+        strncpy(filename, filename_s.c_str(), FS_CHAR_FILENAME_SIZE); filename[FS_CHAR_FILENAME_SIZE-1]='\0';
+    }
 };
 
 struct file_v5_map_header {
@@ -93,16 +115,33 @@ struct file_v5_map_header {
         autoscroll = false;
         sprintf(music_filename, "%s", "");
     }
+
+    template <class Archive>
+    void save(Archive & ar) const {
+        std::string map_name_s(map_name);
+        std::string tileset_s(tileset_filename);
+        std::string music_s(music_filename);
+        std::vector<file_v5_map_background> backgrounds_v;
+        backgrounds_v.reserve(BACKGROUND_LAYERS_MAX);
+        for (int i = 0; i < BACKGROUND_LAYERS_MAX; ++i) backgrounds_v.push_back(backgrounds[i]);
+        ar(cereal::make_nvp(std::string("map_name"), map_name_s), cereal::make_nvp(std::string("tiles_w"), tiles_w), cereal::make_nvp(std::string("tiles_h"), tiles_h), cereal::make_nvp(std::string("backgrounds"), backgrounds_v), cereal::make_nvp(std::string("background_color"), background_color), cereal::make_nvp(std::string("gfx"), gfx), cereal::make_nvp(std::string("tileset_filename"), tileset_s), cereal::make_nvp(std::string("autoscroll"), autoscroll), cereal::make_nvp(std::string("music_filename"), music_s));
+    }
+    template <class Archive>
+    void load(Archive & ar) {
+        std::string map_name_s, tileset_s, music_s;
+        std::vector<file_v5_map_background> backgrounds_v;
+        ar(cereal::make_nvp(std::string("map_name"), map_name_s), cereal::make_nvp(std::string("tiles_w"), tiles_w), cereal::make_nvp(std::string("tiles_h"), tiles_h), cereal::make_nvp(std::string("backgrounds"), backgrounds_v), cereal::make_nvp(std::string("background_color"), background_color), cereal::make_nvp(std::string("gfx"), gfx), cereal::make_nvp(std::string("tileset_filename"), tileset_s), cereal::make_nvp(std::string("autoscroll"), autoscroll), cereal::make_nvp(std::string("music_filename"), music_s));
+        strncpy(map_name, map_name_s.c_str(), V5_CHAR_NAME); map_name[V5_CHAR_NAME-1]='\0';
+        strncpy(tileset_filename, tileset_s.c_str(), FS_CHAR_FILENAME_SIZE); tileset_filename[FS_CHAR_FILENAME_SIZE-1]='\0';
+        strncpy(music_filename, music_s.c_str(), FS_CHAR_FILENAME_SIZE); music_filename[FS_CHAR_FILENAME_SIZE-1]='\0';
+        for (size_t i = 0; i < backgrounds_v.size() && i < BACKGROUND_LAYERS_MAX; ++i) backgrounds[i] = backgrounds_v[i];
+    }
 };
 
 struct file_v5_map_room {
     file_v5_map_tile tiles[AREA_ROOM_TILES_W][AREA_ROOM_TILES_H];
     int area_x = -1;
     int area_y = -1;
-
-    file_v5_map_room() {
-        std::cout << ">>>>>>>>>>> file_v5_map_room" << std::endl;
-    }
 };
 
 // this is used to save/load from disk (serialized)
@@ -139,6 +178,11 @@ struct file_v5_map_npc {
         id_npc = -1;
         direction = 0;
     }
+
+    template <class Archive>
+    void serialize(Archive & ar) {
+        ar(CEREAL_NVP(id_npc), CEREAL_NVP(start_point), CEREAL_NVP(direction));
+    }
 };
 
 struct file_v5_map_teleporter_object {
@@ -167,6 +211,11 @@ struct file_v5_map_object {
 struct slope_data {
     int left = 0;
     int right = 0;
+
+    template <class Archive>
+    void serialize(Archive & ar) {
+        ar(CEREAL_NVP(left), CEREAL_NVP(right));
+    }
 };
 
 struct file_v5_slope_tile {
@@ -177,8 +226,19 @@ struct file_v5_slope_tile {
         filename[0] = '\0';
     }
 
-};
+    template <class Archive>
+    void save(Archive & ar) const {
+        std::string fname(filename);
+        ar(CEREAL_NVP(fname), CEREAL_NVP(slope));
+    }
+    template <class Archive>
+    void load(Archive & ar) {
+        std::string fname;
+        ar(fname, slope);
+        strncpy(filename, fname.c_str(), FS_CHAR_FILENAME_SIZE); filename[FS_CHAR_FILENAME_SIZE-1]='\0';
+    }
 
+};
 
 
 #endif // STRUCT_FILE_MAP_H

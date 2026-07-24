@@ -1,6 +1,8 @@
 #ifndef ST_COLOR_HPP
 #define ST_COLOR_HPP
 
+#include "cereal/cereal.hpp"
+
 struct st_color {
     int r;
     int g;
@@ -15,6 +17,11 @@ struct st_color {
         r = setR;
         g = setG;
         b = setB;
+    }
+
+    template <class Archive>
+    void serialize(Archive & ar) {
+        ar(CEREAL_NVP(r), CEREAL_NVP(g), CEREAL_NVP(b));
     }
 };
 

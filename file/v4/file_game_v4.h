@@ -55,6 +55,25 @@ struct file_projectilev3 {
         is_explosive = false;
         vanishes_on_hit = true;
     }
+
+    template <class Archive>
+    void save(Archive & ar) const {
+        std::string name_s(name);
+        std::string graphic_s(graphic_filename);
+        std::string sfx_s(sfx_filename);
+        ar(cereal::make_nvp(std::string("name"), name_s), cereal::make_nvp(std::string("graphic_filename"), graphic_s), cereal::make_nvp(std::string("size"), size), cereal::make_nvp(std::string("is_destructible"), is_destructible), cereal::make_nvp(std::string("hp"), hp), cereal::make_nvp(std::string("trajectory"), trajectory), cereal::make_nvp(std::string("max_shots"), max_shots), cereal::make_nvp(std::string("speed"), speed), cereal::make_nvp(std::string("damage"), damage), cereal::make_nvp(std::string("sfx_filename"), sfx_s), cereal::make_nvp(std::string("can_be_reflected"), can_be_reflected), cereal::make_nvp(std::string("spawn_npc_id"), spawn_npc_id), cereal::make_nvp(std::string("spawn_npc_n"), spawn_npc_n), cereal::make_nvp(std::string("is_explosive"), is_explosive), cereal::make_nvp(std::string("vanishes_on_hit"), vanishes_on_hit));
+    }
+
+    template <class Archive>
+    void load(Archive & ar) {
+        std::string name_s;
+        std::string graphic_s;
+        std::string sfx_s;
+        ar(cereal::make_nvp(std::string("name"), name_s), cereal::make_nvp(std::string("graphic_filename"), graphic_s), cereal::make_nvp(std::string("size"), size), cereal::make_nvp(std::string("is_destructible"), is_destructible), cereal::make_nvp(std::string("hp"), hp), cereal::make_nvp(std::string("trajectory"), trajectory), cereal::make_nvp(std::string("max_shots"), max_shots), cereal::make_nvp(std::string("speed"), speed), cereal::make_nvp(std::string("damage"), damage), cereal::make_nvp(std::string("sfx_filename"), sfx_s), cereal::make_nvp(std::string("can_be_reflected"), can_be_reflected), cereal::make_nvp(std::string("spawn_npc_id"), spawn_npc_id), cereal::make_nvp(std::string("spawn_npc_n"), spawn_npc_n), cereal::make_nvp(std::string("is_explosive"), is_explosive), cereal::make_nvp(std::string("vanishes_on_hit"), vanishes_on_hit));
+        strncpy(name, name_s.c_str(), CHAR_NAME_SIZE); name[CHAR_NAME_SIZE-1] = '\0';
+        strncpy(graphic_filename, graphic_s.c_str(), FS_CHAR_NAME_SIZE); graphic_filename[FS_CHAR_NAME_SIZE-1] = '\0';
+        strncpy(sfx_filename, sfx_s.c_str(), FS_CHAR_NAME_SIZE); sfx_filename[FS_CHAR_NAME_SIZE-1] = '\0';
+    }
 };
 
 
@@ -82,7 +101,7 @@ struct st_sprite_data {
     template<class Archive>
     void serialize(Archive & archive)
     {
-      archive(used, duration, sprite_graphic_pos_x, collision_rect);
+        archive(cereal::make_nvp(std::string("used"), used), cereal::make_nvp(std::string("duration"), duration), cereal::make_nvp(std::string("sprite_graphic_pos_x"), sprite_graphic_pos_x), cereal::make_nvp(std::string("collision_rect"), collision_rect));
     }
 
 };
@@ -174,30 +193,79 @@ struct file_player_v3_1_1 {
 
     // This method lets cereal know which data members to serialize
     template<class Archive>
-    void serialize(Archive & archive)
+    void save(Archive & ar) const
     {
-      archive( cereal::make_nvp("name", name),
-               cereal::make_nvp("graphic_filename", graphic_filename),
-               face_filename,
-               HP,
-               sprite_size,
-               sprite_hit_area,
-               move_speed,
-               sprites,
-               have_shield,
-               max_shots,
-               simultaneous_shots,
-               can_double_jump,
-               can_slide,
-               can_charge_shot,
-               full_charged_projectile_id,
-               can_air_dash,
-               damage_modifier,
-               can_shot_diagonal,
-               attack_arm_pos,
-               attack_frame,
-               double_shot,
-               normal_shot_projectile_id ); // serialize things by passing them to the archive
+        std::string name_s(name);
+        std::string graphic_s(graphic_filename);
+        std::string face_s(face_filename);
+        // convert C-array sprites[ANIM_TYPE_COUNT][ANIM_FRAMES_COUNT] to vector of vectors
+        std::vector<std::vector<st_sprite_data>> sprites_v;
+        sprites_v.resize(ANIM_TYPE_COUNT);
+        for (int i = 0; i < ANIM_TYPE_COUNT; ++i) {
+            sprites_v[i].reserve(ANIM_FRAMES_COUNT);
+            for (int j = 0; j < ANIM_FRAMES_COUNT; ++j) sprites_v[i].push_back(sprites[i][j]);
+        }
+        ar(cereal::make_nvp(std::string("name"), name_s),
+           cereal::make_nvp(std::string("graphic_filename"), graphic_s),
+           cereal::make_nvp(std::string("face_filename"), face_s),
+           cereal::make_nvp(std::string("HP"), HP),
+           cereal::make_nvp(std::string("sprite_size"), sprite_size),
+           cereal::make_nvp(std::string("sprite_hit_area"), sprite_hit_area),
+           cereal::make_nvp(std::string("move_speed"), move_speed),
+           cereal::make_nvp(std::string("sprites"), sprites_v),
+           cereal::make_nvp(std::string("have_shield"), have_shield),
+           cereal::make_nvp(std::string("max_shots"), max_shots),
+           cereal::make_nvp(std::string("simultaneous_shots"), simultaneous_shots),
+           cereal::make_nvp(std::string("can_double_jump"), can_double_jump),
+           cereal::make_nvp(std::string("can_slide"), can_slide),
+           cereal::make_nvp(std::string("can_charge_shot"), can_charge_shot),
+           cereal::make_nvp(std::string("full_charged_projectile_id"), full_charged_projectile_id),
+           cereal::make_nvp(std::string("can_air_dash"), can_air_dash),
+           cereal::make_nvp(std::string("damage_modifier"), damage_modifier),
+           cereal::make_nvp(std::string("can_shot_diagonal"), can_shot_diagonal),
+           cereal::make_nvp(std::string("attack_arm_pos"), attack_arm_pos),
+           cereal::make_nvp(std::string("attack_frame"), attack_frame),
+           cereal::make_nvp(std::string("double_shot"), double_shot),
+           cereal::make_nvp(std::string("normal_shot_projectile_id"), normal_shot_projectile_id) );
+    }
+
+    template<class Archive>
+    void load(Archive & ar)
+    {
+        std::string name_s, graphic_s, face_s;
+        std::vector<std::vector<st_sprite_data>> sprites_v;
+        ar(cereal::make_nvp(std::string("name"), name_s),
+           cereal::make_nvp(std::string("graphic_filename"), graphic_s),
+           cereal::make_nvp(std::string("face_filename"), face_s),
+           cereal::make_nvp(std::string("HP"), HP),
+           cereal::make_nvp(std::string("sprite_size"), sprite_size),
+           cereal::make_nvp(std::string("sprite_hit_area"), sprite_hit_area),
+           cereal::make_nvp(std::string("move_speed"), move_speed),
+           cereal::make_nvp(std::string("sprites"), sprites_v),
+           cereal::make_nvp(std::string("have_shield"), have_shield),
+           cereal::make_nvp(std::string("max_shots"), max_shots),
+           cereal::make_nvp(std::string("simultaneous_shots"), simultaneous_shots),
+           cereal::make_nvp(std::string("can_double_jump"), can_double_jump),
+           cereal::make_nvp(std::string("can_slide"), can_slide),
+           cereal::make_nvp(std::string("can_charge_shot"), can_charge_shot),
+           cereal::make_nvp(std::string("full_charged_projectile_id"), full_charged_projectile_id),
+           cereal::make_nvp(std::string("can_air_dash"), can_air_dash),
+           cereal::make_nvp(std::string("damage_modifier"), damage_modifier),
+           cereal::make_nvp(std::string("can_shot_diagonal"), can_shot_diagonal),
+           cereal::make_nvp(std::string("attack_arm_pos"), attack_arm_pos),
+           cereal::make_nvp(std::string("attack_frame"), attack_frame),
+           cereal::make_nvp(std::string("double_shot"), double_shot),
+           cereal::make_nvp(std::string("normal_shot_projectile_id"), normal_shot_projectile_id));
+        strncpy(name, name_s.c_str(), FS_CHAR_NAME_SIZE); name[FS_CHAR_NAME_SIZE-1] = '\0';
+        strncpy(graphic_filename, graphic_s.c_str(), FS_CHAR_NAME_SIZE); graphic_filename[FS_CHAR_NAME_SIZE-1] = '\0';
+        strncpy(face_filename, face_s.c_str(), FS_CHAR_NAME_SIZE); face_filename[FS_CHAR_NAME_SIZE-1] = '\0';
+        // copy sprites_v back to C-array, filling defaults when missing
+        for (int i = 0; i < ANIM_TYPE_COUNT; ++i) {
+            for (int j = 0; j < ANIM_FRAMES_COUNT; ++j) {
+                if (i < (int)sprites_v.size() && j < (int)sprites_v[i].size()) sprites[i][j] = sprites_v[i][j];
+                else sprites[i][j] = st_sprite_data();
+            }
+        }
     }
 
 };
@@ -267,6 +335,36 @@ struct file_enemy_v3_1_2 {
         npc_requested_item_id = -1;
         npc_given_item_id = -1;
     }
+
+    template <class Archive>
+    void save(Archive & ar) const {
+        std::string name_s(name);
+        std::string graphic_s(graphic_filename);
+        std::string bg_s(bg_graphic_filename);
+        // convert 2D C-array sprites to vector<vector<st_sprite_data>>
+        std::vector<std::vector<st_sprite_data>> sprites_v;
+        sprites_v.resize(ANIM_TYPE_COUNT);
+        for (int i = 0; i < ANIM_TYPE_COUNT; ++i) {
+            sprites_v[i].reserve(ANIM_FRAMES_COUNT);
+            for (int j = 0; j < ANIM_FRAMES_COUNT; ++j) sprites_v[i].push_back(sprites[i][j]);
+        }
+        ar(cereal::make_nvp(std::string("id"), id), cereal::make_nvp(std::string("projectile_id"), projectile_id), cereal::make_nvp(std::string("name"), name_s), cereal::make_nvp(std::string("graphic_filename"), graphic_s), cereal::make_nvp(std::string("hp"), hp), cereal::make_nvp(std::string("direction"), direction), cereal::make_nvp(std::string("speed"), speed), cereal::make_nvp(std::string("walk_range"), walk_range), cereal::make_nvp(std::string("facing"), facing), cereal::make_nvp(std::string("start_point"), start_point), cereal::make_nvp(std::string("sprites"), sprites_v), cereal::make_nvp(std::string("frame_size"), frame_size), cereal::make_nvp(std::string("is_ghost"), is_ghost), cereal::make_nvp(std::string("shield_type"), shield_type), cereal::make_nvp(std::string("IA_type"), IA_type), cereal::make_nvp(std::string("fly_flag"), fly_flag), cereal::make_nvp(std::string("bg_graphic_filename"), bg_s), cereal::make_nvp(std::string("sprites_pos_bg"), sprites_pos_bg), cereal::make_nvp(std::string("is_boss"), is_boss), cereal::make_nvp(std::string("is_sub_boss"), is_sub_boss), cereal::make_nvp(std::string("respawn_delay"), respawn_delay), cereal::make_nvp(std::string("attack_arm_pos"), attack_arm_pos), cereal::make_nvp(std::string("attack_frame"), attack_frame), cereal::make_nvp(std::string("vulnerable_area"), vulnerable_area), cereal::make_nvp(std::string("gfx_effect"), gfx_effect), cereal::make_nvp(std::string("is_npc"), is_npc), cereal::make_nvp(std::string("npc_dialog_id"), npc_dialog_id), cereal::make_nvp(std::string("npc_requested_item_id"), npc_requested_item_id), cereal::make_nvp(std::string("npc_given_item_id"), npc_given_item_id));
+    }
+    template <class Archive>
+    void load(Archive & ar) {
+        std::string name_s, graphic_s, bg_s;
+        std::vector<std::vector<st_sprite_data>> sprites_v;
+        ar(cereal::make_nvp(std::string("id"), id), cereal::make_nvp(std::string("projectile_id"), projectile_id), cereal::make_nvp(std::string("name"), name_s), cereal::make_nvp(std::string("graphic_filename"), graphic_s), cereal::make_nvp(std::string("hp"), hp), cereal::make_nvp(std::string("direction"), direction), cereal::make_nvp(std::string("speed"), speed), cereal::make_nvp(std::string("walk_range"), walk_range), cereal::make_nvp(std::string("facing"), facing), cereal::make_nvp(std::string("start_point"), start_point), cereal::make_nvp(std::string("sprites"), sprites_v), cereal::make_nvp(std::string("frame_size"), frame_size), cereal::make_nvp(std::string("is_ghost"), is_ghost), cereal::make_nvp(std::string("shield_type"), shield_type), cereal::make_nvp(std::string("IA_type"), IA_type), cereal::make_nvp(std::string("fly_flag"), fly_flag), cereal::make_nvp(std::string("bg_graphic_filename"), bg_s), cereal::make_nvp(std::string("sprites_pos_bg"), sprites_pos_bg), cereal::make_nvp(std::string("is_boss"), is_boss), cereal::make_nvp(std::string("is_sub_boss"), is_sub_boss), cereal::make_nvp(std::string("respawn_delay"), respawn_delay), cereal::make_nvp(std::string("attack_arm_pos"), attack_arm_pos), cereal::make_nvp(std::string("attack_frame"), attack_frame), cereal::make_nvp(std::string("vulnerable_area"), vulnerable_area), cereal::make_nvp(std::string("gfx_effect"), gfx_effect), cereal::make_nvp(std::string("is_npc"), is_npc), cereal::make_nvp(std::string("npc_dialog_id"), npc_dialog_id), cereal::make_nvp(std::string("npc_requested_item_id"), npc_requested_item_id), cereal::make_nvp(std::string("npc_given_item_id"), npc_given_item_id));
+        strncpy(name, name_s.c_str(), CHAR_NAME_SIZE); name[CHAR_NAME_SIZE-1]='\0';
+        strncpy(graphic_filename, graphic_s.c_str(), FS_CHAR_NAME_SIZE); graphic_filename[FS_CHAR_NAME_SIZE-1]='\0';
+        strncpy(bg_graphic_filename, bg_s.c_str(), FS_CHAR_NAME_SIZE); bg_graphic_filename[FS_CHAR_NAME_SIZE-1]='\0';
+        for (int i = 0; i < ANIM_TYPE_COUNT; ++i) {
+            for (int j = 0; j < ANIM_FRAMES_COUNT; ++j) {
+                if (i < (int)sprites_v.size() && j < (int)sprites_v[i].size()) sprites[i][j] = sprites_v[i][j];
+                else sprites[i][j] = st_sprite_data();
+            }
+        }
+    }
 };
 
 
@@ -305,8 +403,65 @@ struct file_npc_v3_1_2 {
         npc_given_item_id = -1;
         hit_area = st_rectangle(0, 0, 0, 0);
     }
-};
 
+    template <class Archive>
+    void save(Archive & ar) const {
+        std::string name_s(name);
+        std::string graphic_s(graphic_filename);
+        // convert sprites C-array to vector<vector<st_sprite_data>>
+        std::vector<std::vector<st_sprite_data>> sprites_v;
+        sprites_v.resize(ANIM_TYPE_NPC_COUNT);
+        for (int i = 0; i < ANIM_TYPE_NPC_COUNT; ++i) {
+            sprites_v[i].reserve(ANIM_TYPE_NPC_FRAMES_N);
+            for (int j = 0; j < ANIM_TYPE_NPC_FRAMES_N; ++j) sprites_v[i].push_back(sprites[i][j]);
+        }
+        ar(cereal::make_nvp(std::string("id"), id));
+        ar(cereal::make_nvp(std::string("name"), name_s));
+        ar(cereal::make_nvp(std::string("graphic_filename"), graphic_s));
+        ar(cereal::make_nvp(std::string("direction"), direction));
+        ar(cereal::make_nvp(std::string("speed"), speed));
+        ar(cereal::make_nvp(std::string("walk_range"), walk_range));
+        ar(cereal::make_nvp(std::string("npc_move_behavior"), npc_move_behavior));
+        ar(cereal::make_nvp(std::string("start_point"), start_point));
+        ar(cereal::make_nvp(std::string("frame_width"), frame_width));
+        ar(cereal::make_nvp(std::string("frame_duration"), frame_duration));
+        ar(cereal::make_nvp(std::string("hit_area"), hit_area));
+        ar(cereal::make_nvp(std::string("npc_dialog_id"), npc_dialog_id));
+        ar(cereal::make_nvp(std::string("npc_quest_id"), npc_quest_id));
+        ar(cereal::make_nvp(std::string("npc_requested_item_id"), npc_requested_item_id));
+        ar(cereal::make_nvp(std::string("npc_given_item_id"), npc_given_item_id));
+        ar(cereal::make_nvp(std::string("sprites"), sprites_v));
+    }
+    template <class Archive>
+    void load(Archive & ar) {
+        std::string name_s, graphic_s;
+        std::vector<std::vector<st_sprite_data>> sprites_v;
+        ar(cereal::make_nvp(std::string("id"), id));
+        ar(cereal::make_nvp(std::string("name"), name_s));
+        ar(cereal::make_nvp(std::string("graphic_filename"), graphic_s));
+        ar(cereal::make_nvp(std::string("direction"), direction));
+        ar(cereal::make_nvp(std::string("speed"), speed));
+        ar(cereal::make_nvp(std::string("walk_range"), walk_range));
+        ar(cereal::make_nvp(std::string("npc_move_behavior"), npc_move_behavior));
+        ar(cereal::make_nvp(std::string("start_point"), start_point));
+        ar(cereal::make_nvp(std::string("frame_width"), frame_width));
+        ar(cereal::make_nvp(std::string("frame_duration"), frame_duration));
+        ar(cereal::make_nvp(std::string("hit_area"), hit_area));
+        ar(cereal::make_nvp(std::string("npc_dialog_id"), npc_dialog_id));
+        ar(cereal::make_nvp(std::string("npc_quest_id"), npc_quest_id));
+        ar(cereal::make_nvp(std::string("npc_requested_item_id"), npc_requested_item_id));
+        ar(cereal::make_nvp(std::string("npc_given_item_id"), npc_given_item_id));
+        ar(cereal::make_nvp(std::string("sprites"), sprites_v));
+        strncpy(name, name_s.c_str(), CHAR_NAME_SIZE); name[CHAR_NAME_SIZE-1]='\0';
+        strncpy(graphic_filename, graphic_s.c_str(), FS_CHAR_NAME_SIZE); graphic_filename[FS_CHAR_NAME_SIZE-1]='\0';
+        for (int i = 0; i < ANIM_TYPE_NPC_COUNT; ++i) {
+            for (int j = 0; j < ANIM_TYPE_NPC_FRAMES_N; ++j) {
+                if (i < (int)sprites_v.size() && j < (int)sprites_v[i].size()) sprites[i][j] = sprites_v[i][j];
+                else sprites[i][j] = st_sprite_data();
+            }
+        }
+    }
+};
 // **************************** NPC 3.1.2 **************************** //
 
 
@@ -352,7 +507,7 @@ struct file_ai_action {
     int action;
     int go_to;                                                  // action number to be executed once this one is finished, -1 indicates that must return to CHANCES (random)
     int go_to_delay;                                            // delay before going to the next action
-    int extra_parameter;										// left, right, etc
+    int extra_parameter;                                        // left, right, etc
 
     file_ai_action()
     {
@@ -362,18 +517,28 @@ struct file_ai_action {
         go_to_delay = 500;
         extra_parameter = 0;
     }
+
+    template <class Archive>
+    void serialize(Archive & ar) {
+        ar(CEREAL_NVP(chance), CEREAL_NVP(action), CEREAL_NVP(go_to), CEREAL_NVP(go_to_delay), CEREAL_NVP(extra_parameter));
+    }
 };
 
 struct reaction {
     int action;
     int go_to;                                                  // action number to be executed once this one is finished, -1 indicates that must return to CHANCES (random)
     int go_to_delay;                                            // delay before going to the next action
-    int extra_parameter;										// left, right, etc
+    int extra_parameter;                                        // left, right, etc
     reaction() {
         action = -1;
         go_to = 0;
         go_to_delay = 500;
         extra_parameter = 0;
+    }
+
+    template <class Archive>
+    void serialize(Archive & ar) {
+        ar(CEREAL_NVP(action), CEREAL_NVP(go_to), CEREAL_NVP(go_to_delay), CEREAL_NVP(extra_parameter));
     }
 };
 
@@ -385,8 +550,20 @@ struct file_artificial_intelligence {
     file_artificial_intelligence() {
         sprintf(name, "%s", "A.I.");
     }
-};
 
+    template <class Archive>
+    void save(Archive & ar) const {
+        std::string name_s(name);
+        ar(CEREAL_NVP(name_s), CEREAL_NVP(states), CEREAL_NVP(reactions));
+    }
+    template <class Archive>
+    void load(Archive & ar) {
+        std::string name_s;
+        ar(name_s, states, reactions);
+        strncpy(name, name_s.c_str(), CHAR_NAME_SIZE);
+        name[CHAR_NAME_SIZE-1] = '\0';
+    }
+};
 
 // *** NEW AI format *** //
 struct file_ai_action_v3 {

@@ -2,6 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <string>
+#include <QTextEdit>
+#include <QDockWidget>
+#include <filesystem>
 #include "cereal/cereal.hpp"
 #include "cereal/archives/json.hpp"
 #include "file/data/file_data_enemy.hpp"
@@ -38,6 +42,7 @@ public:
 
 private:
     void loadConfig();
+    void convert_legacy_dat_to_json(const std::string &base_dir);
 
 private slots:
     void on_actionEnemy_Editor_triggered();
@@ -53,6 +58,10 @@ private:
     e_editMode editMode = e_editMode_ENEMY;
     editor_config config;
     std::string config_filename = "editor_config.json";
+
+    // UI widget used to show conversion progress/logs
+    QTextEdit *conversion_log = nullptr;
+    QDockWidget *conversion_dock = nullptr;
 
 };
 

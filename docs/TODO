@@ -1,6 +1,11 @@
 ########################################################
                      TODO LIST
 ########################################################
+I did notice some json files fields have no names, being just called "value1", "value2" and so on.
+Make sure all json files properties are saved with the same name the C++ code uses.
+And, if this file is converted from a dat one, delete the json file, so that the conversion runs again.
+
+
 - remove all build warnings
 - convert all data to use json
 - remove fixed-size chars, use std::str5ing instead.

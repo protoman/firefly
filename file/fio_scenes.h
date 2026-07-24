@@ -21,6 +21,11 @@ struct st_game_scene_item {
         id = set_id;
         scene_id = set_scene_id;
     }
+
+    template <class Archive>
+    void serialize(Archive & ar) {
+        ar(CEREAL_NVP(id), CEREAL_NVP(scene_id));
+    }
 };
 
 
