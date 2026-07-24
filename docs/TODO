@@ -1,18 +1,27 @@
 ########################################################
                      TODO LIST
 ########################################################
-- create a system for map
+- remove all build warnings
+- use a tool for code-cleaning like SonarCube
+
+Resolution independence
+    # SDL_SetRenderLogicalPresentation
+    # https://gamedev.stackexchange.com/questions/177894/what-is-the-proper-way-of-handling-resolution-and-size-units-on-a-2d-game
+
+- Split SDL3 code better
+    # there should be no SDL code outside SDL-layer ones.
+    # minimize the use of SDL functions, avoiding duplication.
+
+- create a system for in-game map
     # should know the rooms size from the tmx map
     # should automatically map every room player enters since the origin.
     # should add information to the map about save, teleport or other special points.
 
-- implement editors
-    # npc
-    # enemy
-    # object
-    # quest
-    # behavior (AI)
-    # map items (npcs, enemies, objects)
+- player and npcs must not collide.
+- check why player is taking damage at the start of the stage.
+
+- Configure build system on github
+
 
 - can be hardcoded instead of editable:
     # game/stage properties (music, names, etc)
@@ -21,7 +30,25 @@
     # projectiles and weapons
     # player-characters
 
+- Each player sprite needs its own size (w/h) and position adjust
+=> precisa mesmo? Dá para fazer bem grande agora, já que memória não é mais para ser uma restrição
+    # setting the sprite must be done ONLY through a method, so it can update the size in box2d
+    # improve the way we place the player sprite on screen
+    # move player position in player class to player-shared-data, use box2d only for the movement
+    # add an "execute" method in box2d that moves player/etc
+
+########################################################
+EDITOR:
+########################################################
 - convert all existing data to json.
+
+- implement editors
+    # npc
+    # enemy
+    # object
+    # quest
+    # behavior (AI)
+    # map items (npcs, enemies, objects)
 
 - implement editor screens
     # reorganize the file-* load and write classes.
@@ -37,15 +64,7 @@ https://medibangpaint.com/en/
 https://krita.org/pt-br/
 
 
-- Each player sprite needs its own size (w/h)
-    # setting the sprite must be done ONLY through a method, so it can update the size in box2d
-    # improve the way we place the player sprite on screen
-    # move player position in player class to player-shared-data, use box2d only for the movement
-    # add an "execute" method in box2d that moves player/etc
-
-- Split SDL3 code better
-    # there should be no SDL code outside SDL-layer ones.
-    # minimize the use of SDL functions, avoiding duplication.
+=============================================
 
 - Organize data with JSon
     # npcs
@@ -60,12 +79,6 @@ https://krita.org/pt-br/
     # friendly npc -> include dialogs
     # cutscenes (movie)
 
-- Configure build system on github
-
-- remove all build warnings
-- use a tool for code-cleaning like SonarCube
-
-- move to SDL3
 
 - created a method that will determine after witch layer the player will be added
     # it should look for a "PLAYER" layer
@@ -90,8 +103,6 @@ Por exemplo:
     # Enemies data (textura, posição, estado, etc)
 
 
-Resolution indepedance
-    # https://gamedev.stackexchange.com/questions/177894/what-is-the-proper-way-of-handling-resolution-and-size-units-on-a-2d-game
 
 
 separar em headersa diferentes st_rectanble, st_point, st_size, etc
