@@ -2,7 +2,9 @@
                      TODO LIST
 ########################################################
 - remove all build warnings
-- use a tool for code-cleaning like SonarCube
+- convert all data to use json
+- remove fixed-size chars, use std::str5ing instead.
+- replace any sprintfs for safer version snprints
 
 Resolution independence
     # SDL_SetRenderLogicalPresentation
